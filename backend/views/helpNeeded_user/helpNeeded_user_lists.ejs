@@ -1,0 +1,11 @@
+<div class="container">
+    <div class="content">
+        <% curates.forEach((curate) => { %>
+            <a href="/helpNeeded/curatePost/<%= curate._id %>"><%= curate.date %>에 신청한 큐레이팅</a>
+            <p>
+                의사 의견 수: <%= curate.comments.length %>
+            </p>
+            <hr>
+        <% }) %>
+    </div>
+</div>

@@ -1,0 +1,60 @@
+<div class="container">
+    <div class="content">
+        <h2><%= usernick %>이(가) 요청한 큐레이팅</h2>
+        큐레이팅 요청 시각: <%= date %>
+        <br>
+        <h3>의사에게 공유된 Post</h3>
+        <% posts.forEach((post) => { %>
+            <div class="content">
+                <h4><%= post.title %></h4>
+                <%= post.details %>
+                <br>
+                <%= post.additional_material %>
+                <br>
+                <%= post.tag %>
+            </div>
+            <hr>
+        <% }) %>
+    </div>
+    <hr>
+    <div class="content">
+        <h3>의사에게 공유된 AI 상담 내역</h3>
+        <% ai_chats.forEach((chat) => { %>
+            <h4><%= chat.title %></h4>
+                <div class="content">
+                    <% for (let i = 0; i < chat.UserResponse.length; i++) { %>
+                        환자:<br>
+                        <%= chat.UserResponse[i] %><br>
+                        AI:<br>
+                        <%= chat.AIResponse[i] %>
+                        <hr>
+                    <% } %>
+                </div>
+            <hr>
+        <% }) %>
+    </div>
+    <hr>
+    <div class="content">
+        <form action="/helpNeeded_doc/comment/<%= postInfo %>" method="POST">
+            <label for="comment" style="text-align: left;">Comment:</label>
+            <textarea id="comment" class="input-box" name="comment" placeholder="큐레이팅 내용을 입력하세요. 부적절한 내용은 삭제될 수 있습니다."></textarea>
+            <input type="submit" value="코멘트 등록">
+        </form>
+    </div>
+    <div class="content">
+        <h2>의사들의 의견</h2>
+        <br>
+        <% commentList.forEach((comment) => { %>
+            <h4><%= comment.content %></h4>
+            <h6><%= comment.date %></h6>
+            <h5>by <%= comment.doctor %></h5>
+            <% if (comment.doctorid == accountInfo._id) { %>
+                <a href="/helpNeeded_doc/comment/edit/<%= comment.commentid %>?postid=<%= postInfo %>">내 의견 수정하기</a>
+                <form action="/helpNeeded_doc/comment/delete/<%= comment.commentid %>?postid=<%= postInfo %>&_method=DELETE" method="POST">
+                    <input type="submit" value="내 의견 삭제하기">
+                </form>
+            <% } %>
+            <hr>
+        <% }) %>
+    </div>
+</div>

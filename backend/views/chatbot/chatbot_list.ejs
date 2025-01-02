@@ -1,0 +1,14 @@
+<div class="container">
+    <div class="content">
+        <% chats.forEach((chat) => { %>
+            <a href="/chatbot/chat/<%= chat._id %>"><%= chat.title %></a>
+            <p>
+                Created at: <%= chat.chatCreatedAt %>
+            </p>
+            <p>
+                Edited at: <%= chat.chatEditedAt %>
+            </p>
+            <hr>
+        <% }); %>
+    </div>
+</div>

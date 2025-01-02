@@ -1,0 +1,23 @@
+<div class="container">
+    <div class="content">
+        <h2><%= chat.title %></h2>
+        <h3>
+            <p>
+                Created at: <%= chat.chatCreatedAt %> <br> Edited at: <%= chat.chatEditedAt %>
+            </p>
+        </h3>
+        <% for (let i = 0; i < chat.AIResponse.length; i++) { %>
+            <h5>나:</h5>
+            <%= chat.UserResponse[i] %>
+            <h5>AI: </h5>
+            <%= chat.AIResponse[i] %>
+            <hr>
+        <% } %>
+        <a href="/chatbot/chat/list">채팅 목록으로 돌아가기</a>
+        <br>
+        <a href="/chatbot/chat?isResume=true&chatid=<%= chat._id %>">이 채팅 계속해서 이어가기</a>
+        <form id="save" method="POST" action="/chatbot/chat/<%= chat._id %>?_method=DELETE">
+            <button type="submit" class="red-button">대화 삭제하기</button>
+        </form>
+    </div>
+</div>

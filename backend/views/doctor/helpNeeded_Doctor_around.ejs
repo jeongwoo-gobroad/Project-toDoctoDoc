@@ -1,0 +1,29 @@
+<div class="container">
+    <div class="content">
+        <form action="/helpNeeded_doc/curate" method="get">
+            <label for="km">반경 몇 km 이내에서 검색할지 고르세요(기본값: 1km):</label>
+            <select id="km" name="km">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+            <input type="submit" value="확인">
+        </form>
+        <input type="hidden" id="around" value="<%= arnd %>">
+        <h2>반경 <%= arnd %>km 내 큐레이팅 희망 환자 검색 결과</h2>
+        <% curates.forEach((curate) => { %>
+            <a href="/helpNeeded_doc/view/<%= curate._id %>"><%= curate.date %>에 신청한 큐레이팅</a>
+            <p>
+                의사 의견 수: <%= curate.comments.length %>
+            </p>
+            <hr>
+        <% }) %>
+        <script>
+            const defaultKm = document.getElementById('around').value;
+
+            document.getElementById('km').value = defaultKm;
+        </script>
+    </div>
+</div>

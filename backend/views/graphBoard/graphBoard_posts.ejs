@@ -1,0 +1,13 @@
+<div class="container">
+    <% data.forEach((element) => { %>
+        <div class="content">
+            <h3><%= element.title %></h3>
+            <%= element.details %>
+            <h5>By: <%= element.usernick %></h5>
+            <h5>Created at: <%= element.createdAt %></h5>
+            <h5>Tags: <%= element.tag %></h5>
+        </div>
+        <hr>
+        <br>
+    <% }); %>
+</div>

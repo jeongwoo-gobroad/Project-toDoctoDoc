@@ -1,0 +1,129 @@
+<div class="container" id="container">
+    <svg id="svg"></svg>
+</div>
+<input type="hidden" id="tagList" value="<%= tagList %>">
+<input type="hidden" id="tagGraph" value="<%= tagGraph %>">
+
+<script>
+    let tagList = JSON.parse(document.getElementById('tagList').value);
+    let tagGraph = JSON.parse(document.getElementById('tagGraph').value);
+
+    console.log(tagList);
+    console.log(tagGraph);
+
+    const container = document.getElementById('container');
+    let svg = document.getElementById('svg');
+
+    // 가장 큰 값을 찾아 중앙에 배치 
+    const entries = Object.entries(tagList).sort((a, b) => b[1] - a[1]);
+    const largest = entries[0];
+    const baseSize = 100;
+    const positions = {}; // 원의 위치를 저장
+
+    function createCircle(key, value, x, y) {
+        const link = document.createElement('a');
+        let size = value * baseSize;
+        if (value > 3) {
+            size = 300;
+        }
+        link.href = `/tagSearch/${key}`;
+        link.className = 'circle';
+        link.style.width = `${size}px`;
+        link.style.height = `${size}px`;
+        link.style.left = `${x - size / 2}px`;
+        link.style.top = `${y - size / 2}px`;
+        link.textContent = key;
+        container.appendChild(link);
+        positions[key] = { x: x, y: y, size: size }; // 원의 중심 좌표 저장
+    }
+
+    function createLine(x1, y1, x2, y2) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', x1);
+        line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2);
+        line.setAttribute('y2', y2);
+        line.setAttribute('stroke', '#FFFFFF');
+        line.setAttribute('stroke-width', '2');
+        svg.appendChild(line);
+        console.log(line);
+    }
+
+    function drawCircles() {
+        // SVG 초기화
+        container.innerHTML = '<svg id="svg" style="z-index: 2;"></svg>'
+        svg = document.getElementById('svg');
+        const maxCirclesAround = 6;
+
+        const centerX = container.clientWidth / 2;
+        const centerY = container.clientHeight / 2;
+
+        // 중앙에 가장 큰 원 배치
+        createCircle(largest[0], largest[1], centerX, centerY);
+
+        /*
+        // 주위에 나머지 원 배치
+        const radius = largest[1] * baseSize + 50; // 중심 원의 크기에 따라 반지름 설정
+        const angleStep = (2 * Math.PI) / (entries.length - 1);
+
+        for (let i = 1; i < entries.length; i++) {
+            const angle = i * angleStep;
+            const x = centerX + radius * Math.cos(angle);
+            const y = centerY + radius * Math.sin(angle);
+            createCircle(entries[i][0], entries[i][1], x, y);
+        }
+        */
+        let radius = largest[1] * baseSize + 50;
+
+        for (let i = 1; i < entries.length; i++) {
+            if (entries.length - i < maxCirclesAround) {
+                const angleStep = (2 * Math.PI) / (entries.length - i);
+
+                for (let j = i; j < entries.length; j++) {
+                    const angle = j * angleStep;
+                    const x = centerX + radius * Math.cos(angle);
+                    const y = centerY + radius * Math.sin(angle);
+                    createCircle(entries[j][0], entries[j][1], x, y);
+                }
+
+                i = entries.length;
+            } else {
+                const angleStep = (2 * Math.PI) / (6);
+
+                for (let j = i; j < i + 6; j++) {
+                    const angle = j * angleStep;
+                    const x = centerX + radius * Math.cos(angle);
+                    const y = centerY + radius * Math.sin(angle);
+                    createCircle(entries[j][0], entries[j][1], x, y);
+                }
+
+                radius += 300;
+                i += 6;
+            }
+        }
+
+        // 원 사이에 직선 그리기
+        tagGraph.forEach(edge => {
+            const [key1, key2] = edge;
+            if (positions[key1] && positions[key2]) {
+                const pos1 = positions[key1];
+                const pos2 = positions[key2];
+                const center1X = pos1.x;
+                const center1Y = pos1.y;
+                const center2X = pos2.x;
+                const center2Y = pos2.y;
+                createLine(
+                    center1X, center1Y,
+                    center2X, center2Y
+                );
+                console.log(center1X, center1Y, center2X, center2Y);
+            }
+        });
+    }
+
+    // 초기 원 그리기
+    drawCircles();
+
+    // 창 크기 변경 시 원 다시 그리기
+    window.addEventListener('resize', (event) => drawCircles());
+</script>

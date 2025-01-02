@@ -1,0 +1,24 @@
+<div class="container">
+    <div class="content">
+        <script>
+            const validateForm = (event) => {
+                const checked = document.getElementById('agree');
+
+                if (!checked.checked) {
+                    event.preventDefault();
+                    alert('동의하지 않으시면 큐레이팅 시스템 제공이 불가능합니다.');
+                }
+            };
+        </script>
+        <form action="/helpNeeded/curate" method="POST" onsubmit="validateForm(event)">
+            <br>
+            <label>
+                <input type="checkbox" id="agree">
+                주치의 큐레이팅 시스템을 활용하기 위해 본인의 AI 기반 고민 상담 기록을 제출하는 것에 동의합니다.
+            </label>
+            <br>
+
+            <input type="submit" value="큐레이팅 요청">
+        </form>
+    </div>
+</div>

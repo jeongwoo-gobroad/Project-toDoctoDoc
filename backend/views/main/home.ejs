@@ -1,0 +1,38 @@
+<div class="container">
+    <h3 style="text-align:center;">누구나 감기에 걸리듯 마음 또한 아플 수 있습니다.</h3>
+    <h3 style="text-align:center;">편하게 털어놓으세요.</h3>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <div class="search-container">
+        <form method="post" action="/query" id="query" style="text-align: center;">
+            <% if (typeof accountInfo !== 'undefined') { %>
+                <input type="text" class="search-box" placeholder="걱정거리를 입력하세요." name="input" id="input">
+            <% } else { %>
+                <input type="text" class="search-box" placeholder="로그인 해야 합니다." name="input" id="input" readonly>
+            <% } %>
+            <button class="search-button" type="submit"><i class="fas fa-arrow-right"></i></button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const searchBox = document.getElementById('input');
+    const query = document.getElementById('query');
+
+    let accountInfo = false;
+
+    <% if (typeof accountInfo !== 'undefined') { %>
+        accountInfo = <%- JSON.stringify(accountInfo) %>
+    <% } %>
+
+    searchBox.addEventListener('input', function() {
+        this.style.width = this.value.length + 10 + 'ch';
+    });
+
+    query.addEventListener('submit', (event) => {
+        if (!accountInfo) {
+            event.preventDefault();
+            alert("로그인 해야 합니다.");
+        }
+    });
+</script>

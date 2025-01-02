@@ -1,0 +1,9 @@
+<div class="content">
+    <h3><%= pageContent.title %></h3>
+    <%= pageContent.context %>
+    <form action="/posts" method="post">
+        <input type="hidden" id="title" name="title" value="<%= pageContent.title %>"></hidden>
+        <input type="hidden" id="content" name="content" value="<%= pageContent.context %>"></hidden>
+        <button type="submit" class="green-button">내가 걱정을 이겨낸 방법을 공유하기</button>
+    </form>
+</div>

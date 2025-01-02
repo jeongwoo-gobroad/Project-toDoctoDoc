@@ -1,0 +1,9 @@
+<div class="container">
+    <div class="content">
+        <form action="/helpNeeded_doc/comment/edit/<%= comment._id %>?postid=<%= post %>&_method=PUT" method="POST">
+            <label for="comment" style="text-align: left;">Comment:</label>
+            <textarea id="comment" class="input-box" name="comment"><%= comment.content %></textarea>
+            <input type="submit" value="코멘트 수정">
+        </form>
+    </div>
+</div>

@@ -1,0 +1,9 @@
+<div class="container">
+    <div class="content">
+        <% chats.forEach((chat) => { %>
+            <a href="/dm/messages/<%= chat._id %>"><h3>의사 <%= chat.doctor.name %>와의 대화</h3></a>
+            <h5>At: <%= chat.date %></h5>
+            <hr>
+        <% }); %>
+    </div>
+</div>

@@ -1,0 +1,31 @@
+<div class="container">
+    <div class="content">
+        <form action="/helpNeeded/around" method="get">
+            <label for="km">반경 몇 km 이내에서 검색할지 고르세요(기본값: 1km):</label>
+            <select id="km" name="km">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+            <input type="submit" value="확인">
+        </form>
+        <input type="hidden" id="around" value="<%= arnd %>">
+        <h2>반경 <%= arnd %>km 내 주치의 검색 결과</h2>
+        <% nearDoctors.forEach((doctor) => { %>
+            <h3>이름:</h3>
+            <%= doctor.name %>
+            <h4>주소:</h4>
+            <%= doctor.address.address + " " + doctor.address.detailAddress %>
+            <h4>연락처:</h4>
+            <%= doctor.phone %>
+            <hr>
+        <% }) %>
+        <script>
+            const defaultKm = document.getElementById('around').value;
+
+            document.getElementById('km').value = defaultKm;
+        </script>
+    </div>
+</div>

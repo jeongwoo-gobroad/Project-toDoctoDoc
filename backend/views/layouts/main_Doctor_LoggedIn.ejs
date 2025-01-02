@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= pageInfo.title %></title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=<%= pageInfo.apikey %>&libraries=services">
+  </script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <a href="/doctor">토닥toDoc-Doctor</a>
+            </div>
+            <nav class="navbar">
+                <ul>
+                    <li><a href="/doctor">Doctor Home</a></li>
+                    <li><a href="/helpNeeded_doc">근처에 도움이 필요한 환자 찾기</a></li>
+                    <li><a href="/dm_doc/list">환자와의 DM 확인하기</a></li>
+                    <li><a href="/doctor/info">내 정보 확인하고 수정하기</a></li>
+                </ul>
+            </nav>
+            <div class="login-home-button">
+                <a href="/doctor/info">어서오세요, 의사 <%= accountInfo.name %>님!</a>
+                <a href="/logout">로그아웃 하기</a>
+            </div>
+        </div>
+    </header>
+
+    <%- body %>
+</body>
+</html>

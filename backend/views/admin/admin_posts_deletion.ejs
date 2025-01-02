@@ -1,0 +1,32 @@
+<div class="container">
+    <div class="content">
+        <% posts.forEach((post) => { %>
+            <form action="/admin/posts?_method=DELETE" method="post">
+                <div class="form-group">
+                    <%= post.title %>
+                </div>
+                <div class="form-group">
+                    <%= post.details %>
+                </div>
+                <div class="form-group">
+                    <%= post.additional_material %>
+                </div>
+                <div class="form-group">
+                    <%= post.createdAt %>
+                </div>
+                <div class="form-group">
+                    <%= post.editedAt %>
+                </div>
+                <div class="form-group">
+                    <%= post.tag %>
+                </div>
+                <div class="form-group">
+                    <%= post.user %>
+                </div>
+                <input type="hidden" id="postID" name="postID" value="<%= post._id %>"></hidden>
+                <button type="submit" class="red-button">삭제</button>
+            </form>
+            <hr>
+        <% }) %>
+    </div>
+</div>

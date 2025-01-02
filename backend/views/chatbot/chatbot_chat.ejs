@@ -1,0 +1,21 @@
+<div id="chat-container">
+    <div id="chat-messages"></div>
+    <div id="user-input">
+        <input type="text" placeholder="메시지를 입력하세요..." />
+        <button>전송</button>
+    </div>
+    <% if (typeof chatList !== 'undefined') { %>
+        <form id="save" method="POST" action="/chatbot/editChat">
+            <input type="hidden" name="chatData" id="chatData">
+            <input type="hidden" name="prevChatData" id="prevChatData" value="<%= JSON.stringify(chatList) %>">
+            <input type="hidden" name="prevChatID" id="prevChatID" value="<%= chatid %>">
+            <button type="submit" class="green-button">대화 저장하기</button>
+        </form>
+    <% } else { %>
+        <form id="save" method="POST" action="/chatbot/saveChat">
+            <input type="hidden" name="chatData" id="chatData">
+            <button type="submit" class="green-button">대화 저장하기</button>
+        </form>
+    <% } %>
+</div>
+<script src="/js/chatbot.js"></script>

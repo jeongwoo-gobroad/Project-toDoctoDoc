@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= pageInfo.title %></title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <a href="/">토닥toDoc</a>
+            </div>
+            <nav class="navbar">
+                <ul>
+                    <li><a href="/home">Home</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/posts/mine">My Posts</a></li>
+                    <li><a href="/graphBoard">GraphBoard</a></li>
+                    <li><a href="/geo">가까운 마음병원 찾기</a></li>
+                    <li><a href="/chatbot">AI와 고민상담</a></li>
+                    <li><a href="/helpNeeded">마음이 아파요</a></li>
+                    <li><a href="/dm/list">의사와의 DM</a></li>
+                </ul>
+            </nav>
+            <div class="login-home-button">
+                <a href="/login">로그인하기</a>
+            </div>
+        </div>
+    </header>
+
+    <%- body %>
+</body>
+</html>

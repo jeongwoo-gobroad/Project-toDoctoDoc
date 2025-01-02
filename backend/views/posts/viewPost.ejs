@@ -1,0 +1,19 @@
+<div class="container">
+    <div class="content">
+        <h3><%= pageContent.title %></h3>
+        <%= pageContent.details %>
+        <%= pageContent.additional_material %>
+        <h5>By: <%= pageContent.usernick %></h5>
+        <h5>Created at: <%= pageContent.createdAt %></h5>
+        <h5>Edited at: <%= pageContent.editedAt %></h5>
+        <h5>Tags: <%= pageContent.tag %></h5>
+    </div>
+    <br>
+    <% if (pageContent.userid == accountInfo.id) { %>
+        <form action = "/posts/delete/<%= pageContent.postid %>?_method=DELETE" method="POST">
+            <input type = "submit" value = "삭제" class = "btn-delete btn">
+        </form>
+        <a href="/posts/edit/<%= pageContent.postid %>">수정</a>
+    <% } %>
+    <hr>
+</div>

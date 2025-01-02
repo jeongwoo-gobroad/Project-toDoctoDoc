@@ -1,0 +1,44 @@
+<div class="container">
+    <div class="content">
+        <h2>대화 저장하기</h2>
+        <h3>대화 제목은 자동으로 추천됩니다.</h3>
+        <% if (typeof prevChatID !== 'undefined') { %>
+            <form action="/chatbot/chatSaved/<%= prevChatID %>?_method=PATCH" method="post">
+                <div class="form-group">
+                    <label for="title" class="new-label">제목:</label>
+                    <input type="text" id="title" name="title" class="signup-form" value="<%= pageInfo.contentTitle %>" required>
+                </div>
+                <% for (let i = 0; i < chat.UserResponse.length; i++) { %>
+                    <div class="form-group">
+                        <h5>나: </h5><%= chat.UserResponse[i] %>
+                        <br>
+                        <h5>AI: </h5><%= chat.AIResponse[i] %>
+                        <hr>
+                    </div>
+                <% } %>
+                <input type="hidden" id="chat" name="chat" value="<%= JSON.stringify(chat) %>">
+                <button type="submit" class="signup-button">저장하기</button>
+            </form>
+        <% } else { %>
+            <form action="/chatbot/chatSaved" method="post">
+                <div class="form-group">
+                    <label for="title" class="new-label">제목:</label>
+                    <input type="text" id="title" name="title" class="signup-form" value="<%= pageInfo.contentTitle %>" required>
+                </div>
+                <% for (let i = 0; i < chat.UserResponse.length; i++) { %>
+                    <div class="form-group">
+                        <h5>나: </h5><%= chat.UserResponse[i] %>
+                        <br>
+                        <h5>AI: </h5><%= chat.AIResponse[i] %>
+                        <hr>
+                    </div>
+                <% } %>
+                <input type="hidden" id="chat" name="chat" value="<%= JSON.stringify(chat) %>">
+                <button type="submit" class="signup-button">저장하기</button>
+            </form>
+        <% } %>
+        <form action="/chatbot" method="get">
+            <button type="submit" class="red-button">저장 취소하고 챗봇 홈으로 돌아가기</button>
+        </form>
+    </div>
+</div>

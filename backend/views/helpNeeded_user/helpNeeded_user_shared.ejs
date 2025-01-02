@@ -1,0 +1,31 @@
+<div class="container">
+    <div class="content">
+        큐레이팅 요청 시각: <%= curate.date %>
+        <br>
+        <h3>의사에게 공유된 Post 리스트</h3>
+        <% posts.forEach((post) => { %>
+            <h4><a href="/posts/view/<%= post._id %>"><%= post.title %></a></h4>
+            <hr>
+        <% }) %>
+    </div>
+    <hr>
+    <div class="content">
+        <h3>의사에게 공유된 AI 상담 리스트</h3>
+        <% ai_chats.forEach((chat) => { %>
+            <h4><a href="/chatbot/chat/<%= chat._id %>"><%= chat.title %></a></h4>
+            <hr>
+        <% }) %>
+    </div>
+    <hr>
+    <div class="content">
+        <h2>의사들의 의견</h2>
+        <br>
+        <% commentList.forEach((comment) => { %>
+            <h4><%= comment.comment %></h4>
+            <h6><%= comment.date %></h6>
+            <h5>by <%= comment.doctor %></h5>
+            <a href="/dm/checkIfDMExists?userid=<%= accountInfo._id %>&doctorid=<%= comment.doctorid %>"><h6>이 의사와 대화할래요!</h6></a>
+            <hr>
+        <% }) %>
+    </div>
+</div>

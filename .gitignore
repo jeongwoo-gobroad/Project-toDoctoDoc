@@ -1,0 +1,6 @@
+/backend/node_modules/
+/backend/.env
+/backend/ca_bundle.crt
+/backend/certificate.crt
+/backend/private.key
+/auxliary/

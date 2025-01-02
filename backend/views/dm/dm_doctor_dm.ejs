@@ -1,0 +1,54 @@
+<div class="container">
+    <div class="content">
+        <h2>환자 <%= prevChats.user.usernick %> 와의 대화</h2>
+        <ul id="messages"></ul>
+        <form id="form" action="">
+            <input id="input" autocomplete="off" /><button>Send</button>
+        </form>
+        <input type="hidden" id="prevChats" value="<%= prevChatList %>">
+    </div>
+</div>
+
+<script src="/msg/socket.io.js"></script>
+<script>
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+    const messages = document.getElementById('messages');
+
+    const inputMessage = (msg) => {
+        const item = document.createElement('li');
+        item.textContent = msg;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+    };
+
+    const prevChats = JSON.parse(document.getElementById('prevChats').value);
+
+    if (prevChats.length >= 1) {
+        for (const chat of prevChats) {
+            if (chat.role === 'Doctor') {
+                inputMessage("나: " + chat.message);
+            } else {
+                inputMessage("환자: " + chat.message);
+            }
+        }
+    }
+
+    const socket = io.connect('http://jeongwoo-kim-web.myds.me:3000/chat', {
+        path: '/msg'
+    });
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (input.value) {
+            console.log(socket);
+            socket.emit('dm', 'Doctor:' + input.value);
+            inputMessage("나: " + input.value);
+            input.value = '';
+        }
+    });
+
+    socket.on('dm', (msg) => {
+        inputMessage("환자자: " + msg);
+    });
+</script>

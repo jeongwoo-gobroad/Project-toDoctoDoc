@@ -1,0 +1,14 @@
+<div class="container">
+    <% pageContent.posts.forEach((element) => { %>
+        <div class="content">
+            <a href="/posts/view/<%= element._id %>">
+                <h3><%= element.title %></h3>
+            </a>
+            <h5>Created at: <%= element.createdAt %></h5>
+            <h5>Edited at: <%= element.editedAt %></h5>
+            <h5>Tags: <%= element.tag %></h5>
+        </div>
+        <br>
+        <hr>
+    <% }); %>
+</div>
