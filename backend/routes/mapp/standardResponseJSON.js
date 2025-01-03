@@ -2,7 +2,7 @@ const returnResponse = (err, result, content) => {
     return {
         error: err,
         result: result,
-        content: content
+        content: JSON.stringify(content)
     }
 };
 

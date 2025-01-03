@@ -6,9 +6,25 @@ const checkIfLoggedIn = (req, res, next) => {
 
     if (getTokenInformation(token)) {
         next();
+
+        return;
     }
 
     res.status(401).json(returnResponse(true, "not_logged_in", "로그인 해 주세요"));
+
+    return;
+};
+
+const checkIfNotLoggedIn = (req, res, next) => {
+    const token = req.cookies.token;
+
+    if (getTokenInformation(token)) {
+        res.status(401).json(returnResponse(true, "already_logged_in", "이미 로그인 되어 있습니다."));
+
+        return;
+    }
+
+    next();
 
     return;
 };
@@ -21,8 +37,12 @@ const isDoctorThenProceed = (req, res, next) => {
     if (rest) {
         if (rest.isDoctor) {
             next();
+
+            return;
         } else {
             res.status(401).json(returnResponse(true, "not_a_doctor", "의사가 아닙니다."));
+
+            return;
         }
     } 
 
@@ -39,8 +59,12 @@ const ifPremiumThenProceed = (req, res, next) => {
     if (rest) { 
         if (rest.isPremium) {
             next();
+
+            return;
         } else {
             res.status(401).json(returnResponse(true, "not_premium_account", "프리미엄 계정이 아닙니다."));
+
+            return;
         }
     } 
 
@@ -49,4 +73,4 @@ const ifPremiumThenProceed = (req, res, next) => {
     return;
 };
 
-module.exports = {checkIfLoggedIn, isDoctorThenProceed, ifPremiumThenProceed};
+module.exports = {checkIfLoggedIn, checkIfNotLoggedIn, isDoctorThenProceed, ifPremiumThenProceed};

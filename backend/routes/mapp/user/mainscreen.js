@@ -5,10 +5,19 @@ const openai = require("openai");
 const { checkIfLoggedIn } = require("../checkingMiddleWare");
 const { ifDailyChatNotExceededThenProceed } = require("../limitMiddleWare");
 const returnResponse = require("../standardResponseJSON");
+const refreshJWTMiddleware = require("../../auth/refreshToken");
+const { getTokenInformation } = require("../../auth/jwt");
+const UserSchema = require("../../../models/User");
+const { removeSpacesAndHashes } = require("../../../serverSideWorks/tagCollection");
+const Post = require("../../../models/Post");
+const mongoose = require("mongoose");
+
+const User = mongoose.model("User", UserSchema);
 
 router.post(["/query"],
     checkIfLoggedIn,
     ifDailyChatNotExceededThenProceed,
+    refreshJWTMiddleware,
     async (req, res, next) => {
         const {input} = req.body;
         const target = new openai({
@@ -49,6 +58,169 @@ router.post(["/query"],
             }
         } else {
             res.status(401).json(returnResponse(true, "typemorethanone", "입력 데이터 없음"));
+
+            return;
+        }
+    }
+);
+
+router.post(["/upload"], 
+    checkIfLoggedIn,
+    refreshJWTMiddleware,
+    async(req, res, next) => {
+        const {title, content, content_additional, tags} = req.body;
+
+        const user = getTokenInformation(req.cookies.token);
+
+        const newTags = removeSpacesAndHashes(tags);
+
+        try {
+            const newPost = await Post.create({
+                title: title,
+                details: content,
+                additional_material: content_additional,
+                tag: newTags,
+                user: user.userid,
+            });
+
+            await User.findByIdAndUpdate(user.userid,
+                {$push: {posts: newPost._id}},
+                {new: true}
+            )
+
+            res.status(200).json(returnResponse(false, "ai_answer", newPost));
+
+            return;
+        } catch (error) {
+            res.status(401).json(returnResponse(true, "uploaderror", "uploaderror"));
+
+            return;
+        }
+    }
+);
+
+router.get(["/view/:id"], 
+    checkIfLoggedIn,
+    refreshJWTMiddleware,
+    async(req, res, next) => {
+        const user = getTokenInformation(req.cookies.token);
+
+        try {
+            const post = await Post.findById(req.params.id).populate("user");
+
+            let isOwner = false;
+
+            if (post.user._id == user.userid) {
+                isOwner = true;
+            }
+
+            const pageContent = {
+                postid: post._id,
+                title: post.title,
+                details: post.details,
+                additional_material: post.additional_material,
+                createdAt: post.createdAt,
+                editedAt: post.editedAt,
+                tag: post.tag,
+                usernick: post.user.usernick,
+                userid: post.user._id,
+                isOwner: isOwner,
+            };
+
+            res.status(200).json(returnResponse(false, "view", pageContent));
+
+            return;
+        } catch (error) {
+            res.status(401).json(returnResponse(true, "viewerror", "viewerror"));
+
+            return;
+        }
+    }
+);
+
+router.patch(["/edit/:id"],
+    checkIfLoggedIn,
+    refreshJWTMiddleware,
+    async(req, res, next) => {
+        const {content_additional, tags} = req.body;
+
+        const user = getTokenInformation(req.cookies.token);
+
+        const newTags = removeSpacesAndHashes(tags);
+
+        try {
+            const check = await Post.findById(req.params.id);
+
+            if (check.user != user.userid) {
+                res.status(401).json(returnResponse(true, "notowner", "notowner"));
+
+                return;
+            }
+
+            const post = await Post.findByIdAndUpdate(req.params.id, {
+                title: title,
+                details: content,
+                additional_material: content_additional,
+                tag: newTags,
+                editedAt: Date.now(),
+            }, {new: true});
+
+            res.status(200).json(returnResponse(false, "edit", post));
+
+            return;
+        } catch (error) {
+            res.status(401).json(returnResponse(true, "editerror", "editerror"));
+
+            return;
+        }
+    }
+);
+
+router.delete(["/delete/:id"],
+    checkIfLoggedIn,
+    refreshJWTMiddleware,
+    async(req, res, next) => {
+        const user = getTokenInformation(req.cookies.token);
+
+        try {
+            const check = await Post.findById(req.params.id);
+
+            if (check.user != user.userid) {
+                res.status(401).json(returnResponse(true, "notowner", "notowner"));
+
+                return;
+            }
+
+            await Post.findByIdAndDelete(req.params.id);
+            await User.findByIdAndUpdate(user.userid, {
+                $pull: {posts: req.params.id}
+            });
+
+            res.status(200).json(returnResponse(false, "delete", "delete"));
+
+            return;
+        } catch (error) {
+            res.status(401).json(returnResponse(true, "deleteerror", "deleteerror"));
+
+            return;
+        }
+    }
+);
+
+router.get(["/myPosts"],
+    checkIfLoggedIn,
+    refreshJWTMiddleware,
+    async(req, res, next) => {
+        const user = getTokenInformation(req.cookies.token);
+
+        try {
+            const userinfo = await User.findById(user.userid).populate("posts", "title tag createdAt");
+
+            res.status(200).json(returnResponse(false, "myposts", userinfo.posts));
+
+            return;
+        } catch (error) {
+            res.status(401).json(returnResponse(true, "mypostserror", "mypostserror"));
 
             return;
         }

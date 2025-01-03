@@ -9,6 +9,8 @@ const ifDailyRequestNotExceededThenProceed = async (req, res, next) => {
 
     if (user.isPremium) {
         next();
+
+        return;
     }
 
     const db = await User.findById(user.userid);
@@ -34,6 +36,8 @@ const ifDailyRequestNotExceededThenProceed = async (req, res, next) => {
             });
 
             next();
+
+            return;
         } catch (error) {
             res.status(401).json(returnResponse(true, "mongodberror", "몽고DB 에러"));
 
@@ -47,6 +51,8 @@ const ifDailyChatNotExceededThenProceed = async (req, res, next) => {
 
     if (user.isPremium) {
         next();
+
+        return;
     }
 
     const db = await User.findById(user.userid);
@@ -72,6 +78,8 @@ const ifDailyChatNotExceededThenProceed = async (req, res, next) => {
             });
 
             next();
+
+            return;
         } catch (error) {
             res.status(401).json(returnResponse(true, "mongodberror", "몽고DB 에러"));
 
