@@ -16,7 +16,6 @@ const User = mongoose.model("User", UserSchema);
 
 router.get(["/tagSearch/:tag"],
     checkIfLoggedIn,
-    refreshJWTMiddleware,
     async (req, res, next) => {
         try {
             const data = await Post.find({tag: new RegExp(req.params.tag, 'i')}).sort({editedAt: "desc"});
@@ -32,7 +31,6 @@ router.get(["/tagSearch/:tag"],
 
 router.get(["/graphBoard"],
     checkIfLoggedIn,
-    refreshJWTMiddleware,
     async (req, res, next) => {
         const tagList = JSON.stringify(Object.fromEntries(serverWorks.tagMap));
         const tagGraph = JSON.stringify(serverWorks.tagGraph);

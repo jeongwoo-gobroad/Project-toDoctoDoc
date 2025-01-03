@@ -17,7 +17,6 @@ const User = mongoose.model("User", UserSchema);
 router.post(["/query"],
     checkIfLoggedIn,
     ifDailyChatNotExceededThenProceed,
-    refreshJWTMiddleware,
     async (req, res, next) => {
         const {input} = req.body;
         const target = new openai({
@@ -66,11 +65,10 @@ router.post(["/query"],
 
 router.post(["/upload"], 
     checkIfLoggedIn,
-    refreshJWTMiddleware,
     async(req, res, next) => {
         const {title, content, content_additional, tags} = req.body;
 
-        const user = getTokenInformation(req);
+        const user = await getTokenInformation(req, res);
 
         const newTags = removeSpacesAndHashes(tags);
 
@@ -101,9 +99,8 @@ router.post(["/upload"],
 
 router.get(["/view/:id"], 
     checkIfLoggedIn,
-    refreshJWTMiddleware,
     async(req, res, next) => {
-        const user = getTokenInformation(req);
+        const user = await getTokenInformation(req, res);
 
         try {
             const post = await Post.findById(req.params.id).populate("user");
@@ -140,11 +137,10 @@ router.get(["/view/:id"],
 
 router.patch(["/edit/:id"],
     checkIfLoggedIn,
-    refreshJWTMiddleware,
     async(req, res, next) => {
         const {content_additional, tags} = req.body;
 
-        const user = getTokenInformation(req);
+        const user = await getTokenInformation(req, res);
 
         const newTags = removeSpacesAndHashes(tags);
 
@@ -178,9 +174,8 @@ router.patch(["/edit/:id"],
 
 router.delete(["/delete/:id"],
     checkIfLoggedIn,
-    refreshJWTMiddleware,
     async(req, res, next) => {
-        const user = getTokenInformation(req);
+        const user = await getTokenInformation(req, res);
 
         try {
             const check = await Post.findById(req.params.id);
@@ -209,9 +204,8 @@ router.delete(["/delete/:id"],
 
 router.get(["/myPosts"],
     checkIfLoggedIn,
-    refreshJWTMiddleware,
     async(req, res, next) => {
-        const user = getTokenInformation(req);
+        const user = await getTokenInformation(req, res);
 
         try {
             const userinfo = await User.findById(user.userid).populate("posts", "title tag createdAt");

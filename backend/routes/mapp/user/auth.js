@@ -9,7 +9,7 @@ const { checkIfLoggedIn, checkIfNotLoggedIn } = require("../checkingMiddleWare")
 const returnLongLatOfAddress = require("../../../middleware/getcoordinate");
 const router = express.Router();
 
-const User = mongoose.models.User || mongoose.model("User", UserSchema);
+const User = mongoose.model("User", UserSchema);
 
 router.post(["/login"], async (req, res, next) => {
     try {

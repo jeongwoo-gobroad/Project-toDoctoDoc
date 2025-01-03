@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const UserSchema = require("../../models/User");
 const secretKey = process.env.JWT_SECRET;
 const mongoose = require("mongoose");
-const User = mongoose.models.User;
+const User = mongoose.model("User", UserSchema);
 
 const generateToken = (payload) => {
     const token = jwt.sign(payload, secretKey, {expiresIn: '1h'});
