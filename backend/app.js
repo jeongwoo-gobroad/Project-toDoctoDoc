@@ -10,6 +10,7 @@ const expressErrorHandler = require('express-error-handler');
 const SocketIO = require("socket.io");
 const http = require("http");
 const { wrap } = require("module");
+const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
@@ -53,6 +54,8 @@ io.use(wrap(cookieParser()));
 io.use(wrap(express.json()));
 io.use(wrap(express.urlencoded({extended: true})));
 io.of('/chat').use(require("./middleware/dmAlgorithm"));
+
+app.use(cors());
 
 app.use("/", require("./routes/main"));
 app.use("/", require("./routes/graphBoard"));

@@ -1,9 +1,9 @@
 const returnResponse = (err, result, content) => {
-    return {
+    return JSON.stringify({
         error: err,
         result: result,
-        content: JSON.stringify(content)
-    }
+        content: content
+    });
 };
 
 module.exports = returnResponse;

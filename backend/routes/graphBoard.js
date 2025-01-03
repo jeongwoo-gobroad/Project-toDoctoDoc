@@ -16,7 +16,7 @@ router.get(["/tagSearch/:tag"],
 
         try {
             // console.log(new RegExp(req.params.tag, 'i'));
-            data = await Post.find({tag: new RegExp(req.params.tag, 'i')});
+            data = await Post.find({tag: new RegExp(req.params.tag, 'i')}).sort({editedAt: "desc"});
         } catch (error) {
             res.redirect("/error");
 

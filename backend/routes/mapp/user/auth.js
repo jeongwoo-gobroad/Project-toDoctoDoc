@@ -18,6 +18,8 @@ router.post(["/login"], async (req, res, next) => {
 
         const user = await User.findOne({id: userid});
 
+        // console.log(userid, password);
+
         if (!user) {
             res.status(401).json(returnResponse(true, "no_such_user", "등록된 유저가 없습니다."));
             return;
@@ -40,9 +42,11 @@ router.post(["/login"], async (req, res, next) => {
         const token = generateToken(payload);
 
         res.cookie('token', token, {httpOnly: true, maxAge: 10800000});
-        res.status(200).json(returnResponse(false, "logged_in", "성공적으로 로그인 되었습니다."));
+        res.status(200).json(returnResponse(false, "logged_in", token));
+        
         return;
     } catch (error) {
+        
         res.status(401).json(returnResponse(true, "errorAtPostLogin", "-"));
         return;
     }
@@ -51,7 +55,7 @@ router.post(["/login"], async (req, res, next) => {
 router.get(["/logout"], 
     checkIfLoggedIn,
         (req, res, next) => {
-            const token = req.cookies.token;
+            const token = req.headers["authorization"]?.split(" ")[1];
 
             const decoded = jwt.decode(token);
 

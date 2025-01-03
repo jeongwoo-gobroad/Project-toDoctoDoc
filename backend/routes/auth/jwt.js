@@ -30,9 +30,9 @@ const refreshToken = (token) => {
     }
 };
 
-const getTokenInformation = (token) => {
+const getTokenInformation = (req) => {
     try {
-        const decoded = jwt.verify(token, secretKey);
+        const decoded = jwt.verify(req.headers["authorization"]?.split(" ")[1], secretKey);
 
         const payload = {
             userid: decoded.userid,

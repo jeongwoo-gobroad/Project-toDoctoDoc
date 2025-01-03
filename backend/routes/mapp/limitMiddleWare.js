@@ -5,7 +5,7 @@ const returnResponse = require("./standardResponseJSON");
 const User = mongoose.model('User', UserSchema);
 
 const ifDailyRequestNotExceededThenProceed = async (req, res, next) => {
-    const user = getTokenInformation(req.cookies.token);
+    const user = getTokenInformation(req);
 
     if (user.isPremium) {
         next();
@@ -47,7 +47,7 @@ const ifDailyRequestNotExceededThenProceed = async (req, res, next) => {
 };
 
 const ifDailyChatNotExceededThenProceed = async (req, res, next) => {
-    const user = getTokenInformation(req.cookies.token);
+    const user = getTokenInformation(req);
 
     if (user.isPremium) {
         next();

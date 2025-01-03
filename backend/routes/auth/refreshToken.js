@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const {refreshToken} = require('./jwt');
 
 const refreshJWTMiddleware = (req, res, next) => {
-    const token = req.cookies.token;
+    const token = req.headers["authorization"]?.split(" ")[1];
 
     if (token) {
         const newToken = refreshToken(token);
