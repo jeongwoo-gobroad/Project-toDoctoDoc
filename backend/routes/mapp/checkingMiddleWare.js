@@ -2,7 +2,7 @@ const { getTokenInformation } = require("../auth/jwt");
 const returnResponse = require("./standardResponseJSON");
 
 const checkIfLoggedIn = (req, res, next) => {
-    if (getTokenInformation(req)) {
+    if (getTokenInformation(req, res)) {
         next();
 
         return;
@@ -14,7 +14,7 @@ const checkIfLoggedIn = (req, res, next) => {
 };
 
 const checkIfNotLoggedIn = (req, res, next) => {
-    if (getTokenInformation(req)) {
+    if (getTokenInformation(req, res)) {
         res.status(401).json(returnResponse(true, "already_logged_in", "이미 로그인 되어 있습니다."));
 
         return;
@@ -26,7 +26,7 @@ const checkIfNotLoggedIn = (req, res, next) => {
 };
 
 const isDoctorThenProceed = (req, res, next) => {
-    const rest = getTokenInformation(req);
+    const rest = getTokenInformation(req, res);
 
     if (rest) {
         if (rest.isDoctor) {
@@ -46,7 +46,7 @@ const isDoctorThenProceed = (req, res, next) => {
 };
 
 const ifPremiumThenProceed = (req, res, next) => {
-    const rest = getTokenInformation(req);
+    const rest = getTokenInformation(req, res);
 
     if (rest) { 
         if (rest.isPremium) {

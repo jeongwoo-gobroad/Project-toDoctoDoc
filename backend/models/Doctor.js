@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const AddressSchema = require("./Address");
+const { refreshToken } = require("../routes/auth/jwt");
 
 const DoctorSchema = new mongoose.Schema({
     id: {
@@ -49,7 +50,10 @@ const DoctorSchema = new mongoose.Schema({
     isVerified: {
         type: Boolean,
         required: true,
-    }
+    },
+    refreshToken: {
+        type: String,
+    },
 });
 
 module.exports = mongoose.model("Doctor", DoctorSchema);

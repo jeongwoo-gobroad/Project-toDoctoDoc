@@ -11,7 +11,7 @@ const mongoose = require("mongoose");
 const loginMiddleWare = require("./checkLogin");
 const serverWorks = require("../serverSideWorks/tagCollection");
 
-const User = mongoose.model("User", UserSchema);
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
 router.post(["/"], 
     loginMiddleWare.ifLoggedInThenProceed, 

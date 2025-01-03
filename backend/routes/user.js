@@ -13,7 +13,7 @@ const loginMiddleWare = require("./checkLogin");
 const request = require("request");
 const returnLongLatOfAddress = require("../middleware/getcoordinate");
 
-const User = mongoose.model("User", UserSchema);
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
 const Address = mongoose.model("Address", AddressSchema);
 const AccountLimitCount = mongoose.model("AccountLimitCount", AccountLimitCountSchema);
 

@@ -9,9 +9,8 @@ const UserSchema = require("../models/User");
 const AddressSchema = require("../models/Address");
 const AccountLimitCountSchema = require("../models/AccountLimitCount");
 const mongoose = require("mongoose");
-const loginMiddleWare = require("./checkLogin");
 
-const User = mongoose.model("User", UserSchema);
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
 const Address = mongoose.model("Address", AddressSchema);
 const AccountLimitCount = mongoose.model("AccountLimitCount", AccountLimitCountSchema);
 

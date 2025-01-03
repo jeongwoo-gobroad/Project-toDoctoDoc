@@ -10,7 +10,7 @@ const Post = require("../models/Post");
 const mongoose = require("mongoose");
 const loginMiddleWare = require("./checkLogin");
 
-const User = mongoose.model("User", UserSchema);
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
 router.get(["/"],
     loginMiddleWare.ifLoggedInThenProceed,

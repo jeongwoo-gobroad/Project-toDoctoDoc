@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const AddressSchema = require("./Address");
 const AccountLimitCountSchema = require("./AccountLimitCount");
+const { refreshToken } = require("../routes/auth/jwt");
 
 const UserSchema = new mongoose.Schema({
     id: {
@@ -54,6 +55,9 @@ const UserSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Chat',
     }],
+    refreshToken: {
+        type: String,
+    },
 });
 
 module.exports = UserSchema;

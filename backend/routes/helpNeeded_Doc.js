@@ -12,7 +12,7 @@ const mongoose = require("mongoose");
 const loginMiddleWare = require("./checkLogin");
 const request = require("request");
 
-const User = mongoose.model("User", UserSchema);
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
 const Address = mongoose.model("Address", AddressSchema);
 const Doctor = require("../models/Doctor");
 const Curate = require("../models/Curate");

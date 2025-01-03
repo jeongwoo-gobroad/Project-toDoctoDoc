@@ -4,13 +4,12 @@ const bcrypt = require("bcrypt");
 const UserSchema = require("../../../models/User");
 const returnResponse = require("../standardResponseJSON");
 const jwt = require("jsonwebtoken");
-const { generateToken } = require("../../auth/jwt");
+const { generateToken, generateRefreshToken } = require("../../auth/jwt");
 const { checkIfLoggedIn, checkIfNotLoggedIn } = require("../checkingMiddleWare");
-const { route } = require("../main");
 const returnLongLatOfAddress = require("../../../middleware/getcoordinate");
 const router = express.Router();
 
-const User = mongoose.model("User", UserSchema);
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
 router.post(["/login"], async (req, res, next) => {
     try {
@@ -40,9 +39,9 @@ router.post(["/login"], async (req, res, next) => {
         };
 
         const token = generateToken(payload);
+        const refreshToken = generateRefreshToken();
 
-        res.cookie('token', token, {httpOnly: true, maxAge: 10800000});
-        res.status(200).json(returnResponse(false, "logged_in", token));
+        res.status(200).json(returnResponse(false, "logged_in", {token: token, refreshToken: refreshToken}));
         
         return;
     } catch (error) {
@@ -63,7 +62,6 @@ router.get(["/logout"],
                 res.status(401).json(returnResponse(true, "errorAtLogout", "로그아웃 실패"));
             }
 
-            res.clearCookie('token');
             res.status(200).json(returnResponse(false, "successful_logout", "로그아웃 성공"));
         }
 );
@@ -87,6 +85,8 @@ router.post(["/register"],
 
             const {long, lat} = await returnLongLatOfAddress(address);
 
+            const refreshToken = generateRefreshToken();
+
             const user = await User.create({
                 id: id,
                 password: hashedPassword,
@@ -106,6 +106,7 @@ router.post(["/register"],
                     dailyChatCount: 0
                 },
                 email: email,
+                refreshToken: refreshToken
             });
 
             const payload = {
@@ -117,8 +118,7 @@ router.post(["/register"],
     
             const token = generateToken(payload);
 
-            res.cookie('token', token, {httpOnly: true, maxAge: 10800000});
-            res.status(200).json(returnResponse(false, "registered", "성공적으로 회원가입 되었습니다."));
+            res.status(200).json(returnResponse(false, "registered", {token: token, refreshToken: refreshToken}));
         } catch (error) {
             res.status(401).json(returnResponse(true, "errorAtPostRegister", "회원가입 실패"));
             return;

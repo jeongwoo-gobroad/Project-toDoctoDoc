@@ -14,7 +14,7 @@ const mongoose = require("mongoose");
 const loginMiddleWare = require("./checkLogin");
 const limitMiddleWare = require("./checkLimit");
 
-const User = mongoose.model("User", UserSchema);
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
 const Address = mongoose.model("Address", AddressSchema);
 const Doctor = require("../models/Doctor");
 const Admin = require("../models/Admin");
