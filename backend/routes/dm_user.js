@@ -26,9 +26,24 @@ const Chat = require("../models/Chat");
 router.get(["/list"], 
     loginMiddleWare.ifLoggedInThenProceed,
     asyncHandler(async (req, res, next) => {
-        const chats = await Chat.find({
-            user: req.session.user._id
-        }).populate('user doctor').sort({date: 'desc'});
+        const user = await User.findById(req.session.user._id).populate('chats');
+        const chatList = [];
+
+        for (const chat of user.chats) {
+            const doctorName = await Doctor.findById(chat.doctor, 'name');
+            chatList.push({
+                _id: chat._id,
+                doctor: doctorName,
+                date: chat.date
+            });
+        }
+
+        const chats = chatList.sort(
+            (a, b) => {
+                new Date(b.date) - new Date(a.date);
+            }
+        );
+
 
         const pageInfo = {
             title: "Welcome to Mentally::DM 리스트"

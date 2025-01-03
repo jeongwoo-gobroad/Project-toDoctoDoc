@@ -17,11 +17,11 @@ const chatting = async (socket, next) => {
 
     socket.join(roomNo);
 
-    console.log(roomNo);
+    // console.log(roomNo);
 
     socket.on('dm', async (data) => {
         const sentence = data.split(':');
-        console.log(sentence[0] + ":" + sentence[1]);
+        // console.log(sentence[0] + ":" + sentence[1]);
         socket.broadcast.to(roomNo).emit('dm', sentence[1]);
         await Chat.findByIdAndUpdate(roomNo, {
             $push: {chatList: {

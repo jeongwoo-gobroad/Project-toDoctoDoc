@@ -9,9 +9,7 @@ const serverWorks = require("./serverSideWorks/tagCollection");
 const expressErrorHandler = require('express-error-handler');
 const SocketIO = require("socket.io");
 const http = require("http");
-const fs = require("fs");
 const { wrap } = require("module");
-const chatServer = require("./middleware/dmAlgorithm");
 
 const app = express();
 const server = http.createServer(app);
@@ -69,6 +67,7 @@ app.use("/helpNeeded_doc", require("./routes/helpNeeded_Doc"));
 app.use("/dm", require("./routes/dm_user"));
 app.use("/dm", require("./routes/dm"));
 app.use("/dm_doc", require("./routes/dm_doctor"));
+app.use('/mapp', require("./routes/mapp"));
 
 app.use(expressErrorHandler.httpError(404));
 app.use(errorHandler);

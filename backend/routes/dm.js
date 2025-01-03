@@ -49,12 +49,13 @@ router.get(["/checkIfDMExists"],
                 user: userid,
                 doctor: doctorid
             });
-
-            if (req.session.isDoctor) {
-                res.redirect("/dm_doc/messages/" + newChat._id);
-            } else {
-                res.redirect("/dm/messages/" + newChat._id);
-            }
+            await Doctor.findByIdAndUpdate(doctorid,{
+                $push: {chats: newChat._id}
+            });
+            await User.findByIdAndUpdate(userid, {
+                $push: {chats: newChat._id}
+            });
+            res.redirect("/dm/messages/" + newChat._id);
         }
     })
 );

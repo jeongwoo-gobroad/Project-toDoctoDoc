@@ -13,17 +13,22 @@
             <button class="search-button" type="submit"><i class="fas fa-arrow-right"></i></button>
         </form>
     </div>
+    <% if (typeof accountInfo !== 'undefined') { %>
+        <input type="hidden" id="accountInfo" value="<%= JSON.stringify(accountInfo) %>">
+    <% } %>
 </div>
 
 <script>
     const searchBox = document.getElementById('input');
     const query = document.getElementById('query');
 
+    const account = document.getElementById('accountInfo');
+
     let accountInfo = false;
 
-    <% if (typeof accountInfo !== 'undefined') { %>
-        accountInfo = <%- JSON.stringify(accountInfo) %>
-    <% } %>
+    if (account) {
+        accountInfo = JSON.parse(account.value);
+    }
 
     searchBox.addEventListener('input', function() {
         this.style.width = this.value.length + 10 + 'ch';
