@@ -41,6 +41,10 @@ router.post(["/login"], async (req, res, next) => {
         const token = generateToken(payload);
         const refreshToken = generateRefreshToken();
 
+        await User.findByIdAndUpdate(user._id, {
+            refreshToken: refreshToken
+        });
+
         res.status(200).json(returnResponse(false, "logged_in", {token: token, refreshToken: refreshToken}));
         
         return;
