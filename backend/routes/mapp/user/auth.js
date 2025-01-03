@@ -118,7 +118,7 @@ router.post(["/register"],
             const token = generateToken(payload);
 
             res.cookie('token', token, {httpOnly: true, maxAge: 10800000});
-            res.status(200).json(returnResponse(false, "registered", "성공적으로 회원가입입 되었습니다."));
+            res.status(200).json(returnResponse(false, "registered", "성공적으로 회원가입 되었습니다."));
         } catch (error) {
             res.status(401).json(returnResponse(true, "errorAtPostRegister", "회원가입 실패"));
             return;

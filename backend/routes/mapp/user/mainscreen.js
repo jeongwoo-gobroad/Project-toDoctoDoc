@@ -70,7 +70,7 @@ router.post(["/upload"],
     async(req, res, next) => {
         const {title, content, content_additional, tags} = req.body;
 
-        const user = getTokenInformation(req.cookies.token);
+        const user = getTokenInformation(req);
 
         const newTags = removeSpacesAndHashes(tags);
 
@@ -103,7 +103,7 @@ router.get(["/view/:id"],
     checkIfLoggedIn,
     refreshJWTMiddleware,
     async(req, res, next) => {
-        const user = getTokenInformation(req.cookies.token);
+        const user = getTokenInformation(req);
 
         try {
             const post = await Post.findById(req.params.id).populate("user");
@@ -144,7 +144,7 @@ router.patch(["/edit/:id"],
     async(req, res, next) => {
         const {content_additional, tags} = req.body;
 
-        const user = getTokenInformation(req.cookies.token);
+        const user = getTokenInformation(req);
 
         const newTags = removeSpacesAndHashes(tags);
 
@@ -180,7 +180,7 @@ router.delete(["/delete/:id"],
     checkIfLoggedIn,
     refreshJWTMiddleware,
     async(req, res, next) => {
-        const user = getTokenInformation(req.cookies.token);
+        const user = getTokenInformation(req);
 
         try {
             const check = await Post.findById(req.params.id);
@@ -211,7 +211,7 @@ router.get(["/myPosts"],
     checkIfLoggedIn,
     refreshJWTMiddleware,
     async(req, res, next) => {
-        const user = getTokenInformation(req.cookies.token);
+        const user = getTokenInformation(req);
 
         try {
             const userinfo = await User.findById(user.userid).populate("posts", "title tag createdAt");
