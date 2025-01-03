@@ -7,8 +7,8 @@ const { ifDailyChatNotExceededThenProceed } = require("../limitMiddleWare");
 const returnResponse = require("../standardResponseJSON");
 
 router.post(["/query"],
-    checkIfLoggedIn(req, res, next),
-    ifDailyChatNotExceededThenProceed(req, res, next),
+    checkIfLoggedIn,
+    ifDailyChatNotExceededThenProceed,
     async (req, res, next) => {
         const {input} = req.body;
         const target = new openai({
@@ -39,6 +39,9 @@ router.post(["/query"],
                     context: completion.choices[0].message.content,
                 }
                 
+                res.status(200).json(returnResponse(false, "ai_answer", pageContent));
+
+                return;
             } catch (error) {
                 res.status(401).json(returnResponse(true, "openaierror", "openaierror"));
 
@@ -46,6 +49,10 @@ router.post(["/query"],
             }
         } else {
             res.status(401).json(returnResponse(true, "typemorethanone", "입력 데이터 없음"));
+
+            return;
         }
     }
 );
+
+module.exports = router;

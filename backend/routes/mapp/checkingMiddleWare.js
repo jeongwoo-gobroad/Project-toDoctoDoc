@@ -1,5 +1,5 @@
-const { getTokenInformation } = require("../../auth/jwt");
-const returnResponse = require("../standardResponseJSON");
+const { getTokenInformation } = require("../auth/jwt");
+const returnResponse = require("./standardResponseJSON");
 
 const checkIfLoggedIn = (req, res, next) => {
     const token = req.cookies.token;
@@ -16,10 +16,10 @@ const checkIfLoggedIn = (req, res, next) => {
 const isDoctorThenProceed = (req, res, next) => {
     const token = req.cookies.token;
 
-    const res = getTokenInformation(token);
+    const rest = getTokenInformation(token);
 
-    if (res) {
-        if (res.isDoctor) {
+    if (rest) {
+        if (rest.isDoctor) {
             next();
         } else {
             res.status(401).json(returnResponse(true, "not_a_doctor", "의사가 아닙니다."));
@@ -34,10 +34,10 @@ const isDoctorThenProceed = (req, res, next) => {
 const ifPremiumThenProceed = (req, res, next) => {
     const token = req.cookies.token;
 
-    const res = getTokenInformation(token);
+    const rest = getTokenInformation(token);
 
-    if (res) {
-        if (res.isPremium) {
+    if (rest) { 
+        if (rest.isPremium) {
             next();
         } else {
             res.status(401).json(returnResponse(true, "not_premium_account", "프리미엄 계정이 아닙니다."));

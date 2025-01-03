@@ -47,7 +47,7 @@ router.post(["/login"], async (req, res, next) => {
 });
 
 router.get(["/logout"], 
-    checkIfLoggedIn(req, res, next),
+    checkIfLoggedIn,
         (req, res, next) => {
             const token = req.cookies.token;
 
