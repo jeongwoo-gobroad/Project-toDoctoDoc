@@ -349,13 +349,17 @@ router.get(['/chat/list'],
     loginMiddleWare.ifLoggedInThenProceed,
     asyncHandler(async (req, res) => {
         try {
-            const chats = [];
+            let chats = [];
 
             for (const chatid of req.session.user.ai_chats) {
                 const chat = await AIChat.findById(chatid, 'title _id chatCreatedAt chatEditedAt');
 
                 chats.push(chat);
             }
+
+            chats = chats.sort((a, b) => {
+                return new Date(b.date) - new Date(a.date);
+            });
 
             const pageInfo = {
                 title: "Welcome to Mentally::Chatbot::My Chat List"
@@ -393,6 +397,7 @@ router.get(['/chat/:id'],
                     address: req.session.user.address,
                     email: req.session.user.email,
                 };
+
                 res.render("chatbot/chatbot_chatted", {pageInfo, accountInfo, chat, layout: mainLayout_LoggedIn});
             } else {
                 res.redirect("/error");

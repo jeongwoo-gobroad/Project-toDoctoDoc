@@ -37,7 +37,7 @@ router.get(["/curate"],
         const arnd = parseFloat(req.query.km);
         const userLong = req.session.user.address.longitude;
         const userLat  = req.session.user.address.latitude;
-        const curates = [];
+        const curate = [];
 
         const nearPatients = await User.find({
             $and: [
@@ -60,9 +60,13 @@ router.get(["/curate"],
         
         for (const patient of nearPatients) {
             for (const id of patient.curates) {
-                curates.push(await Curate.findById(id));
+                curate.push(await Curate.findById(id));
             }
         }
+
+        const curates = curate.sort((a, b) => {
+            return new Date(b.date) - new Date(a.date);
+        })
 
         const accountInfo = req.session.user;
         const pageInfo = {

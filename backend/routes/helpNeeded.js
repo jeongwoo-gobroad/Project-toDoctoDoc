@@ -196,7 +196,9 @@ router.get(['/myCurate'],
     asyncHandler(async (req, res, next) => {
         let curates = await User.findById(req.session.user._id).populate('curates');
 
-        curates = curates.curates;
+        curates = curates.curates.sort((a, b) => {
+            return new Date(b.date) - new Date(a.date);
+        });
 
         const pageInfo = {
             title: "Welcome to Mentally::큐레이팅 리스트"
