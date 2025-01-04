@@ -234,8 +234,61 @@ router.get(["/info"],
             const userinfo = await User.findById(user.userid, "id usernick email address limits isPremium");
 
             res.status(200).json(returnResponse(false, "info", userinfo));
+
+            return;
         } catch (error) {
             res.status(401).json(returnResponse(true, "infoerror", "infoerror"));
+
+            return;
+        }
+    }
+);
+
+router.patch(["/editInfo"],
+    checkIfLoggedIn,
+    async (req, res, next) => {
+        const {usernick, email, postcode, address, detailAddress, extraAddress, password, password2} = req.body;
+
+        const user = await getTokenInformation(req, res);
+
+        try {
+            const {long, lat} = await returnLongLatOfAddress(address);
+
+            await User.findByIdAndUpdate(user.userid,
+                {
+                    usernick: usernick,
+                    address: {
+                        postcode: postcode,
+                        address: address,
+                        detailAddress: detailAddress,
+                        extraAddress: extraAddress,
+                        longitude: long,
+                        latitude: lat,
+                    },
+                    email: email,
+                    password: hashedPassword,
+                },
+            );
+
+            if (password.length > 0 && password != password2) {
+                res.status(401).json(returnResponse(true, "password_not_match", "password_not_match"));
+
+                return;
+            } else if (password.length > 0 && password == password2) {
+                const hashedPassword = await bcrypt.hash(password, 10);
+
+                await User.findByIdAndUpdate(user.userid, {
+                    password: hashedPassword
+                });
+            }
+            
+            const newUserInfo = await User.findById(user.userid, "id usernick email address limits isPremium");
+
+            res.status(200).json(returnResponse(false, "editinfo", newUserInfo));
+
+            return;
+        } catch (error) {
+            res.status(401).json(returnResponse(true, "editinfoerror", "editinfoerror"));
 
             return;
         }
