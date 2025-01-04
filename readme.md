@@ -34,3 +34,7 @@ Please refer to /documentation.docx
     * Initial commit to GitHub
     * Supports [Home, About, My Posts, GraphBoard, Finding a Close Psychiatry, AI Chatbot, AI-based problem solving, Psychiatrist Curating, DM with Psychiatrist] Features based on node.js and ejs view engine on website
     * Only supported in Korean (Ko/KR)
+  
+* #### 0.9.0
+    * The chatbot has been improved to support asynchronous chat, and there have been enhancements in the aspect of database storage for chatbot data.
+    * Frontend implementation through Flutter has been added.

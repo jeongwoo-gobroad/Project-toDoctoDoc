@@ -6,13 +6,15 @@
                 Created at: <%= chat.chatCreatedAt %> <br> Edited at: <%= chat.chatEditedAt %>
             </p>
         </h3>
-        <% for (let i = 0; i < chat.AIResponse.length; i++) { %>
-            <h5>나:</h5>
-            <%= chat.UserResponse[i] %>
-            <h5>AI: </h5>
-            <%= chat.AIResponse[i] %>
-            <hr>
-        <% } %>
+        <% chat.response.forEach((talk) => { %>
+            <div class="form-group">
+                <% if (talk.role === 'user') { %>
+                    <h5>나: </h5><%= talk.content %>
+                <% } else { %>
+                    <h5>AI: </h5><%= talk.content %>
+            </div>
+        <% }}) %>
+            </div>
         <a href="/chatbot/chat/list">채팅 목록으로 돌아가기</a>
         <br>
         <a href="/chatbot/chat?isResume=true&chatid=<%= chat._id %>">이 채팅 계속해서 이어가기</a>

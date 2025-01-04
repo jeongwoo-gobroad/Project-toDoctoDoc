@@ -54,24 +54,13 @@ router.get(["/chat"],
             const chatid = req.query.chatid;
 
             const chat = await AIChat.findById(chatid); 
-            const chatList = [];
+            const chatList = chat.response;
 
             /* not to allow unauthorized users */
             if (chat.user != req.session.user._id) {
                 res.redirect("/error");
 
                 return;
-            }
-
-            for (let i = 0; i < chat.UserResponse.length; i++) {
-                chatList.push({
-                    'role': 'user',
-                    'content': chat.UserResponse[i],
-                });
-                chatList.push({
-                    'role': 'assistant',
-                    'content': chat.AIResponse[i],
-                })
             }
 
             res.render("chatbot/chatbot_chat", {pageInfo, accountInfo, chatList, chatid, layout: mainLayout_LoggedIn});
@@ -167,14 +156,6 @@ router.post(['/saveChat'],
 
         const regex = /['"](.*?)['"]/g;
         const titles = title.match(regex).map(match => match.replace(/['"]/g, ''));
-
-        parsed.forEach((talk) => {
-            if (talk['role'] === 'user') {
-                chat.UserResponse.push(talk['content']);
-            } else if (talk['role'] === 'assistant') {
-                chat.AIResponse.push(talk['content']);
-            }
-        });
  
         const pageInfo = {
             title: "Welcome to Mentally::Chatbot::Save",
@@ -187,7 +168,9 @@ router.post(['/saveChat'],
             email: req.session.user.email,
         };
 
-        res.render("chatbot/chatbot_save", {pageInfo, accountInfo, chat, layout: mainLayout_LoggedIn});
+        // console.log(parsed);
+
+        res.render("chatbot/chatbot_save", {pageInfo, accountInfo, parsed, layout: mainLayout_LoggedIn});
     })
 );
 
@@ -200,10 +183,6 @@ router.post(['/editChat'],
 
         const {chatData, prevChatID} = req.body;
         let title = "";
-        const chat = {
-            UserResponse: [],
-            AIResponse: [],
-        };
     
         const messages = [
             {
@@ -238,14 +217,6 @@ router.post(['/editChat'],
         const regex = /['"](.*?)['"]/g;
         const titles = title.match(regex).map(match => match.replace(/['"]/g, ''));
 
-        parsed.forEach((talk) => {
-            if (talk['role'] === 'user') {
-                chat.UserResponse.push(talk['content']);
-            } else if (talk['role'] === 'assistant') {
-                chat.AIResponse.push(talk['content']);
-            }
-        });
-
         const pageInfo = {
             title: "Welcome to Mentally::Chatbot::Save",
             contentTitle: titles[0],
@@ -257,7 +228,7 @@ router.post(['/editChat'],
             email: req.session.user.email,
         };
 
-        res.render("chatbot/chatbot_save", {pageInfo, accountInfo, chat, prevChatID, layout: mainLayout_LoggedIn});
+        res.render("chatbot/chatbot_save", {pageInfo, accountInfo, parsed, prevChatID, layout: mainLayout_LoggedIn});
     })
 );
 
@@ -273,12 +244,7 @@ router.post(['/chatSaved'],
 
         const parsed = JSON.parse(chat);
 
-        parsed.AIResponse.forEach((talk) => {
-            newChat.AIResponse.push(talk);
-        });
-        parsed.UserResponse.forEach((talk) => {
-            newChat.UserResponse.push(talk);
-        });
+        newChat.response = parsed;
 
         newChat.title = title;
 
@@ -306,8 +272,7 @@ router.patch(['/chatSaved/:id'],
     asyncHandler(async (req, res) => {
         const {title, chat} = req.body;
         const chatid = req.params.id;
-        const aiResponse = [];
-        const userResponse = [];
+
         const parsed = JSON.parse(chat);
 
         const prev = await AIChat.findById(chatid, 'user');
@@ -319,17 +284,9 @@ router.patch(['/chatSaved/:id'],
             return;
         }
 
-        parsed.AIResponse.forEach((talk) => {
-            aiResponse.push(talk);
-        });
-        parsed.UserResponse.forEach((talk) => {
-            userResponse.push(talk);
-        });
-
         try {
             await AIChat.findByIdAndUpdate(chatid, {
-                AIResponse: aiResponse,
-                UserResponse: userResponse,
+                response: parsed,
                 title: title,
                 chatEditedAt: Date.now()
             })

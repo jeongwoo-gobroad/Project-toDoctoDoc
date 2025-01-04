@@ -13,7 +13,6 @@ const storeUserInput = (input) => {
 
     if (chattingPrompt.length >= 80) {
         chattingPrompt.shift();
-        chattingPrompt.shift();
     }
 };
 
@@ -21,7 +20,6 @@ const storeGPTResponse = (output) => {
     chattingPrompt.push({role: 'assistant', content: output});
 
     if (chattingPrompt.length >= 80) {
-        chattingPrompt.shift();
         chattingPrompt.shift();
     }
 };

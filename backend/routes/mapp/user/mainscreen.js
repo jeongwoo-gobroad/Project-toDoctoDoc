@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 const openai = require("openai");
 const { checkIfLoggedIn } = require("../checkingMiddleWare");
-const { ifDailyChatNotExceededThenProceed } = require("../limitMiddleWare");
+const { ifDailyChatNotExceededThenProceed, ifDailyRequestNotExceededThenProceed } = require("../limitMiddleWare");
 const returnResponse = require("../standardResponseJSON");
 const refreshJWTMiddleware = require("../../auth/refreshToken");
 const { getTokenInformation } = require("../../auth/jwt");
@@ -17,7 +17,7 @@ const User = mongoose.model("User", UserSchema);
 
 router.post(["/query"],
     checkIfLoggedIn,
-    ifDailyChatNotExceededThenProceed,
+    ifDailyRequestNotExceededThenProceed,
     async (req, res, next) => {
         const {input} = req.body;
         const target = new openai({

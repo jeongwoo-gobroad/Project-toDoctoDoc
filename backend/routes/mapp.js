@@ -4,7 +4,7 @@ const router = express.Router();
 router.use('/', require("./mapp/main"));
 router.use('/', require("./mapp/user/auth"));
 router.use('/', require("./mapp/user/mainscreen"));
-router.use('/', require("./mapp/user/chatbot"));
+router.use('/aichat', require("./mapp/user/chatbot"));
 router.use('/', require("./mapp/user/graphboard"));
 router.use('/doctor', require("./mapp/doctor/auth"));
 

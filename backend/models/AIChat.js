@@ -4,11 +4,8 @@ const AIChatSchema = new mongoose.Schema({
     title: {
         type: String,
     },
-    AIResponse: [{
-        type: String,
-    }],
-    UserResponse: [{
-        type: String,
+    response: [{
+        type: Object, /* for flutter version */
     }],
     user: {
         type: mongoose.Schema.Types.ObjectId,

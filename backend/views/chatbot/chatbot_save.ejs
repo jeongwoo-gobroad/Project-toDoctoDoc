@@ -8,15 +8,16 @@
                     <label for="title" class="new-label">제목:</label>
                     <input type="text" id="title" name="title" class="signup-form" value="<%= pageInfo.contentTitle %>" required>
                 </div>
-                <% for (let i = 0; i < chat.UserResponse.length; i++) { %>
+                <% parsed.forEach((talk) => { %>
                     <div class="form-group">
-                        <h5>나: </h5><%= chat.UserResponse[i] %>
-                        <br>
-                        <h5>AI: </h5><%= chat.AIResponse[i] %>
-                        <hr>
-                    </div>
-                <% } %>
-                <input type="hidden" id="chat" name="chat" value="<%= JSON.stringify(chat) %>">
+                        <% if (talk.role === 'user') { %>
+                            <h5>나: </h5><%= talk.content %>
+                        <% } else { %>
+                            <h5>AI: </h5><%= talk.content %>
+                        <% } %>
+                    </div> 
+                <% }); %>
+                <input type="hidden" id="chat" name="chat" value="<%= JSON.stringify(parsed) %>">
                 <button type="submit" class="signup-button">저장하기</button>
             </form>
         <% } else { %>
@@ -25,15 +26,16 @@
                     <label for="title" class="new-label">제목:</label>
                     <input type="text" id="title" name="title" class="signup-form" value="<%= pageInfo.contentTitle %>" required>
                 </div>
-                <% for (let i = 0; i < chat.UserResponse.length; i++) { %>
+                <% parsed.forEach((talk) => { %>
                     <div class="form-group">
-                        <h5>나: </h5><%= chat.UserResponse[i] %>
-                        <br>
-                        <h5>AI: </h5><%= chat.AIResponse[i] %>
-                        <hr>
-                    </div>
-                <% } %>
-                <input type="hidden" id="chat" name="chat" value="<%= JSON.stringify(chat) %>">
+                        <% if (talk.role === 'user') { %>
+                            <h5>나: </h5><%= talk.content %>
+                        <% } else { %>
+                            <h5>AI: </h5><%= talk.content %>
+                        <% } %>
+                    </div> 
+                <% }); %>
+                <input type="hidden" id="chat" name="chat" value="<%= JSON.stringify(parsed) %>">
                 <button type="submit" class="signup-button">저장하기</button>
             </form>
         <% } %>
