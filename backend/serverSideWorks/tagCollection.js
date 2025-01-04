@@ -5,7 +5,7 @@ const asyncHandler = require("express-async-handler");
 const tagMap = new Map();
 const tagGraph = [];
 
-const removeSpacesAndHashes = (input) => {
+const removeSpacesAndHashes = (input) => { 
     return input.replace(/[\s#]/g, '');
 };
 
