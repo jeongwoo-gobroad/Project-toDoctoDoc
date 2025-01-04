@@ -1,11 +1,8 @@
 const Chat = require("../models/Chat");
+const { getLastSegment } = require("./usefulFunctions");
 
 require("dotenv").config();
 
-function getLastSegment(url) {
-    const match = url.match(/\/([^\/]+)\/?$/);
-    return match ? match[1] : null;
-}
 
 const chatting = async (socket, next) => {
     const req = socket.request;
