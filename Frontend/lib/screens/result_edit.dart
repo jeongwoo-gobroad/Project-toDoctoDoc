@@ -5,7 +5,7 @@ import 'package:to_doc/controllers/upload_controller.dart';
 import 'package:to_doc/screens/myPost.dart';
 
 class ResultEdit extends StatefulWidget {
-  ResultEdit({super.key});
+  const ResultEdit({super.key});
 
   @override
   State<ResultEdit> createState() => _ResultEditState();
@@ -118,7 +118,7 @@ class _ResultEditState extends State<ResultEdit> {
                 ),
                 SizedBox(height: 25),
         
-                Container(
+                SizedBox(
                   width: 1000,
                   height: 40,
                   child: ElevatedButton(

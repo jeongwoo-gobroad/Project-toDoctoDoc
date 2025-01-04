@@ -80,6 +80,7 @@ router.post(["/upload"],
                 additional_material: content_additional,
                 tag: newTags,
                 user: user.userid,
+                editedAt: Date.now(),
             });
 
             await User.findByIdAndUpdate(user.userid,

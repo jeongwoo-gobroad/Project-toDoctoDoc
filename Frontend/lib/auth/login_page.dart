@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
-import 'package:to_doc/home.dart';
 import 'package:to_doc/navigation_menu.dart';
 import 'package:to_doc/provider/auth_provider.dart';
 
