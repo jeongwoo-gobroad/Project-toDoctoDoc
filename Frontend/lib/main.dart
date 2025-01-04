@@ -7,6 +7,7 @@ import 'package:to_doc/provider/auth_provider.dart';
 import 'package:to_doc/screens/airesult.dart';
 import 'package:to_doc/screens/intro.dart';
 import 'package:to_doc/screens/myPost.dart';
+import 'package:to_doc/screens/pageView.dart';
 
 void main() async{
  

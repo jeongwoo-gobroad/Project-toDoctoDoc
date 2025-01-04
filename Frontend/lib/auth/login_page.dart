@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:to_doc/controllers/userInfo_controller.dart';
 import 'package:to_doc/home.dart';
 import 'package:to_doc/navigation_menu.dart';
 import 'package:to_doc/provider/auth_provider.dart';
@@ -19,7 +20,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
 
   final authProvider = Get.put(AuthProvider());
-
+  final UserinfoController user = Get.put(UserinfoController());
   final TextEditingController idController = TextEditingController(); //추후 수정
   final TextEditingController pwController = TextEditingController(); //추후 수정
 
@@ -29,6 +30,7 @@ class _LoginPageState extends State<LoginPage> {
       pwController.text,
     );
     if(result['success'] == true){
+      user.getInfo();
       Get.offAll(()=> NavigationMenu());
     }
     else{
