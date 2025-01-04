@@ -22,13 +22,16 @@
         <% ai_chats.forEach((chat) => { %>
             <h4><%= chat.title %></h4>
                 <div class="content">
-                    <% for (let i = 0; i < chat.UserResponse.length; i++) { %>
-                        환자:<br>
-                        <%= chat.UserResponse[i] %><br>
-                        AI:<br>
-                        <%= chat.AIResponse[i] %>
+                    <% chat.response.forEach((talk) => { %>
+                        <% if (talk.role === 'user') { %>
+                            환자:<br>
+                            <%= talk.content %>
+                        <% } else { %>
+                            AI:<br>
+                            <%= talk.content %>
+                        <% } %>
                         <hr>
-                    <% } %>
+                    <% }) %>
                 </div>
             <hr>
         <% }) %>

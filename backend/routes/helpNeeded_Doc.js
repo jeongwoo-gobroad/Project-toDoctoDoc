@@ -75,7 +75,6 @@ router.get(["/curate"],
 
         res.render("doctor/helpNeeded_Doctor_around", {accountInfo, pageInfo, curates, arnd, layout: mainLayout_Doctor});
     }),
-    loginMiddleWare.errorOccured
 );
 
 router.get(["/view/:id"],

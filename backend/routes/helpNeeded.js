@@ -23,7 +23,7 @@ const Curate = require("../models/Curate");
 
 router.get(["/"], 
     loginMiddleWare.ifLoggedInThenProceed,
-    asyncHandler(async (req, res) => {
+    asyncHandler(async (req, res) => { 
         const pageInfo = {
             title: "Welcome to Mentally::마음이 아파요"
         };
