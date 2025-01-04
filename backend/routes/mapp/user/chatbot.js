@@ -126,7 +126,23 @@ router.post(["/save"],
 router.delete(["/delete/:chatid"], 
     checkIfLoggedIn,
     async (req, res, next) => {
-        
+        const user = await getTokenInformation(req, res);
+        const chat = await AIChat.findById(req.params.chatid);
+
+        if (!chat) {
+            res.status(401).json(returnResponse(true, "noSuchChat", "-"));
+
+            return;
+        }
+        if (chat.user !== user.userid) {
+            res.status(401).json(returnResponse(true, "notYourChat", "-"));
+
+            return;
+        }
+
+        AIChat.findByIdAndDelete(req.params.chatid);
+
+        res.status(200).json(returnResponse(false, "aichatdeleted", "-"));
     }
 );
 
