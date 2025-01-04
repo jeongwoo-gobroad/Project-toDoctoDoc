@@ -23,7 +23,7 @@ const refreshToken = (token) => {
 
         const payload = {
             userid: decoded.userid,
-            isPremium: decoded.isPremium,
+            isPremium: decoded.isPremium,  
             isDoctor: decoded.isDoctor,
             isAdmin: decoded.isAdmin,
         };
@@ -32,7 +32,7 @@ const refreshToken = (token) => {
 
         return newToken;
     } catch (error) {
-        console.error("token error");
+        console.error("token error5");
 
         return null;
     }
@@ -46,7 +46,7 @@ const getTokenInformation = async (req, res) => {
             const user = await User.findOne({refreshToken: req.headers["authorization"]?.split(" ")[1]});
 
             if (!user) {
-                console.log("token error");
+                console.log("token error1");
 
                 return null;
             }
@@ -86,7 +86,7 @@ const getTokenInformation = async (req, res) => {
             return payload;
         }
     } catch (error) {
-        console.error("token error");
+        console.error("token error2");
 
         return null;
     }
