@@ -71,7 +71,7 @@ class _MypostTempState extends State<MypostTemp> {
 
               },
               title: Text(post['title'] ?? '제목없음'),
-              subtitle: Text('태그: ${post['tag']} ??  ' ),
+              subtitle: Text('태그: ${post['tag']}' ?? ''),
               trailing: Text(formatDate(post['createdAt']) ?? ''), //2025년 10시시 17분
             );
 

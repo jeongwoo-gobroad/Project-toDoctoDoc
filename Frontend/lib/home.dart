@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/aboutpage.dart';
 import 'package:to_doc/controllers/query_controller.dart';
+import 'package:to_doc/provider/aboutpage_provider.dart';
 import 'package:to_doc/screens/airesult.dart';
+import 'Other.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -37,8 +40,6 @@ class _HomeState extends State<Home> {
 
 
 
-
-  Home({super.key});
 
   @override
   Widget build(context) {

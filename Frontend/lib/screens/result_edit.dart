@@ -6,7 +6,7 @@ import 'package:to_doc/screens/myPost.dart';
 import 'package:to_doc/screens/myPost_temp.dart';
 
 class ResultEdit extends StatefulWidget {
-  const ResultEdit({super.key});
+  ResultEdit({super.key});
 
   @override
   State<ResultEdit> createState() => _ResultEditState();
@@ -121,7 +121,7 @@ class _ResultEditState extends State<ResultEdit> {
                 ),
                 SizedBox(height: 25),
         
-                SizedBox(
+                Container(
                   width: 1000,
                   height: 40,
                   child: ElevatedButton(

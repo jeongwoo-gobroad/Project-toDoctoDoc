@@ -1,13 +1,16 @@
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:provider/provider.dart';
 
 class RegisterController extends GetxController{
    Future<Map<String, dynamic>> register(String id, String password, String password2, String nickname, String postcode
    ,String address, String detailAddress, String extraAddress, String email) async{
 
-    String? token;
+    String? _token;
     final url = Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/register');
     
 
@@ -45,17 +48,17 @@ class RegisterController extends GetxController{
         // _token = data;
        
 
-        token = data['content']['token'];
+        _token = data['content']['token'];
         ///_refreshToken = data['content']['refreshToken'];
         ///
-        print(token); 
+        print(_token); 
         
 
 
         // _token = data['content'];
         
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('jwt_token', token!);
+        await prefs.setString('jwt_token', _token!);
 
 
         //notifyListeners();
