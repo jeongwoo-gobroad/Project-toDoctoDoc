@@ -10,6 +10,8 @@ const chatting = async (socket, next) => {
         headers: {referer}
     } = req;
 
+    console.log(socket.handshake);
+
     const roomNo = getLastSegment(referer);
 
     socket.join(roomNo);

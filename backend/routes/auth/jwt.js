@@ -32,7 +32,11 @@ const refreshToken = (token) => {
 
         return newToken;
     } catch (error) {
+<<<<<<< HEAD
         console.error("token error5");
+=======
+        // console.error("token error5");
+>>>>>>> 75ad042e5ba3ed4c774e0ee52f1fa3aca181a38b
 
         return null;
     }
@@ -46,7 +50,11 @@ const getTokenInformation = async (req, res) => {
             const user = await User.findOne({refreshToken: req.headers["authorization"]?.split(" ")[1]});
 
             if (!user) {
+<<<<<<< HEAD
                 console.log("token error1");
+=======
+                // console.log("token error1");
+>>>>>>> 75ad042e5ba3ed4c774e0ee52f1fa3aca181a38b
 
                 return null;
             }
@@ -73,7 +81,7 @@ const getTokenInformation = async (req, res) => {
                 isAdmin: user.isAdmin,
             };
 
-            return payload;
+            return payload; 
 
         } else {
             const payload = {
@@ -86,7 +94,12 @@ const getTokenInformation = async (req, res) => {
             return payload;
         }
     } catch (error) {
+<<<<<<< HEAD
         console.error("token error2");
+=======
+        // console.error("token error2");
+        // console.error(error);
+>>>>>>> 75ad042e5ba3ed4c774e0ee52f1fa3aca181a38b
 
         return null;
     }
