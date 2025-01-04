@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/controllers/query_controller.dart';
+import 'package:to_doc/controllers/upload_controller.dart';
+import 'package:to_doc/screens/myPost.dart';
 
 class ResultEdit extends StatefulWidget {
   ResultEdit({super.key});
@@ -13,23 +15,22 @@ class _ResultEditState extends State<ResultEdit> {
   QueryController queryController = Get.put(QueryController());
   final FocusNode focusNode = FocusNode();
   bool isExpanded = false;
-   @override
-  void initState() {
-    super.initState();
-    focusNode.addListener(() { //focus상태감지
-      setState(() {
-        isExpanded = focusNode.hasFocus;
-      });
-    });
+  UploadController uploadController = Get.put(UploadController());
+                        
+
+  final TextEditingController addController = TextEditingController(); //추후 수정
+  final TextEditingController tagController = TextEditingController(); //추후 수정
+
+  _submit() async{
+    await uploadController.uploadResult(
+      queryController.title.value, 
+      queryController.context.value,
+      addController.text,
+      tagController.text,
+    );
+    Get.to(()=> MyPage());
+    
   }
-
-  @override
-  void dispose() {
-    focusNode.dispose();
-    super.dispose();
-  }
-
-
 
 
   @override
@@ -39,14 +40,6 @@ class _ResultEditState extends State<ResultEdit> {
       body: SingleChildScrollView(
         //padding: EdgeInsets.all(16),
         child: Form(
-          child: AnimatedContainer(
-            duration: Duration(milliseconds: 300),
-            width: MediaQuery.of(context).size.width - 32,
-            height: isExpanded ? 200 : 60, //expand상태면 200
-            padding: EdgeInsets.all(8),
-        
-        
-          
             child: Column(
               //mainAxisAlignment: MainAxisAlignment.center,
                // mainAxisSize: MainAxisSize.min,
@@ -125,16 +118,11 @@ class _ResultEditState extends State<ResultEdit> {
                 ),
                 SizedBox(height: 25),
         
-        
                 Container(
                   width: 1000,
                   height: 40,
                   child: ElevatedButton(
-                    onPressed: () {
-                      
-                
-                        
-                    },
+                    onPressed: _submit,
         
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
@@ -153,7 +141,7 @@ class _ResultEditState extends State<ResultEdit> {
             ),
           ),
         ),
-      ),
+      
     );
   }
 }

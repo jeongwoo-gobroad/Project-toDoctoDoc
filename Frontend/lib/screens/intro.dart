@@ -77,7 +77,7 @@ class _IntroState extends State<Intro> with SingleTickerProviderStateMixin {
                       borderRadius: BorderRadius.circular(15),
                     )
                   ),
-                  onPressed: (){Get.to(()=> const RegisterPage());}, 
+                  onPressed: (){Get.to(()=> RegisterPage());}, 
                   child: Text('시작하기', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
                   ),
                 

@@ -40,6 +40,9 @@ dependencies:
   flutter_secure_storage: ^9.2.2
   shared_preferences: ^2.0.13
   jwt_decoder: ^2.0.1
+  remedi_kopo: ^0.0.2
+  simple_animations: ^5.1.0
+  
 
 dev_dependencies:
   flutter_test:
