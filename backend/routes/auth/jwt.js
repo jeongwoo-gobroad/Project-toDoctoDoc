@@ -32,7 +32,7 @@ const refreshToken = (token) => {
 
         return newToken;
     } catch (error) {
-        // console.error("token error5");
+        console.error("token error");
 
         return null;
     }
@@ -46,7 +46,7 @@ const getTokenInformation = async (req, res) => {
             const user = await User.findOne({refreshToken: req.headers["authorization"]?.split(" ")[1]});
 
             if (!user) {
-                // console.log("token error1");
+                console.log("token error");
 
                 return null;
             }
@@ -86,8 +86,7 @@ const getTokenInformation = async (req, res) => {
             return payload;
         }
     } catch (error) {
-        // console.error("token error2");
-        // console.error(error);
+        console.error("token error");
 
         return null;
     }

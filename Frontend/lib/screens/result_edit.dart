@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:to_doc/controllers/query_controller.dart';
 import 'package:to_doc/controllers/upload_controller.dart';
 import 'package:to_doc/screens/myPost.dart';
+import 'package:to_doc/screens/myPost_temp.dart';
 
 class ResultEdit extends StatefulWidget {
   const ResultEdit({super.key});
@@ -28,7 +29,7 @@ class _ResultEditState extends State<ResultEdit> {
       addController.text,
       tagController.text,
     );
-    Get.to(()=> MyPage());
+    Get.to(()=> MypostTemp());
     
   }
 
@@ -70,7 +71,7 @@ class _ResultEditState extends State<ResultEdit> {
                 SizedBox(height: 8),
                 TextFormField(
                   readOnly: true,
-                  initialValue: '구현 X',
+                  initialValue: queryController.nickname,
                   decoration: InputDecoration(
                       labelText: 'NickName',
                       helperText: '수정할 수 없는 필드입니다', // 도움말 텍스트 추가
@@ -105,6 +106,7 @@ class _ResultEditState extends State<ResultEdit> {
         
         
                 TextFormField(
+                  controller: addController,
                   decoration: InputDecoration(
                       labelText: 'Additional Content',
                       hintText: '추가적인 내용을 입력하세요.'),
@@ -113,6 +115,7 @@ class _ResultEditState extends State<ResultEdit> {
                 SizedBox(height: 16),
         
                 TextFormField(
+                  controller: tagController,
                   decoration: InputDecoration(
                       labelText: 'Tags', hintText: '콤마로 구분됨, 공백 없는 태그를 입력하세요.'),
                 ),

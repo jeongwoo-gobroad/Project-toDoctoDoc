@@ -7,6 +7,7 @@ class QueryController extends GetxController{
   var title = RxString("");
   var context = RxString("");
   var isLoading = false.obs;
+  String? nickname;
 
   Future<void> sendQuery(String input) async{
 
@@ -25,6 +26,7 @@ class QueryController extends GetxController{
       print('로그인이 필요합니다.');
     }
 
+    nickname = prefs.getString('usernick');
 
     final response = await http.post(
       Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/query'),

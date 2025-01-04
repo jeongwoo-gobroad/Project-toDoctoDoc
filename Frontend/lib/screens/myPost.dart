@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:to_doc/app.dart';
 
 
 
@@ -10,7 +12,9 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
-  
+  MypostController mypostController = Get.put(MypostController());
+
+
   List<Map> posts = 
     [
       {
@@ -97,7 +101,7 @@ class _MyPageState extends State<MyPage> {
         "title" : "마음이 아프다",
         "content" : "그러시군요",
       },
-      
+
 
     ];
 
@@ -125,7 +129,7 @@ class _MyPageState extends State<MyPage> {
       final post = posts[index];
 
       return InkWell(
-        onTap: (){},
+        onTap: ()async {await mypostController.fetchMyPost();},
 
         child: ListTile(
           title: Text(post['title']),
