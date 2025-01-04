@@ -55,21 +55,6 @@ router.post(["/login"], async (req, res, next) => {
     }
 });
 
-router.get(["/logout"], 
-    checkIfLoggedIn,
-        (req, res, next) => {
-            const token = req.headers["authorization"]?.split(" ")[1];
-
-            const decoded = jwt.decode(token);
-
-            if (!decoded) {
-                res.status(401).json(returnResponse(true, "errorAtLogout", "로그아웃 실패"));
-            }
-
-            res.status(200).json(returnResponse(false, "successful_logout", "로그아웃 성공"));
-        }
-);
-
 router.post(["/register"],
     checkIfNotLoggedIn,
     async (req, res, next) => {

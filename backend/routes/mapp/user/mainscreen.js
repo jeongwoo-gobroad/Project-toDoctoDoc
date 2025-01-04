@@ -210,11 +210,32 @@ router.get(["/myPosts"],
         try {
             const userinfo = await User.findById(user.userid).populate("posts", "title tag createdAt");
 
-            res.status(200).json(returnResponse(false, "myposts", userinfo.posts));
+            const posts = userinfo.posts.sort((a, b) => {
+                return b.editedAt - a.editedAt;
+            });
+
+            res.status(200).json(returnResponse(false, "myposts", posts));
 
             return;
         } catch (error) {
             res.status(401).json(returnResponse(true, "mypostserror", "mypostserror"));
+
+            return;
+        }
+    }
+);
+
+router.get(["/info"],
+    checkIfLoggedIn,
+    async (req, res, next) => {
+        const user = await getTokenInformation(req, res);
+
+        try {
+            const userinfo = await User.findById(user.userid, "id usernick email address limits isPremium");
+
+            res.status(200).json(returnResponse(false, "info", userinfo));
+        } catch (error) {
+            res.status(401).json(returnResponse(true, "infoerror", "infoerror"));
 
             return;
         }
