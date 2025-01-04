@@ -11,6 +11,7 @@ const UserSchema = require("../../../models/User");
 const { removeSpacesAndHashes } = require("../../../serverSideWorks/tagCollection");
 const Post = require("../../../models/Post");
 const mongoose = require("mongoose");
+const returnLongLatOfAddress = require("../../../middleware/getcoordinate");
 
 const User = mongoose.model("User", UserSchema);
 
@@ -225,7 +226,7 @@ router.get(["/myPosts"],
     }
 );
 
-router.get(["/info"],
+router.get(["/userInfo"],
     checkIfLoggedIn,
     async (req, res, next) => {
         const user = await getTokenInformation(req, res);
@@ -244,7 +245,7 @@ router.get(["/info"],
     }
 );
 
-router.patch(["/editInfo"],
+router.patch(["/editUserInfo"],
     checkIfLoggedIn,
     async (req, res, next) => {
         const {usernick, email, postcode, address, detailAddress, extraAddress, password, password2} = req.body;
@@ -266,15 +267,14 @@ router.patch(["/editInfo"],
                         latitude: lat,
                     },
                     email: email,
-                    password: hashedPassword,
                 },
             );
 
-            if (password.length > 0 && password != password2) {
+            if (password.length > 8 && password != password2) {
                 res.status(401).json(returnResponse(true, "password_not_match", "password_not_match"));
 
                 return;
-            } else if (password.length > 0 && password == password2) {
+            } else if (password.length > 8 && password == password2) {
                 const hashedPassword = await bcrypt.hash(password, 10);
 
                 await User.findByIdAndUpdate(user.userid, {
