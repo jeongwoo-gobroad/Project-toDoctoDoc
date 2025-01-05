@@ -20,7 +20,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
 
   final authProvider = Get.put(AuthProvider());
-  final UserinfoController user = Get.put(UserinfoController());
+  final UserinfoController user = Get.find<UserinfoController>();
   final TextEditingController idController = TextEditingController(); //추후 수정
   final TextEditingController pwController = TextEditingController(); //추후 수정
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/aboutpage.dart';
 import 'package:to_doc/controllers/query_controller.dart';
+import 'package:to_doc/controllers/userInfo_controller.dart';
 import 'package:to_doc/navigator/side_menu.dart';
 import 'package:to_doc/provider/aboutpage_provider.dart';
 import 'package:to_doc/screens/airesult.dart';
@@ -17,6 +18,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   //final AboutpageProvider aboutpage = Get.put(AboutpageProvider());
   final TextEditingController queryController = TextEditingController(); 
+  final UserinfoController userController = Get.find<UserinfoController>();
  //추후 수정
   final QueryController query = Get.put(QueryController());
   String? id;
@@ -60,7 +62,8 @@ class _HomeState extends State<Home> {
 
 
       //appBar
-      drawer: SideMenu(usernick, email),
+      drawer: Obx(() => SideMenu(userController.usernick.value,
+        userController.email.value), ),
       appBar: AppBar(
         centerTitle: true,
         title: InkWell(
@@ -76,7 +79,7 @@ class _HomeState extends State<Home> {
       ),
 
       
-      body: isLoading ?  Center(child: CircularProgressIndicator())  //아직 갱신안됐으면 로딩창띄움움
+      body: Obx(() => isLoading ?  Center(child: CircularProgressIndicator())  //아직 갱신안됐으면 로딩창띄움움
         : 
           SingleChildScrollView(
           
@@ -87,7 +90,7 @@ class _HomeState extends State<Home> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    '반가워요! ${usernick ?? '로그인이 필요합니다.'}',
+                    '반가워요! ${userController.usernick.value ?? '로그인이 필요합니다.'}',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 35,
@@ -162,8 +165,8 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-        );
-      
+        ),
+    );
     
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/screens/myPost_temp.dart';
+import 'package:to_doc/screens/user_edit.dart';
 
 class SideMenu extends StatelessWidget {
   final String? usernick, email;
@@ -35,7 +36,9 @@ class SideMenu extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.person),
             title: Text('내 프로필'),
-            onTap: (){},
+            onTap: (){
+              Get.to(()=> UserEdit());
+            },
             trailing: Icon(Icons.navigate_next),
           ),
           ListTile(

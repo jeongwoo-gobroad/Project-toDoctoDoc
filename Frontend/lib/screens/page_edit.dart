@@ -19,23 +19,29 @@ class _PageEditState extends State<PageEdit> {
   final TextEditingController _additionalMaterialController = TextEditingController();
   final TextEditingController _tagController = TextEditingController();
   final MypostController mypostController = Get.put(MypostController());
+  final ViewController viewController = Get.put(ViewController());
 
   _submit() async{
-     String updatedAdditionalMaterial = _additionalMaterialController.text;
+    String updatedAdditionalMaterial = _additionalMaterialController.text;
     String updatedTag = _tagController.text;
 
     if (updatedAdditionalMaterial.isEmpty || updatedTag.isEmpty) {
       Get.snackbar('Error', '모든 필드를 채워주세요.');
       return;
-        
+      
     }
+    viewController.additional_material.value = updatedAdditionalMaterial;
+    viewController.tag.value = updatedTag;
+    
     await mypostController.editMyPost(
       widget.model.currentId.value,
+      
       updatedAdditionalMaterial,
+     
       updatedTag,
     );
-
-    Get.back();
+    
+    Navigator.pop(context);
 
 
   }
