@@ -1,0 +1,119 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:to_doc/controllers/ai_chat_list_controller.dart';
+import 'package:to_doc/aboutpage.dart';
+
+enum MenuType {
+  edit(tostring: 'edit', toIcon: Icon(CupertinoIcons.scissors)),
+  delete(tostring: 'delete', toIcon: Icon(Icons.phonelink_erase));
+
+  final String tostring;
+  final Icon toIcon;
+  const MenuType({required this.tostring, required this.toIcon});
+}
+
+class AiChatList extends StatefulWidget {
+  const AiChatList({super.key});
+
+  @override
+  State<AiChatList> createState() => _AiChatListState();
+}
+
+class _AiChatListState extends State<AiChatList> {
+  AiChatListController aiChatListController = Get.put(AiChatListController());
+
+  void asyncLoad() async {
+    await aiChatListController.getChatList();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    asyncLoad();
+  }
+
+  String formatDate(String date){
+    DateTime dateTime = DateTime.parse(date);
+    String formattedDate = DateFormat('yyyy년 M월 d일 HH시 mm분').format(dateTime);
+
+    return formattedDate;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: InkWell(
+          onTap: () {
+            /*to about page*/
+            Get.to(() => Aboutpage());
+          },
+          child: Text('토닥toDoc',
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+        ),
+      ),
+
+      body :
+        Obx(() {
+          if (aiChatListController.isLoading.value) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (aiChatListController.chatList.isEmpty) {
+            return Center(
+              child:Text('NO chat'),
+            );
+          }
+          child:
+          return ListView.builder(
+            padding: EdgeInsets.all(8.0),
+            itemCount: aiChatListController.chatList.length,
+            itemBuilder: (context, int index) {
+              final chatRoom = aiChatListController.chatList[index];
+              print(chatRoom['title']);
+              return ListTile(
+
+                trailing: Column(
+                  children: [
+                    PopupMenuButton<MenuType>(
+                      onSelected: (MenuType result) {
+                        print(result);
+                        },
+                      itemBuilder: (BuildContext buildContext) {
+                        return [
+                          for (final value in MenuType.values)
+                            PopupMenuItem(value: value,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(value.tostring),
+                                  value.toIcon,
+                                ],
+                              ),)
+                        ];
+                      },
+                    ),
+                  ],
+                ),
+                title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                    Text('${chatRoom['title']}'),
+                    Text(formatDate(chatRoom['chatEditedAt']) ?? '',style: TextStyle(fontSize: 10, fontWeight: FontWeight.w100, color: Colors.grey),),
+                  ],
+                ),
+                subtitle: Text('${chatRoom['_id']}'),
+
+                //trailing: Text(formatDate(chatRoom['chatEditedAt']) ?? ''),
+              );
+            },
+          );
+        }),
+    );
+  }
+
+
+}

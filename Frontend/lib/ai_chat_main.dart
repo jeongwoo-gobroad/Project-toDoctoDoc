@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/aboutpage.dart';
 import 'ai_chat_sub.dart';
+import 'ai_chat_list.dart';
 
 class AichatMain extends StatelessWidget {
   const AichatMain({super.key});
@@ -73,7 +74,7 @@ class AichatMain extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     )
                 ),
-                onPressed: (){Get.to(()=> /**/());},
+                onPressed: (){Get.to(()=> AiChatList());},
                 child: Text('채팅 목록', style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20,

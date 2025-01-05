@@ -23,8 +23,6 @@ class AiChatSub extends StatefulWidget {
 class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
   AiChatController aiChatController = Get.put(AiChatController());
   AiChatSaveController aiChatSaveController = Get.put(AiChatSaveController());
-  AiChatDeleteController aiChatDeleteController = Get.put(
-      AiChatDeleteController());
   TextEditingController textEditingController = Get.put(
       TextEditingController());
 
@@ -111,28 +109,33 @@ class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
                       )
                   ),
 
-                  Stack(
+                  Row(
                       children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12),
-                            child: SizedBox(
-                              width: MediaQuery.of(context).size.width,
-                              child: TextField(
-                                maxLines: null,
-                                controller: textEditingController,
-                                //onSubmitted: _handleSubmitted,
-                                decoration: InputDecoration(labelText: 'chat'),
+                        ConstrainedBox( constraints: BoxConstraints(maxHeight: 150,),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 12),
+                              child: SizedBox(
+                                width: MediaQuery.of(context).size.width - 90,
+                                child: TextField(
+                                  maxLines: null,
+                                  controller: textEditingController,
+                                  //onSubmitted: _handleSubmitted,
+                                  decoration: InputDecoration(labelText: 'chat'),
+                                ),
                               ),
                             ),
                           ),
 
+
                         Positioned(
-                            bottom: 0, right: 0,
+                            right: 0,
                             child: IconButton(
                                 onPressed: () =>
                                     _handleSubmitted(
                                         textEditingController.text),
-                                icon: Icon(Icons.send_rounded)))
+                                icon: Icon(Icons.send_rounded)
+                            )
+                        )
                       ]
                   ),
                 ]
