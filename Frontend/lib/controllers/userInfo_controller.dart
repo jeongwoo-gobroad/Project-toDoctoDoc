@@ -1,13 +1,11 @@
-/**
- * id usernick email address limits isPremium
- * userInfo, 로그인, 회원가입시 바로 저장, 수정시 다시 불러와야함
- * 
- */
+/// id usernick email address limits isPremium
+/// userInfo, 로그인, 회원가입시 바로 저장, 수정시 다시 불러와야함
+/// 
+library;
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 
 class UserinfoController extends GetxController {
   var id = "".obs;

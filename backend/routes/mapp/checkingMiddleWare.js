@@ -2,8 +2,14 @@ const { getTokenInformation } = require("../auth/jwt");
 const returnResponse = require("./standardResponseJSON");
 
 const checkIfLoggedIn = async (req, res, next) => {
-    if (await getTokenInformation(req, res)) {
+    const rest = await getTokenInformation(req, res);
+
+    if (rest && rest !== -1) {
         next();
+
+        return;
+    } else if (rest && rest === -1) {
+        res.status(419).json(returnResponse(true, "token_expired", "토큰이 만료되었습니다."));
 
         return;
     }
@@ -65,4 +71,16 @@ const ifPremiumThenProceed = async (req, res, next) => {
     return;
 };
 
-module.exports = {checkIfLoggedIn, checkIfNotLoggedIn, isDoctorThenProceed, ifPremiumThenProceed};
+const ifTokenIsNotExpriredThenProceed = async (req, res, next) => {
+    const rest = await getTokenInformation(req, res);
+
+    if (rest === -1) {
+        res.status(419).json(returnResponse(true, "token_expired", "토큰이 만료되었습니다."));
+
+        return;
+    }
+
+    next();
+};
+
+module.exports = {checkIfLoggedIn, checkIfNotLoggedIn, isDoctorThenProceed, ifPremiumThenProceed, ifTokenIsNotExpriredThenProceed};

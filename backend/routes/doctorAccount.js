@@ -16,6 +16,7 @@ const User = mongoose.models.User || mongoose.model("User", UserSchema);
 const Address = mongoose.model("Address", AddressSchema);
 const Doctor = require("../models/Doctor");
 const returnLongLatOfAddress = require("../middleware/getcoordinate");
+const { generateRefreshToken_web } = require("./web_auth/jwt_web");
 
 router.get(["/"],
     loginMiddleWare.isDoctorThenProceed,
@@ -50,6 +51,19 @@ router.post(["/login"],
             if (doctor && doctor.isVerified && await bcrypt.compare(password, doctor.password)) {
                 req.session.user = doctor;
                 req.session.isDoctor = true;
+
+                res.cookie("token", generateToken_web({
+                    userid: doctor._id,
+                    isPremium: false,
+                    isDoctor: true,
+                    isAdmin: false
+                }), {maxAge: 900000});
+                const refresh = generateRefreshToken_web();
+                res.cookie("refreshToken", refresh, {maxAge: 10800000});
+
+                await Doctor.findByIdAndUpdate(doctor._id, {
+                    refreshToken: refresh
+                });
 
                 res.redirect("/doctor");
 

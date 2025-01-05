@@ -82,6 +82,7 @@ router.get(["/messages/:id"],
             usernick: req.session.user.usernick,
             address: req.session.user.address,
             email: req.session.user.email,
+            token: req.cookies.token
         };
 
         res.render("dm/dm_user_dm", {pageInfo, accountInfo, prevChats, prevChatList, layout: mainLayout_LoggedIn});

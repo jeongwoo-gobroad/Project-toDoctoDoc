@@ -91,6 +91,20 @@ router.post(["/login"],
                 req.session.user = admin;
                 req.session.isAdmin = true;
 
+                res.cookie("token", generateToken_web({
+                    userid: admin._id,
+                    isPremium: false,
+                    isDoctor: false,
+                    isAdmin: true
+                }), {maxAge: 900000});
+                const refresh = generateRefreshToken_web();
+                res.cookie("refreshToken", refresh, {maxAge: 10800000});
+
+                await Admin.findByIdAndUpdate(admin._id, {
+                    refreshToken: refresh
+                });
+
+
                 res.redirect("/admin");
 
                 return;

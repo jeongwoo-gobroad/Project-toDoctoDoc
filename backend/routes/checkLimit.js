@@ -9,13 +9,14 @@ const UserSchema = require("../models/User");
 const AddressSchema = require("../models/Address");
 const AccountLimitCountSchema = require("../models/AccountLimitCount");
 const mongoose = require("mongoose");
+const { getTokenInformation_web } = require("./web_auth/jwt_web");
 
 const User = mongoose.models.User || mongoose.model("User", UserSchema);
 const Address = mongoose.model("Address", AddressSchema);
 const AccountLimitCount = mongoose.model("AccountLimitCount", AccountLimitCountSchema);
 
 const ifPremiumThenProceed = asyncHandler (async (req, res, next) => {
-    const user = await User.findById(req.session.user._id);
+    const user = await User.findById(await getTokenInformation_web(req, res)._id);
 
     if (user.isPremium) {
         next();
@@ -29,7 +30,7 @@ const ifPremiumThenProceed = asyncHandler (async (req, res, next) => {
 });
 
 const ifDailyRequestNotExceededThenProceed = asyncHandler (async (req, res, next) => {
-    const user = await User.findById(req.session.user._id);
+    const user = await User.findById(await getTokenInformation_web(req, res)._id);
 
     if (user.isPremium) {
         next();
@@ -72,7 +73,8 @@ const ifDailyRequestNotExceededThenProceed = asyncHandler (async (req, res, next
 });
 
 const ifDailyChatNotExceededThenProceed = asyncHandler(async (req, res, next) => {
-    const user = await User.findById(req.session.user._id);
+    const uid = await getTokenInformation_web(req, res)._id;
+    const user = await User.findById(uid);
 
     if (user.isPremium) {
         next();
@@ -97,7 +99,7 @@ const ifDailyChatNotExceededThenProceed = asyncHandler(async (req, res, next) =>
         limits.dailyChatCount += 1;
 
         try {
-            await User.findByIdAndUpdate(req.session.user._id, {
+            await User.findByIdAndUpdate(uid, {
                 limits: limits
             });
 

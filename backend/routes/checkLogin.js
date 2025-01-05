@@ -1,5 +1,22 @@
-const ifLoggedInThenProceed = (req, res, next) => {
-    if (req.session && req.session.user) {
+const { get } = require("request");
+const { getTokenInformation_web } = require("./web_auth/jwt_web");
+const Doctor = require("../models/Doctor");
+const Admin = require("../models/Admin");
+const UserSchema = require("../models/User");
+const mongoose = require("mongoose");
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
+
+const ifLoggedInThenProceed = async (req, res, next) => {
+    const rest = await getTokenInformation_web(req, res);
+
+    if (rest) {
+        if (!req.session.user && !rest.isDoctor && !rest.isAdmin) {
+            req.session.user = await User.findById(rest.userid);
+        } else if (!req.session.user && rest.isDoctor) {
+            req.session.user = await Doctor.findById(rest.userid);
+        } else if (!req.session.user && rest.isAdmin) {
+            req.session.user = await Admin.findById(rest.userid);
+        }
         next();
     } else {
         res.redirect('/login');
@@ -8,8 +25,8 @@ const ifLoggedInThenProceed = (req, res, next) => {
     }
 };
 
-const ifNotLoggedInThenProceed = (req, res, next) => {
-    if (!req.session || !req.session.user) {
+const ifNotLoggedInThenProceed = async (req, res, next) => {
+    if (! await getTokenInformation_web(req, res)) {
         next();
     } else {
         res.redirect("/");
@@ -18,48 +35,63 @@ const ifNotLoggedInThenProceed = (req, res, next) => {
     }
 };
 
-const ifNotLoggedInThenRedirectToLoginPage = (req, res) => {
-    if (!req.session || !req.session.user) {
+const ifNotLoggedInThenRedirectToLoginPage = async (req, res) => {
+    if (! await getTokenInformation_web(req, res)) {
         res.redirect("/login");
 
         return;
     }
 };
 
-const ifLoggedInThenRedirectToMainPage = (req, res) => {
-    if (req.session && req.session.user) {
+const ifLoggedInThenRedirectToMainPage = async (req, res) => {
+    if (await getTokenInformation_web(req, res)) {
         res.redirect("/");
 
         return;
     }
 };
 
-const isLoggedIn = (req, res) => {
-    if (req.session && req.session.user) {
+const isLoggedIn = async (req, res) => {
+    const rest = await getTokenInformation_web(req, res);
+    if (rest) {
+        if (!req.session.user && !rest.isDoctor && !rest.isAdmin) {
+            req.session.user = await User.findById(rest.userid);
+        } else if (!req.session.user && rest.isDoctor) {
+            req.session.user = await Doctor.findById(rest.userid);
+        } else if (!req.session.user && rest.isAdmin) {
+            req.session.user = await Admin.findById(rest.userid);
+        }
+
         return true;
     }
 
     return false;
 };
 
-const isDoctor = (req, res) => {
-    if (req.session && req.session.isDoctor) {
+const isDoctor = async (req, res) => {
+    const rest = await getTokenInformation_web(req, res);
+
+    if (rest && rest.isDoctor) {
         return true;
     }
 
     return false;
 };
 
-const isAdmin = (req, res) => {
-    if (req.session && req.session.isAdmin) {
+const isAdmin = async (req, res) => {
+    const rest = await getTokenInformation_web(req, res);
+
+    if (rest && rest.isAdmin) {
         return true;
     }
 
     return false;
 };
 
-const isDoctorThenProceed = (req, res, next) => {
-    if (req.session && req.session.isDoctor) {
+const isDoctorThenProceed = async (req, res, next) => {
+    const rest = await getTokenInformation_web(req, res);
+
+    if (rest && rest.isDoctor) {
         next();
     } else {
         res.redirect("/");
@@ -68,8 +100,10 @@ const isDoctorThenProceed = (req, res, next) => {
     }
 };
 
-const isAdminThenProceed = (req, res, next) => {
-    if (req.session && req.session.isAdmin) {
+const isAdminThenProceed = async (req, res, next) => {
+    const rest = await getTokenInformation_web(req, res);
+
+    if (rest && rest.isAdmin) {
         next();
     } else {
         res.redirect("/");
@@ -79,7 +113,7 @@ const isAdminThenProceed = (req, res, next) => {
 };
 
 const errorOccured = (err) => {
-    console.log(err);
+    console.error(err);
 
     return;
 };

@@ -6,7 +6,11 @@ const tagMap = new Map();
 const tagGraph = [];
 
 const removeSpacesAndHashes = (input) => { 
-    return input.replace(/[\s#]/g, '');
+    if (input.length > 0) {
+        return input.replace(/[\s#]/g, '');
+    } 
+
+    return "";
 };
 
 const serverSideWorks_tagCollection = async () => {

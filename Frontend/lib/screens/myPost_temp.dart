@@ -6,10 +6,10 @@ import 'package:to_doc/controllers/view_controller.dart';
 import 'package:to_doc/screens/pageView.dart';
 
 
-/** 스크롤 기능 구현 예정, 페이지로 나누기 */
+/// 스크롤 기능 구현 예정, 페이지로 나누기
 class MypostTemp extends StatefulWidget {
 
-  MypostTemp({super.key});
+  const MypostTemp({super.key});
 
   @override
   State<MypostTemp> createState() => _MypostTempState();

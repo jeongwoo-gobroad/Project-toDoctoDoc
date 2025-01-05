@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/controllers/query_controller.dart';
 import 'package:to_doc/controllers/upload_controller.dart';
-import 'package:to_doc/screens/myPost.dart';
 import 'package:to_doc/screens/myPost_temp.dart';
 
 class ResultEdit extends StatefulWidget {
-  ResultEdit({super.key});
+  const ResultEdit({super.key});
 
   @override
   State<ResultEdit> createState() => _ResultEditState();
@@ -121,7 +120,7 @@ class _ResultEditState extends State<ResultEdit> {
                 ),
                 SizedBox(height: 25),
         
-                Container(
+                SizedBox(
                   width: 1000,
                   height: 40,
                   child: ElevatedButton(

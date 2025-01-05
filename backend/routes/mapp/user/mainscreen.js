@@ -2,10 +2,9 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const openai = require("openai");
-const { checkIfLoggedIn } = require("../checkingMiddleWare");
+const { checkIfLoggedIn, ifTokenIsNotExpriredThenProceed } = require("../checkingMiddleWare");
 const { ifDailyChatNotExceededThenProceed, ifDailyRequestNotExceededThenProceed } = require("../limitMiddleWare");
 const returnResponse = require("../standardResponseJSON");
-const refreshJWTMiddleware = require("../../auth/refreshToken");
 const { getTokenInformation } = require("../../auth/jwt");
 const UserSchema = require("../../../models/User");
 const { removeSpacesAndHashes } = require("../../../serverSideWorks/tagCollection");
@@ -64,7 +63,7 @@ router.post(["/query"],
     }
 );
  
-router.post(["/upload"], 
+router.post(["/upload"],
     checkIfLoggedIn,
     async(req, res, next) => {
         const {title, content, content_additional, tags} = req.body;

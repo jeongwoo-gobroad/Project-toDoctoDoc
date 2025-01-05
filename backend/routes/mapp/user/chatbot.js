@@ -209,7 +209,7 @@ const aiChatting = async (socket, next) => {
 
             const response = completion.choices[0].message.content;
 
-            AIChat.findByIdAndUpdate(roomNo, {
+            await AIChat.findByIdAndUpdate(roomNo, {
                 $push: {response: {
                     "role": "assistant",
                     "content": response

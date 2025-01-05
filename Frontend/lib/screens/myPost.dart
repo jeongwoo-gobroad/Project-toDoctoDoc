@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:to_doc/app.dart';
 import 'package:to_doc/controllers/myPost_controller.dart';
 
 

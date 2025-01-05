@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 const UserSchema = require("../../models/User");
 const secretKey = process.env.JWT_SECRET;
 const mongoose = require("mongoose");
+const Doctor = require("../../models/Doctor");
+const Admin = require("../../models/Admin");
 const User = mongoose.model("User", UserSchema);
 
 const generateToken = (payload) => {
@@ -12,12 +14,12 @@ const generateToken = (payload) => {
 };
 
 const generateRefreshToken = () => {
-    const refreshToken = jwt.sign({}, secretKey, {expiresIn: '60d'});
+    const refreshingToken = jwt.sign({}, secretKey, {expiresIn: '60d'});
 
-    return refreshToken;
+    return refreshingToken;
 };
 
-const refreshToken = (token) => {
+const refreshingToken = (token) => {
     try {
         const decoded = jwt.verify(token, secretKey);
 
@@ -43,35 +45,61 @@ const getTokenInformation = async (req, res) => {
         const decoded = jwt.verify(req.headers["authorization"]?.split(" ")[1], secretKey);
         
         if (typeof decoded.userid === "undefined") {
-            const user = await User.findOne({refreshToken: req.headers["authorization"]?.split(" ")[1]});
+            const user = await User.findOne({refreshToken: req.cookies.refreshToken});
+            const doctor = await Doctor.findOne({refreshToken: req.cookies.refreshToken});
+            const admin = await Admin.findOne({refreshToken: req.cookies.refreshToken});
 
-            if (!user) {
-                // console.log("token error");
+            let payload = null;
+            let token = null;
+            let refreshToken = null;
 
+            if (user) {
+                payload = {
+                    userid: user._id,
+                    isPremium: user.isPremium,
+                    isDoctor: user.isDoctor,
+                    isAdmin: user.isAdmin,
+                };
+
+                token = generateToken(payload);
+                refreshToken = generateRefreshToken();
+
+                await User.findByIdAndUpdate(user._id, {
+                    refreshToken: refreshToken,
+                });
+            } else if (doctor) {
+                payload = {
+                    userid: doctor._id,
+                    isPremium: false,
+                    isDoctor: true,
+                    isAdmin: false,
+                };
+
+                token = generateToken(payload);
+                refreshToken = generateRefreshToken();
+
+                await Doctor.findByIdAndUpdate(doctor._id, {
+                    refreshToken: refreshToken,
+                });
+            } else if (admin) {
+                payload = {
+                    userid: admin._id,
+                    isPremium: false,
+                    isDoctor: false,
+                    isAdmin: true,
+                };
+
+                token = generateToken(payload);
+                refreshToken = generateRefreshToken();
+
+                await Admin.findByIdAndUpdate(admin._id, {
+                    refreshToken: refreshToken,
+                });
+            } else {
                 return null;
             }
-
-            const token = generateToken({
-                userid: user._id,
-                isPremium: user.isPremium,
-                isDoctor: user.isDoctor,
-                isAdmin: user.isAdmin,
-            });
-            const refreshToken = generateRefreshToken();
-
-            await User.findByIdAndUpdate(user._id, {
-                refreshToken: refreshToken,
-            });
-
             res.setHeader("Access_Token", token);
             res.setHeader("Refresh_Token", refreshToken);
-
-            const payload = {
-                userid: user._id,
-                isPremium: user.isPremium,
-                isDoctor: user.isDoctor,
-                isAdmin: user.isAdmin,
-            };
 
             return payload; 
 
@@ -86,10 +114,12 @@ const getTokenInformation = async (req, res) => {
             return payload;
         }
     } catch (error) {
-        // console.error("token error");
+        if (error.name === "TokenExpiredError") {
+            return -1;
+        }
 
         return null;
     }
 };
 
-module.exports = {generateToken, generateRefreshToken, refreshToken, getTokenInformation};
+module.exports = {generateToken, generateRefreshToken, refreshingToken, getTokenInformation};

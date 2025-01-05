@@ -8,8 +8,8 @@ const loginMiddleWare = require("./checkLogin");
 const asyncHandler = require("express-async-handler");
 const limitMiddleWare = require("./checkLimit");
 
-router.get(["/", "/home", "/index"], (req, res) => {
-    if (loginMiddleWare.isLoggedIn(req, res)) {
+router.get(["/", "/home", "/index"], async (req, res) => {
+    if (await loginMiddleWare.isLoggedIn(req, res)) {
         const pageInfo = {
             title: "Welcome to Mentally",
         };
@@ -25,8 +25,8 @@ router.get(["/", "/home", "/index"], (req, res) => {
     }
 });
 
-router.get(["/about"], (req, res) => {
-    if (loginMiddleWare.isLoggedIn(req, res)) {
+router.get(["/about"], async (req, res) => {
+    if (await loginMiddleWare.isLoggedIn(req, res)) { 
         const pageInfo = {
             title: "Welcome to Mentally::About",
         };
@@ -93,8 +93,8 @@ router.post(["/query"],
         }
 })); 
 
-router.get(["/error"], async(req, res) => {
-    if (loginMiddleWare.isLoggedIn(req, res)) {
+router.get(["/error"], async (req, res) => {
+    if (await loginMiddleWare.isLoggedIn(req, res)) {
         const pageInfo = {
             title: "Welcome to Mentally::Error page",
         };
@@ -110,8 +110,8 @@ router.get(["/error"], async(req, res) => {
     }
 });
 
-router.get(["/freeAccountError"], async(req, res) => {
-    if (loginMiddleWare.isLoggedIn(req, res)) {
+router.get(["/freeAccountError"], async (req, res) => {
+    if (await loginMiddleWare.isLoggedIn(req, res)) {
         const pageInfo = {
             title: "Welcome to Mentally::Free account limit exceeded",
         };

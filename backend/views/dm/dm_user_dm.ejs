@@ -7,6 +7,7 @@
             <input type="submit" value="전송">
         </form>
         <input type="hidden" id="prevChats" value="<%= prevChatList %>">
+        <input type="hidden" id="usertoken" value="<%= token %>">
     </div>
 </div>
 
@@ -15,6 +16,7 @@
     const form = document.getElementById('form');
     const input = document.getElementById('input');
     const messages = document.getElementById('messages');
+    const tokenValue = document.getElementById('usertoken').value;
 
     const inputMessage = (msg) => {
         const item = document.createElement('li');
@@ -36,7 +38,10 @@
     }
 
     const socket = io.connect('http://jeongwoo-kim-web.myds.me:3000/chat', {
-        path: '/msg'
+        path: '/msg',
+        query: {
+            token: tokenValue
+        }
     });
 
     form.addEventListener('submit', (e) => {

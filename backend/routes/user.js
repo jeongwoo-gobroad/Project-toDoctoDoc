@@ -12,13 +12,13 @@ const mongoose = require("mongoose");
 const loginMiddleWare = require("./checkLogin");
 const request = require("request");
 const returnLongLatOfAddress = require("../middleware/getcoordinate");
+const { generateToken_web, generateRefreshToken_web} = require("./web_auth/jwt_web");
 
 const User = mongoose.models.User || mongoose.model("User", UserSchema);
 const Address = mongoose.model("Address", AddressSchema);
 const AccountLimitCount = mongoose.model("AccountLimitCount", AccountLimitCountSchema);
 
-router.get(["/login"], asyncHandler(async (req, res) => {
-    loginMiddleWare.ifLoggedInThenRedirectToMainPage(req, res);
+router.get(["/login"], loginMiddleWare.ifNotLoggedInThenProceed, asyncHandler(async (req, res) => {
     
     const pageInfo = {
         title: "Welcome to Mentally::Login"
@@ -27,7 +27,7 @@ router.get(["/login"], asyncHandler(async (req, res) => {
     res.render("user_auth/login", {pageInfo, layout: mainLayout});
 }));
 
-router.post(["/login"], asyncHandler(async (req, res) => {
+router.post(["/login"], loginMiddleWare.ifNotLoggedInThenProceed, asyncHandler(async (req, res) => {
     const {username, password} = req.body;
 
     try {
@@ -35,6 +35,19 @@ router.post(["/login"], asyncHandler(async (req, res) => {
 
         if (user && await bcrypt.compare(password, user.password)) {
             req.session.user = user;
+
+            res.cookie("token", generateToken_web({
+                userid: user._id,
+                isPremium: user.isPremium,
+                isDoctor: false,
+                isAdmin: false
+            }), {maxAge: 900000});
+            const refresh = generateRefreshToken_web();
+            res.cookie("refreshToken", refresh, {maxAge: 10800000});
+
+            await User.findByIdAndUpdate(user._id, {
+                refreshToken: refresh
+            }); // 동기
 
             res.redirect("/");
 
@@ -45,13 +58,15 @@ router.post(["/login"], asyncHandler(async (req, res) => {
             return;
         }
     } catch (error) {
+        console.error(error);
+
         res.redirect("/error");
 
         return;
     }  
 }));
 
-router.get(["/register"], asyncHandler(async (req, res) => {
+router.get(["/register"], loginMiddleWare.ifNotLoggedInThenProceed, asyncHandler(async (req, res) => {
     loginMiddleWare.ifLoggedInThenRedirectToMainPage(req, res);
 
     const pageInfo = {
@@ -61,7 +76,7 @@ router.get(["/register"], asyncHandler(async (req, res) => {
     res.render("user_auth/register", {pageInfo, layout: mainLayout});
 }));
 
-router.post(["/register"], asyncHandler(async (req, res) => {
+router.post(["/register"], loginMiddleWare.ifNotLoggedInThenProceed, asyncHandler(async (req, res) => {
     const {id, password, password2, nickname, postcode, address, detailAddress, extraAddress, email} = req.body;
     let addressData;
     let accountLimit;
@@ -102,6 +117,19 @@ router.post(["/register"], asyncHandler(async (req, res) => {
 
         req.session.user = loggedIn;
 
+        res.cookie("token", generateToken_web({
+            userid: loggedIn._id,
+            isPremium: loggedIn.isPremium,
+            isDoctor: false,
+            isAdmin: false
+        }), {maxAge: 900000});
+        const refresh = generateRefreshToken_web();
+        res.cookie("refreshToken", refresh, {maxAge: 10800000});
+
+        await User.findByIdAndUpdate(loggedIn._id, {
+            refreshToken: refresh
+        }); // 동기
+
         res.redirect("/");
 
         return;
@@ -114,8 +142,7 @@ router.post(["/register"], asyncHandler(async (req, res) => {
     }
 }));
 
-router.get(["/userInfo"], asyncHandler(async (req, res) => {
-    loginMiddleWare.ifNotLoggedInThenRedirectToLoginPage(req, res);
+router.get(["/userInfo"], loginMiddleWare.ifLoggedInThenProceed, asyncHandler(async (req, res) => {
 
     const pageInfo = {
         title: "Welcome to Mentally::User Information"
@@ -179,8 +206,11 @@ router.patch(["/userInfo"],
         }
 }));
 
-router.get(["/logout"], asyncHandler(async (req, res) => {
+router.get(["/logout"], loginMiddleWare.ifLoggedInThenProceed, asyncHandler(async (req, res) => {
     req.session.destroy();
+    
+    res.cookie("token", "", {maxAge: 0});
+    res.cookie("refreshToken", "", {maxAge: 0});
 
     res.redirect("/");
 }));
