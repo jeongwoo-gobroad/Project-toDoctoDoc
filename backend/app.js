@@ -15,7 +15,11 @@ const cors = require("cors");
 const app = express();
 const server = http.createServer(app);
 const io = SocketIO(server, {
-    path: '/msg'
+    path: '/msg',
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    },
 });
 
 const port = process.env.PORT || 3000;
@@ -55,8 +59,7 @@ io.use(wrap(express.json()));
 io.use(wrap(express.urlencoded({extended: true})));
 io.of('/chat').use(require('./routes/dm_auth/dm_isValid'));
 io.of('/chat').use(require("./middleware/dmAlgorithm"));
-io.of('/aichat').use(require("./routes/mapp/user/chatbot").aiChatting);
-
+io.of('/aichat').on('connect', require("./routes/mapp/user/chatbot").aiChatting);
 
 app.use(cors());
 

@@ -270,11 +270,11 @@ router.patch(["/editUserInfo"],
                 },
             );
 
-            if (password.length > 8 && password != password2) {
+            if (password && password.length > 8 && password != password2) {
                 res.status(401).json(returnResponse(true, "password_not_match", "password_not_match"));
 
                 return;
-            } else if (password.length > 8 && password == password2) {
+            } else if (password && password.length > 8 && password == password2) {
                 const hashedPassword = await bcrypt.hash(password, 10);
 
                 await User.findByIdAndUpdate(user.userid, {
@@ -288,6 +288,8 @@ router.patch(["/editUserInfo"],
 
             return;
         } catch (error) {
+            console.error(error);
+
             res.status(401).json(returnResponse(true, "editinfoerror", "editinfoerror"));
 
             return;

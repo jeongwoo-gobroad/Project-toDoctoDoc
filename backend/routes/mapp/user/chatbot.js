@@ -23,6 +23,27 @@ const openai = require("openai");
  * 그리고 웹 버전과 달리 채팅 내용은 사용자가 삭제를 원하지 않는 이상 항시 저장되도록 구성되어 있다.
 */
 
+router.get(["/list"],
+    checkIfLoggedIn,
+    async (req, res, next) => {
+        try {
+            const user = await getTokenInformation(req, res);
+
+            const userInfo = await User.findById(user.userid).populate('ai_chats');
+
+            const chatList = userInfo.ai_chats;
+
+            res.status(200).json(returnResponse(false, "listOfAIChat", chatList));
+
+            return;
+        } catch (error) {
+            res.status(401).json((returnResponse(true, "errorAtAIList", "-")));
+
+            return;
+        }
+    }
+);
+
 router.get(["/new"],
     checkIfLoggedIn,
     ifDailyChatNotExceededThenProceed,
@@ -31,6 +52,9 @@ router.get(["/new"],
             const user = await getTokenInformation(req, res);
 
             const aichat = await AIChat.create({user: user.userid});
+            await User.findByIdAndUpdate(user.userid, {
+                $push: {ai_chats: aichat._id}
+            });
 
             const chatid = aichat._id;
 
@@ -148,44 +172,50 @@ router.delete(["/delete/:chatid"],
 );
 
 const aiChatting = async (socket, next) => {
-    const req = socket.request;
-    const token = socket.handshake.query.token;
+    // const token = socket.handshake.query.token;
     const chatid = socket.handshake.query.chatid;
+    const roomNo = chatid;
 
-    const userid = await AIChat.findById(roomNo).user;
-    const token_userid = jwt.verify(token, process.env.JWT_SECRET);
+    const userid = await AIChat.findById(chatid).user;
+    // const token_userid = jwt.verify(token, process.env.JWT_SECRET);
 
     const user = await User.findById(userid);
 
-    if (userid != token_userid.userid) {
-        return;
-    }
+    // if (userid != token_userid.userid) {
+    //     return;
+    // }
 
-    if (!user.isPremium) {
-        const limits = user.limits;
-        const current = new Date();
+    console.log("Phase 1");
 
-        if (limits.dailyChatDate.toDateString() !== current.toDateString()) {
-            limits.dailyChatDate = current;
-            limits.dailyChatCount = 0;
-        }
+    // console.log(socket);
 
-        if (limits.dailyChatCount >= 10) {
-            socket.emit('aichat', "일일 대화 한도가 초과되었습니다. 무료 계정은 하루에 10개의 말풍선만을 사용할 수 있습니다.");
+    // if (!user.isPremium) {
+    //     const limits = user.limits;
+    //     const current = new Date();
 
-            return;
-        }
-    }
+    //     if (limits.dailyChatDate.toDateString() !== current.toDateString()) {
+    //         limits.dailyChatDate = current;
+    //         limits.dailyChatCount = 0;
+    //     }
 
-    socket.join(roomNo);
+    //     if (limits.dailyChatCount >= 10) {
+    //         socket.emit('aichat', "일일 대화 한도가 초과되었습니다. 무료 계정은 하루에 10개의 말풍선만을 사용할 수 있습니다.");
+
+    //         return;
+    //     }
+    // }
+    
+    // await socket.join(roomNo);
 
     socket.on('aichat', async (data) => {
         const sentence = data;
 
-        console.log("Hi!!");
+        console.log("Phase 2");
+
+        console.log(data);
 
         const target = new openai({
-            apikey: process.env.OPENAI_API_KEY,
+            apiKey: process.env.OPENAI_KEY,
         });
 
         const messages = [
@@ -222,7 +252,12 @@ const aiChatting = async (socket, next) => {
                 chatEditedAt: Date.now()
             })
 
-            socket.broadcast.to(roomNo).emit('aichat', response);
+            console.log(response);
+
+            socket.join(roomNo);
+            console.log(socket.rooms);
+            socket.of("/aichat").in(roomNo).emit('aichat', response);
+            // socket.emit('aichat', response);
 
             return;
         } catch (error) {
