@@ -13,7 +13,6 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:bubble/bubble.dart';
 
 
-
 class AiChatSub extends StatefulWidget {
   const AiChatSub({Key? key}) : super(key: key);
 
@@ -31,10 +30,10 @@ class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
 
   //final scrollController = ScrollController();
 
-
   var chatId = '';
   final List<ChatObject> _messageList = [];
   late ChatSocketService socketService;
+  final scrollController = ScrollController();
 
   void asyncNew() async {
     await aiChatController.getNewChat();
@@ -89,34 +88,43 @@ class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
             child: Column(
                 children: [
                   Expanded(
-                      child: ListView.builder(
-                        padding: EdgeInsets.all(8.0),
-                        reverse: false,
-                        itemCount: _messageList.length,
-                        itemBuilder: (_, int index) {
-                            return Bubble(
-                              nip: _messageList[index].role == 'user' ? BubbleNip.rightBottom : BubbleNip.leftBottom,
-                              alignment: _messageList[index].role == 'user' ? Alignment.centerRight : Alignment.centerLeft,
-                              color: _messageList[index].role == 'user' ? Colors.black : Colors.white,
+                      child: Align( alignment: Alignment.topCenter,
+                        child: ListView.builder(
+                          padding: EdgeInsets.all(8.0),
+                          shrinkWrap: true,
+                          reverse: true,
+                          itemCount: _messageList.length,
+                          controller: scrollController,
+                          itemBuilder: (_, int index) {
+                              return Bubble(
+                                nip: _messageList[_messageList.length-index-1].role == 'user' ? BubbleNip.rightBottom : BubbleNip.leftBottom,
+                                alignment: _messageList[_messageList.length-index-1].role == 'user' ? Alignment.centerRight : Alignment.centerLeft,
+                                color: _messageList[_messageList.length-index-1].role == 'user' ? Colors.black : Colors.white,
 
-                              margin: const BubbleEdges.only(top: 8),
-                              child: Text('${_messageList[index].content}',
-                                style: TextStyle(fontSize: 15,
-                                    color: _messageList[index].role == 'user' ? Colors.white : Colors.black),),
-                            );
-                        },
+                                margin: const BubbleEdges.only(top: 8),
+                                child: Text('${_messageList[_messageList.length-index-1].content}',
+                                  style: TextStyle(fontSize: 15,
+                                      color: _messageList[_messageList.length-index-1].role == 'user' ? Colors.white : Colors.black),),
+                              );
+                          },
+                        ),
                       )
-
                   ),
-
 
                   Stack(
                       children: [
-                        TextField(
-                          controller: textEditingController,
-                          //onSubmitted: _handleSubmitted,
-                          decoration: InputDecoration(labelText: 'chat'),
-                        ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 12),
+                            child: SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              child: TextField(
+                                maxLines: null,
+                                controller: textEditingController,
+                                //onSubmitted: _handleSubmitted,
+                                decoration: InputDecoration(labelText: 'chat'),
+                              ),
+                            ),
+                          ),
 
                         Positioned(
                             bottom: 0, right: 0,
@@ -145,7 +153,9 @@ class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
     setState(() {
       _messageList.add(
           ChatObject(content: text, role: 'user', createdAt: DateTime.now()));
+      scrollController.animateTo(0, duration: const Duration(milliseconds: 100), curve: Curves.easeInOut);
     });
+
 
     for (int i = 0; i < _messageList.length; i++) {
       print('${_messageList[i].content}, ${_messageList[i].role}');
