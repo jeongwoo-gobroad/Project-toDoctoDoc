@@ -110,8 +110,8 @@ router.post(["/save"],
 
             return;
         }
-        if (chat.user !== user.userid) {
-            res.status(401).json(returnResponse(true, "notYourChat", "-"));
+        if (chat.user != user.userid) {
+            res.status(402).json(returnResponse(true, "notYourChat", "-"));
 
             return;
         }
@@ -124,6 +124,7 @@ router.post(["/save"],
         ];
 
         messages = messages.concat(chat.response);
+        messages = messages.concat([{"role": "user", "content": "지금까지 나눈 대화에 어울리는 제목을 쌍따옴표 안에 넣어서 알려줘"}]);
 
         try {
             const target = new openai({
@@ -137,13 +138,17 @@ router.post(["/save"],
 
             title = getQuote(completion.choices[0].message.content);
 
+            await AIChat.findByIdAndUpdate(chatid, {
+                title: title
+            });
+
             res.status(200).json(returnResponse(false, "saveAiChat", {title: title}));
 
             return;
         } catch (error) {
             console.error(error, "errorAtAiChatSaving");
 
-            res.status(401).json(returnResponse(true, "errorAtAiChatSaving", "-"));
+            res.status(403).json(returnResponse(true, "errorAtAiChatSaving", "-"));
 
             return;
         }
@@ -175,15 +180,6 @@ router.delete(["/delete/:chatid"],
 
 const aiChatting = async (socket, next) => {
     // const token = socket.handshake.query.token;
-    if (socket.handshake.query.isMirror) {
-        console.log("recursion");
-        socket.on('aichat', (data) => {
-            console.log("recursion2");
-            socket.to("room_" + socket.handshake.query.chatid.toString()).emit(data);
-        });
-
-        return;
-    }
 
     const chatid = socket.handshake.query.chatid;
     const roomNo = chatid;
@@ -197,7 +193,7 @@ const aiChatting = async (socket, next) => {
     //     return;
     // }
 
-    console.log("Phase 1");
+    // console.log("Phase 1");
 
     // console.log(socket);
 
@@ -222,9 +218,7 @@ const aiChatting = async (socket, next) => {
     socket.on('aichat', async (data) => {
         const sentence = data;
 
-        console.log("Phase 2");
-
-        console.log(data);
+        // console.log("Phase 2");
 
         const target = new openai({
             apiKey: process.env.OPENAI_KEY,
@@ -264,21 +258,7 @@ const aiChatting = async (socket, next) => {
                 chatEditedAt: Date.now()
             })
 
-            console.log(response);
-
-            await socket.join("room_" + roomNo.toString());
-
-            const sock = io("http://jeongwoo-kim-web.myds.me:3000/aichat", {
-                path: "/msg",
-                query: {
-                    chatid: roomNo,
-                    isMirror: true
-                }
-            });
-
             socket.emit("aichat", response);
-
-            sock.emit("aichat", response);
 
             return;
         } catch (error) {
