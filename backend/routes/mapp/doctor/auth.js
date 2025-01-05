@@ -40,11 +40,11 @@ router.post(["/login"],
 
                 return;
             } else if (doctor && !doctor.isVerified) {
-                res.status(401).json(returnResponse(true, "register_pending", "현재 인증 절차 진행 중입니다."));
+                res.status(402).json(returnResponse(true, "register_pending", "현재 인증 절차 진행 중입니다."));
 
                 return;
             } else {
-                res.status(401).json(returnResponse(true, "no_such_user", "등록된 유저가 없습니다."));
+                res.status(403).json(returnResponse(true, "no_such_user", "등록된 유저가 없습니다."));
 
                 return;
             }
@@ -60,14 +60,14 @@ router.post(["/register"],
     checkIfNotLoggedIn,
     async (req, res, next) => {
         const {
-            id, password, password2, name, phone, personalID, doctorID, postcode, address, detailAddress, extraddress, email
+            id, password, password2, name, phone, personalID, doctorID, postcode, address, detailAddress, extraAddress, email
         } = req.body;
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
         try {
             if (password != password2 || await Doctor.findOne({$or: [{id: id}, {personalID: personalID}, {doctorID: doctorID}]})) {
-                res.status(401).json(returnResponse(true, "errorAtPostRegister", "회원가입 실패"));
+                res.status(400).json(returnResponse(true, "errorAtPostRegister", "회원가입 실패"));
 
                 return;
             }

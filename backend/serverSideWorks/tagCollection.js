@@ -6,7 +6,7 @@ const tagMap = new Map();
 const tagGraph = [];
 
 const removeSpacesAndHashes = (input) => { 
-    if (input.length > 0) {
+    if (input && input.length > 0) {
         return input.replace(/[\s#]/g, '');
     } 
 

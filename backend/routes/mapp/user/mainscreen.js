@@ -150,14 +150,12 @@ router.patch(["/edit/:id"],
             const check = await Post.findById(req.params.id);
 
             if (check.user != user.userid) {
-                res.status(401).json(returnResponse(true, "notowner", "notowner"));
+                res.status(400).json(returnResponse(true, "notowner", "notowner"));
 
                 return;
             }
 
             const post = await Post.findByIdAndUpdate(req.params.id, {
-                title: title,
-                details: content,
                 additional_material: content_additional,
                 tag: newTags,
                 editedAt: Date.now(),
@@ -183,7 +181,7 @@ router.delete(["/delete/:id"],
             const check = await Post.findById(req.params.id);
 
             if (check.user != user.userid) {
-                res.status(401).json(returnResponse(true, "notowner", "notowner"));
+                res.status(400).json(returnResponse(true, "notowner", "notowner"));
 
                 return;
             }
