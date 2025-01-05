@@ -59,7 +59,8 @@ io.use(wrap(express.json()));
 io.use(wrap(express.urlencoded({extended: true})));
 io.of('/chat').use(require('./routes/dm_auth/dm_isValid'));
 io.of('/chat').use(require("./middleware/dmAlgorithm"));
-io.of('/aichat').on('connect', require("./routes/mapp/user/chatbot").aiChatting);
+const aichat = io.of('/aichat');
+aichat.on('connect', require("./routes/mapp/user/chatbot").aiChatting);
 
 app.use(cors());
 

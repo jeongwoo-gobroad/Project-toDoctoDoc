@@ -25,6 +25,7 @@
     "nodemon": "^3.1.9",
     "openai": "^4.77.0",
     "request": "^2.88.2",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
   }
 }

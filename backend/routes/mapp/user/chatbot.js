@@ -18,6 +18,8 @@ const { ifDailyChatNotExceededThenProceed } = require("../limitMiddleWare");
 const { getLastSegment, getQuote } = require("../../../middleware/usefulFunctions");
 const openai = require("openai");
 
+const io = require("socket.io-client");
+
 /*
  * 웹 버전의 채팅방과 달리 플러터 버전은 socket.io를 사용하여 실시간 채팅을 구현한다.
  * 그리고 웹 버전과 달리 채팅 내용은 사용자가 삭제를 원하지 않는 이상 항시 저장되도록 구성되어 있다.
@@ -173,6 +175,16 @@ router.delete(["/delete/:chatid"],
 
 const aiChatting = async (socket, next) => {
     // const token = socket.handshake.query.token;
+    if (socket.handshake.query.isMirror) {
+        console.log("recursion");
+        socket.on('aichat', (data) => {
+            console.log("recursion2");
+            socket.to("room_" + socket.handshake.query.chatid.toString()).emit(data);
+        });
+
+        return;
+    }
+
     const chatid = socket.handshake.query.chatid;
     const roomNo = chatid;
 
@@ -254,10 +266,19 @@ const aiChatting = async (socket, next) => {
 
             console.log(response);
 
-            socket.join(roomNo);
-            console.log(socket.rooms);
-            socket.of("/aichat").in(roomNo).emit('aichat', response);
-            // socket.emit('aichat', response);
+            await socket.join("room_" + roomNo.toString());
+
+            const sock = io("http://jeongwoo-kim-web.myds.me:3000/aichat", {
+                path: "/msg",
+                query: {
+                    chatid: roomNo,
+                    isMirror: true
+                }
+            });
+
+            socket.emit("aichat", response);
+
+            sock.emit("aichat", response);
 
             return;
         } catch (error) {

@@ -42,3 +42,8 @@ Please refer to /documentation.docx
 * #### 0.9.1
     * The user authentication process of web version has been changed from session-only-method to session-and-token-hybrid-method. (No need to re-login after server reboot while developing!)
     * Flutter frontend features implemented so far: login(register) -> about/welcome page -> Query -> Query result -> Query share -> My query list
+
+* #### 0.9.2
+    * AI Chat feature has been enabled in Flutter app version!
+    * Totally redesigned UX layout for Flutter app version.
+    * Token related backend part has been redesigned.

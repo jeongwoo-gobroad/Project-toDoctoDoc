@@ -11,6 +11,7 @@ const { removeSpacesAndHashes } = require("../../../serverSideWorks/tagCollectio
 const Post = require("../../../models/Post");
 const mongoose = require("mongoose");
 const returnLongLatOfAddress = require("../../../middleware/getcoordinate");
+const bcrypt = require("bcrypt");
 
 const User = mongoose.model("User", UserSchema);
 
