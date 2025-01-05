@@ -1,3 +1,4 @@
+require("dotenv").config;
 const express = require("express");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
@@ -148,15 +149,17 @@ router.delete(["/delete/:chatid"],
 
 const aiChatting = async (socket, next) => {
     const req = socket.request;
-    const {
-        headers: {referer},
-    } = req;
-
-    const roomNo = getLastSegment(referer);
+    const token = socket.handshake.query.token;
+    const chatid = socket.handshake.query.chatid;
 
     const userid = await AIChat.findById(roomNo).user;
+    const token_userid = jwt.verify(token, process.env.JWT_SECRET);
 
     const user = await User.findById(userid);
+
+    if (userid != token_userid.userid) {
+        return;
+    }
 
     if (!user.isPremium) {
         const limits = user.limits;
@@ -178,6 +181,8 @@ const aiChatting = async (socket, next) => {
 
     socket.on('aichat', async (data) => {
         const sentence = data;
+
+        console.log("Hi!!");
 
         const target = new openai({
             apikey: process.env.OPENAI_API_KEY,

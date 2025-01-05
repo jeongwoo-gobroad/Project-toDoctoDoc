@@ -21,7 +21,7 @@ const authSocket = async (socket, next) => {
         const user = verify(token, process.env.JWT_SECRET); 
 
         if (chat.user == user.userid || chat.doctor == user.userid) {
-            console.log("hi");
+            // console.log("hi");
             next();
         } 
 
