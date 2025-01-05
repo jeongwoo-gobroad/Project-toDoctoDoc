@@ -32,8 +32,6 @@ class RegisterController extends GetxController{
           'extraAddress' : extraAddress,
           'email' : email,
         }),
-
-        
       );
 
       print('response code ${response.statusCode}');
