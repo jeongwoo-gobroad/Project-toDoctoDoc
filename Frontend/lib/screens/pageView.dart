@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart';
+import 'package:to_doc/controllers/myPost_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc/controllers/view_controller.dart';
+import 'package:to_doc/screens/page_edit.dart';
 
 class Pageview extends StatelessWidget {
   Pageview({super.key});
   ViewController viewController = Get.put(ViewController());
-
-  /*title.value = data['content']['title'];
+  MypostController mypostController = Get.put(MypostController());
+    /*title.value = data['content']['title'];
       details.value = data['content']['details'];
       additional_material = data['content']['additional_material'];
       createdAt = data['content']['createdAt'];
@@ -26,15 +29,75 @@ class Pageview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       appBar: AppBar(
         title: Text(viewController.title.value, overflow: TextOverflow.ellipsis),
         actions: [
-          IconButton(onPressed: (){
-            //수정, 삭제 버튼 구현
-          }, icon: Icon(Icons.more_vert)),
+          PopupMenuButton(
+            borderRadius: BorderRadius.circular(16),
+            popUpAnimationStyle: AnimationStyle(
+              curve: Easing.emphasizedDecelerate,
+              duration: const Duration(seconds: 1),
+            ),
+            itemBuilder: (context) => <PopupMenuEntry>[
+              PopupMenuItem(
+                onTap: (){
+                  Get.to(()=> PageEdit(viewController));
+                },
+                child: ListTile(
+                  leading: Icon(Icons.edit),
+                  title: Text('수정하기'),
+                ),
+              ),
+              PopupMenuItem(
+                onTap: (){
+                  /* 사용자 체크 */
+                  showDialog(
+                    context: context,
+                    builder: (context){
+                      return AlertDialog(
+                        title: Text('삭제하기'), //삭제하기기
+                        content: Text('이 글을 삭제하시겠습니까? 삭제한 글은 다시 볼 수 없습니다.'),
+                        actions: [
+                          ElevatedButton(
+                            onPressed: () async{
+                              bool result  = await mypostController.deleteMyPost(viewController.currentId.value);
+                              if(result){
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                              }
+                            },
+                          
+                           child: Text('확인'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                                
+                            },
+                         
+                           child: Text('취소'),
+                          )
+                        ],
+                      );
+                    },
+                  ); 
+
+                },
+                child: ListTile(
+                  leading: Icon(Icons.delete_outline),
+                  title: Text('삭제하기'),
+                ),
+              ),
+              
+
+
+            ],
+            icon: Icon(Icons.more_vert),
+          ),
         ],
         centerTitle: true,
-        
+      
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -42,7 +105,7 @@ class Pageview extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
+              Container(
                 width: double.infinity,
                 
                 child: Card(
@@ -52,7 +115,7 @@ class Pageview extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                    Text(viewController.title.value, 
+                    Text(viewController.title.value, //viewController.title.value
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -66,7 +129,7 @@ class Pageview extends StatelessWidget {
                   
 
                         //태그 존재
-                    if(true)
+                    if(viewController.tag.value.isNotEmpty)
                       Container(
                         margin: EdgeInsets.only(left: 8),
                         padding: EdgeInsets.symmetric(

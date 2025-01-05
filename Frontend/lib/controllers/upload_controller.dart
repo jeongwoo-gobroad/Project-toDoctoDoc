@@ -2,11 +2,12 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class UploadController extends GetxController {
   var title = "".obs;
   var context = "".obs; // content 필드
-  Future<void> uploadResult(String title, String content, String additionalContent, String tags) async {
+  Future<bool> uploadResult(String title, String content, String additionalContent, String tags) async {
     
 
     
@@ -24,6 +25,7 @@ class UploadController extends GetxController {
 
       Get.snackbar('Login', '로그인이 필요합니다.');
       print('로그인이 필요합니다.');
+      return false;
     }
     // POST 요청 전송
     try {
@@ -41,13 +43,16 @@ class UploadController extends GetxController {
       if (response.statusCode == 200) {
         
         Get.snackbar("성공", "결과가 성공적으로 공유되었습니다!");
+        return true;
       } else {
         
         Get.snackbar("오류", "결과 공유에 실패했습니다. 다시 시도해주세요.");
+        return false;
       }
     } catch (e) {
       
       Get.snackbar("오류", "문제가 발생했습니다. 다시 시도해주세요.");
+      return false;
     }
   }
 }

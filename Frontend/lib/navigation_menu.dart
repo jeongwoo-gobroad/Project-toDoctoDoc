@@ -21,8 +21,8 @@ class NavigationMenu extends StatelessWidget {
             const NavigationDestination(icon: Icon(Icons.home), label: '홈'),
             const NavigationDestination(icon: Icon(Icons.chat), label: '챗봇'),
             const NavigationDestination(icon: Icon(Icons.analytics), label: '그래프보드'),
-            const NavigationDestination(icon: Icon(Icons.place), label: '주위 정신과 찾기'),
-            const NavigationDestination(icon: Icon(Icons.local_hospital), label: '큐레이팅'),
+            const NavigationDestination(icon: Icon(Icons.place), label: '마음병원'),
+            const NavigationDestination(icon: Icon(Icons.menu), label: '메뉴'),
         
           ],
         ),

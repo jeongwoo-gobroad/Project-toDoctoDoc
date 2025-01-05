@@ -6,10 +6,10 @@ import 'package:to_doc/controllers/view_controller.dart';
 import 'package:to_doc/screens/pageView.dart';
 
 
-/// 스크롤 기능 구현 예정, 페이지로 나누기
+/** 스크롤 기능 구현 예정, 페이지로 나누기 */
 class MypostTemp extends StatefulWidget {
 
-  const MypostTemp({super.key});
+  MypostTemp({super.key});
 
   @override
   State<MypostTemp> createState() => _MypostTempState();
@@ -41,6 +41,10 @@ class _MypostTempState extends State<MypostTemp> {
 
 
   }
+  
+  Future<void> _onRefresh() async{
+    await controller.fetchMyPost();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,34 +58,35 @@ class _MypostTempState extends State<MypostTemp> {
         if(controller.posts.isEmpty){
           return Center(
            child: Text('게시물이 없습니다.'),
-
-
           );
         }
-        
-        return ListView.builder(
-          itemCount: controller.posts.length,
-          itemBuilder: (context, index){
-            final post = controller.posts[index];
-            return ListTile(
-              onTap: () async{
-
-                await viewController.getFeed(controller.posts[index]['_id']);
-                Get.to(()=> Pageview());
-
-              },
-              title: Text(post['title'] ?? '제목없음'),
-              subtitle: Text('태그: ${post['tag']}' ?? ''),
-              trailing: Text(formatDate(post['createdAt']) ?? ''), //2025년 10시시 17분
-            );
-
-
-
-
-          },
-
-
+        return NotificationListener<ScrollNotification>( //스크롤구현
+          
+          
+            child: RefreshIndicator(
+              onRefresh: _onRefresh,
+              child: ListView.builder(
+                itemCount: controller.posts.length,
+                itemBuilder: (context, index){
+                  final post = controller.posts[index];
+                  return ListTile(
+                    onTap: () async{
+              
+                      await viewController.getFeed(controller.posts[index]['_id']);
+                      Get.to(()=> Pageview());
+              
+                    },
+                    title: Text(post['title'] ?? '제목없음'), //post['title']
+                    subtitle: Text('태그: ${post['tag']}' ?? ''),
+                    trailing: Text(formatDate(post['createdAt']) ?? ''), //2025년 10시 17분
+                  );
+              
+                },
+              ),
+            ),
+          
         );
+        
 
 
       }),

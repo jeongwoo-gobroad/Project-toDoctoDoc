@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/controllers/query_controller.dart';
 import 'package:to_doc/controllers/upload_controller.dart';
+import 'package:to_doc/navigation_menu.dart';
+import 'package:to_doc/screens/myPost.dart';
 import 'package:to_doc/screens/myPost_temp.dart';
 
 class ResultEdit extends StatefulWidget {
-  const ResultEdit({super.key});
+  ResultEdit({super.key});
 
   @override
   State<ResultEdit> createState() => _ResultEditState();
@@ -22,13 +24,43 @@ class _ResultEditState extends State<ResultEdit> {
   final TextEditingController tagController = TextEditingController(); //추후 수정
 
   _submit() async{
-    await uploadController.uploadResult(
+    bool result = await uploadController.uploadResult(
       queryController.title.value, 
       queryController.context.value,
       addController.text,
       tagController.text,
     );
-    Get.to(()=> MypostTemp());
+    
+    if(result){
+      Get.defaultDialog(
+      title: '제출 완료',
+      middleText: '게시판으로 이동하시겠습니까?',
+      actions: [
+        TextButton(
+          onPressed: () {
+            // 게시판으로 이동하고 이전화면으로 돌아갈 수 없게
+            Get.offAll(() => MypostTemp()); 
+          },
+          child: Text('예'),
+        ),
+        TextButton(
+          onPressed: () {
+            // 아니오 버튼: 홈으로 이동
+            Get.offAll(() => NavigationMenu()); // Get.offAll은 모든 이전 화면을 제거하고 홈으로 이동
+          },
+          child: Text('아니오'),
+        ),
+      ],
+      barrierDismissible: false,
+      );
+    }else{
+
+      Get.snackbar(
+      '오류',
+      '제출에 실패했습니다. 다시 시도해주세요.',
+      );
+    }
+    
     
   }
 
@@ -120,7 +152,7 @@ class _ResultEditState extends State<ResultEdit> {
                 ),
                 SizedBox(height: 25),
         
-                SizedBox(
+                Container(
                   width: 1000,
                   height: 40,
                   child: ElevatedButton(
