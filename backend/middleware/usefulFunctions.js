@@ -9,5 +9,5 @@ const getQuote = (sentence) => {
 
     return titles[0];
 }
-
+ 
 module.exports = {getLastSegment, getQuote};

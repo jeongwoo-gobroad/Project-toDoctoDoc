@@ -16,7 +16,8 @@ const Address = mongoose.model("Address", AddressSchema);
 const AccountLimitCount = mongoose.model("AccountLimitCount", AccountLimitCountSchema);
 
 const ifPremiumThenProceed = asyncHandler (async (req, res, next) => {
-    const user = await User.findById(await getTokenInformation_web(req, res)._id);
+    const u = await getTokenInformation_web(req, res);
+    const user = await User.findById(u.userid);
 
     if (user.isPremium) {
         next();
@@ -30,7 +31,8 @@ const ifPremiumThenProceed = asyncHandler (async (req, res, next) => {
 });
 
 const ifDailyRequestNotExceededThenProceed = asyncHandler (async (req, res, next) => {
-    const user = await User.findById(await getTokenInformation_web(req, res)._id);
+    const u = await getTokenInformation_web(req, res);
+    const user = await User.findById(u.userid);
 
     if (user.isPremium) {
         next();
@@ -73,7 +75,8 @@ const ifDailyRequestNotExceededThenProceed = asyncHandler (async (req, res, next
 });
 
 const ifDailyChatNotExceededThenProceed = asyncHandler(async (req, res, next) => {
-    const uid = await getTokenInformation_web(req, res)._id;
+    const u = await getTokenInformation_web(req, res);
+    const uid = u.userid;
     const user = await User.findById(uid);
 
     if (user.isPremium) {

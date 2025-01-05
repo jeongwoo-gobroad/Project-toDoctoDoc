@@ -16,9 +16,10 @@ const User = mongoose.models.User || mongoose.model("User", UserSchema);
 const Address = mongoose.model("Address", AddressSchema);
 const Doctor = require("../models/Doctor");
 const returnLongLatOfAddress = require("../middleware/getcoordinate");
-const { generateRefreshToken_web } = require("./web_auth/jwt_web");
+const { generateRefreshToken_web, generateToken_web } = require("./web_auth/jwt_web");
 
 router.get(["/"],
+    loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isDoctorThenProceed,
     asyncHandler(async (req, res) => {
         const accountInfo = req.session.user;
@@ -169,6 +170,7 @@ router.get(["/register/pending"],
 );
 
 router.get(["/info"],
+    loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isDoctorThenProceed,
     asyncHandler(async (req, res, next) => {
         const doctor = await Doctor.findById(req.session.user._id);
@@ -185,6 +187,7 @@ router.get(["/info"],
 );
 
 router.patch(["/info"],
+    loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isDoctorThenProceed,
     asyncHandler(async (req, res, next) => {
         const {

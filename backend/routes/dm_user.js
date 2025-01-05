@@ -73,6 +73,8 @@ router.get(["/messages/:id"],
             return;
         }
 
+        const token = req.cookies.token;
+
         const pageInfo = {
             title: "Welcome to Mentally::DM with Doctor " + prevChats.doctor.name,
         };
@@ -85,7 +87,7 @@ router.get(["/messages/:id"],
             token: req.cookies.token
         };
 
-        res.render("dm/dm_user_dm", {pageInfo, accountInfo, prevChats, prevChatList, layout: mainLayout_LoggedIn});
+        res.render("dm/dm_user_dm", {pageInfo, accountInfo, prevChats, token, prevChatList, layout: mainLayout_LoggedIn});
     })
 );
 

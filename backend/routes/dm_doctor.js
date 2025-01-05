@@ -39,7 +39,7 @@ router.get(["/list"],
             });
         }
 
-        const chats = chatList.sort(
+        const chats = chatList.sort( 
             (a, b) => {
                 new Date(b.date) - new Date(a.date);
             }
@@ -81,6 +81,7 @@ router.get(["/messages/:id"],
             usernick: req.session.user.usernick,
             address: req.session.user.address,
             email: req.session.user.email,
+            token: req.cookies.token, 
         };
 
         res.render("dm/dm_doctor_dm", {pageInfo, accountInfo, prevChats, prevChatList, layout: mainLayout_Doctor});

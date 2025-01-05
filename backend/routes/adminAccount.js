@@ -18,6 +18,7 @@ const Admin = require("../models/Admin");
 const Post = require("../models/Post");
 
 router.get(["/"], 
+    loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isAdminThenProceed,
     asyncHandler(async (req, res) => {
         const accountInfo = {
@@ -32,6 +33,7 @@ router.get(["/"],
 );
 
 router.get(["/doctorVerification"], 
+    loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isAdminThenProceed,
     asyncHandler(async (req, res) => {
         const doctorInfo = await Doctor.find();
@@ -48,6 +50,7 @@ router.get(["/doctorVerification"],
 );
 
 router.patch(["/doctorVerification"], 
+    loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isAdminThenProceed,
     asyncHandler(async (req, res) => {
         const {doctorID} = req.body;
@@ -187,6 +190,7 @@ router.post(["/register"],
 );
 
 router.get(["/posts"], 
+    loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isAdminThenProceed,
     asyncHandler(async (req, res) => {
         const posts = await Post.find();
@@ -203,6 +207,7 @@ router.get(["/posts"],
 );
 
 router.delete(["/posts"], 
+    loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isAdminThenProceed,
     asyncHandler(async (req, res) => {
         const {postID} = req.body;

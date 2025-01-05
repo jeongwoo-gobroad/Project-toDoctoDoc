@@ -57,7 +57,7 @@ const getTokenInformation_web = async (req, res) => {
                 });
             } else if (doctor) {
                 payload = {
-                    userid: doctor._id,
+                    userid: doctor._id, 
                     isPremium: false,
                     isDoctor: true,
                     isAdmin: false,
@@ -86,7 +86,7 @@ const getTokenInformation_web = async (req, res) => {
             } else {
                 return null;
             }
-
+ 
             res.cookie("token", token, {httpOnly: true, maxAge: 900000});
             res.cookie("refreshToken", refreshToken, {httpOnly: true, maxAge: 10800000});
             // console.log("Token refreshed successfully");

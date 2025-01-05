@@ -4,7 +4,7 @@ const Doctor = require("../models/Doctor");
 const Admin = require("../models/Admin");
 const UserSchema = require("../models/User");
 const mongoose = require("mongoose");
-const User = mongoose.models.User || mongoose.model("User", UserSchema);
+const User = mongoose.model("User", UserSchema);
 
 const ifLoggedInThenProceed = async (req, res, next) => {
     const rest = await getTokenInformation_web(req, res);
@@ -17,6 +17,7 @@ const ifLoggedInThenProceed = async (req, res, next) => {
         } else if (!req.session.user && rest.isAdmin) {
             req.session.user = await Admin.findById(rest.userid);
         }
+
         next();
     } else {
         res.redirect('/login');

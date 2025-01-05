@@ -113,7 +113,7 @@ router.post(["/register"], loginMiddleWare.ifNotLoggedInThenProceed, asyncHandle
                 dailyChatCount: 0
             },
             email: email,
-        });
+        }); 
 
         req.session.user = loggedIn;
 

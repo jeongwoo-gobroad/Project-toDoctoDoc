@@ -19,6 +19,7 @@ const Curate = require("../models/Curate");
 const Comment = require("../models/Comment");
 
 router.get(["/"],
+    loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isDoctorThenProceed,
     asyncHandler(async (req, res, next) => {
         const accountInfo = req.session.user;
@@ -32,6 +33,7 @@ router.get(["/"],
 );
 
 router.get(["/curate"],
+    loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isDoctorThenProceed,
     asyncHandler(async (req, res, next) => {
         const arnd = parseFloat(req.query.km);
@@ -78,6 +80,7 @@ router.get(["/curate"],
 );
 
 router.get(["/view/:id"],
+    loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isDoctorThenProceed,
     asyncHandler(async (req, res, next) => {
         const curatePost = await Curate.findById(req.params.id);
@@ -114,6 +117,7 @@ router.get(["/view/:id"],
 );
 
 router.post(["/comment/:id"],
+    loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isDoctorThenProceed,
     asyncHandler(async (req, res, next) => {
         const comment = await Comment.create({
@@ -132,6 +136,7 @@ router.post(["/comment/:id"],
 );
 
 router.get(["/comment/edit/:id"],
+    loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isDoctorThenProceed,
     asyncHandler(async (req, res, next) => {
         const comment = await Comment.findById(req.params.id);
@@ -153,6 +158,7 @@ router.get(["/comment/edit/:id"],
 );
 
 router.put(["/comment/edit/:id"],
+    loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isDoctorThenProceed,
     asyncHandler(async (req, res, next) => {
         const comment = await Comment.findById(req.params.id);
@@ -171,6 +177,7 @@ router.put(["/comment/edit/:id"],
 );
 
 router.delete(["/comment/delete/:id"],
+    loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isDoctorThenProceed,
     asyncHandler(async (req, res, next) => {
         const comment = await Comment.findById(req.params.id);
