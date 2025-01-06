@@ -40,6 +40,7 @@ class AiChatSaveController extends GetxController{
       print('response code ${response.statusCode}');
 
       if (response.statusCode == 200) {
+        print('saved');
         Get.snackbar('Success', '채팅을 저장했습니다. ${response.statusCode})');
       }
       else {

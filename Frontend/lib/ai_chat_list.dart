@@ -4,6 +4,9 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc/controllers/ai_chat_list_controller.dart';
 import 'package:to_doc/aboutpage.dart';
+import 'package:to_doc/controllers/aichat_delete_coltroller.dart';
+
+import 'ai_chat_oldview.dart';
 
 enum MenuType {
   edit(tostring: 'edit', toIcon: Icon(CupertinoIcons.scissors)),
@@ -21,8 +24,10 @@ class AiChatList extends StatefulWidget {
   State<AiChatList> createState() => _AiChatListState();
 }
 
+
 class _AiChatListState extends State<AiChatList> {
   AiChatListController aiChatListController = Get.put(AiChatListController());
+  AiChatDeleteController aiChatDeleteController = Get.put(AiChatDeleteController());
 
   void asyncLoad() async {
     await aiChatListController.getChatList();
@@ -38,7 +43,6 @@ class _AiChatListState extends State<AiChatList> {
   String formatDate(String date){
     DateTime dateTime = DateTime.parse(date);
     String formattedDate = DateFormat('yyyy년 M월 d일 HH시 mm분').format(dateTime);
-
     return formattedDate;
   }
 
@@ -73,41 +77,48 @@ class _AiChatListState extends State<AiChatList> {
             itemCount: aiChatListController.chatList.length,
             itemBuilder: (context, int index) {
               final chatRoom = aiChatListController.chatList[index];
+
               print(chatRoom['title']);
-              return ListTile(
+              return GestureDetector(
+                onTap: () {
+                  Get.to(()=> AiChatOldView(chatId: chatRoom['_id'],));
+                  print(chatRoom['_id']);
+                },
 
-                trailing: Column(
-                  children: [
-                    PopupMenuButton<MenuType>(
-                      onSelected: (MenuType result) {
-                        print(result);
-                        },
-                      itemBuilder: (BuildContext buildContext) {
-                        return [
-                          for (final value in MenuType.values)
-                            PopupMenuItem(value: value,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(value.tostring),
-                                  value.toIcon,
-                                ],
-                              ),)
-                        ];
-                      },
-                    ),
-                  ],
-                ),
-                title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: ListTile(
+                  trailing: Column(
                     children: [
-                    Text('${chatRoom['title']}'),
-                    Text(formatDate(chatRoom['chatEditedAt']) ?? '',style: TextStyle(fontSize: 10, fontWeight: FontWeight.w100, color: Colors.grey),),
-                  ],
-                ),
-                subtitle: Text('${chatRoom['_id']}'),
+                      PopupMenuButton<MenuType>(
+                        onSelected: (MenuType result) {
+                          aiChatDeleteController.deleteOldChat(chatRoom['_id']);
+                          print(result);},
+                        itemBuilder: (BuildContext buildContext) {
+                          return [
+                            for (final value in MenuType.values)
+                              PopupMenuItem(value: value,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(value.tostring),
+                                    value.toIcon,
+                                  ],
+                                ),)
+                          ];
+                        },
+                      ),
+                    ],
+                  ),
+                  title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                      Text('${chatRoom['title']}'),
+                      Text(formatDate(chatRoom['chatEditedAt']) ?? '',style: TextStyle(fontSize: 10, fontWeight: FontWeight.w100, color: Colors.grey),),
+                    ],
+                  ),
+                  subtitle: Text('${chatRoom['recentMessage']}', overflow: TextOverflow.ellipsis,),
 
-                //trailing: Text(formatDate(chatRoom['chatEditedAt']) ?? ''),
+                  //trailing: Text(formatDate(chatRoom['chatEditedAt']) ?? ''),
+                ),
               );
             },
           );
@@ -115,5 +126,11 @@ class _AiChatListState extends State<AiChatList> {
     );
   }
 
+  void _onDeleted(String chatId) async{
+    print(chatId);
+    await aiChatDeleteController.deleteOldChat(chatId);
+    await aiChatListController.getChatList();
+
+  }
 
 }

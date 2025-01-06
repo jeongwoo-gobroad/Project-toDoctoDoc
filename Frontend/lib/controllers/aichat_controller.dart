@@ -7,6 +7,7 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 
 class AiChatController extends GetxController{
   var chatId = '';
+  var firstChat = '';
 
   var isLoading = false.obs;
 
@@ -43,6 +44,7 @@ class AiChatController extends GetxController{
       print(data);
 
       chatId = data['content']['chatid'];
+      firstChat = data['content']['startingMessage'];
     }
     else {
       Get.snackbar('Error', '채팅을 생성하지 못했습니다. ${response.statusCode})');

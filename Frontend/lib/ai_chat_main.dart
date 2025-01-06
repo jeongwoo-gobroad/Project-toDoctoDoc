@@ -57,7 +57,7 @@ class AichatMain extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       )
                   ),
-                  onPressed: (){Get.to(()=> AiChatSub());},
+                  onPressed: (){Get.to(()=> AiChatSub(messageList: [],));},
                   child: Text('시작하기', style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,

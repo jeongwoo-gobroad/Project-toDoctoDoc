@@ -26,9 +26,10 @@ class AiChatDeleteController extends GetxController{
       return;
     }
 
+    print(chatId);
 
     final response = await http.get(
-      Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/aichat/$chatId'),
+      Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/aichat/delete/$chatId'),
       headers: {
         'Content-Type':'application/json',
         'authorization':'Bearer $token',
