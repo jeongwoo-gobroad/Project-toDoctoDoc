@@ -82,7 +82,13 @@ router.get(["/new"],
             const startingMessage = completion.choices[0].message.content;
 
             await AIChat.findByIdAndUpdate(chatid, {
-                $push: {response: startingMessage},
+                $push: {
+                    response: 
+                    {
+                        role: 'assistant',
+                        content: startingMessage
+                    }
+                },
             });
 
             res.status(200).json(returnResponse(false, "newAiChat", {chatid: chatid, startingMessage: startingMessage}));
@@ -256,17 +262,19 @@ const aiChatting = async (socket, next) => {
             }
         ];
 
-        const prevChat = await AIChat.findByIdAndUpdate(roomNo, {
-            $push: {
-                response: {
-                    "role": "user",
-                    "content": sentence
-                }
-            },
-            chatEditedAt: Date.now()
-        }, {new: true});
-
         try {
+            const prevChat = await AIChat.findByIdAndUpdate(roomNo, {
+                $push: {
+                    response: {
+                        "role": "user",
+                        "content": sentence
+                    }
+                },
+                chatEditedAt: Date.now()
+            }, {new: true});
+
+            // console.log(messages.concat(prevChat.response));
+
             const completion = await target.chat.completions.create({
                 "model": "gpt-4o-mini",
                 "store": false,
@@ -274,14 +282,21 @@ const aiChatting = async (socket, next) => {
             });
 
             const response = completion.choices[0].message.content;
+            prevChat.response.push(
+                {
+                    role: "assistant",
+                    content: response
+                }
+            );
+
+            if (prevChat.response.length > 40) {
+                prevChat.response.shift();
+            }
 
             await AIChat.findByIdAndUpdate(roomNo, {
-                $push: {response: {
-                    "role": "assistant",
-                    "content": response
-                }},
+                response: prevChat.response,
                 chatEditedAt: Date.now()
-            })
+            });
 
             socket.emit("aichat", response);
 
