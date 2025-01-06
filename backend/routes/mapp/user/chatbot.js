@@ -29,7 +29,7 @@ router.get(["/list"],
         try {
             const user = await getTokenInformation(req, res);
 
-            const userInfo = await User.findById(user.userid).populate('ai_chats');
+            const userInfo = await User.findById(user.userid).populate('ai_chats', 'title recentMessage chatCreatedAt chatEditedAt _id');
 
             const chatList = userInfo.ai_chats;
 
@@ -89,6 +89,7 @@ router.get(["/new"],
                         content: startingMessage
                     }
                 },
+                recentMessage: startingMessage,
             });
 
             res.status(200).json(returnResponse(false, "newAiChat", {chatid: chatid, startingMessage: startingMessage}));
@@ -203,7 +204,10 @@ router.delete(["/delete/:chatid"],
             return;
         }
 
-        AIChat.findByIdAndDelete(req.params.chatid);
+        await AIChat.findByIdAndDelete(req.params.chatid);
+        await User.findByIdAndUpdate(user.userid, {
+            $pull: {ai_chats: req.params.chatid}
+        });
 
         res.status(200).json(returnResponse(false, "aichatdeleted", "-"));
     }
@@ -282,6 +286,7 @@ const aiChatting = async (socket, next) => {
             });
 
             const response = completion.choices[0].message.content;
+
             prevChat.response.push(
                 {
                     role: "assistant",
@@ -295,7 +300,8 @@ const aiChatting = async (socket, next) => {
 
             await AIChat.findByIdAndUpdate(roomNo, {
                 response: prevChat.response,
-                chatEditedAt: Date.now()
+                chatEditedAt: Date.now(),
+                recentMessage: response,
             });
 
             socket.emit("aichat", response);

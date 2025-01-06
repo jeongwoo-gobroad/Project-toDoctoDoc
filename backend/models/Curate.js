@@ -23,6 +23,11 @@ const CurateSchema = new mongoose.Schema({
         required: true,
         default: Date.now()
     },
+    createdAt: {
+        type: Date,
+        required: true,
+        default: Date.now()
+    },
 });
 
 module.exports = mongoose.model("Curate", CurateSchema);

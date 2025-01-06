@@ -40,7 +40,7 @@ const isDoctorThenProceed = async (req, res, next) => {
 
             return;
         } else {
-            res.status(401).json(returnResponse(true, "not_a_doctor", "의사가 아닙니다."));
+            res.status(600).json(returnResponse(true, "not_a_doctor", "의사가 아닙니다."));
 
             return;
         }
@@ -60,7 +60,7 @@ const ifPremiumThenProceed = async (req, res, next) => {
 
             return;
         } else {
-            res.status(401).json(returnResponse(true, "not_premium_account", "프리미엄 계정이 아닙니다."));
+            res.status(700).json(returnResponse(true, "not_premium_account", "프리미엄 계정이 아닙니다."));
 
             return;
         }

@@ -7,6 +7,9 @@ const AIChatSchema = new mongoose.Schema({
     response: [{
         type: Object, /* for flutter version */
     }],
+    recentMessage: {
+        type: String,
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
