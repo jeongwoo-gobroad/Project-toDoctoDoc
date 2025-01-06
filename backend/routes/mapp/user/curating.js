@@ -36,9 +36,13 @@ router.get(["/around"],
             } else {
                 res.status(404).json(returnResponse(true, "noSuchUser", "-"));
             }
+
+            return;
         } catch (error) {
             console.error(error);
             res.status(405).json(returnResponse(true, "errorAt/around", "-"));
+
+            return;
         }
     }
 );
