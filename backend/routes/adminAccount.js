@@ -16,6 +16,9 @@ const Address = mongoose.model("Address", AddressSchema);
 const Doctor = require("../models/Doctor");
 const Admin = require("../models/Admin");
 const Post = require("../models/Post");
+const Premium_Psychiatry = require("../models/Premium_Psychiatry");
+const { generateToken_web, generateRefreshToken_web } = require("./web_auth/jwt_web");
+const returnLongLatOfAddress = require("../middleware/getcoordinate");
 
 router.get(["/"], 
     loginMiddleWare.ifLoggedInThenProceed,
@@ -230,6 +233,117 @@ router.delete(["/posts"],
 
         res.redirect("/admin/posts");
     })
+);
+
+router.get(["/premiumify"], 
+    loginMiddleWare.ifLoggedInThenProceed,
+    loginMiddleWare.isAdminThenProceed,
+    async (req, res, next) => {
+        try {
+            const prem = await Premium_Psychiatry.find();
+
+            const accountInfo = {
+                usernick: req.session.user.usernick,
+            };
+            const pageInfo = {
+                title: "Welcome to Mentally::Admin Menu::Premiumify Psy."
+            };
+    
+            res.render("admin/admin_premiumify_psy", {prem, accountInfo, pageInfo, layout: mainLayout_Admin});
+
+            return;
+        } catch (error) {
+            console.error(error);
+
+            res.redirect("/error");
+
+            return;
+        }
+    }
+);
+
+router.post(["/premiumify"], 
+    loginMiddleWare.ifLoggedInThenProceed,
+    loginMiddleWare.isAdminThenProceed,
+    async (req, res, next) => {
+        const { name, place_id, postcode, address, detailAddress, extraAddress, phone } = req.body;
+        const { long, lat } = await returnLongLatOfAddress(address);
+
+        try {
+            await Premium_Psychiatry.create({
+                name: name,
+                place_id: place_id,
+                address: {
+                    postcode: postcode,
+                    address: address,
+                    detailAddress: detailAddress,
+                    extraAddress: extraAddress,
+                    longitude: long,
+                    latitude: lat,
+                },
+                phone: phone
+            })
+
+            res.redirect("/admin/premiumify");
+        } catch (error) {
+            console.error(error);
+
+            res.redirect("/error");
+
+            return;
+        }
+    }
+);
+
+router.delete(["/premiumify/:id"], 
+    loginMiddleWare.ifLoggedInThenProceed,
+    loginMiddleWare.isAdminThenProceed,
+    async (req, res, next) => {
+        try {
+            await Premium_Psychiatry.findByIdAndDelete(req.params.id);
+
+            res.redirect("/admin/premiumify");
+        } catch (error) {
+            console.error(error);
+
+            res.redirect("/error");
+
+            return;
+        }
+    }
+);
+
+router.patch(["/premiumify/:id"], 
+    loginMiddleWare.ifLoggedInThenProceed,
+    loginMiddleWare.isAdminThenProceed,
+    async (req, res, next) => {
+        const { name, place_id, postcode, address, detailAddress, extraAddress, phone } = req.body;
+        const { long, lat } = await returnLongLatOfAddress(address);
+
+        try {
+            await Premium_Psychiatry.findByIdAndUpdate(req.params.id, {
+                name: name,
+                place_id: place_id,
+                address: {
+                    postcode: postcode,
+                    address: address,
+                    detailAddress: detailAddress,
+                    extraAddress: extraAddress,
+                    longitude: long,
+                    latitude: lat,
+                },
+                phone: phone
+            })
+
+            res.redirect("/admin/premiumify");
+        } catch (error) {
+            console.error(error);
+
+            res.redirect("/error");
+
+            return;
+        }
+    }
 );
 
 module.exports = router;

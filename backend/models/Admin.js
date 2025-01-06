@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { refreshToken } = require("../routes/auth/jwt");
 
 const AdminSchema = new mongoose.Schema({
     id: {

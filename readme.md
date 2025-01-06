@@ -47,3 +47,9 @@ Please refer to /documentation.docx
     * AI Chat feature has been enabled in Flutter app version!
     * Totally redesigned UX layout for Flutter app version.
     * Token related backend part has been redesigned.
+
+* #### 0.9.3
+    * AI Chat listing feature has been enabled in Flutter app version.
+    * User info editing feature has been enabled in Flutter app version.
+    * Advanced Business Model: Premium Psychiatry related schema and admin feature has been updated.
+    * /mapp/curate/around?radius="someValue" API has been implemented.

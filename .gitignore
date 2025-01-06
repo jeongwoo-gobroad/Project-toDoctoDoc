@@ -97,3 +97,51 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Miscellaneous
+/Frontend/*.class
+/Frontend/*.log
+/Frontend/*.pyc
+/Frontend/*.swp
+/Frontend/.DS_Store
+/Frontend/.atom/
+/Frontend/.build/
+/Frontend/.buildlog/
+/Frontend/.history
+/Frontend/.svn/
+/Frontend/.swiftpm/
+/Frontend/migrate_working_dir/
+
+# IntelliJ related
+/Frontend/*.iml
+/Frontend/*.ipr
+/Frontend/*.iws
+/Frontend/.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+.vscode/
+
+# Flutter/Dart/Pub related
+/Frontend/**/doc/api/
+/Frontend/**/ios/Flutter/.last_build_id
+/Frontend/.dart_tool/
+/Frontend/.flutter-plugins
+/Frontend/.flutter-plugins-dependencies
+/Frontend/.pub-cache/
+/Frontend/.pub/
+/Frontend/build/
+
+# 혹시 모르니까 한 번 더더
+
+# Symbolication related
+/Frontend/app.*.symbols
+
+# Obfuscation related
+/Frontend/app.*.map.json
+
+# Android Studio will place build artifacts here
+/Frontend/android/app/debug
+/Frontend/android/app/profile
+/Frontend/android/app/release

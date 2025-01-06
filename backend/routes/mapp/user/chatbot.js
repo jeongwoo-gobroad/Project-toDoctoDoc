@@ -18,8 +18,6 @@ const { ifDailyChatNotExceededThenProceed } = require("../limitMiddleWare");
 const { getLastSegment, getQuote } = require("../../../middleware/usefulFunctions");
 const openai = require("openai");
 
-const io = require("socket.io-client");
-
 /*
  * 웹 버전의 채팅방과 달리 플러터 버전은 socket.io를 사용하여 실시간 채팅을 구현한다.
  * 그리고 웹 버전과 달리 채팅 내용은 사용자가 삭제를 원하지 않는 이상 항시 저장되도록 구성되어 있다.
@@ -60,7 +58,34 @@ router.get(["/new"],
 
             const chatid = aichat._id;
 
-            res.status(200).json(returnResponse(false, "newAiChat", {chatid}));
+            const target = new openai({
+                apiKey: process.env.OPENAI_KEY,
+            });
+
+            const message = [
+                {
+                    "role": "developer",
+                    "content": "너는 전문 심리 상담사이고, 내가 제시하는 걱정들에 대해서 걱정할 필요가 없다는 것을 가능한 한 긍정적으로, 밝고 긍정적인 어휘를 써서, 한국어 경어체로 말해줘야 해"
+                },
+                {
+                    "role": "user",
+                    "content": "안녕"
+                }
+            ];
+
+            const completion = await target.chat.completions.create({
+                "model": "gpt-4o-mini",
+                "store": false,
+                "messages": message
+            });
+
+            const startingMessage = completion.choices[0].message.content;
+
+            await AIChat.findByIdAndUpdate(chatid, {
+                $push: {response: startingMessage},
+            });
+
+            res.status(200).json(returnResponse(false, "newAiChat", {chatid: chatid, startingMessage: startingMessage}));
 
             return;
         } catch (error) {

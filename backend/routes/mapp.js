@@ -7,5 +7,6 @@ router.use('/', require("./mapp/user/mainscreen"));
 router.use('/aichat', require("./mapp/user/chatbot").router);
 router.use('/', require("./mapp/user/graphboard"));
 router.use('/doctor', require("./mapp/doctor/auth"));
+router.use('/curate', require("./mapp/user/curating"));
 
 module.exports = router;

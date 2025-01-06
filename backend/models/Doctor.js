@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const AddressSchema = require("./Address");
-const { refreshToken } = require("../routes/auth/jwt");
 
 const DoctorSchema = new mongoose.Schema({
     id: {
