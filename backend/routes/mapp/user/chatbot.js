@@ -168,6 +168,8 @@ router.post(["/save"],
                 "messages": messages
             });
 
+            console.log(completion.choices[0].message.content);
+
             title = getQuote(completion.choices[0].message.content);
 
             await AIChat.findByIdAndUpdate(chatid, {
@@ -193,23 +195,34 @@ router.delete(["/delete/:chatid"],
         const user = await getTokenInformation(req, res);
         const chat = await AIChat.findById(req.params.chatid);
 
+        console.log(chat);
+        console.log("www");
+
         if (!chat) {
             res.status(401).json(returnResponse(true, "noSuchChat", "-"));
 
             return;
         }
-        if (chat.user !== user.userid) {
-            res.status(401).json(returnResponse(true, "notYourChat", "-"));
+        if (chat.user != user.userid) {
+            res.status(402).json(returnResponse(true, "notYourChat", "-"));
 
             return;
         }
 
-        await AIChat.findByIdAndDelete(req.params.chatid);
-        await User.findByIdAndUpdate(user.userid, {
-            $pull: {ai_chats: req.params.chatid}
-        });
+        try {
+            await AIChat.findByIdAndDelete(req.params.chatid);
+            await User.findByIdAndUpdate(user.userid, {
+                $pull: {ai_chats: req.params.chatid}
+            });
 
-        res.status(200).json(returnResponse(false, "aichatdeleted", "-"));
+            res.status(200).json(returnResponse(false, "aichatdeleted", "-"));
+        } catch (error) {
+            res.status(403).json(returnResponse(true, "errorAtDelete", "-"));
+
+            console.error(error, "errorAtAiChatDelete");
+
+            return;
+        }
     }
 );
 
