@@ -22,13 +22,18 @@ router.get(["/around"],
     checkIfLoggedIn,
     async (req, res, next) => {
         const radius = req.query.radius;
+        let page = req.query.page;
         const info = await getTokenInformation(req, res);
+
+        if (!req.query.page) {
+            page = 1;
+        }
 
         try {
             const user = await User.findById(info.userid);
 
             if (user) {
-                let list = await returnListOfPsychiatry(user.address.longitude, user.address.latitude, parseInt(radius) * 1000);
+                let list = await returnListOfPsychiatry(user.address.longitude, user.address.latitude, parseInt(radius) * 1000, page);
 
                 list = await topExposureForPremiumPsy(list);
 

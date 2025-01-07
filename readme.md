@@ -53,3 +53,7 @@ Please refer to /documentation.docx
     * User info editing feature has been enabled in Flutter app version.
     * Advanced Business Model: Premium Psychiatry related schema and admin feature has been updated.
     * /mapp/curate/around?radius="someValue" API has been implemented.
+
+* #### 0.9.4
+    * Currently implementing star rating system...
+    * implemented address-based user-doctor curation mechanism.

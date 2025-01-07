@@ -42,7 +42,7 @@ const isDoctorThenProceed = async (req, res, next) => {
 
             return;
         } else if (rest.isDoctor && doctor && !doctor.isVerified) {
-            res.status(601).json(returnResponse(true, "doctor_register_pending", "의사 본인 확인 절차 진행 중중."));
+            res.status(601).json(returnResponse(true, "doctor_register_pending", "의사 본인 확인 절차 진행 중."));
 
             return;
         } else {

@@ -26,6 +26,10 @@ const Premium_Psychiatry_Schema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    stars: {
+        type: Number,
+        default: 4,
+    }
 });
 
 module.exports = mongoose.model("Premium_Psychiatry", Premium_Psychiatry_Schema);

@@ -7,7 +7,7 @@ const { ifDailyChatNotExceededThenProceed } = require("../limitMiddleWare");
 const returnResponse = require("../standardResponseJSON");
 const { getTokenInformation } = require("../../auth/jwt");
 const UserSchema = require("../../../models/User");
-const { removeSpacesAndHashes } = require("../../../serverSideWorks/tagCollection");
+const { removeSpacesAndHashes, serverSideWorks, tagMap, tagGraph } = require("../../../serverSideWorks/tagCollection");
 const Post = require("../../../models/Post");
 const mongoose = require("mongoose");
 
@@ -17,7 +17,7 @@ router.get(["/tagSearch/:tag"],
     checkIfLoggedIn,
     async (req, res, next) => {
         try {
-            const data = await Post.find({tag: new RegExp(req.params.tag, 'i')}).sort({editedAt: "desc"});
+            const data = await Post.find({tag: new RegExp(req.params.tag.split(",").join('|'), 'i')}).sort({editedAt: "desc"});
 
             res.status(200).json(returnResponse(false, "tagSearchResult", data));
         } catch (error) {
@@ -31,10 +31,10 @@ router.get(["/tagSearch/:tag"],
 router.get(["/graphBoard"],
     checkIfLoggedIn,
     async (req, res, next) => {
-        const tagList = JSON.stringify(Object.fromEntries(serverWorks.tagMap));
-        const tagGraph = JSON.stringify(serverWorks.tagGraph);
+        const _tagList = JSON.stringify(Object.fromEntries(tagMap));
+        const _tagGraph = JSON.stringify(tagGraph);
 
-        res.status(200).json(returnResponse(false, "graphBoardData", {tagList, tagGraph}));
+        res.status(200).json(returnResponse(false, "graphBoardData", {_tagList, _tagGraph}));
 
         return;
     }

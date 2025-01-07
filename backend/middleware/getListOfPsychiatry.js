@@ -2,10 +2,10 @@ require("dotenv").config;
 const request = require("request");
 
 /* radius는 m 단위이다. */
-const returnListOfPsychiatry = (x, y, radius) => {
+const returnListOfPsychiatry = (x, y, radius, page) => {
     const executor = (resolve, reject) => {
         const kakaoMapOptions = {
-            uri: encodeURI(`https://dapi.kakao.com/v2/local/search/keyword?query=정신건강의학과&x=${x}&y=${y}&radius=${radius}`),
+            uri: encodeURI(`https://dapi.kakao.com/v2/local/search/keyword?query=정신건강의학과&x=${x}&y=${y}&radius=${radius}&page=${page}`),
             method: 'GET',
             json: true,
             headers: {
