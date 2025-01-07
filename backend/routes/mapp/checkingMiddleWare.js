@@ -1,3 +1,4 @@
+const Doctor = require("../../models/Doctor");
 const { getTokenInformation } = require("../auth/jwt");
 const returnResponse = require("./standardResponseJSON");
 
@@ -33,10 +34,15 @@ const checkIfNotLoggedIn = async (req, res, next) => {
 
 const isDoctorThenProceed = async (req, res, next) => {
     const rest = await getTokenInformation(req, res);
+    const doctor = await Doctor.findById(rest.userid);
 
     if (rest) {
-        if (rest.isDoctor) {
+        if (rest.isDoctor && doctor && doctor.isVerified) {
             next();
+
+            return;
+        } else if (rest.isDoctor && doctor && !doctor.isVerified) {
+            res.status(601).json(returnResponse(true, "doctor_register_pending", "의사 본인 확인 절차 진행 중중."));
 
             return;
         } else {

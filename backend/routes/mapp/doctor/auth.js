@@ -13,6 +13,57 @@ const User = mongoose.model("User", UserSchema);
 const Doctor = require("../../../models/Doctor");
 
 
+router.post(["/dupemailcheck"],
+    checkIfNotLoggedIn,
+    async (req, res, next) => {
+        const {email} = req.body;
+
+        try {
+            const user = await User.findOne({email: email});
+            const doctor = await Doctor.findOne({email: email});
+
+            if (user || doctor) {
+                res.status(402).json(returnResponse(true, "email_already_exists", "이미 존재하는 이메일입니다."));
+
+                return;
+            } else {    
+                res.status(200).json(returnResponse(false, "email_not_exists", "사용 가능한 이메일입니다."));
+
+                return;
+            }
+        } catch (error) {
+            res.status(401).json(returnResponse(true, "errorAtDoctorPostDupemailcheck", "-"));
+
+            return;
+        }
+    }
+);
+
+router.post(["/dupidcheck"],
+    checkIfNotLoggedIn,
+    async (req, res, next) => {
+        const {id} = req.body;
+
+        try {
+            const doctor = await Doctor.findOne({id: id});
+
+            if (doctor) {
+                res.status(402).json(returnResponse(true, "doctor_id_already_exists", "-"));
+
+                return;
+            } else {
+                res.status(200).json(returnResponse(false, "id_not_exists", "사용 가능한 이메일입니다."));
+
+                return;
+            }
+        } catch (error) {
+            res.status(401).json(returnResponse(true, "errorAtDoctorPostDupIdcheck", "-"));
+
+            return;
+        }
+    }
+);
+
 router.post(["/login"], 
     checkIfNotLoggedIn, 
     async (req, res, next) => {
@@ -40,7 +91,7 @@ router.post(["/login"],
 
                 return;
             } else if (doctor && !doctor.isVerified) {
-                res.status(402).json(returnResponse(true, "register_pending", "현재 인증 절차 진행 중입니다."));
+                res.status(601).json(returnResponse(true, "register_pending", "현재 인증 절차 진행 중입니다."));
 
                 return;
             } else {

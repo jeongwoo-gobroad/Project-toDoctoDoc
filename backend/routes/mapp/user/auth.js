@@ -20,7 +20,7 @@ router.post(["/dupidcheck"],
             const user = await User.findOne({id: userid});
 
             if (user) {
-                res.status(401).json(returnResponse(true, "id_already_exists", "이미 존재하는 아이디입니다."));
+                res.status(402).json(returnResponse(true, "id_already_exists", "이미 존재하는 아이디입니다."));
                 return;
             } else {    
                 res.status(200).json(returnResponse(false, "id_not_exists", "사용 가능한 아이디입니다."));
@@ -43,7 +43,7 @@ router.post(["/dupemailcheck"],
             const doctor = await Doctor.findOne({email: email});
 
             if (user || doctor) {
-                res.status(401).json(returnResponse(true, "email_already_exists", "이미 존재하는 이메일입니다."));
+                res.status(402).json(returnResponse(true, "email_already_exists", "이미 존재하는 이메일입니다."));
                 return;
             } else {    
                 res.status(200).json(returnResponse(false, "email_not_exists", "사용 가능한 이메일입니다."));
