@@ -17,9 +17,10 @@ const Chat = require("../../../models/Chat");
 const AIChat = require("../../../models/AIChat");
 const returnListOfPsychiatry = require("../../../middleware/getListOfPsychiatry");
 const topExposureForPremiumPsy = require("../../../middleware/sortByPremiumPsy");
-const { ifDailyRequestNotExceededThenProceed } = require("../limitMiddleWare");
+const { ifDailyRequestNotExceededThenProceed, ifDailyCurateNotExceededThenProceed } = require("../limitMiddleWare");
 const Curate = require("../../../models/Curate");
 const { ifLoggedInThenProceed } = require("../../checkLogin");
+const Comment = require("../../../models/Comment");
 
 router.get(["/list"],
     checkIfLoggedIn,
@@ -28,7 +29,7 @@ router.get(["/list"],
         const user = await getTokenInformation(req, res);
 
         try {
-            const info = await User.findById(user.userid).populate('curates', '_id date');
+            const info = await User.findById(user.userid).populate('curates', '_id date comments');
             const curates = info.curates;
 
             res.status(200).json(returnResponse(false, "careplus/list", curates));
@@ -103,8 +104,12 @@ router.delete(["/post/:id"],
             }
 
             await User.findByIdAndUpdate(user.userid, {
-                $pull: {curates: curate._id} 
+                $pull: {curates: curate._id},
+                recentCurateDate: "", 
             });
+            for (const comment of curate.comments) {
+                await Comment.findByIdAndDelete(comment);
+            }
             await Curate.findByIdAndDelete(curate._id);
 
             res.status(200).json(returnResponse(false, "curate deletion succeeded", {}));
@@ -121,6 +126,7 @@ router.delete(["/post/:id"],
 router.post(["/curate"], 
     checkIfLoggedIn,
     ifPremiumThenProceed,
+    ifDailyCurateNotExceededThenProceed,
     async (req, res, next) => {
         try {
             const user = await getTokenInformation(req, res);
