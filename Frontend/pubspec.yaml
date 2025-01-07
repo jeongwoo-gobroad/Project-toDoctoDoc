@@ -44,9 +44,6 @@ dependencies:
   simple_animations: ^5.1.0
   intl: ^0.18.1
 
-  socket_io_client: ^3.0.2
-  bubble: ^1.2.1
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

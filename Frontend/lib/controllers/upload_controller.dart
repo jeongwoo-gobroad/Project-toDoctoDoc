@@ -8,6 +8,9 @@ class UploadController extends GetxController {
   var title = "".obs;
   var context = "".obs; // content 필드
   Future<bool> uploadResult(String title, String content, String additionalContent, String tags) async {
+    
+
+    
     var body = {
       'title': title,
       'content': content,

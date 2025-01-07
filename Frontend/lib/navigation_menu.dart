@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:to_doc/ai_chat_main.dart';
 import 'package:to_doc/home.dart';
 
 class NavigationMenu extends StatelessWidget {
@@ -39,6 +38,6 @@ class NavigationMenu extends StatelessWidget {
 class NavigationController extends GetxController{
   final Rx<int> selectedIndex = 0.obs; //home 상태관리
 
-  final screens = [Home(), AichatMain(), Container(color: Colors.red), Container(color: Colors.blue), Container(color: Colors.purple)];
+  final screens = [Home(), Container(color: Colors.green), Container(color: Colors.red), Container(color: Colors.blue), Container(color: Colors.purple)]; 
 
 }

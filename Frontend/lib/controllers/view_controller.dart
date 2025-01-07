@@ -12,7 +12,7 @@ class ViewController extends GetxController{
   var details = "".obs;
   RxString additional_material = "".obs;
   var createdAt = "".obs;
-  var editedAt = "".obs;
+  RxString editedAt = "".obs;
   RxString tag = "".obs;
   var usernick = "".obs; 
   var currentId = "".obs;
@@ -62,6 +62,7 @@ class ViewController extends GetxController{
       tag.value = data['content']['tag'];
       usernick.value = data['content']['usernick'];
       
+      print('수정된 시각: $editedAt');
     }
     
     isLoading.value = false;

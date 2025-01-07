@@ -69,95 +69,256 @@ class RegisterPage extends StatelessWidget {
   }
 
 
-  @override
+@override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: idController,
-              decoration: InputDecoration(labelText: 'ID'),
-            ),
-            SizedBox(height: 20),
-
-            TextField(
-              controller: pwController,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-
-            SizedBox(height: 20),
-            TextField(
-              controller: reEnterPwController,
-              decoration: InputDecoration(labelText: 'ReEnter Password'),
-              obscureText: true,
-            ),
-
-            TextField(
-              controller: nickNameContoller,
-              decoration: InputDecoration(labelText: 'NickName'),
-            ),
-            SizedBox(height: 20),
-            
-            /*주소검색*/
-            Row(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Expanded(
-                  child: TextField(
-                    controller: postcodeController,
-                    decoration: InputDecoration(hintText: '우편번호'),
-                    readOnly: true,
-                  ),
+                const SizedBox(height: 60),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [],
                 ),
-
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    
-
+                const SizedBox(height: 40),
+                
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF5F5F5),
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  onPressed: (){
-                    _searchAddress(context);
-                  },
-                  child: Text('우편번호 찾기') 
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '회원가입',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1D4044),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      TextField(
+                        controller: idController,
+                        decoration: InputDecoration(
+                          hintText: '아이디를 입력하세요',
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      
+                      TextField(
+                        controller: pwController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          hintText: '비밀번호를 입력하세요',
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      
+                      TextField(
+                        controller: reEnterPwController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          hintText: '비밀번호를 다시 입력하세요',
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      // Nickname Field
+                      TextField(
+                        controller: nickNameContoller,
+                        decoration: InputDecoration(
+                          hintText: '닉네임을 입력하세요',
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                     
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: postcodeController,
+                              decoration: InputDecoration(
+                                hintText: '우편번호',
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide.none,
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 14,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            onPressed: () => _searchAddress(context),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(255, 212, 212, 212),
+                              foregroundColor: const Color.fromARGB(255, 35, 40, 35),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: const Text(
+                              '우편번호 찾기',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      TextField(
+                        controller: addressController,
+                        decoration: InputDecoration(
+                          hintText: '주소',
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      
+                      TextField(
+                        controller: addressDetailController,
+                        decoration: InputDecoration(
+                          hintText: '상세 주소',
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      
+                      TextField(
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          hintText: '이메일을 입력하세요',
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      
+                      TextField(
+                        controller: extraController,
+                        decoration: InputDecoration(
+                          hintText: '참고항목',
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: ElevatedButton(
+                          onPressed: _submit,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(255, 212, 212, 212),
+                            foregroundColor: const Color.fromARGB(255, 35, 40, 35),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text(
+                            '회원가입',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-            TextField(
-              controller: addressController,
-              decoration: InputDecoration(hintText: '주소'),
-              readOnly: true,
-            ),
-            TextField(
-              controller: addressDetailController,
-              decoration: InputDecoration(hintText: '상세주소'),
-              
-            ),
-            TextField(
-              controller: extraController,
-              decoration: InputDecoration(hintText: '참고'),
-
-            ),
-
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(hintText: '이메일'),
-      
-            ),
-
-            ElevatedButton(
-              onPressed: (){},
-              child: Text('로그인'),
-            ),
-
-            ElevatedButton(
-              onPressed: _submit,
-              child: Text('회원가입'),
-            ),
-          ],
+          ),
         ),
       ),
     );

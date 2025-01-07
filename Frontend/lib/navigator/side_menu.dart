@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:to_doc/screens/myPost_temp.dart';
+import 'package:to_doc/screens/myPost.dart';
 import 'package:to_doc/screens/user_edit.dart';
 
 class SideMenu extends StatelessWidget {

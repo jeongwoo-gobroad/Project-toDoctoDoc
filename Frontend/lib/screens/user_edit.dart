@@ -126,8 +126,8 @@ class _UserEditState extends State<UserEdit> {
     if(result){
       // 정보 새로고침
       Get.snackbar('Success', '프로필이 성공적으로 수정되었습니다.');
-      Get.back(closeOverlays: true);  // 현재 화면 닫기
-      Navigator.pop(context);  // 이전 화면으로 돌아가
+      await Future.delayed(Duration(milliseconds: 200)); // 지연 추가
+      Get.back(closeOverlays: true);
     }
     else{
       Get.snackbar('Error', '실패');

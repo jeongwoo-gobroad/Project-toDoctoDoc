@@ -4,7 +4,7 @@ import 'package:to_doc/controllers/query_controller.dart';
 import 'package:to_doc/controllers/upload_controller.dart';
 import 'package:to_doc/navigation_menu.dart';
 import 'package:to_doc/screens/myPost.dart';
-import 'package:to_doc/screens/myPost_temp.dart';
+import 'package:to_doc/screens/myPost.dart';
 
 class ResultEdit extends StatefulWidget {
   ResultEdit({super.key});

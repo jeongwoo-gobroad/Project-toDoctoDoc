@@ -41,6 +41,8 @@ class _PageEditState extends State<PageEdit> {
       updatedTag,
     );
     
+    await viewController.getFeed(widget.model.currentId.value);
+    
     Navigator.pop(context);
 
 
@@ -168,7 +170,7 @@ class _PageEditState extends State<PageEdit> {
                   children: [
                     Icon(Icons.edit, size: 16, color: Colors.grey),
                     SizedBox(width: 4),
-                    Text("123412",
+                    Text(formatDate(widget.model.editedAt.value),
                     style: TextStyle(color: Colors.grey,  fontSize: 13),
                     )
                     //formatDate(viewController.createdAt.value)
