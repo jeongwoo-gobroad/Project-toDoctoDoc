@@ -9,6 +9,7 @@ import 'package:to_doc/screens/airesult.dart';
 import 'Other.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'dart:math';
 
 class Home extends StatefulWidget {
   @override
@@ -24,7 +25,8 @@ class _HomeState extends State<Home> {
   String? id;
   String? usernick;
   String? email;
-
+  int randIndex = 0;
+  int randIndex2 = 0;
   bool isLoading = true;
   Future<void> _getUserInfo() async{
     final prefs = await SharedPreferences.getInstance();
@@ -37,15 +39,36 @@ class _HomeState extends State<Home> {
   }
   @override
   void initState() {
+    final random = Random();
+    randIndex = random.nextInt(welcomeMessages.length);
+    randIndex2 = random.nextInt(mindfulnessQuotes.length);
     // TODO: implement initState
     super.initState();
     _getUserInfo();
   }
 
-  
-
-
-
+  // 환영 문구 리스트
+  final List<String> welcomeMessages = [
+      '반가워요!',
+      '어서오세요!',
+      '어서와요!',
+      '환영합니다!',
+      '안녕하세요!',
+      '환영해요!',
+      '잘 오셨습니다!'
+    ];
+  final List<String> mindfulnessQuotes = [
+  '마음이 평온해야 모든 것이 평온해진다.',
+  '지금 이 순간에 집중하라. 그것이 유일한 삶의 순간이다.',
+  '걱정은 내일의 문제를 해결하지 않고 오늘의 평화를 빼앗는다.',
+  '비 온 뒤에 땅이 굳어지듯, 어려움 뒤에 마음이 강해진다.',
+  '내면의 고요함이야말로 진정한 힘이다.',
+  '행복은 조건이 아니라 선택이다.',
+  '마음의 짐을 내려놓는 것이 자유로 가는 길이다.',
+  '너무 앞서가지 마라. 오늘을 살라.',
+  '삶은 단순하다. 우리가 복잡하게 만드는 것이다.',
+  '침묵 속에서 진정한 나를 만난다.',
+  ];
 
   @override
   Widget build(context) {
@@ -91,8 +114,9 @@ class _HomeState extends State<Home> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      '반가워요! ${userController.usernick.value ?? '로그인이 필요합니다.'}',
+                      '${welcomeMessages[randIndex]} ${userController.usernick.value ?? '로그인이 필요합니다.'}',
                       textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 35,
                         fontWeight: FontWeight.bold,
@@ -154,10 +178,11 @@ class _HomeState extends State<Home> {
                     ),
                     SizedBox(height: 50),
                     Text(
-                      '샘플 텍스트',
+                      '${mindfulnessQuotes[randIndex2]}',
                       textAlign: TextAlign.center,
+                      overflow: TextOverflow.clip,
                       style: TextStyle(
-                        fontSize: 35,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

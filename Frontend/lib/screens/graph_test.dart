@@ -1,114 +1,144 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'dart:math';
-class GraphController extends GetxController {
-  var tagList = <String, int>{}.obs;
-  var tagGraph = <String, String>{}.obs;
+import 'dart:math' as math;
+
+
+
+class TagNode {
+  final String tag;
+  final int count;
+  Offset position;
+
+  TagNode(this.tag, this.count) : position = Offset.zero;
 }
 
-class GraphBoardTest extends StatelessWidget {
-  GraphBoardTest({super.key});
-  final GraphController graphController = Get.put(GraphController());
+class TagEdge {
+  final String tag1;
+  final String tag2;
+
+  TagEdge(this.tag1, this.tag2);
+}
+
+class TagGraphBoard extends StatefulWidget {
+  const TagGraphBoard({Key? key}) : super(key: key);
+
+  @override
+  State<TagGraphBoard> createState() => _TagGraphBoardState();
+}
+
+class _TagGraphBoardState extends State<TagGraphBoard> {
+  
+  //같은 형식의의 샘플데이터
+  final Map<String, int> _tagList = {
+    'Flutter': 100,
+    'Dart': 80,
+    'Mobile': 60,
+    'Web': 45,
+    'iOS': 40,
+    'Android': 35,
+    'React': 30,
+    'JavaScript': 25,
+    'UI': 20,
+    'Design': 15,
+  };
+
+  final List<TagEdge> _tagGraph = [
+    TagEdge('Flutter', 'Dart'),
+    TagEdge('Flutter', 'Mobile'),
+    TagEdge('Flutter', 'Web'),
+    TagEdge('Mobile', 'iOS'),
+    TagEdge('Mobile', 'Android'),
+    TagEdge('Web', 'JavaScript'),
+    TagEdge('Web', 'React'),
+  ];
+  late List<TagNode> nodes;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeNodes();
+  }
+
+  void _initializeNodes() {
+    nodes = _tagList.entries
+        .map((e) => TagNode(e.key, e.value))
+        .toList();
+    
+    //노드들을 원형으로 배치치
+    final centerX = 400.0;
+    final centerY = 300.0;
+    final radius = 200.0;
+    
+    for (var i = 0; i < nodes.length; i++) {
+      final angle = (2 * math.pi * i) / nodes.length;
+      nodes[i].position = Offset(
+        centerX + radius * math.cos(angle),
+        centerY + radius * math.sin(angle),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // 샘플 데이터 초기화
-    graphController.tagList.value = {
-      'Tag1': 10,
-      'Tag2': 5,
-      'Tag3': 8,
-      'Tag4': 3,
-    };
-
-    graphController.tagGraph.value = {
-      'Tag1': 'Tag2',
-      'Tag2': 'Tag3',
-      'Tag3': 'Tag4',
-      'Tag4': 'Tag1',
-    };
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Graph Board'),
-      ),
-      body: Center(
-        child: Obx(() {
-          if (graphController.tagList.isEmpty || graphController.tagGraph.isEmpty) {
-            return Text('데이터가 없습니다.');
-          }
-
-          return CustomPaint(
-            size: Size(400, 400),
-            painter: GraphPainter(
-              tagList: graphController.tagList,
-              tagGraph: graphController.tagGraph,
-            ),
-          );
-        }),
+    return SizedBox(
+      width: 800,
+      height: 600,
+      child: CustomPaint(
+        painter: TagGraphPainter(nodes, _tagGraph),
       ),
     );
   }
 }
 
-class GraphPainter extends CustomPainter {
-  final Map<String, int> tagList;
-  final Map<String, String> tagGraph;
+class TagGraphPainter extends CustomPainter { //taggraph는 node간 연결정의의
+  final List<TagNode> nodes;
+  final List<TagEdge> edges;
 
-  GraphPainter({required this.tagList, required this.tagGraph});
+  TagGraphPainter(this.nodes, this.edges);
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = Colors.blue
       ..style = PaintingStyle.fill;
+    
+    final linePaint = Paint()
+      ..color = Colors.grey.withOpacity(0.5)
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke;
 
-    final textPainter = TextPainter(
-      textAlign: TextAlign.center,
-      textDirection: TextDirection.ltr,
-    );
+    
+     //edge 그리기기
+    for (var edge in edges) {
+      final node1 = nodes.firstWhere((n) => n.tag == edge.tag1);
+      final node2 = nodes.firstWhere((n) => n.tag == edge.tag2);
+      canvas.drawLine(node1.position, node2.position, linePaint);
+    }
 
-    final radius = 20.0;
-    final center = Offset(size.width / 2, size.height / 2);
+    //노드는 int값 클수록 큰모형나타내게 구현
+    for (var node in nodes) {
+      final radius = 20 + (node.count / 10);
+      canvas.drawCircle(node.position, radius, paint);
 
-    final positions = <String, Offset>{};
-
-    // 태그위치계산
-    final angleStep = 2 * 3.14 / tagList.length;
-    var angle = 0.0;
-    tagList.forEach((tag, count) {
-      final x = center.dx + (size.width / 3) * cos(angle);
-      final y = center.dy + (size.height / 3) * sin(angle);
-      positions[tag] = Offset(x, y);
-      angle += angleStep;
-    });
-
-    // 태그 edge
-    tagGraph.forEach((tag1, tag2) {
-      final pos1 = positions[tag1]!;
-      final pos2 = positions[tag2]!;
-      canvas.drawLine(pos1, pos2, paint..color = Colors.grey);
-    });
-
-    // 태그원 그리기
-    tagList.forEach((tag, count) {
-      final pos = positions[tag]!;
-      canvas.drawCircle(pos, radius, paint..color = Colors.blue);
-
-      // 태그텍스트 
-      textPainter.text = TextSpan(
-        text: tag,
-        style: TextStyle(color: Colors.white, fontSize: 12),
+      //tag 이름
+      final textSpan = TextSpan(
+        text: node.tag,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 12,
+        ),
+      );
+      final textPainter = TextPainter(
+        text: textSpan,
+        textDirection: TextDirection.ltr,
       );
       textPainter.layout();
       textPainter.paint(
         canvas,
-        pos - Offset(textPainter.width / 2, textPainter.height / 2),
+        node.position.translate(-textPainter.width / 2, -textPainter.height / 2),
       );
-    });
+    }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
-  }
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

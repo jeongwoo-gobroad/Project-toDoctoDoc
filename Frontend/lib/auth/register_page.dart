@@ -8,27 +8,74 @@ import 'package:to_doc/navigation_menu.dart';
 
 
 
-class RegisterPage extends StatelessWidget {
+class RegisterPage extends StatefulWidget {
 
   RegisterPage({super.key});
+
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
   Map<String, String> formData = {};
-  final TextEditingController idController = TextEditingController(); //추후 수정
-  final TextEditingController pwController = TextEditingController(); //추후 수정
+
+  final TextEditingController idController = TextEditingController(); 
+ //추후 수정
+  final TextEditingController pwController = TextEditingController(); 
+ //추후 수정
   final TextEditingController reEnterPwController = TextEditingController(); 
+
   final TextEditingController nickNameContoller = TextEditingController();
+
   final TextEditingController postcodeController = TextEditingController();
+
   final TextEditingController addressController = TextEditingController();
+
   final TextEditingController addressDetailController = TextEditingController();
+
   final TextEditingController emailController = TextEditingController();
+
   final TextEditingController extraController = TextEditingController();
+
   RegisterController registerController = Get.put(RegisterController());
 
   _submit() async{
+
+    if (idController.text.isEmpty || pwController.text.isEmpty || nickNameContoller.text.isEmpty || postcodeController.text.isEmpty
+    || addressController.text.isEmpty || addressDetailController.text.isEmpty ||  emailController.text.isEmpty ) {
+      Get.snackbar('Error', '필드를 채워주세요.');
+      return;
+    }
+
+
+    if(!emailController.text.contains('@')){
+      Get.snackbar('Error', '적절한 이메일 형식이 아닙니다.');
+    }
+
+    if(pwController.text.isNotEmpty && pwController.text.length < 8){
+      Get.snackbar('Error', '비밀번호는 8자 이상으로 해주세요.');
+      return;
+    }
+
+    if(pwController.text != reEnterPwController.text){
+      Get.snackbar('Error', '확인 비밀번호가 다릅니다.');
+      return;
+    }
+    registerController.dupidIDCheck(idController.text);
+    registerController.dupidEmailCheck(emailController.text);
+    
     Map result = await registerController.register(
       idController.text, pwController.text, reEnterPwController.text,
       nickNameContoller.text, postcodeController.text, addressController.text, addressDetailController.text, extraController.text,
       emailController.text,
     );
+    //test용
+    // Map result = await registerController.register(
+    //   idController.text, pwController.text, reEnterPwController.text,
+    //   nickNameContoller.text, '41196', '대구 동구 경대로 2', '내가 사는곳곳', extraController.text,
+    //   emailController.text,
+    // );
+
     if(result['success']){
       SnackBar(content: Text('회원가입 성공'),);
       Get.offAll(()=> NavigationMenu());
@@ -68,6 +115,20 @@ class RegisterPage extends StatelessWidget {
     }
   }
 
+  @override
+  void dispose() {
+    // 컨트롤러들 해제
+    idController.dispose();
+    pwController.dispose();
+    reEnterPwController.dispose();
+    nickNameContoller.dispose();
+    emailController.dispose();
+    postcodeController.dispose();
+    addressController.dispose();
+    addressDetailController.dispose();
+    extraController.dispose();
+    super.dispose();
+  }
 
 @override
   Widget build(BuildContext context) {

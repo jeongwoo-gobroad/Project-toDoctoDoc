@@ -13,6 +13,7 @@ import 'package:to_doc/screens/pageView.dart';
 import 'package:to_doc/screens/user_edit.dart';
 
 void main() async{
+  
   Get.put(UserinfoController(), permanent: true);
   runApp(GetMaterialApp(
     scrollBehavior: const MaterialScrollBehavior().copyWith(
@@ -24,7 +25,11 @@ void main() async{
           PointerDeviceKind.unknown,
         },
       ),
-    
+    // getPages: [
+    // //GetPage(name: '/', page: () => Intro()),
+    // GetPage(name: '/navigationmenu', page: () => NavigationMenu()), // 라우트 이름 등록
+    // GetPage(name: '/myposttemp', page: () => MypostTemp()),
+    // ],
     home: Intro()));
 }
 

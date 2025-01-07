@@ -42,7 +42,7 @@ class _PageEditState extends State<PageEdit> {
     );
     
     await viewController.getFeed(widget.model.currentId.value);
-    
+
     Navigator.pop(context);
 
 
@@ -57,7 +57,7 @@ class _PageEditState extends State<PageEdit> {
   }
  
   String formatDate(String date){
-    DateTime dateTime = DateTime.parse(date);
+    DateTime dateTime = DateTime.parse(date).toUtc().add(Duration(hours: 9));
     String formattedDate = DateFormat('yyyy년 M월 d일 HH시 mm분').format(dateTime);
 
     return formattedDate;

@@ -125,13 +125,22 @@ class _UserEditState extends State<UserEdit> {
     );
     if(result){
       // 정보 새로고침
-      Get.snackbar('Success', '프로필이 성공적으로 수정되었습니다.');
-      await Future.delayed(Duration(milliseconds: 200)); // 지연 추가
       Get.back(closeOverlays: true);
+      Get.snackbar(
+        'Success',
+        '프로필이 성공적으로 수정되었습니다.',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 3),);
+        await Future.delayed(Duration(milliseconds: 200)); // 지연 추가
     }
     else{
-      Get.snackbar('Error', '실패');
       Get.back(closeOverlays: true);
+      Get.snackbar(
+        'Error',
+        '프로필 수정에 실패했습니다.',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 3),
+      );
     }
     
     

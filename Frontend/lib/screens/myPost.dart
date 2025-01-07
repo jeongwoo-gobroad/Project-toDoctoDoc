@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:to_doc/controllers/myPost_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc/controllers/view_controller.dart';
+import 'package:to_doc/navigation_menu.dart';
 import 'package:to_doc/screens/pageView.dart';
 
 class MypostTemp extends StatefulWidget {
@@ -26,7 +27,7 @@ class _MypostTempState extends State<MypostTemp> {
 
   String formatDate(String date) {
     try {
-      DateTime dateTime = DateTime.parse(date);
+      DateTime dateTime = DateTime.parse(date).toUtc().add(Duration(hours: 9));
       return DateFormat('yyyy년 M월 d일 HH시 mm분').format(dateTime);
     } catch (e) {
       return '날짜 정보 없음';
@@ -65,6 +66,13 @@ class _MypostTempState extends State<MypostTemp> {
         title: Text(
           '내 게시물',
           style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            // 뒤로 가기 버튼 클릭 시 홈으로 이동
+            Get.offAll(() => NavigationMenu());
+          },
         ),
         centerTitle: true,
       ),

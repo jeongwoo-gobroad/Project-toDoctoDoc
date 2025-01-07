@@ -12,7 +12,6 @@ class RegisterController extends GetxController{
 
     String? _token;
     final url = Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/register');
-    
 
     try{
       final response = await http.post(
@@ -32,36 +31,37 @@ class RegisterController extends GetxController{
           'extraAddress' : extraAddress,
           'email' : email,
         }),
-
-        
       );
 
-      print('response code ${response.statusCode}');
-
-
+      if(await dupidEmailCheck(email) == false){
+        return{
+          'success': false,
+          
+        };
+      }
+      if(await dupidIDCheck(id) == false){
+        return{
+          'success': false,
+          
+        };
+      }
+      
+      
+      print('register response code ${response.statusCode}');
+      print('register response code ${response.body}');
+      
       if(response.statusCode == 200){
 
         final data = json.decode(json.decode(response.body));
-        //token, refreshToken
-
-
-        // _token = data;
-       
 
         _token = data['content']['token'];
         ///_refreshToken = data['content']['refreshToken'];
         ///
         print(_token); 
-        
 
-
-        // _token = data['content'];
-        
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('jwt_token', _token!);
 
-
-        //notifyListeners();
         return{
           'success': true,
           'data': data,
@@ -69,7 +69,6 @@ class RegisterController extends GetxController{
       }else{
         return{
           'success': false,
-          
         };
 
       }
@@ -85,5 +84,95 @@ class RegisterController extends GetxController{
   } 
 
 
+  Future<bool> dupidIDCheck(String userid) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/dupidcheck'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'userid': userid,
+        }),
+      );
+
+      print(response.statusCode);
+      final data = json.decode(json.decode(response.body));
+      print(data['error']);
+      if (response.statusCode == 200) {
+        if (data['error'] == false) {
+          return true; // 사용 가능한 ID
+        } 
+        else {
+          Get.snackbar('Error', '서버 에러가 발생했습니다.');
+          return false; // 서버 에러
+        }
+      } else if (response.statusCode == 402) {
+        if (data['result'] == 'id_already_exists') {
+          Get.snackbar('실패', '이미 존재하는 아이디입니다.');
+          return false; 
+        } else {
+          Get.snackbar('Error', '서버 에러가 발생했습니다.');
+          return false; 
+        }
+      } else {
+        Get.snackbar('Error', '서버 에러가 발생했습니다. 코드: ${response.statusCode}');
+        return false; 
+      }
+    } catch (e) {
+      Get.snackbar('Error', '예외가 발생했습니다: $e');
+      return false; 
+    }
+    //{error: true, result: id_already_exists, content: 이미 존재하는 아이디입니다.}
+  }
+
+  Future<bool> dupidEmailCheck(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/dupemailcheck'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'email': email,
+        }),
+      );
+      print(response.statusCode);
+      final data = json.decode(json.decode(response.body));
+      print('email check: ${data['error']}');
+      print(data);
+      if (response.statusCode == 200) {
+        if (data['error'] == false) { //성공공
+          return true; 
+        } else if (data['error'] == true && data['result'] == 'email_already_exists') {
+          Get.snackbar('실패', '이미 존재하는 이메일입니다.');
+          return false; 
+        } else {
+          Get.snackbar('Error', '서버 에러가 발생했습니다.');
+          return false; // 서버에러
+        }
+      } else if (response.statusCode == 402) {
+        if (data['result'] == 'email_already_exists') {
+          Get.snackbar('실패', '이미 존재하는 이메일입니다.');
+          return false; 
+        } else {
+          Get.snackbar('Error', '서버 에러가 발생했습니다.');
+          return false; 
+        }
+      } else {
+        Get.snackbar('Error', '서버 에러가 발생했습니다. 코드: ${response.statusCode}');
+        return false; 
+      }
+    } catch (e) {
+      Get.snackbar('Error', '예외가 발생했습니다: $e');
+      return false; 
+    }
+    
+  }
+    
+  
+
+   
+  
 
 }

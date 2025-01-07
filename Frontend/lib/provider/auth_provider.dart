@@ -26,29 +26,17 @@ class AuthProvider extends ChangeNotifier{
           'userid' : userid,
           'password' : password,
         }),
-
-        
       );
-
-      print('response code ${response.statusCode}');
-
 
       if(response.statusCode == 200){
 
         final data = json.decode(json.decode(response.body));
         //token, refreshToken
-
-
         // _token = data;
-       
-
         _token = data['content']['token'];
         ///_refreshToken = data['content']['refreshToken'];
         ///
         print(_token); 
-        
-
-
         // _token = data['content'];
         
         final prefs = await SharedPreferences.getInstance();
@@ -74,8 +62,6 @@ class AuthProvider extends ChangeNotifier{
       };
     }
 
-    
-
   }
 //토큰 로드
   Future<void> loadToken() async{
@@ -83,6 +69,10 @@ class AuthProvider extends ChangeNotifier{
     _token = prefs.getString('jwt_token');
     notifyListeners();
   }
-
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('jwt_token');
+    _token = '';
+  }
 
 }

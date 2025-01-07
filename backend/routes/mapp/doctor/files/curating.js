@@ -38,4 +38,52 @@ router.get(["/"],
     }
 );
 
+router.get(["/details/:id"],
+    checkIfLoggedIn,
+    isDoctorThenProceed,
+    async (req, res, next) => {
+        
+    }
+);
+
+router.get(["/post/:id"],
+    checkIfLoggedIn,
+    isDoctorThenProceed,
+    async (req, res, next) => {
+
+    }
+);
+
+router.get(["/chat/:id"],
+    checkIfLoggedIn,
+    isDoctorThenProceed,
+    async (req, res, next) => {
+
+    }
+);
+
+router.post(["/comment/:id"],
+    checkIfLoggedIn,
+    isDoctorThenProceed,
+    async (req, res, next) => {
+
+    }
+);
+
+router.patch(["/comment/:id"],
+    checkIfLoggedIn,
+    isDoctorThenProceed,
+    async (req, res, next) => {
+
+    }
+);
+
+router.delete(["/comment/:id"],
+    checkIfLoggedIn,
+    isDoctorThenProceed,
+    async (req, res, next) => {
+
+    }
+);
+
 module.exports = router;

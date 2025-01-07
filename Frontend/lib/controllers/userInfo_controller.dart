@@ -18,6 +18,7 @@ class UserinfoController extends GetxController {
   RxString extraAddress = "".obs;
   RxString address = "".obs;
   final RxBool isLoading = false.obs;
+  RxBool isPremium = false.obs;
   //RxString address = "".obs;
  /*error: false, result: info, content: {_id: 67763d058b0c374bed083641, id: test1234, usernick: jun, email: j123@21, address: {postcode: 41196, address: 대구 동구 경대로 2, detailAddress: 1, extraAddress:  (신암동), longitude: 128.612188721856, latitude: 35.8819379527752, _id: 67763d058b0c374bed083642}, limits: {dailyRequestDate: 2025-01-02T07:15:17.044Z, dailyRequestCount: 4, dailyChatDate: 2025-01-03T06:27:50.340Z, dailyChatCount: 1, _id: 67763d058b0c374bed083643}, isPremium: true}} */
   Future<void> getInfo() async {
@@ -48,6 +49,8 @@ class UserinfoController extends GetxController {
       address.value = data['content']['address']['address'];
       detailAddress.value = data['content']['address']['detailAddress'];
       extraAddress.value = data['content']['address']['extraAddress'];
+      isPremium.value = data['content']['isPremium'];
+
       print(address.value);
       print(extraAddress.value);
       print(email.value);
@@ -104,25 +107,18 @@ class UserinfoController extends GetxController {
       
     );
 
-       print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
     if (response.statusCode == 200) {
     
         
         
-          getInfo();  // 새로운정보 가져오기
+          await getInfo();  // 새로운정보 가져오기
           return true;
         
          
     } 
-    // } catch (e) {
-    //   print('error: $e');
-    //   Get.snackbar('Error', '응답 처리 중 오류 발생');
-    //   return false;
-    // }
-    // } else {
-    // print('Status code: ${response.statusCode}, Body: ${response.body}');
-    // Get.snackbar('Error', '서버 오류: ${response.statusCode}');
+    
     return false;
   
   }

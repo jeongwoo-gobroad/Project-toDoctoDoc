@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:to_doc/controllers/register_controller.dart';
 import 'package:to_doc/controllers/userInfo_controller.dart';
 import 'package:to_doc/home.dart';
 import 'package:to_doc/navigation_menu.dart';
@@ -24,12 +25,17 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController idController = TextEditingController(); //추후 수정
   final TextEditingController pwController = TextEditingController(); //추후 수정
 
+  //테스트용
+  RegisterController registerController = Get.put(RegisterController());
+
   _submit() async{
+    //await registerController.dupidCheck(idController.text);
     Map result = await authProvider.login(
       idController.text,
       pwController.text,
     );
     if(result['success'] == true){
+      Get.snackbar('Login', '로그인에 성공하였습니다.');
       user.getInfo();
       Get.offAll(()=> NavigationMenu());
     }

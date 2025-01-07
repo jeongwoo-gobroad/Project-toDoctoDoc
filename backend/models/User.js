@@ -57,6 +57,9 @@ const UserSchema = new mongoose.Schema({
     refreshToken: {
         type: String,
     },
+    recentCurateDate: {
+        type: Date,
+    },
 });
 
 module.exports = UserSchema;
