@@ -44,7 +44,7 @@ class _MypostTempState extends State<MypostTemp> {
 
       if(searchResults.isEmpty){
         _resetSearch();
-
+        Get.snackbar('Error', '검색 결과가 없습니다.');
       }
     }
   }

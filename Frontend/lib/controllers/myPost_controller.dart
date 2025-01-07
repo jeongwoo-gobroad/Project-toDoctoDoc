@@ -36,7 +36,7 @@ class MypostController extends GetxController{
     if(response.statusCode==200){
       final data = json.decode(json.decode(response.body));
       
-      //print(data);
+      print(data);
       
       if(data is Map<String,dynamic> && data['content'] is List){
         List<dynamic> contentList = data['content'];
