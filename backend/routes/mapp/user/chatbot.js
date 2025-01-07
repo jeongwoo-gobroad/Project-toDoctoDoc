@@ -195,8 +195,8 @@ router.delete(["/delete/:chatid"],
         const user = await getTokenInformation(req, res);
         const chat = await AIChat.findById(req.params.chatid);
 
-        console.log(chat);
-        console.log("www");
+        // console.log(chat);
+        // console.log("www");
 
         if (!chat) {
             res.status(401).json(returnResponse(true, "noSuchChat", "-"));
