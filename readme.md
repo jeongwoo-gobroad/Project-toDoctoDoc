@@ -57,3 +57,6 @@ Please refer to /documentation.docx
 * #### 0.9.4
     * Currently implementing star rating system...
     * implemented address-based user-doctor curation mechanism.
+    * Random welcome message printing feature has been enabled in Flutter app version.
+    * Finding near psychiatry feature has been implemented in Flutter app version, but no map printing yet.
+    * Premium psychiatry advertisement feature has been implemented in Flutter app version.
