@@ -41,7 +41,8 @@ const nearbyPatientCurate = async (long, lat, radius) => {
             $project: {
                 'user.usernick': 1,
                 'date': 1,
-                'createdAt': 1
+                'createdAt': 1,
+                'comments': 1,
             }
         }
     ]);

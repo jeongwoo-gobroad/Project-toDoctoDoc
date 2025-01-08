@@ -56,7 +56,13 @@ router.get(["/details/:id"],
     isDoctorThenProceed,
     async (req, res, next) => {
         try {
-            const curate = await Curate.findById(req.params.id).populate('posts ai_chats comments');
+            const curate = await Curate.findById(req.params.id).populate(
+                [
+                    {path: 'posts'},
+                    {path: 'ai_chats'},
+                    {path: 'comments', populate: {path: 'doctor', select: 'name address phone email'}}
+                ]
+            );
 
             if (curate) {
                 const user = await getTokenInformation(req, res);
