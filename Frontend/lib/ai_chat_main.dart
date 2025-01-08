@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:to_doc/aboutpage.dart';
 import 'ai_chat_sub.dart';
 import 'ai_chat_list.dart';
+import 'chat_object.dart';
+import 'controllers/aichat_controller.dart';
 
 class AichatMain extends StatelessWidget {
   const AichatMain({super.key});
@@ -57,12 +59,16 @@ class AichatMain extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       )
                   ),
-                  onPressed: (){Get.to(()=> AiChatSub(messageList: [],));},
+                  onPressed: (){
+                    Get.to(()=> AiChatSub(isNewChat : true, chatId : '', messageList: [],));
+                    },
+
                   child: Text('시작하기', style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
-                      color: Colors.white),),
-                ),
+                      color: Colors.white),
+                  ),
+              ),
               SizedBox(height: 30,),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -74,7 +80,9 @@ class AichatMain extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     )
                 ),
-                onPressed: (){Get.to(()=> AiChatList());},
+                onPressed: (){
+                  Get.to(()=> AiChatList());
+                  },
                 child: Text('채팅 목록', style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
@@ -87,4 +95,5 @@ class AichatMain extends StatelessWidget {
       ),
     );
   }
+
 }

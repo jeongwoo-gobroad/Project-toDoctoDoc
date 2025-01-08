@@ -3,11 +3,13 @@ import 'package:get/get.dart';
 import 'chat_bubble_listview.dart';
 import 'controllers/aichat_load_controller.dart';
 import 'package:to_doc/chat_object.dart';
+import 'ai_chat_sub.dart';
 
 
 class AiChatOldView extends StatefulWidget {
-  const AiChatOldView({Key? key, required this.chatId}) : super(key:key);
+  const AiChatOldView({Key? key, required this.chatId, required this.chatTitle}) : super(key:key);
 
+  final String chatTitle;
   final String chatId;
 
   @override
@@ -39,7 +41,6 @@ class _AiChatOldViewState extends State<AiChatOldView> {
     asyncNew();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,8 +50,8 @@ class _AiChatOldViewState extends State<AiChatOldView> {
           onTap: () {
             /*to about page*/
           },
-          child: Text('토닥toDoc',
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+          child: Text('${widget.chatTitle}', overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         ),
       ),
 
@@ -61,8 +62,31 @@ class _AiChatOldViewState extends State<AiChatOldView> {
         return
           Padding(padding: EdgeInsets.all(10),
             child: Column(
-              children: [ChatMaker(scrollController: scrollController, messageList: _messageList,),],
+              children: [ChatMaker(scrollController: scrollController, messageList: _messageList,),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 51, 51, 51),
+                      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                      foregroundColor: const Color.fromARGB(255, 51, 51, 51),
+                      minimumSize: const Size(double.infinity, 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      )
+                  ),
+                  onPressed: (){
+                    print('edit');
+                    print(chatid);
+                    Get.off(()=> AiChatSub(isNewChat: false, chatId: chatid, messageList: _messageList,));
+                  },
+                  child: Text('채팅 재개하기', style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      color: Colors.white),),
+                ),
+              ],
             ),
+
+
           );
         }),
     );

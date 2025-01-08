@@ -9,7 +9,7 @@ import 'package:to_doc/controllers/aichat_delete_coltroller.dart';
 import 'ai_chat_oldview.dart';
 
 enum MenuType {
-  edit(tostring: 'edit', toIcon: Icon(CupertinoIcons.scissors)),
+  edit(tostring: 'temp', toIcon: Icon(CupertinoIcons.scissors)),
   delete(tostring: 'delete', toIcon: Icon(Icons.phonelink_erase));
 
   final String tostring;
@@ -66,9 +66,9 @@ class _AiChatListState extends State<AiChatList> {
           if (aiChatListController.isLoading.value) {
             return Center(child: CircularProgressIndicator());
           }
-          if (aiChatListController.chatList.isEmpty) {
+          if (aiChatListController.isEmpty.value) {
             return Center(
-              child:Text('NO chat'),
+              child:Text('채팅이 없습니다'),
             );
           }
           child:
@@ -81,7 +81,9 @@ class _AiChatListState extends State<AiChatList> {
               print(chatRoom['title']);
               return GestureDetector(
                 onTap: () {
-                  Get.to(()=> AiChatOldView(chatId: chatRoom['_id'],));
+                  Get.to(()=> AiChatOldView(chatId: chatRoom['_id'], chatTitle: (chatRoom['title'] != null) ? chatRoom['title'] : '빈 제목',))?.whenComplete(() {
+                    setState(() {
+                      aiChatListController.getChatList();});});
                   print(chatRoom['_id']);
                 },
 
@@ -116,7 +118,7 @@ class _AiChatListState extends State<AiChatList> {
                   title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                      Text('${chatRoom['title']}'),
+                      Text('${chatRoom['title']}', overflow: TextOverflow.ellipsis),
                       Text(formatDate(chatRoom['chatEditedAt']) ?? '',style: TextStyle(fontSize: 10, fontWeight: FontWeight.w100, color: Colors.grey),),
                     ],
                   ),

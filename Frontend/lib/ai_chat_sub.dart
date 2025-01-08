@@ -14,11 +14,13 @@ import 'package:bubble/bubble.dart';
 
 class AiChatSub extends StatefulWidget {
   final List<ChatObject> messageList;
+  final chatId;
+  final bool isNewChat;
 
-  const AiChatSub({Key? key, required this.messageList}) : super(key: key);
+  const AiChatSub({Key? key, required this.isNewChat, required this.chatId, required this.messageList}) : super(key: key);
 
   @override
-  State<AiChatSub> createState() => _AiChatSub(messageList);
+  State<AiChatSub> createState() => _AiChatSub();
 }
 
 class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
@@ -31,20 +33,27 @@ class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
   List<ChatObject> _messageList = [];
   late ChatSocketService socketService;
 
-  _AiChatSub(List<ChatObject> messageList) {
-    _messageList = messageList;
-  }
-
   void asyncNew() async {
-    await aiChatController.getNewChat();
+    if (widget.isNewChat) {
+      await aiChatController.getNewChat();
+      chatId = aiChatController.chatId;
+      _messageList.add(ChatObject(content: aiChatController.firstChat, role: 'ai', createdAt: DateTime.now()));
+    }
+    else {
+      chatId = widget.chatId;
+      _messageList = widget.messageList;
+      print('inside');
+      print(chatId);
+      print(_messageList);
+    }
+
+    print(chatId);
 
     setState(() {
-      _messageList.add(
-          ChatObject(content: aiChatController.firstChat, role: 'ai', createdAt: DateTime.now()));
       scrollController.animateTo(0, duration: const Duration(milliseconds: 100), curve: Curves.easeInOut);
     });
 
-    socketService = ChatSocketService(aiChatController.chatId);
+    socketService = ChatSocketService(chatId);
 
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -68,7 +77,12 @@ class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return PopScope(
       onPopInvokedWithResult: (didPop, result) async {
-        await aiChatSaveController.saveChat(aiChatController.chatId);
+        if (aiChatController.isLoading.value) {
+          Get.snackbar('Error', '로딩 중에는 뒤로 갈 수 없습니다');
+          return;
+        }
+
+        await aiChatSaveController.saveChat(chatId);
       },
       child: Scaffold(
           resizeToAvoidBottomInset: true,
@@ -78,7 +92,7 @@ class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
               onTap: () {
                 /*to about page*/
               },
-              child: Text('토닥toDoc',
+              child: Text('Ai와의 채팅',
                   style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
             ),
           ),

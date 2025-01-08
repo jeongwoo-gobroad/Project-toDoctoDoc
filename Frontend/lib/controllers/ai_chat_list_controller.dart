@@ -8,9 +8,9 @@ import 'dart:convert';
 class AiChatListController extends GetxController {
   var chatList = <Map<String, dynamic>>[].obs;
   var isLoading = false.obs;
+  var isEmpty = true.obs;
 
   Future<void> getChatList() async{
-
     isLoading.value = true;
 
     //토큰? Access Token으로 접근하고 1회 실패하면 Refresh Token으로 접근하면 되고, Refresh Token으로 접근하면 헤더에 Access_Token에 Access Token을 담고 Refresh_token에 Refresh Token을 담아서 줌.
@@ -38,7 +38,9 @@ class AiChatListController extends GetxController {
     );
 
     if(response.statusCode == 200){
-      final data = json.decode(json.decode(response.body));
+      isEmpty.value = false;
+
+    final data = json.decode(json.decode(response.body));
       print(data);
 
       if(data is Map<String,dynamic> && data['content'] is List) {
@@ -63,10 +65,18 @@ class AiChatListController extends GetxController {
         print(chatList[0]);
         print(chatList[0]['title']);
       }
-
+      isLoading.value = false;
+      return;
+    }
+    else if (response.statusCode == 201) {
+      isEmpty.value = true;
+      isLoading.value = false;
+      return;
     }
     else {
+      isEmpty.value = true;
       Get.snackbar('Error', '채팅 목록을 받아오지 못했습니다. ${response.statusCode})');
+      isLoading.value = false;
       return;
     }
     isLoading.value = false;
