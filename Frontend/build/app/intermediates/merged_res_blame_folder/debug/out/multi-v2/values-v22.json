@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.to_doc.app-mergeDebugResources-44:/values-v22/values-v22.xml",
+            "outputFile": "com.example.to_doc.app-mergeDebugResources-45:/values-v22/values-v22.xml",
             "map": [
                 {
                     "source": "C:\\Users\\kimje\\.gradle\\caches\\transforms-3\\2c8864dfae3f34b9658cf3ec019ec127\\transformed\\appcompat-1.1.0\\res\\values-v22\\values-v22.xml",

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:to_doc/ai_chat_main.dart';
 import 'package:to_doc/home.dart';
 import 'package:to_doc/screens/careplus/curate.dart';
 import 'package:to_doc/screens/careplus/curate_feed.dart';
@@ -42,6 +43,6 @@ class NavigationMenu extends StatelessWidget {
 class NavigationController extends GetxController{
   final Rx<int> selectedIndex = 0.obs; //home 상태관리
 
-  final screens = [Home(), Container(color: Colors.green), TagGraphBoard() , MapAndListScreen(), CurateFeed()]; 
+  final screens = [Home(), AichatMain(), TagGraphBoard() , MapAndListScreen(), CurateFeed()];
 
 }
