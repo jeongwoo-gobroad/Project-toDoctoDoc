@@ -54,9 +54,9 @@ class _AiChatListState extends State<AiChatList> {
         title: InkWell(
           onTap: () {
             /*to about page*/
-            Get.to(() => Aboutpage());
+            //Get.to(() => Aboutpage());
           },
-          child: Text('토닥toDoc',
+          child: Text('Ai 채팅 목록',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
         ),
       ),
@@ -90,7 +90,11 @@ class _AiChatListState extends State<AiChatList> {
                     children: [
                       PopupMenuButton<MenuType>(
                         onSelected: (MenuType result) {
-                          aiChatDeleteController.deleteOldChat(chatRoom['_id']);
+                          if (result.tostring == 'delete') {
+                            setState(() {
+                              _onDeleted(chatRoom['_id']);
+                            });
+                          }
                           print(result);},
                         itemBuilder: (BuildContext buildContext) {
                           return [
@@ -102,7 +106,8 @@ class _AiChatListState extends State<AiChatList> {
                                     Text(value.tostring),
                                     value.toIcon,
                                   ],
-                                ),)
+                                ),
+                              )
                           ];
                         },
                       ),
@@ -128,9 +133,9 @@ class _AiChatListState extends State<AiChatList> {
 
   void _onDeleted(String chatId) async{
     print(chatId);
+    aiChatListController.isLoading.value = true;
     await aiChatDeleteController.deleteOldChat(chatId);
     await aiChatListController.getChatList();
-
   }
 
 }

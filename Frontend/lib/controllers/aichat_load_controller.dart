@@ -2,12 +2,11 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:to_doc/chat_object.dart';
 
 class AichatLoadController extends GetxController {
-  var chat;
   var isLoading = false.obs;
-
+  final List<ChatObject> messageList = [];
 
   Future<bool> loadChat(String chatId) async {
     print('chat Loading');
@@ -38,20 +37,25 @@ class AichatLoadController extends GetxController {
       print('loading');
       print(data);
 
-      if(data is Map<String,dynamic> && data['content'] is List){
-        List<dynamic> contentList = data['content'];
-        chat = (data['content'] as List).map((e) => e as Map<String,dynamic>).toList();
+      List<dynamic> contentList = data['content']['response'];
 
+      //print('response');
+      //print(contentList);
 
-        chat.sort((a, b) =>
-            DateTime.parse(a['chatEditedAt']).compareTo(DateTime.parse(b['chatEditedAt'])) //정렬
-        );
-        //chat.refresh();
-        //시간형식: "2025-01-02T11:17:48.062Z\"
-
-        print('load end');
+      for (var chat in contentList) {
+        if (chat['role'] == 'user') {
+          messageList.add(ChatObject(content: chat['content'], role: 'user', createdAt: DateTime.now()));
+        }
+        else {
+          messageList.add(ChatObject(content: chat['content'], role: 'ai', createdAt: DateTime.now()));
+        }
       }
 
+      //chatData.sort((a, b) => DateTime.parse(a['chatEditedAt']).compareTo(DateTime.parse(b['chatEditedAt'])) //정렬);
+      //chat.refresh();
+      //시간형식: "2025-01-02T11:17:48.062Z\"
+
+      print('load end');
 
       //print('게시물 data: ${posts.value}');
       isLoading.value = false;

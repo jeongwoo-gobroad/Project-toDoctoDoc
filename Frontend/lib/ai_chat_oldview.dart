@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'chat_bubble_listview.dart';
 import 'controllers/aichat_load_controller.dart';
+import 'package:to_doc/chat_object.dart';
 
 
 class AiChatOldView extends StatefulWidget {
@@ -27,7 +28,7 @@ class _AiChatOldViewState extends State<AiChatOldView> {
 
   void asyncNew() async {
     await aichatLoadController.loadChat(chatid);
-    _messageList = aichatLoadController.chat;
+    _messageList = aichatLoadController.messageList;
 
     print(_messageList);
   }

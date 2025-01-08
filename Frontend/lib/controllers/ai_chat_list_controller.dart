@@ -70,6 +70,7 @@ class AiChatListController extends GetxController {
       return;
     }
     isLoading.value = false;
+    return;
   }
 
 
