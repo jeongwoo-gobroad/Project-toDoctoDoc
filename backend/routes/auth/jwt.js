@@ -45,9 +45,9 @@ const getTokenInformation = async (req, res) => {
         const decoded = jwt.verify(req.headers["authorization"]?.split(" ")[1], secretKey);
         
         if (typeof decoded.userid === "undefined") {
-            const user = await User.findOne({refreshToken: req.cookies.refreshToken});
-            const doctor = await Doctor.findOne({refreshToken: req.cookies.refreshToken});
-            const admin = await Admin.findOne({refreshToken: req.cookies.refreshToken});
+            const user = await User.findOne({refreshToken: req.headers["authorization"]?.split(" ")[1]});
+            const doctor = await Doctor.findOne({refreshToken: req.headers["authorization"]?.split(" ")[1]});
+            const admin = await Admin.findOne({refreshToken: req.headers["authorization"]?.split(" ")[1]});
 
             let payload = null;
             let token = null;
