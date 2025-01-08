@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:remedi_kopo/remedi_kopo.dart';
 import 'package:to_doc/controllers/register_controller.dart';
+import 'package:to_doc/controllers/userInfo_controller.dart';
 import 'package:to_doc/navigation_menu.dart';
 
 
@@ -18,7 +19,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   Map<String, String> formData = {};
-
+  final UserinfoController user = Get.find<UserinfoController>();
   final TextEditingController idController = TextEditingController(); 
  //추후 수정
   final TextEditingController pwController = TextEditingController(); 
@@ -41,12 +42,12 @@ class _RegisterPageState extends State<RegisterPage> {
 
   _submit() async{
 
-    if (idController.text.isEmpty || pwController.text.isEmpty || nickNameContoller.text.isEmpty || postcodeController.text.isEmpty
-    || addressController.text.isEmpty || addressDetailController.text.isEmpty ||  emailController.text.isEmpty ) {
+    if (idController.text.isEmpty || pwController.text.isEmpty || nickNameContoller.text.isEmpty /*|| postcodeController.text.isEmpty
+    || addressController.text.isEmpty || addressDetailController.text.isEmpty */||  emailController.text.isEmpty ) {
       Get.snackbar('Error', '필드를 채워주세요.');
       return;
     }
-
+    print('register debug: ${idController.text} ${emailController.text}');
 
     if(!emailController.text.contains('@')){
       Get.snackbar('Error', '적절한 이메일 형식이 아닙니다.');
@@ -61,28 +62,37 @@ class _RegisterPageState extends State<RegisterPage> {
       Get.snackbar('Error', '확인 비밀번호가 다릅니다.');
       return;
     }
-    registerController.dupidIDCheck(idController.text);
-    registerController.dupidEmailCheck(emailController.text);
     
-    Map result = await registerController.register(
-      idController.text, pwController.text, reEnterPwController.text,
-      nickNameContoller.text, postcodeController.text, addressController.text, addressDetailController.text, extraController.text,
-      emailController.text,
-    );
-    //test용
+    bool isIdAvailable = await registerController.dupidIDCheck(idController.text);
+    if (!isIdAvailable) {
+      return;
+    }
+    bool isEmailAvailable = await registerController.dupidEmailCheck(emailController.text);
+    if (!isEmailAvailable) {
+      return;
+    }
     // Map result = await registerController.register(
     //   idController.text, pwController.text, reEnterPwController.text,
-    //   nickNameContoller.text, '41196', '대구 동구 경대로 2', '내가 사는곳곳', extraController.text,
+    //   nickNameContoller.text, postcodeController.text, addressController.text, addressDetailController.text, extraController.text,
     //   emailController.text,
     // );
+    //test용
+    Map result = await registerController.register(
+      idController.text, pwController.text, reEnterPwController.text,
+      nickNameContoller.text, '41196', '대구 동구 경대로 2', '내가 사는곳', extraController.text,
+      emailController.text,
+    );
 
     if(result['success']){
-      SnackBar(content: Text('회원가입 성공'),);
+      Get.snackbar('Success', '회원가입 성공');
+      user.getInfo();
       Get.offAll(()=> NavigationMenu());
     }
     else{
-      SnackBar(content: Text('회원가입 실패'),);
+      Get.snackbar('Error', '회원가입에 실패했습니다. 다시 시도해주세요.');
+      return;
     }
+    
 
   }
 

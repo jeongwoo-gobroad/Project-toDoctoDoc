@@ -33,20 +33,9 @@ class RegisterController extends GetxController{
         }),
       );
 
-      if(await dupidEmailCheck(email) == false){
-        return{
-          'success': false,
-          
-        };
-      }
-      if(await dupidIDCheck(id) == false){
-        return{
-          'success': false,
-          
-        };
-      }
       
       
+      print('register debug: $id $email $password $password2 $postcode $address $extraAddress $nickname');
       print('register response code ${response.statusCode}');
       print('register response code ${response.body}');
       
@@ -96,11 +85,13 @@ class RegisterController extends GetxController{
         }),
       );
 
-      print(response.statusCode);
+     
       final data = json.decode(json.decode(response.body));
-      print(data['error']);
+      print('id responsecode: ${response.statusCode}');
+
       if (response.statusCode == 200) {
         if (data['error'] == false) {
+          print('아이디 중복 없음');
           return true; // 사용 가능한 ID
         } 
         else {
@@ -137,17 +128,17 @@ class RegisterController extends GetxController{
           'email': email,
         }),
       );
-      print(response.statusCode);
+
+      print('email responsecode: ${response.statusCode}');
       final data = json.decode(json.decode(response.body));
-      print('email check: ${data['error']}');
+      
       print(data);
       if (response.statusCode == 200) {
         if (data['error'] == false) { //성공공
+          print('이메일 중복 없음');
           return true; 
-        } else if (data['error'] == true && data['result'] == 'email_already_exists') {
-          Get.snackbar('실패', '이미 존재하는 이메일입니다.');
-          return false; 
-        } else {
+        } 
+        else {
           Get.snackbar('Error', '서버 에러가 발생했습니다.');
           return false; // 서버에러
         }

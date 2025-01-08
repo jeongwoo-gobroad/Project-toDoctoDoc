@@ -8,6 +8,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'dart:math';
 
+import 'package:to_doc/screens/careplus/curate_list.dart';
+
 class CurateFeed extends StatefulWidget {
   @override
   _CurateFeedState createState() => _CurateFeedState();
@@ -108,7 +110,7 @@ class _CurateFeedState extends State<CurateFeed> {
                         return Card(
                           margin: EdgeInsets.symmetric(
                               vertical: 8.0, horizontal: 16.0),
-                          elevation: 2.0, //프리미엄 항목 그림자 강조조
+                          elevation: 2.0, 
                           color: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12.0),
@@ -139,7 +141,13 @@ class _CurateFeedState extends State<CurateFeed> {
                                 
                               ],
                             ),
-                           onTap: (){}, 
+                           onTap: (){
+                            //id
+                            //print(curateList['_id']);
+                            curateListController.getPost(curateList['_id']);
+
+
+                            Get.to(()=> CurationScreen());}, 
                           ),
                         );
                       },

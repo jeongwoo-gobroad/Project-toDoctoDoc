@@ -18,11 +18,12 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
   double _mapHeight = 0.5; //지도 비율율
   bool isradiusNotSelected = true;
   bool showMap = true;
+  bool isDropdownOpen = false;
 
   @override
   void initState() {
     super.initState();
-    
+    mapController.getMapInfo('1');
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
   }
@@ -68,23 +69,12 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: PopupMenuButton<String>(
-          onSelected: RadiusSelect,
-          itemBuilder: (BuildContext context) {
-            return {'1', '2', '3', '4', '5'}.map((String choice) {
-              return PopupMenuItem<String>(
-                value: choice,
-                child: Text('반경 $choice km'),
-              );
-            }).toList();
-          },
-          child: Text('근처 마음병원 찾기',
+        
+          title: Text('근처 마음병원 찾기',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
         ),
-      ),
-      body: isradiusNotSelected
-          ? Center(child: Text('반경을 선택해주세요.'))
-          : Obx(
+      
+      body: Obx(
               () => CustomScrollView(
                 slivers: [
                   // 상단지도영역
@@ -93,17 +83,22 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
                     delegate: _SliverAppBarDelegate(
                       minHeight: screenHeight * 0.15,
                       maxHeight: screenHeight * _mapHeight,
-                      child: Container(
-                        color: Colors.blueAccent,
-                        alignment: Alignment.center,
-                        child: Text(
-                          '지도 부분',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
+                      child: Stack(
+                        children: [
+                        Container(
+                          color: Colors.blueAccent,
+                          alignment: Alignment.center,
+                          child: Text(
+                            '지도 부분',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
+                        _buildRadiusSelector(),
+                        ]
                       ),
                     ),
                   ),
@@ -231,7 +226,102 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
             ),
     );
   }
+  Widget _buildRadiusSelector() {
+    return Positioned(
+      right: 16,
+      bottom: 16,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          InkWell(
+            onTap: () {
+              setState(() {
+                isDropdownOpen = !isDropdownOpen;
+              });
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${mapController.currentRadius}km',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Icon(
+                    isDropdownOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                    color: Colors.black54,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (isDropdownOpen)
+            Container(
+              margin: EdgeInsets.only(top: 4),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: List.generate(5, (index) {
+                  final radius = (index + 1).toString();
+                  return InkWell(
+                    onTap: () {
+                      RadiusSelect(radius);
+                      setState(() {
+                        isDropdownOpen = false;
+                      });
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      width: 100,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: index != 4 ? Colors.grey.shade200 : Colors.transparent,
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        '$radius km',
+                        style: TextStyle(fontSize: 16),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 }
+
 
 class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   _SliverAppBarDelegate({
@@ -261,4 +351,5 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
         minHeight != oldDelegate.minHeight ||
         child != oldDelegate.child;
   }
+   
 }

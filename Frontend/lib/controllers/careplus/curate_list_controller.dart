@@ -11,8 +11,8 @@ class CurateListController extends GetxController {
 
   RxBool isPremium = false.obs;
   var CurateList = <Map<String, dynamic>>[].obs;
-
-
+  //var posts  
+  var posts = <Map<String, dynamic>>[].obs;
   UserinfoController userinfoController = Get.put(UserinfoController());
   
   // if(userinfoController.isPremium == 'true'){
@@ -90,8 +90,14 @@ class CurateListController extends GetxController {
 
     if (response.statusCode == 200) {
       final data = json.decode(json.decode(response.body));
-      
-      print(data);
+      //final posts = data['content']['posts'] as List;
+      if (data['content'] != null && data['content']['posts'] is List) {
+        posts.value = (data['content']['posts'] as List)
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+      }
+      print(posts);
+
       //print(content);
     }
   
