@@ -11,11 +11,9 @@ const AddressSchema = new mongoose.Schema({
     },
     detailAddress: {
         type: String,
-        required: true,
     },
     extraAddress: {
         type: String,
-        required: true,
     },
     longitude: {
         type: mongoose.Schema.Types.Double,

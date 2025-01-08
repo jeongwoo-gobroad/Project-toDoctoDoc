@@ -12,6 +12,8 @@ const router = express.Router();
 const User = mongoose.model("User", UserSchema);
 const Doctor = require("../../../../models/Doctor");
 const nearbyPatientCurate = require("../../../../middleware/nearCurate");
+const Curate = require("../../../../models/Curate");
+const Comment = require("../../../../models/Comment");
 
 router.get(["/"], 
     checkIfLoggedIn,
@@ -42,23 +44,27 @@ router.get(["/details/:id"],
     checkIfLoggedIn,
     isDoctorThenProceed,
     async (req, res, next) => {
-        
-    }
-);
+        try {
+            const curate = await Curate.findById(req.params.id).populate('posts ai_chats comments');
 
-router.get(["/post/:id"],
-    checkIfLoggedIn,
-    isDoctorThenProceed,
-    async (req, res, next) => {
+            if (curate) {
+                res.status(200).json(returnResponse(false, "doctor_curating_details_success", curate));
 
-    }
-);
+                return;
+            } else {
+                res.status(401).json(returnResponse(true, "noSuchCurateID", ""));
 
-router.get(["/chat/:id"],
-    checkIfLoggedIn,
-    isDoctorThenProceed,
-    async (req, res, next) => {
+                return;
+            }   
 
+            return;
+        } catch (error) {
+            console.error(error, "error at doctor_curating_details");
+
+            res.status(403).json(returnResponse(true, "error_at_doctor_curating_details", "-"))
+
+            return;
+        }
     }
 );
 
@@ -66,23 +72,108 @@ router.post(["/comment/:id"],
     checkIfLoggedIn,
     isDoctorThenProceed,
     async (req, res, next) => {
+        try {
+            const user = await getTokenInformation(req, res);
+            const {comment} = req.body;
+            const curate = await Curate.findById(req.params.id);
 
+            if (curate && comment.length > 0) {
+                for (const c of curate.comments) {
+                    if (c.doctor == user.userid) {
+                        res.status(402).json(returnResponse(true, "already_comment_exists", "-"));
+
+                        return;
+                    }
+                }
+
+                const newComment = await Comment.create({
+                    doctor: user.userid,
+                    content: comment,
+                    originalID: req.params.id,
+                });
+
+                curate.comments.push(newComment._id);
+
+                await curate.save();
+
+                res.status(200).json(returnResponse(false, "doctor_curating_comment_success", "-"));
+
+                return;
+            } else {
+                res.status(401).json(returnResponse(true, "noSuchCurateIDorTooShortComment", "-"));
+
+                return;
+            }   
+
+            return;
+        } catch (error) {
+            console.error(error, "error at doctor_curating_comment");
+
+            res.status(403).json(returnResponse(true, "error_at_doctor_curating_comment", "-"))
+
+            return;
+        }
     }
 );
 
-router.patch(["/comment/:id"],
+router.patch(["/commentModify/:id"],
     checkIfLoggedIn,
     isDoctorThenProceed,
     async (req, res, next) => {
+        try {
+            const {comment} = req.body;
+            const user = await getTokenInformation(req, res);
+            const prev = await Comment.findById(req.params.id);
 
+            if (prev.doctor != user.userid) {
+                res.status(401).json(returnResponse(true, "notYourComment", "-"));
+
+                return;
+            }
+
+            prev.content = comment;
+
+            await prev.save();
+
+            res.status(200).json(returnResponse(false, "successfullyEditedComment", "-"));
+
+            return;
+        } catch (error) {
+            console.error(error, "error at doctor_comment_edit");
+
+            res.status(403).json(returnResponse(true, "error at doctor_comment_edit", "-"))
+
+            return;
+        }
     }
 );
 
-router.delete(["/comment/:id"],
+router.delete(["/commentModify/:id"],
     checkIfLoggedIn,
     isDoctorThenProceed,
     async (req, res, next) => {
+        try {
+            const user = await getTokenInformation(req, res);
+            const prev = await Comment.findById(req.params.id);
 
+            if (prev.doctor != user.userid) {
+                res.status(401).json(returnResponse(true, "notYourComment", "-"));
+
+                return;
+            }
+
+            await Comment.findByIdAndDelete(req.params.id);
+
+            res.status(200).json(returnResponse(false, "successfullyDeletedComment", "-"));
+
+            return;
+        } catch (error) {
+            console.error(error, "error at doctor_comment_delete");
+
+            res.status(403).json(returnResponse(true, "error at doctor_comment_delete", "-"))
+
+            return;
+        }
     }
 );
 

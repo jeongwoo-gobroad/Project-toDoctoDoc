@@ -105,13 +105,15 @@ router.post(["/register"],
     async (req, res, next) => {
         const {id, password, password2, nickname, postcode, address, detailAddress, extraAddress, email} = req.body;
 
+        // console.log(req.body);
+
         try {
             if (password != password2) {
-                res.status(401).json(returnResponse(true, "password_not_match", "패스워드가 일치하지 않습니다."));
+                res.status(402).json(returnResponse(true, "password_not_match", "패스워드가 일치하지 않습니다."));
                 return;
             }
             if (await User.findOne({id: id})) {
-                res.status(401).json(returnResponse(true, "id_already_exists", "이미 존재하는 아이디입니다."));
+                res.status(403).json(returnResponse(true, "id_already_exists", "이미 존재하는 아이디입니다."));
                 return;
             }
 
@@ -154,6 +156,8 @@ router.post(["/register"],
 
             res.status(200).json(returnResponse(false, "registered", {token: token, refreshToken: refreshToken}));
         } catch (error) {
+            console.error(error, "errorAtPostRegister");
+
             res.status(401).json(returnResponse(true, "errorAtPostRegister", "회원가입 실패"));
             return;
         }

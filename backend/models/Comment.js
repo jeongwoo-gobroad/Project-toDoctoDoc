@@ -15,6 +15,11 @@ const CommentSchema = new mongoose.Schema({
         required: true,
         default: Date.now()
     },
+    originalID: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'Curate',
+    },
 });
 
 module.exports = mongoose.model("Comment", CommentSchema);

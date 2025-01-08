@@ -168,7 +168,7 @@ router.post(["/save"],
                 "messages": messages
             });
 
-            console.log(completion.choices[0].message.content);
+            // console.log(completion.choices[0].message.content);
 
             title = getQuote(completion.choices[0].message.content);
 

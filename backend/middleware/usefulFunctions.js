@@ -4,8 +4,13 @@ function getLastSegment(url) {
 }
 
 const getQuote = (sentence) => {
-    const regex = /['"](.*?)['"]/g;
-    const titles = sentence.match(regex).map(match => match.replace(/['"]/g, ''));
+    const regex = /"([^"]*)"/g;
+    const titles = [];
+    let match;
+
+    while ((match = regex.exec(sentence)) !== null) {
+        titles.push(match[1]);
+    }
 
     return titles[0];
 }
