@@ -16,6 +16,29 @@ const Doctor = require("../../../../models/Doctor");
 
 const User = mongoose.model("User", UserSchema);
 
+router.get(["/myComments"],
+    checkIfLoggedIn,
+    isDoctorThenProceed,
+    async (req, res, next) => {
+        const user = await getTokenInformation(req, res);
+
+        try {
+            const doctor = Doctor.findById(user.userid).populate('commentsWritten');
+            const comments = doctor.commentsWritten;
+
+            res.status(200).json(false, "getDoctorComments", comments);
+
+            return;
+        } catch (error) {
+            console.error(error, "error at /doctor/myComments");
+
+            res.status(401).json(true, "doctorMyCommentError", "-");
+
+            return;
+        }
+    }
+);
+
 router.get(["/doctorInfo"],
     checkIfLoggedIn,
     isDoctorThenProceed,
