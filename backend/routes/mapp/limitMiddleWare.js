@@ -99,7 +99,7 @@ const ifDailyCurateNotExceededThenProceed = async (req, res, next) => {
 
     const db = await User.findById(user.userid);
 
-    const limits = db.recentCurateDate;
+    const limits = new Date(db.recentCurateDate);
     const current = new Date();
 
     if (limits.toDateString() !== current.toDateString()) {

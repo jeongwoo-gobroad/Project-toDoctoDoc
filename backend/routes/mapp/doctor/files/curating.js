@@ -121,6 +121,10 @@ router.post(["/comment/:id"],
 
                 curate.comments.push(newComment._id);
 
+                await Doctor.findByIdAndUpdate(user.userid, {
+                    $push: {commentsWritten: newComment._id}
+                });
+
                 await curate.save();
 
                 res.status(200).json(returnResponse(false, "doctor_curating_comment_success", "-"));
@@ -188,7 +192,14 @@ router.delete(["/commentModify/:id"],
 
                 return;
             }
-
+            await Curate.findByIdAndUpdate(prev.originalID, {
+                $pull: {comments: req.params.id}
+            });
+            await Doctor.findByIdAndUpdate(user.userid, {
+                $pull: {
+                    commentsWritten: req.params.id
+                }
+            });
             await Comment.findByIdAndDelete(req.params.id);
 
             res.status(200).json(returnResponse(false, "successfullyDeletedComment", "-"));
