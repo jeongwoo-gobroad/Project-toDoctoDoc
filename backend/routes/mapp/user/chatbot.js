@@ -33,6 +33,12 @@ router.get(["/list"],
 
             const chatList = userInfo.ai_chats;
 
+            if (chatList.length < 1) {
+                res.status(201).json(returnResponse(false, "listOfAIChatIsEmpty", "-"));
+
+                return;
+            }
+
             res.status(200).json(returnResponse(false, "listOfAIChat", chatList));
 
             return;
@@ -112,7 +118,7 @@ router.get(["/get/:chatid"],
 
             const aichat = await AIChat.findById(req.params.chatid);
 
-            if (aichat.user !== user.userid) {
+            if (aichat.user != user.userid) {
                 res.status(401).json(returnResponse(true, "notYourChat", "-"));
 
                 return;

@@ -8,7 +8,7 @@ const BubbleSchema = new mongoose.Schema({
     message: {
         type: String,
         required: true
-    }
+    },
 });
 
 const ChatSchema = new mongoose.Schema({

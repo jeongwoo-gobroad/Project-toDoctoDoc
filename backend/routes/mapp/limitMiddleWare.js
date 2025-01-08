@@ -103,10 +103,11 @@ const ifDailyCurateNotExceededThenProceed = async (req, res, next) => {
     const current = new Date();
 
     if (limits.toDateString() !== current.toDateString()) {
-        limits = current;
+        db.recentCurateDate = current;
+        await db.save();
         next();
     } else {
-        res.status(450).json(returnResponse(true, "cannotPublishCurateMoreThanOnceInADay", "지정된 등록록 횟수 초과"));
+        res.status(450).json(returnResponse(true, "cannotPublishCurateMoreThanOnceInADay", "지정된 등록 횟수 초과"));
 
         return;
     }
