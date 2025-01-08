@@ -46,6 +46,13 @@ const DoctorSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Chat'
     }],
+    curatesRead: {
+        type: Object,
+    },
+    commentsWritten: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comment'
+    }],
     isVerified: {
         type: Boolean,
         required: true,

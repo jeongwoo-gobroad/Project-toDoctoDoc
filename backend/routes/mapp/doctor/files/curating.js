@@ -27,6 +27,17 @@ router.get(["/"],
             
             const aroundPatientList = await nearbyPatientCurate(docInfo.address.longitude, docInfo.address.latitude, km);
 
+            // console.log(docInfo.curatesRead);
+
+            set = new Set(docInfo.curatesRead);
+            for (let index of aroundPatientList) {
+                if (set.has(index._id.toString())) {
+                    index.isRead = true;
+                } else {
+                    index.isRead = false;
+                }
+            }
+
             res.status(200).json(returnResponse(false, "doctor_curating_success", aroundPatientList));
 
             return;
@@ -48,6 +59,16 @@ router.get(["/details/:id"],
             const curate = await Curate.findById(req.params.id).populate('posts ai_chats comments');
 
             if (curate) {
+                const user = await getTokenInformation(req, res);
+                const docInfo = await Doctor.findById(user.userid);
+                const set = new Set(docInfo.curatesRead);
+                if (!set.has(req.params.id)) {
+                    await Doctor.findByIdAndUpdate(user.userid, {
+                        $push: {curatesRead: req.params.id}
+                    });
+                    console.log("wow");
+                }
+
                 res.status(200).json(returnResponse(false, "doctor_curating_details_success", curate));
 
                 return;
