@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import 'package:http/http.dart' as http;
 import 'package:to_doc/controllers/careplus/curate_list_controller.dart';
 import 'package:to_doc/controllers/map_controller.dart';

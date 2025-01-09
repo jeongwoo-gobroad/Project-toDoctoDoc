@@ -4,9 +4,11 @@ import 'package:to_doc/ai_chat_main.dart';
 import 'package:to_doc/home.dart';
 import 'package:to_doc/screens/careplus/curate.dart';
 import 'package:to_doc/screens/careplus/curate_feed.dart';
+import 'package:to_doc/screens/careplus/curate_home.dart';
 import 'package:to_doc/screens/graph_test.dart';
 import 'package:to_doc/screens/map_screen.dart';
 import 'package:to_doc/screens/graph_board.dart';
+
 class NavigationMenu extends StatelessWidget {
   const NavigationMenu({super.key});
 
@@ -43,6 +45,6 @@ class NavigationMenu extends StatelessWidget {
 class NavigationController extends GetxController{
   final Rx<int> selectedIndex = 0.obs; //home 상태관리
 
-  final screens = [Home(), AichatMain(), TagGraphBoard() , MapAndListScreen(), CurateFeed()];
+  final screens = [Home(), AichatMain(), TagGraphBoard() , MapAndListScreen(), CurationHomeScreen()]; 
 
 }

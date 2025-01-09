@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:remedi_kopo/remedi_kopo.dart';
+//import 'package:remedi_kopo/remedi_kopo.dart';
 import 'package:to_doc/app.dart';
 import 'package:to_doc/controllers/userInfo_controller.dart';
+import 'package:kpostal/kpostal.dart';
 class UserEdit extends StatefulWidget {
   const UserEdit({super.key});
   @override
@@ -58,34 +59,34 @@ class _UserEditState extends State<UserEdit> {
     super.dispose();
   }
 
-  void _searchAddress(BuildContext context) async {
-    KopoModel? model = await Navigator.push(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => RemediKopo(),
-      ),
-    );
+  // void _searchAddress(BuildContext context) async {
+  //   // KopoModel? model = await Navigator.push(
+  //   //   context,
+  //   //   CupertinoPageRoute(
+  //   //     builder: (context) => RemediKopo(),
+  //   //   ),
+  //   // );
 
-      if (model != null) {
-      final postcode = model.zonecode ?? '';
-      postcodeController.value = TextEditingValue(
-        text: postcode,
-      );
-      formData['postcode'] = postcode;
+  //     if (model != null) {
+  //     final postcode = model.zonecode ?? '';
+  //     postcodeController.value = TextEditingValue(
+  //       text: postcode,
+  //     );
+  //     formData['postcode'] = postcode;
 
-      final address = model.address ?? '';
-      addressController.value = TextEditingValue(
-        text: address,
-      );
-      formData['address'] = address;
+  //     final address = model.address ?? '';
+  //     addressController.value = TextEditingValue(
+  //       text: address,
+  //     );
+  //     formData['address'] = address;
 
-      final buildingName = model.buildingName ?? '';
-      addressDetailController.value = TextEditingValue(
-        text: buildingName,
-      );
-      formData['address_detail'] = buildingName;
-    }
-  }
+  //     final buildingName = model.buildingName ?? '';
+  //     addressDetailController.value = TextEditingValue(
+  //       text: buildingName,
+  //     );
+  //     formData['address_detail'] = buildingName;
+  //   }
+  // }
 
   Future<void> _submit() async {
     
@@ -269,8 +270,16 @@ class _UserEditState extends State<UserEdit> {
             const SizedBox(width: 8),
             ElevatedButton(
               onPressed: () {
-                //카카오 
-                _searchAddress(context);
+                Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context){
+                                  return KpostalView(
+                                    callback: (Kpostal result){
+                                      postcodeController.text = result.postCode;
+                                      addressController.text = result.address;
+                                    }
+                                  );
+                                },
+                              ));
               },
               child: const Text('우편번호 찾기'),
             ),
