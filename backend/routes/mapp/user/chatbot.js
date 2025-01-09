@@ -136,7 +136,7 @@ router.get(["/get/:chatid"],
 );
 
 router.post(["/save"],
-    checkIfLoggedIn,
+    checkIfLoggedIn, 
     async (req, res, next) => {
         const {chatid} = req.body;
 
@@ -164,7 +164,7 @@ router.post(["/save"],
             ];
     
             messages = messages.concat(chat.response);
-            messages = messages.concat([{"role": "user", "content": "지금까지 나눈 대화에 어울리는 제목을 쌍따옴표 안에 넣어서 알려줘"}]);
+            messages = messages.concat([{"role": "user", "content": "지금까지 나눈 대화에 어울리는 제목을 유니코드가 아닌 아스키코드로 된 쌍따옴표 안에 넣어서 알려줘"}]);
 
             const target = new openai({
                 apiKey: process.env.OPENAI_KEY,
@@ -178,6 +178,8 @@ router.post(["/save"],
             // console.log(completion.choices[0].message.content);
 
             title = getQuote(completion.choices[0].message.content);
+
+            // console.log(title);
 
             await AIChat.findByIdAndUpdate(chatid, {
                 title: title
