@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -13,6 +14,7 @@ class MapController extends GetxController{
   RxBool isLoading = false.obs;
   int currentPage = 1;
   String currentRadius = '1';
+  final RxSet<Marker> markers = <Marker>{}.obs;
 
   Future<bool> getMapInfo(String radius, {int page = 1}) async{
     
@@ -37,7 +39,7 @@ class MapController extends GetxController{
 
       if (response.statusCode == 200) {
         final data = json.decode(json.decode(response.body));
-
+        markers.clear(); //초기화화
 
         //print(data);
 
@@ -48,6 +50,44 @@ class MapController extends GetxController{
         //   psychiatryList.value = (data['content']['list'] as List).map((e) => e as Map<String,dynamic>).toList();
         //   //print('Title: ${post['title']} Tag : ${post['tag']}');
         // }
+
+        for(var item in contentList) { //순회하면서 marker add
+        if(item is Map<String, dynamic> && item.containsKey('x') && item.containsKey('y')) {
+            print(item['x']);
+            print(item['y']);
+            if(item['x'] is double){print('double인데요');}
+            double longitude = double.parse(item['x']);
+            //if(latitude is double){print('이제야 double인데요');}
+            double latitude = double.parse(item['y']);
+
+            String markerId = 'marker_${item['place_name']}';
+            //print(markerId);
+            if(item['isPremiumPsychiatry'] != true){
+              
+              markers.add(Marker(
+                markerId: markerId, 
+                latLng: LatLng(latitude, longitude),
+                )
+              );
+
+            }else{
+              print('premium이네요');
+              markers.add(Marker(
+                  markerId: markerId,
+                  latLng: LatLng(latitude, longitude),
+                  width: 24,
+                  height: 35,
+                  markerImageSrc:
+                  'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png',
+                  zIndex: 4,
+            ));
+            }
+            print(markers.toList());
+            markers.refresh();
+            update();
+
+        }
+    }
           if (page == 1) {
               psychiatryList.value = contentList.map((e) => e as Map<String, dynamic>).toList();
           } else {

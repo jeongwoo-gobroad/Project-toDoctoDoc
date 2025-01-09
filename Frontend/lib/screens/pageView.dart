@@ -8,7 +8,7 @@ import 'package:to_doc/screens/page_edit.dart';
 
 class Pageview extends StatelessWidget {
   Pageview({super.key});
-  ViewController viewController = Get.put(ViewController());
+  final ViewController viewController = Get.find<ViewController>();
   MypostController mypostController = Get.put(MypostController());
     /*title.value = data['content']['title'];
       details.value = data['content']['details'];

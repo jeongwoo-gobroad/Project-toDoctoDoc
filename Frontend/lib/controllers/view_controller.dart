@@ -51,7 +51,7 @@ class ViewController extends GetxController{
       print(data);
       final post = Post.fromJson(data['content']);
       feed.add(post);
-      print('Feed 추가 성공: $feed');
+      print('Feed 추가 성공: ${feed}');
 
 
       title.value = data['content']['title'];
@@ -62,7 +62,7 @@ class ViewController extends GetxController{
       tag.value = data['content']['tag'];
       usernick.value = data['content']['usernick'];
       
-      print('수정된 시각: $editedAt');
+      print('제목: ${title.value} , 수정된 시각: $editedAt');
     }
     
     isLoading.value = false;

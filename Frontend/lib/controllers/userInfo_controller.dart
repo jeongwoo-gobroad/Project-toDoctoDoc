@@ -19,6 +19,8 @@ class UserinfoController extends GetxController {
   RxString address = "".obs;
   final RxBool isLoading = false.obs;
   RxBool isPremium = false.obs;
+  RxDouble longitude = 0.0.obs;
+  RxDouble latitude = 0.0.obs;
   //RxString address = "".obs;
  /*error: false, result: info, content: {_id: 67763d058b0c374bed083641, id: test1234, usernick: jun, email: j123@21, address: {postcode: 41196, address: 대구 동구 경대로 2, detailAddress: 1, extraAddress:  (신암동), longitude: 128.612188721856, latitude: 35.8819379527752, _id: 67763d058b0c374bed083642}, limits: {dailyRequestDate: 2025-01-02T07:15:17.044Z, dailyRequestCount: 4, dailyChatDate: 2025-01-03T06:27:50.340Z, dailyChatCount: 1, _id: 67763d058b0c374bed083643}, isPremium: true}} */
   Future<void> getInfo() async {
@@ -50,12 +52,16 @@ class UserinfoController extends GetxController {
       detailAddress.value = data['content']['address']['detailAddress'];
       extraAddress.value = data['content']['address']['extraAddress'];
       isPremium.value = data['content']['isPremium'];
+      latitude.value = data['content']['address']['latitude'];
+      longitude.value = data['content']['address']['longitude'];
 
       print(address.value);
       print(extraAddress.value);
       print(email.value);
       print(detailAddress.value);
       print(id.value);
+      print(latitude.value);
+      print(longitude.value);
 
       //로컬 저장
       await saveUserInfo(data);

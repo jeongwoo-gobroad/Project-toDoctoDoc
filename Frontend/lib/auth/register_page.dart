@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:remedi_kopo/remedi_kopo.dart';
+//import 'package:remedi_kopo/remedi_kopo.dart';
+import 'package:kpostal/kpostal.dart';
 import 'package:to_doc/controllers/register_controller.dart';
 import 'package:to_doc/controllers/userInfo_controller.dart';
 import 'package:to_doc/navigation_menu.dart';
@@ -71,17 +72,17 @@ class _RegisterPageState extends State<RegisterPage> {
     if (!isEmailAvailable) {
       return;
     }
-    // Map result = await registerController.register(
-    //   idController.text, pwController.text, reEnterPwController.text,
-    //   nickNameContoller.text, postcodeController.text, addressController.text, addressDetailController.text, extraController.text,
-    //   emailController.text,
-    // );
-    //test용
     Map result = await registerController.register(
       idController.text, pwController.text, reEnterPwController.text,
-      nickNameContoller.text, '41196', '대구 동구 경대로 2', '내가 사는곳', extraController.text,
+      nickNameContoller.text, postcodeController.text, addressController.text, addressDetailController.text, extraController.text,
       emailController.text,
     );
+    //test용
+    // Map result = await registerController.register(
+    //   idController.text, pwController.text, reEnterPwController.text,
+    //   nickNameContoller.text, '41196', '대구 동구 경대로 2', '내가 사는곳', extraController.text,
+    //   emailController.text,
+    // );
 
     if(result['success']){
       Get.snackbar('Success', '회원가입 성공');
@@ -96,34 +97,34 @@ class _RegisterPageState extends State<RegisterPage> {
 
   }
 
-  void _searchAddress(BuildContext context) async {
-    KopoModel? model = await Navigator.push(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => RemediKopo(),
-      ),
-    );
+  // void _searchAddress(BuildContext context) async {
+  //   KopoModel? model = await Navigator.push(
+  //     context,
+  //     CupertinoPageRoute(
+  //       builder: (context) => RemediKopo(),
+  //     ),
+  //   );
 
-      if (model != null) {
-      final postcode = model.zonecode ?? '';
-      postcodeController.value = TextEditingValue(
-        text: postcode,
-      );
-      formData['postcode'] = postcode;
+  //     if (model != null) {
+  //     final postcode = model.zonecode ?? '';
+  //     postcodeController.value = TextEditingValue(
+  //       text: postcode,
+  //     );
+  //     formData['postcode'] = postcode;
 
-      final address = model.address ?? '';
-      addressController.value = TextEditingValue(
-        text: address,
-      );
-      formData['address'] = address;
+  //     final address = model.address ?? '';
+  //     addressController.value = TextEditingValue(
+  //       text: address,
+  //     );
+  //     formData['address'] = address;
 
-      final buildingName = model.buildingName ?? '';
-      addressDetailController.value = TextEditingValue(
-        text: buildingName,
-      );
-      formData['address_detail'] = buildingName;
-    }
-  }
+  //     final buildingName = model.buildingName ?? '';
+  //     addressDetailController.value = TextEditingValue(
+  //       text: buildingName,
+  //     );
+  //     formData['address_detail'] = buildingName;
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -256,6 +257,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         children: [
                           Expanded(
                             child: TextField(
+                              enabled: false,
                               controller: postcodeController,
                               decoration: InputDecoration(
                                 hintText: '우편번호',
@@ -274,7 +276,18 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                           const SizedBox(width: 8),
                           ElevatedButton(
-                            onPressed: () => _searchAddress(context),
+                            onPressed: (){
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context){
+                                  return KpostalView(
+                                    callback: (Kpostal result){
+                                      postcodeController.text = result.postCode;
+                                      addressController.text = result.address;
+                                    }
+                                  );
+                                },
+                              ));
+                            }, 
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color.fromARGB(255, 212, 212, 212),
                               foregroundColor: const Color.fromARGB(255, 35, 40, 35),
@@ -293,6 +306,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         ],
                       ),
                       TextField(
+                        enabled: false,
                         controller: addressController,
                         decoration: InputDecoration(
                           hintText: '주소',

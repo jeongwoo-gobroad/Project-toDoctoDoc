@@ -14,7 +14,7 @@ class MypostTemp extends StatefulWidget {
 }
 
 class _MypostTempState extends State<MypostTemp> {
-  final ViewController viewController = Get.put(ViewController());
+  final ViewController viewController = Get.find<ViewController>();
   final MypostController controller = Get.put(MypostController());
   final TextEditingController _tagController = TextEditingController();
   var searchResults = <Map<String, dynamic>>[].obs;
