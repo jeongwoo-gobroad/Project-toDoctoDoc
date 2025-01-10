@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config("./.env");
 const express = require("express");
 const session = require("express-session");
 const expressLayouts = require("express-ejs-layouts");
@@ -11,6 +11,8 @@ const SocketIO = require("socket.io");
 const http = require("http");
 const { wrap } = require("module");
 const cors = require("cors");
+const { url } = require("inspector");
+const redis = require("./config/redis");
 
 const app = express();
 const server = http.createServer(app);
@@ -36,6 +38,7 @@ app.use(session({
     cookie: {secure: false}
 }));
 
+redis.connectRedis();
 connectDB();
 serverWorks.serverSideWorks();
 
@@ -81,6 +84,7 @@ app.use('/mapp', require("./routes/mapp"));
 
 app.use(expressErrorHandler.httpError(404));
 app.use(errorHandler);
+
 
 server.listen(port, () => {
     console.log(`Server working on port ${port}`);

@@ -72,7 +72,7 @@ router.get(["/details/:id"],
                     await Doctor.findByIdAndUpdate(user.userid, {
                         $push: {curatesRead: req.params.id}
                     });
-                    console.log("wow");
+                    // console.log("wow");
                 }
 
                 res.status(200).json(returnResponse(false, "doctor_curating_details_success", curate));

@@ -60,3 +60,8 @@ Please refer to /documentation.docx
     * Random welcome message printing feature has been enabled in Flutter app version.
     * Finding near psychiatry feature has been implemented in Flutter app version, but no map printing yet.
     * Premium psychiatry advertisement feature has been implemented in Flutter app version.
+
+* #### 0.9.5
+    * Currently implementing DM system...
+    * Currently implementing star rating system...
+    * Implemented Redis DB system.
