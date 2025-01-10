@@ -4,6 +4,7 @@ import 'chat_bubble_listview.dart';
 import 'controllers/aichat_load_controller.dart';
 import 'package:to_doc/chat_object.dart';
 import 'ai_chat_sub.dart';
+import 'package:dio/dio.dart';
 
 
 class AiChatOldView extends StatefulWidget {
@@ -17,7 +18,7 @@ class AiChatOldView extends StatefulWidget {
 }
 
 class _AiChatOldViewState extends State<AiChatOldView> {
-  AichatLoadController  aichatLoadController = Get.put(AichatLoadController());
+  AichatLoadController  aichatLoadController = Get.put(AichatLoadController(dio: Dio()));
   get scrollController => null;
   String chatid = '';
   var _messageList;
@@ -62,7 +63,8 @@ class _AiChatOldViewState extends State<AiChatOldView> {
         return
           Padding(padding: EdgeInsets.all(10),
             child: Column(
-              children: [ChatMaker(scrollController: scrollController, messageList: _messageList,),
+              children: [
+                ChatMaker(scrollController: scrollController, messageList: _messageList,),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 51, 51, 51),
@@ -85,8 +87,6 @@ class _AiChatOldViewState extends State<AiChatOldView> {
                 ),
               ],
             ),
-
-
           );
         }),
     );

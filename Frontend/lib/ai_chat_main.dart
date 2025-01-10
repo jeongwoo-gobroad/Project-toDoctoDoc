@@ -6,9 +6,15 @@ import 'ai_chat_list.dart';
 import 'chat_object.dart';
 import 'controllers/aichat_controller.dart';
 
-class AichatMain extends StatelessWidget {
+import 'ai_chat_list.dart';
+
+class AichatMain extends StatefulWidget {
   const AichatMain({super.key});
 
+  @override
+  State<AichatMain> createState() => _AichatMain();
+}
+class _AichatMain extends State<AichatMain> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,14 +31,20 @@ class AichatMain extends StatelessWidget {
             /*to about page*/
             Get.to(() => Aboutpage());
           },
-          child: Text('토닥toDoc',
+          child: Text('Ai와 채팅',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
         ),
         actions: [
         ],
       ),
 
-      body: Center(
+      body: AiChatList(),
+
+      /*
+      Center(
+
+
+
 
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 120),
@@ -92,7 +104,11 @@ class AichatMain extends StatelessWidget {
             ],
           ),
         )
-      ),
+
+
+       */
+
+      //),
     );
   }
 

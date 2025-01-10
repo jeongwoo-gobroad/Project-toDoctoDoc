@@ -8,7 +8,7 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 
 class AuthProvider extends ChangeNotifier{
   String? _token;
-
+  String? _refreshToken;
 
 
   Future<Map<String, dynamic>> login(String userid, String password) async{
@@ -34,13 +34,16 @@ class AuthProvider extends ChangeNotifier{
         //token, refreshToken
         // _token = data;
         _token = data['content']['token'];
-        ///_refreshToken = data['content']['refreshToken'];
+        _refreshToken = data['content']['refreshToken'];
         ///
-        print(_token); 
+        print(_token);
+        print(_refreshToken);
+
         // _token = data['content'];
         
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('jwt_token', _token!);
+        await prefs.setString('ref_token', _refreshToken!);
 
 
         notifyListeners();
