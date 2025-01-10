@@ -39,7 +39,7 @@ const chatting_user = async (socket, next) => {
                 console.log("Phase 2");
     
                 socket.join(roomNo);
-                const peopleCount = await redis.redisClient.get("room: " + roomNo);
+                let peopleCount = await redis.redisClient.get("room: " + roomNo);
                 peopleCount++;
                 await redis.redisClient.set("room: " + roomNo, peopleCount);
     
@@ -70,7 +70,7 @@ const chatting_user = async (socket, next) => {
                 console.log("Phase 3");
     
                 socket.leave(roomNo);
-                const peopleCount = await redis.redisClient.get("room: " + roomNo);
+                let peopleCount = await redis.redisClient.get("room: " + roomNo);
                 peopleCount--;
                 await redis.redisClient.set("room: " + roomNo, peopleCount);
     

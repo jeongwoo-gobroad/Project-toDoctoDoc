@@ -15,6 +15,8 @@ const chatting_main = async (socket, next) => {
 
     socket.on('chatList', async (data) => {
         try {
+            // console.log("chatList");
+
             const unreadChats = JSON.parse(await redis.redisClient.get(userid));
 
             socket.emit('returnChatList', unreadChats);
