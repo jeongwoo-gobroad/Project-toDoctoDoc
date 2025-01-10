@@ -44,7 +44,8 @@ class CurateController extends GetxController {
       if (response.statusCode == 200) {
         final data = json.decode(json.decode(response.body));
         print(data);
-        final contentResponse = ContentResponse.fromJson(data);
+
+        final contentResponse = ContentResponse.fromResponseBody(response.body);
         curateItems.value = contentResponse.content;
 
         //print(curateItems);

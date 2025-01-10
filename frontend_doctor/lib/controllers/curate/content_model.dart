@@ -13,22 +13,24 @@ class ContentResponse {
 
   // 이중 디코딩된 응답을 처리하는 팩토리 메서드
   factory ContentResponse.fromResponseBody(String responseBody) {
-    // 첫 번째 디코딩
-    final decodedOnce = json.decode(responseBody);
-    // 두 번째 디코딩
-    final decodedTwice = json.decode(decodedOnce);
-    
-    return ContentResponse.fromJson(decodedTwice);
-  }
-
-  factory ContentResponse.fromJson(Map<String, dynamic> json) {
-    return ContentResponse(
-      error: json['error'] ?? false,
-      result: json['result'] ?? '',
-      content: (json['content'] as List)
-          .map((item) => ContentItem.fromJson(item))
-          .toList(),
-    );
+    try {
+      final decodedOnce = json.decode(responseBody);
+      final decodedTwice = json.decode(decodedOnce);
+      return ContentResponse(
+        error: decodedTwice['error'] ?? false,
+        result: decodedTwice['result'] ?? '',
+        content: (decodedTwice['content'] as List)
+            .map((item) => ContentItem.fromJson(item))
+            .toList(),
+      );
+    } catch (e) {
+      print('Parsing error: $e');
+      return ContentResponse(
+        error: true,
+        result: 'parsing_error',
+        content: [],
+      );
+    }
   }
 }
 
@@ -50,17 +52,18 @@ class ContentItem {
   });
 
   factory ContentItem.fromJson(Map<String, dynamic> json) {
-    return ContentItem(
-      id: json['_id'] ?? '',
-      users: (json['user'] as List)
-          .map((user) => User.fromJson(user))
-          .toList(),
-      comments: json['comments'] ?? [],
-      date: (json['date']),
-      createdAt: (json['createdAt']),
-      isRead: json['isRead'] ?? false,
-    );
-  }
+  return ContentItem(
+    id: json['_id']?.toString() ?? '',
+    users: (json['user'] as List?)
+            ?.map((user) => User.fromJson(user))
+            .toList()
+        ?? [],
+    comments: json['comments'] ?? [],
+    date: json['date']?.toString() ?? '',
+    createdAt: json['createdAt']?.toString() ?? '',
+    isRead: json['isRead'] ?? false,
+  );
+}
 }
 
 class User {

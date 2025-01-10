@@ -137,14 +137,29 @@ class Comment {
 
   
   factory Comment.fromJson(Map<String, dynamic> json) {
-    return Comment(
-      id: json['_id'] ?? '',
-      doctor: Doctor.fromJson(json['doctor']),
-      content: json['content'] ?? '',
-      date: (json['date']),
-      originalId: json['originalID'] ?? '',
-    );
-  }
+  return Comment(
+    id: json['_id'] ?? '',
+    doctor: (json['doctor'] != null && json['doctor'] is Map<String, dynamic>)
+        ? Doctor.fromJson(json['doctor'])
+        : Doctor(
+            id: '',
+            name: '',
+            email: '',
+            address: Address(
+              postcode: '',
+              address: '',
+              detailAddress: '',
+              extraAddress: '',
+              longitude: 0.0,
+              latitude: 0.0,
+            ),
+            phone: '',
+          ),
+    content: json['content'] ?? '',
+    date: json['date'] ?? '',
+    originalId: json['originalID'] ?? '',
+  );
+}
 }
 class Doctor {
   final String id;
