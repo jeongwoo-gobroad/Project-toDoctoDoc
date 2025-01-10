@@ -34,9 +34,9 @@ const chatting_doctor = async (socket, next) => {
                 }
     
                 socket.join(roomNo);
-                const peopleCount = await redis.redisClient.get(roomNo);
+                const peopleCount = await redis.redisClient.get("room: " + roomNo);
                 peopleCount++;
-                await redis.redisClient.set(roomNo, peopleCount);
+                await redis.redisClient.set("room: " + roomNo, peopleCount);
     
                 const unreadChats = JSON.parse(await redis.redisClient.get(userid));
                 delete unreadChats.roomNo;
@@ -99,7 +99,9 @@ const chatting_doctor = async (socket, next) => {
                 if (await redis.redisClient.get("room: " + struct.roomNo) == 1) {
                     const unreadChats = JSON.parse(await redis.redisClient.get(chat.user));
     
-                    unreadChats.roomNo = {recentMessage: chat.chatList[chat.chatList.length - 1], unread: 0};
+                    unreadChats.roomNo = {recentMessage: chat.chatList[chat.chatList.length - 1], unread: unreadChats.roomNo.unread + 1};
+
+                    socket.emit("unread_user", "-");
                 } else {
                     socket.to(struct.roomNo).emit("recvChat_user", {role: "doctor", message: struct.message});
                 }
