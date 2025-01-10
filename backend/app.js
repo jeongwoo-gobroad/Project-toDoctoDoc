@@ -38,8 +38,8 @@ app.use(session({
     cookie: {secure: false}
 }));
 
-redis.connectRedis();
-connectDB();
+redis.connectRedis().then(console.log("redis connection success")).catch(console.log("redis connection failed"));
+connectDB().then(console.log("MongoDB connection success")).catch(console.log("MongoDB connection failed"));
 serverWorks.serverSideWorks();
 
 app.use(expressLayouts);
