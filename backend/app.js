@@ -64,6 +64,10 @@ io.of('/chat').use(require('./routes/dm_auth/dm_isValid'));
 io.of('/chat').use(require("./middleware/dmAlgorithm"));
 const aichat = io.of('/aichat');
 aichat.on('connect', require("./routes/mapp/user/chatbot").aiChatting);
+const dm = io.of('/dm');
+dm.on('connect', require("./routes/mapp/dm/socketOperation"));
+dm.on('connect', require("./routes/mapp/user/dm_socket"));
+dm.on('connect', require("./routes/mapp/doctor/files/dm_socket"));
 
 app.use(cors());
 

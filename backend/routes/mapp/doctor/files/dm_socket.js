@@ -1,8 +1,8 @@
 const { default: mongoose } = require("mongoose");
-const redis = require("../../../config/redis");
-const Chat = require("../../../models/Chat");
-const UserSchema = require("../../../models/User");
-const Doctor = require("../../../models/Doctor");
+const redis = require("../../../../config/redis");
+const Chat = require("../../../../models/Chat");
+const UserSchema = require("../../../../models/User");
+const Doctor = require("../../../../models/Doctor");
 const User = mongoose.model('User', UserSchema);
 
 const chatting_doctor = async (socket, next) => {
@@ -97,7 +97,7 @@ const chatting_doctor = async (socket, next) => {
                 await chat.save();
     
                 if (await redis.redisClient.get("room: " + struct.roomNo) == 1) {
-                    const unreadChats = JSON.parse(await redis.redisClient.get(chat.doctor));
+                    const unreadChats = JSON.parse(await redis.redisClient.get(chat.user));
     
                     unreadChats.roomNo = {recentMessage: chat.chatList[chat.chatList.length - 1], unread: 0};
                 } else {
@@ -120,3 +120,5 @@ const chatting_doctor = async (socket, next) => {
         return;
     }
 };
+
+module.exports = chatting_doctor;
