@@ -245,11 +245,14 @@ const aiChatting = async (socket, next) => {
         const userid = await AIChat.findById(chatid);
         const token_userid = jwt.verify(token, process.env.JWT_SECRET);
 
-        const user = await User.findById(userid.user);
-
-        if (userid.user != token_userid.userid) {
-            return;
+        // console.log(chatid);
+        // console.log(userid);
+        
+        if (!userid || userid.user != token_userid.userid) {
+            return; 
         }
+
+        const user = await User.findById(userid.user);
     
         // console.log("Phase 1");
     
