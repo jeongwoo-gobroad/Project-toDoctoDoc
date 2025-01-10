@@ -17,10 +17,12 @@ const chatting_user = async (socket, next) => {
         const state = User.findById(userid);
 
         if (!state) {
-            socket.emit("error", "noSuchDocID");
+            socket.emit("error", "noSuchUserID");
 
             return;
         }
+
+        console.log("Phase 1");
     
         socket.on('joinChat_user', async (data) => {
             try {
@@ -33,6 +35,8 @@ const chatting_user = async (socket, next) => {
     
                     return;
                 }
+
+                console.log("Phase 2");
     
                 socket.join(roomNo);
                 const peopleCount = await redis.redisClient.get("room: " + roomNo);
@@ -62,6 +66,8 @@ const chatting_user = async (socket, next) => {
     
                     return;
                 }
+
+                console.log("Phase 3");
     
                 socket.leave(roomNo);
                 const peopleCount = await redis.redisClient.get("room: " + roomNo);
@@ -94,7 +100,7 @@ const chatting_user = async (socket, next) => {
                     return;
                 }
     
-                
+                console.log("Phase 4");
     
                 chat.chatList.push({role: "user", message: struct.message});
                 await chat.save();
