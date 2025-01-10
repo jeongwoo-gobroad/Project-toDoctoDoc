@@ -242,18 +242,18 @@ const aiChatting = async (socket, next) => {
     const roomNo = chatid;
 
     try {
-        const userid = await AIChat.findById(chatid).user;
+        const userid = await AIChat.findById(chatid);
         const token_userid = jwt.verify(token, process.env.JWT_SECRET);
 
-        const user = await User.findById(userid);
+        const user = await User.findById(userid.user);
 
-        if (userid != token_userid.userid) {
+        if (userid.user != token_userid.userid) {
             return;
         }
     
-        console.log("Phase 1");
+        // console.log("Phase 1");
     
-        console.log(socket);
+        // console.log(socket);
     
         if (!user.isPremium) {
             const limits = user.limits;
@@ -339,6 +339,12 @@ const aiChatting = async (socket, next) => {
             }
         });
     } catch (error) {
+        if (error.name === "TokenExpiredError") {
+            socket.emit("error", "needTokenRefresh");
+
+            return;
+        }
+
         socket.emit("error", "errorAtAiChatting");
 
         console.error(error, "errorAtAiChatting");
