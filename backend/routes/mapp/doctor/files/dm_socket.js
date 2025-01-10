@@ -40,8 +40,10 @@ const chatting_doctor = async (socket, next) => {
                 await redis.redisClient.set("room: " + roomNo, peopleCount);
     
                 const unreadChats = JSON.parse(await redis.redisClient.get(userid));
-                delete unreadChats.roomNo;
-                await redis.redisClient.set(userid, unreadChats);
+                if (unreadChats && unreadChats.roomNo) {
+                    delete unreadChats.roomNo;
+                    await redis.redisClient.set(userid, unreadChats);
+                }
     
                 socket.emit("returnJoinedChat", chat);
             } catch (error) {
