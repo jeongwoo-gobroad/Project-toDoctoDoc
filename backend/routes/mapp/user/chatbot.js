@@ -258,7 +258,7 @@ const aiChatting = async (socket, next) => {
     //     const limits = user.limits;
     //     const current = new Date();
 
-    //     if (limits.dailyChatDate.toDateString() !== current.toDateString()) {
+    //     if (new Date(limits.dailyChatDate) !== current.toDateString()) {
     //         limits.dailyChatDate = current;
     //         limits.dailyChatCount = 0;
     //     }
