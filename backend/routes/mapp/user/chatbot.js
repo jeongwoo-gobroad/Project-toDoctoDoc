@@ -236,105 +236,115 @@ router.delete(["/delete/:chatid"],
 );
 
 const aiChatting = async (socket, next) => {
-    // const token = socket.handshake.query.token;
+    const token = socket.handshake.query.token;
 
     const chatid = socket.handshake.query.chatid;
     const roomNo = chatid;
 
-    const userid = await AIChat.findById(chatid).user;
-    // const token_userid = jwt.verify(token, process.env.JWT_SECRET);
+    try {
+        const userid = await AIChat.findById(chatid).user;
+        const token_userid = jwt.verify(token, process.env.JWT_SECRET);
 
-    const user = await User.findById(userid);
+        const user = await User.findById(userid);
 
-    // if (userid != token_userid.userid) {
-    //     return;
-    // }
-
-    // console.log("Phase 1");
-
-    // console.log(socket);
-
-    // if (!user.isPremium) {
-    //     const limits = user.limits;
-    //     const current = new Date();
-
-    //     if (new Date(limits.dailyChatDate) !== current.toDateString()) {
-    //         limits.dailyChatDate = current;
-    //         limits.dailyChatCount = 0;
-    //     }
-
-    //     if (limits.dailyChatCount >= 10) {
-    //         socket.emit('aichat', "일일 대화 한도가 초과되었습니다. 무료 계정은 하루에 10개의 말풍선만을 사용할 수 있습니다.");
-
-    //         return;
-    //     }
-    // }
-    
-    // await socket.join(roomNo);
-
-    socket.on('aichat', async (data) => {
-        const sentence = data;
-
-        // console.log("Phase 2");
-
-        const target = new openai({
-            apiKey: process.env.OPENAI_KEY,
-        });
-
-        const messages = [
-            {
-                "role": "developer",
-                "content": "너는 전문 심리 상담사이고, 내가 제시하는 걱정들에 대해서 걱정할 필요가 없다는 것을 가능한 한 긍정적으로, 밝고 긍정적인 어휘를 써서, 한국어 경어체로 말해줘야 해"
-            }
-        ];
-
-        try {
-            const prevChat = await AIChat.findByIdAndUpdate(roomNo, {
-                $push: {
-                    response: {
-                        "role": "user",
-                        "content": sentence
-                    }
-                },
-                chatEditedAt: Date.now()
-            }, {new: true});
-
-            // console.log(messages.concat(prevChat.response));
-
-            const completion = await target.chat.completions.create({
-                "model": "gpt-4o-mini",
-                "store": false,
-                "messages": messages.concat(prevChat.response)
-            });
-
-            const response = completion.choices[0].message.content;
-
-            prevChat.response.push(
-                {
-                    role: "assistant",
-                    content: response
-                }
-            );
-
-            if (prevChat.response.length > 40) {
-                prevChat.response.shift();
-            }
-
-            await AIChat.findByIdAndUpdate(roomNo, {
-                response: prevChat.response,
-                chatEditedAt: Date.now(),
-                recentMessage: response,
-            });
-
-            socket.emit("aichat", response);
-
-            return;
-        } catch (error) {
-            console.error(error, "errorAtAiChatting");
-
+        if (userid != token_userid.userid) {
             return;
         }
-    })
+    
+        console.log("Phase 1");
+    
+        console.log(socket);
+    
+        if (!user.isPremium) {
+            const limits = user.limits;
+            const current = new Date();
+    
+            if (new Date(limits.dailyChatDate) !== current.toDateString()) {
+                limits.dailyChatDate = current;
+                limits.dailyChatCount = 0;
+            }
+    
+            if (limits.dailyChatCount >= 10) {
+                socket.emit('aichat', "일일 대화 한도가 초과되었습니다. 무료 계정은 하루에 10개의 말풍선만을 사용할 수 있습니다.");
+    
+                return;
+            }
+        }
+        
+        // await socket.join(roomNo);
+    
+        socket.on('aichat', async (data) => {
+            const sentence = data;
+    
+            // console.log("Phase 2");
+    
+            const target = new openai({
+                apiKey: process.env.OPENAI_KEY,
+            });
+    
+            const messages = [
+                {
+                    "role": "developer",
+                    "content": "너는 전문 심리 상담사이고, 내가 제시하는 걱정들에 대해서 걱정할 필요가 없다는 것을 가능한 한 긍정적으로, 밝고 긍정적인 어휘를 써서, 한국어 경어체로 말해줘야 해"
+                }
+            ];
+    
+            try {
+                const prevChat = await AIChat.findByIdAndUpdate(roomNo, {
+                    $push: {
+                        response: {
+                            "role": "user",
+                            "content": sentence
+                        }
+                    },
+                    chatEditedAt: Date.now()
+                }, {new: true});
+    
+                // console.log(messages.concat(prevChat.response));
+    
+                const completion = await target.chat.completions.create({
+                    "model": "gpt-4o-mini",
+                    "store": false,
+                    "messages": messages.concat(prevChat.response)
+                });
+    
+                const response = completion.choices[0].message.content;
+    
+                prevChat.response.push(
+                    {
+                        role: "assistant",
+                        content: response
+                    }
+                );
+    
+                if (prevChat.response.length > 40) {
+                    prevChat.response.shift();
+                }
+    
+                await AIChat.findByIdAndUpdate(roomNo, {
+                    response: prevChat.response,
+                    chatEditedAt: Date.now(),
+                    recentMessage: response,
+                });
+    
+                socket.emit("aichat", response);
+    
+                return;
+            } catch (error) {
+                socket.emit("error", "errorAtAiChatting");
+
+                console.error(error, "errorAtAiChatting");
+    
+                return;
+            }
+        });
+    } catch (error) {
+        socket.emit("error", "errorAtAiChatting");
+
+        console.error(error, "errorAtAiChatting");
+    
+        return;
+    }
 };
 
 module.exports = {router, aiChatting};

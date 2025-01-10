@@ -4,6 +4,7 @@ const Chat = require("../../../models/Chat");
 const UserSchema = require("../../../models/User");
 const Doctor = require("../../../models/Doctor");
 const User = mongoose.model('User', UserSchema);
+const jwt = require("jsonwebtoken");
 
 const chatting_user = async (socket, next) => {
     const token = socket.handshake.query.token;
