@@ -19,7 +19,7 @@ router.get(["/dm/list"],
         const user = await getTokenInformation(req, res);
 
         try {
-            const usr = await User.findById(user.userid).populate(
+            const usr = await User.findById(user.userid, '-chatList').populate(
                 [
                     {path: 'chats', populate: {path: 'doctor', select: 'name'}}
                 ]
