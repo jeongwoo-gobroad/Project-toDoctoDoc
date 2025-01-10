@@ -147,7 +147,7 @@ class _CurateFeedState extends State<CurateFeed> {
                             curateListController.getPost(curateList['_id']);
 
 
-                            Get.to(()=> CurationScreen());}, 
+                            Get.to(()=> CurationScreen(currentId: curateList['_id']));}, 
                           ),
                         );
                       },

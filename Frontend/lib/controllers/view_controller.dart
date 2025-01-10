@@ -7,6 +7,7 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:to_doc/controllers/class/post.dart';
 
 class ViewController extends GetxController{
+  RxString uid = "".obs;
   var feedData = {}.obs;
   var title = "".obs;
   var details = "".obs;
@@ -51,9 +52,9 @@ class ViewController extends GetxController{
       print(data);
       final post = Post.fromJson(data['content']);
       feed.add(post);
-      print('Feed 추가 성공: ${feed}');
+      //print('Feed 추가 성공: ${feed}');
 
-
+      uid.value = data['content']['userid'];
       title.value = data['content']['title'];
       details.value = data['content']['details'];
       additional_material.value = data['content']['additional_material'];

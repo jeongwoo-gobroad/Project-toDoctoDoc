@@ -92,7 +92,7 @@ class CurateListController extends GetxController {
 
     if (response.statusCode == 200) {
       final data = json.decode(json.decode(response.body));
-      //print(data);
+      print(data);
       //final posts = data['content']['posts'] as List;
       if (data['content'] != null && data['content']['posts'] is List) {
         posts.value = (data['content']['posts'] as List)
@@ -104,7 +104,12 @@ class CurateListController extends GetxController {
             .map((e) => e as Map<String, dynamic>)
             .toList();
       }
-      print(chatList);
+      if (data['content'] != null && data['content']['comments'] is List) {
+        comments.value = (data['content']['comments'] as List)
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+      }
+      print(comments);
       //print(posts);
 
       //print(content);
@@ -133,6 +138,10 @@ class CurateListController extends GetxController {
         'Authorization': 'Bearer $token',
       },
     );
+
+    print('request curate 진입');
+    print('curate response body: ${response.body}');
+    print('curate response code: ${response.statusCode}');
     if (response.statusCode == 200) {
       final data = json.decode(json.decode(response.body));
       print(data);

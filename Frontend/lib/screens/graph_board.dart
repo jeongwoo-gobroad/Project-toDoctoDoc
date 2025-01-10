@@ -6,11 +6,11 @@ import 'package:get/get.dart';
 class GraphBoard extends StatelessWidget {
 
   GraphBoard({super.key});
-  GraphController graphController = Get.put(GraphController());
+  TagGraphController tagGraphController = Get.put(TagGraphController());
 
   Future<void> _graph() async {
 
-    await graphController.getGraph();
+    await tagGraphController.getGraph();
     
   }
 

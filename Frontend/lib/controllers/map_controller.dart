@@ -41,7 +41,7 @@ class MapController extends GetxController{
         final data = json.decode(json.decode(response.body));
         markers.clear(); //초기화화
 
-        //print(data);
+        print(data);
 
         if(data is Map<String,dynamic> && data['content']['list'] is List){
         List<dynamic> contentList = data['content']['list'];

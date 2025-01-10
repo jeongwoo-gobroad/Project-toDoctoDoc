@@ -10,7 +10,7 @@ class MypostController extends GetxController{
 
   var posts = <Map<String, dynamic>>[].obs;
   var isLoading = false.obs;
-
+  var isTagLoading = false.obs;
   
 
   Future<bool> fetchMyPost() async {
@@ -182,7 +182,7 @@ class MypostController extends GetxController{
       return [];
     }
 
-    isLoading.value = true;
+    isTagLoading.value = true;
     final response = await http.get(
       Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/tagSearch/$tag'),
       headers: {
@@ -203,14 +203,14 @@ class MypostController extends GetxController{
           //print('Title: ${post['title']} Tag : ${post['tag']}');
         }
         
-        isLoading.value = false;
+        isTagLoading.value = false;
         return tagList;
       }
     } else {
       Get.snackbar('Error', '태그 검색에 실패했습니다. ${response.statusCode})');
     }
 
-    isLoading.value = false;
+    isTagLoading.value = false;
     return [];
   }
   

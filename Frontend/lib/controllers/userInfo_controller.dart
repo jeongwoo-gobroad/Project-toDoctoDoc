@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
 class UserinfoController extends GetxController {
+  RxString uid = "".obs;
   RxString id = "".obs;
   RxString usernick = "".obs;
   RxString email = "".obs;
@@ -44,6 +45,7 @@ class UserinfoController extends GetxController {
     if (response.statusCode == 200) {
       final data = json.decode(json.decode(response.body));
       print(data);
+      uid.value = data['content']['_id'];
       id.value = data['content']['id'];
       usernick.value = data['content']['usernick'];
       email.value = data['content']['email'];
@@ -55,14 +57,14 @@ class UserinfoController extends GetxController {
       latitude.value = data['content']['address']['latitude'];
       longitude.value = data['content']['address']['longitude'];
 
-      print(address.value);
-      print(extraAddress.value);
-      print(email.value);
-      print(detailAddress.value);
-      print(id.value);
-      print(latitude.value);
-      print(longitude.value);
-
+      // print(address.value);
+      // print(extraAddress.value);
+      // print(email.value);
+      // print(detailAddress.value);
+      // print(id.value);
+      // print(latitude.value);
+      // print(longitude.value);
+      print(uid.value);
       //로컬 저장
       await saveUserInfo(data);
 

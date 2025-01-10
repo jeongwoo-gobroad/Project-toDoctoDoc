@@ -28,7 +28,7 @@ class CurationHomeScreen extends StatelessWidget {
             SizedBox(height: 15),
             ElevatedButton(
               onPressed: () {
-                // 팝업창 열기
+             
                 showDialog(
                   context: context,
                   builder: (context) {
@@ -46,12 +46,12 @@ class CurationHomeScreen extends StatelessWidget {
                       content: const Text(
                         "주치의 큐레이팅 시스템을 활용하기 위해 본인의 AI 기반 고민 상담 기록을 제출하는 것에 동의합니다.",
                         overflow: TextOverflow.clip,
-                        style: TextStyle(fontSize: 16.0),
+                        style: TextStyle(fontSize: 16),
                       ),
                       actions: [
                         TextButton(
                           onPressed: () {
-                            Navigator.of(context).pop(); // 팝업닫기
+                            Navigator.of(context).pop(); //팝업닫기
                             
                           },
                           child: const Text(
@@ -78,11 +78,11 @@ class CurationHomeScreen extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.purple[900], // 버튼 색상
-                shape: const CircleBorder(), // 원형 버튼
-                padding: const EdgeInsets.all(50), // 버튼 크기
-                shadowColor: Colors.black.withOpacity(0.3),
-                elevation: 8, // 그림자 효과
+                backgroundColor: Colors.purple[900], 
+                shape: const CircleBorder(), 
+                padding: const EdgeInsets.all(50), 
+                shadowColor: Colors.black,
+                elevation: 8, 
               ),
               child: const Text(
                 "큐레이팅 받기",

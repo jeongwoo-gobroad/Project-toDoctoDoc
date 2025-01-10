@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart';
 import 'package:to_doc/controllers/myPost_controller.dart';
 import 'package:intl/intl.dart';
+import 'package:to_doc/controllers/userInfo_controller.dart';
 import 'package:to_doc/controllers/view_controller.dart';
 import 'package:to_doc/screens/page_edit.dart';
 
@@ -10,6 +11,7 @@ class Pageview extends StatelessWidget {
   Pageview({super.key});
   final ViewController viewController = Get.find<ViewController>();
   MypostController mypostController = Get.put(MypostController());
+  UserinfoController userinfoController = Get.find<UserinfoController>();
     /*title.value = data['content']['title'];
       details.value = data['content']['details'];
       additional_material = data['content']['additional_material'];
@@ -58,7 +60,13 @@ Widget build(BuildContext context) {
           itemBuilder: (context) => <PopupMenuEntry>[
             PopupMenuItem(
               onTap: () {
+                if(viewController.uid != userinfoController.uid){
+                  Get.snackbar('Error', '본인 게시물이 아닙니다.');
+                  
+                }
+                else{
                 Get.to(() => PageEdit(viewController));
+                }
               },
               child: ListTile(
                 leading: Icon(Icons.edit),
@@ -67,6 +75,11 @@ Widget build(BuildContext context) {
             ),
             PopupMenuItem(
               onTap: () {
+                if(viewController.uid != userinfoController.uid){
+                  Get.snackbar('Error', '본인 게시물이 아닙니다.');
+                  
+                }
+                else{
                 showDialog(
                   context: context,
                   builder: (context) {
@@ -95,6 +108,7 @@ Widget build(BuildContext context) {
                     );
                   },
                 );
+                }
               },
               child: ListTile(
                 leading: Icon(Icons.delete_outline),

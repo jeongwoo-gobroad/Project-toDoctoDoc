@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/aboutpage.dart';
+import 'package:to_doc/controllers/careplus/chat_controller.dart';
 import 'package:to_doc/controllers/query_controller.dart';
 import 'package:to_doc/controllers/userInfo_controller.dart';
 import 'package:to_doc/navigator/side_menu.dart';
@@ -75,13 +76,16 @@ class _HomeState extends State<Home> {
   '침묵 속에서 진정한 나를 만난다.',
   "순간의 호흡 속에서 마음의 평화를 발견할 수 있다.",
   ];
-
+  ChatController chatController = Get.put(ChatController());
   @override
   Widget build(context) {
     return Scaffold(
       //floating 아이콘 
         floatingActionButton: FloatingActionButton(
-          onPressed: (){/* to DM page */},
+          onPressed: (){
+            //chatController.getChatList();
+            chatController.getChatContent('67800d68d77a92c816209bf6');
+          },
           child: const Icon(Icons.chat_bubble_outline_rounded),
           
           

@@ -23,15 +23,28 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
   bool showMap = true;
   bool isDropdownOpen = false;
   late KakaoMapController kakaoMapController; //카카오 맵 컨트롤러러
-
+  List<CustomOverlay> customOverlays = [];
   //Set<Marker> markers = {}; //마커들 set
 
   @override
   void initState() {
-    super.initState();
+    
     mapController.getMapInfo('1');
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
+    // final customOverlay = CustomOverlay(
+    //   customOverlayId: UniqueKey().toString(),
+    //   latLng: LatLng(userinfoController.latitude.value, 126.570667),
+    //   content:
+    //       '<p style="background-color: white; padding: 8px; border-radius: 8px;">내 지역</p>',
+    //   xAnchor: 1,
+    //   yAnchor: -1,
+    //   zIndex: 5,
+    // );
+
+    //customOverlays.add(customOverlay);
+
+    super.initState();
   }
 
   void _scrollListener() {
@@ -94,6 +107,7 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
                         kakaoMapController = controller;
                         mapController.markers.add(Marker(
                         markerId: 'myLocationMarker',
+                      
                         latLng: LatLng(userinfoController.latitude.value,
                           userinfoController.longitude.value),
                         width: 50,
@@ -142,6 +156,7 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
                         //print('marker: $markers');
                       },
                       markers: mapController.markers.toList(),
+                      //customOverlays: customOverlays,
                       center: LatLng(userinfoController.latitude.value,
                           userinfoController.longitude.value),
                       // markers.add(Marker(markerId: markerId))

@@ -18,11 +18,27 @@
 /frontend/.swiftpm/
 /frontend/migrate_working_dir/
 
+/frontend_doctor/*.class
+/frontend_doctor/*.log
+/frontend_doctor/*.pyc
+/frontend_doctor/*.swp
+/frontend_doctor/.DS_Store
+/frontend_doctor/.build/
+/frontend_doctor/.buildlog/
+/frontend_doctor/.history
+/frontend_doctor/.svn/
+/frontend_doctor/.swiftpm/
+/frontend_doctor/migrate_working_dir/
 # IntelliJ related
 /frontend/*.iml
 /frontend/*.ipr
 /frontend/*.iws
 /frontend/.idea/
+
+/frontend_doctor/*.iml
+/frontend_doctor/*.ipr
+/frontend_doctor/*.iws
+/frontend_doctor/.idea/
 
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
@@ -39,18 +55,33 @@
 /frontend/.pub/
 /frontend/build/
 
+/frontend_doctor/**/doc/api/
+/frontend_doctor/**/ios/Flutter/.last_build_id
+/frontend_doctor/.dart_tool/
+/frontend_doctor/.flutter-plugins
+/frontend_doctor/.flutter-plugins-dependencies
+/frontend_doctor/.pub-cache/
+/frontend_doctor/.pub/
+/frontend_doctor/build/
+
 # 혹시 모르니까 한 번 더더
 
 # Symbolication related
 /frontend/app.*.symbols
+/frontend_doctor/app.*.symbols
 
 # Obfuscation related
 /frontend/app.*.map.json
+/frontend_doctor/app.*.map.json
 
 # Android Studio will place build artifacts here
 /frontend/android/app/debug
 /frontend/android/app/profile
 /frontend/android/app/release
+
+/frontend_doctor/android/app/release
+/frontend_doctor/app/profile
+/frontend_doctor/app/debug
 
 # Miscellaneous
 *.class
@@ -132,6 +163,8 @@ app.*.map.json
 /Frontend/.pub-cache/
 /Frontend/.pub/
 /Frontend/build/
+
+
 
 # 혹시 모르니까 한 번 더더
 
