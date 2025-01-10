@@ -7,6 +7,9 @@ import 'package:to_doc/controllers/userInfo_controller.dart';
 import 'package:to_doc/navigator/side_menu.dart';
 import 'package:to_doc/provider/aboutpage_provider.dart';
 import 'package:to_doc/screens/airesult.dart';
+import 'package:to_doc/screens/chat/chatTest.dart';
+import 'package:to_doc/screens/chat/dm_list.dart';
+import 'package:to_doc/screens/chat/show.dart';
 import 'Other.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -84,7 +87,8 @@ class _HomeState extends State<Home> {
         floatingActionButton: FloatingActionButton(
           onPressed: (){
             //chatController.getChatList();
-            chatController.getChatContent('67800d68d77a92c816209bf6');
+            //chatController.getChatContent('67800d68d77a92c816209bf6');
+            Get.to(()=>DMList());
           },
           child: const Icon(Icons.chat_bubble_outline_rounded),
           
