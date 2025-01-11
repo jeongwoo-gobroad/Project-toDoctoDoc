@@ -31,6 +31,8 @@ const errorHandler = expressErrorHandler({
     }
 }); 
 
+process.env.TZ = 'Asia/Seoul';
+
 app.use(session({
     secret: process.env.SESS_SECRET,
     resave: false,

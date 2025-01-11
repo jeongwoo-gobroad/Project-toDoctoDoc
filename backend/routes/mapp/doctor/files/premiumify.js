@@ -13,7 +13,7 @@ router.post(["/premiumify"],
     checkIfLoggedIn,
     isDoctorThenProceed,
     async (req, res, next) => {
-
+        
     }
 );
 

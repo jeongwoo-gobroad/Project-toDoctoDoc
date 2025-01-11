@@ -9,6 +9,9 @@ const BubbleSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    createdAt: {
+        type: Date
+    }
 });
 
 const ChatSchema = new mongoose.Schema({

@@ -79,6 +79,8 @@ router.get(["/dm"],
                 return;
             }
         } catch (error) {
+            console.error(error, "errorAtDMMainRoute");
+
             res.status(403).json(returnResponse(true, "errorAtDMMainRoute", "-"));
 
             return;
