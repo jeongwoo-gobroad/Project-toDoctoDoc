@@ -50,6 +50,7 @@ dependencies:
   socket_io_client: ^3.0.2
   kakao_map_plugin: ^0.3.2
   flutter_dotenv: ^5.2.1
+  dio: ^5.7.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -6,7 +6,7 @@ class ChatSocketService {
   late var RoomCode;
   bool chatOngoing = false;
 
-  ChatSocketService(String chatRoomCode) {
+  ChatSocketService(String chatRoomCode, String token) {
     //final prefs = SharedPreferences.getInstance();
     //final token = prefs.getString('jwt_token');
 
@@ -21,7 +21,7 @@ class ChatSocketService {
         io.OptionBuilder()
             .setTransports(['websocket'])
             .disableAutoConnect()
-            .setQuery({'chatid' : chatRoomCode})
+            .setQuery({'chatid' : RoomCode, 'token' : token})
             .setPath('/msg')
             .enableForceNew()
             .build());
@@ -31,7 +31,6 @@ class ChatSocketService {
       print('연결됨');
     });
 
-
     //socket.on('error', (error) => print('Connect error: $error'));
 
     //socket.emit('aichat', 'test');
@@ -40,6 +39,7 @@ class ChatSocketService {
 
     print('소켓 연결 완료');
   }
+
 
   void sendChat(String chatData) {
     print(chatData);

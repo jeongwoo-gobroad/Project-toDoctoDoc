@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -25,8 +26,7 @@ class _CurationScreenState extends State<CurationScreen>
   final CurateListController curateListController =
       Get.put(CurateListController());
   final ViewController viewController = Get.find<ViewController>();
-  final AiChatListController aiChatListController =
-      Get.put(AiChatListController());
+  final AiChatListController aiChatListController = Get.put(AiChatListController(dio: Dio()));
   final ChatController chatController = Get.put(ChatController());
   final UserinfoController userinfoController = Get.find<UserinfoController>();
 
@@ -61,6 +61,7 @@ class _CurationScreenState extends State<CurationScreen>
   @override
   void initState() {
     super.initState();
+    aiChatListController.getChatList();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 150),
       vsync: this,
