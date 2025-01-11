@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -26,8 +27,8 @@ void main() async{
       appKey: 'd5f01b0b56b0599393d5cae23ae8d69f' ?? '',
       baseUrl: '');
 
-  Get.put(UserinfoController(), permanent: true);
-  Get.put(ViewController(), permanent: true);
+  Get.put(UserinfoController(dio:Dio()), permanent: true);
+  Get.put(ViewController(dio:Dio()), permanent: true);
   runApp(GetMaterialApp(
     scrollBehavior: const MaterialScrollBehavior().copyWith(
         dragDevices: {

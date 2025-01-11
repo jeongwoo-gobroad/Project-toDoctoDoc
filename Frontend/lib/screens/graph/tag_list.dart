@@ -1,4 +1,5 @@
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/controllers/myPost_controller.dart';
@@ -14,7 +15,7 @@ class TagList extends StatefulWidget {
 }
 
 class _TagListState extends State<TagList> {
-  MypostController mypostController = Get.put(MypostController());
+  MypostController mypostController = Get.put(MypostController(dio: Dio()));
   var searchResults = <Map<String, dynamic>>[].obs;
   ViewController viewController = Get.find<ViewController>();
 

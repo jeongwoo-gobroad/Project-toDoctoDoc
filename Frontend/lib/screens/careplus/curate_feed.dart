@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
@@ -19,7 +20,7 @@ class _CurateFeedState extends State<CurateFeed> {
   
   bool isLoading = true;
   late ScrollController _scrollController;
-  final CurateListController curateListController = Get.put(CurateListController());
+  final CurateListController curateListController = Get.put(CurateListController(dio:Dio()));
   double _mapHeight = 0.5;
   bool isradiusNotSelected = true;
   bool showMap = true;

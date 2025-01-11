@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/controllers/careplus/curate_list_controller.dart';
@@ -6,7 +7,7 @@ import 'package:to_doc/screens/careplus/curate_feed.dart';
 class CurationHomeScreen extends StatelessWidget {
 
 
-  CurateListController curateListController = Get.put(CurateListController());
+  CurateListController curateListController = Get.put(CurateListController(dio:Dio()));
 
   @override
   Widget build(BuildContext context) {

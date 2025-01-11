@@ -1,16 +1,22 @@
+import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
+import '../auth/auth_dio.dart';
+
 class UploadController extends GetxController {
+  final Dio dio;
   var title = "".obs;
   var context = "".obs; // content 필드
-  Future<bool> uploadResult(String title, String content, String additionalContent, String tags) async {
-    
 
-    
+  UploadController({required this.dio});
+
+  Future<bool> uploadResult(String title, String content, String additionalContent, String tags) async {
+    dio.interceptors.add(CustomInterceptor());
+
     var body = {
       'title': title,
       'content': content,
@@ -18,27 +24,39 @@ class UploadController extends GetxController {
       'tags': tags,
     };
 
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
+    //final prefs = await SharedPreferences.getInstance();
+    //final token = prefs.getString('jwt_token');
 
+    /*
     if(token == null){
-
       Get.snackbar('Login', '로그인이 필요합니다.');
       print('로그인이 필요합니다.');
       return false;
     }
+     */
+
     // POST 요청 전송
     try {
+      var response = await dio.post(
+          'http://jeongwoo-kim-web.myds.me:3000/mapp/upload',
+          data: json.encode(body),
+          options:
+            Options(headers: {
+              'Content-Type':'application/json',
+              'accessToken': 'true',
+            }),
+          );
+
+      /*
       var response = await http.post(
         Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/upload'),
-        
-        body: json.encode(body), 
-        
-        
+        body: json.encode(body),
+
         headers: {
         'Content-Type': 'application/json',
         'authorization':'Bearer $token',
       });
+       */
 
       if (response.statusCode == 200) {
         

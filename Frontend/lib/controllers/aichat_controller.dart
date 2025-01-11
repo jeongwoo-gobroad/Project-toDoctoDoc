@@ -5,14 +5,21 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
+import 'package:dio/dio.dart';
+import '../auth/auth_dio.dart';
+
 class AiChatController extends GetxController{
+  final Dio dio;
+
   var chatId = '';
   var firstChat = '';
 
   var isLoading = false.obs;
 
+  AiChatController({required this.dio});
+
   Future<void> getNewChat() async{
-    //로딩
+    dio.interceptors.add(CustomInterceptor());
     isLoading.value = true;
 
     //토큰? Access Token으로 접근하고 1회 실패하면 Refresh Token으로 접근하면 되고, Refresh Token으로 접근하면 헤더에 Access_Token에 Access Token을 담고 Refresh_token에 Refresh Token을 담아서 줌.
@@ -29,18 +36,18 @@ class AiChatController extends GetxController{
       return;
     }
 
-
-    final response = await http.get(
-      Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/aichat/new'),
-      headers: {
-        'Content-Type':'application/json',
-        'authorization':'Bearer $token',
-      },
-
+    final response = await dio.get(
+      'http://jeongwoo-kim-web.myds.me:3000/mapp/aichat/new',
+      options : Options(
+        headers: {
+          'Content-Type':'application/json',
+          'accessToken':'true',
+        },
+      )
     );
 
     if(response.statusCode == 200){
-      final data = json.decode(json.decode(response.body));
+      final data = json.decode(response.data);
       print(data);
 
       chatId = data['content']['chatid'];
@@ -52,8 +59,4 @@ class AiChatController extends GetxController{
     }
     isLoading.value = false;
   }
-
-
-
-
 }

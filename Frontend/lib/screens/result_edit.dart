@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/controllers/query_controller.dart';
@@ -14,10 +15,10 @@ class ResultEdit extends StatefulWidget {
 }
 
 class _ResultEditState extends State<ResultEdit> {
-  QueryController queryController = Get.put(QueryController());
+  QueryController queryController = Get.put(QueryController(dio: Dio()));
   final FocusNode focusNode = FocusNode();
   bool isExpanded = false;
-  UploadController uploadController = Get.put(UploadController());
+  UploadController uploadController = Get.put(UploadController(dio:Dio()));
 
   bool isContentExpanded = false;
 

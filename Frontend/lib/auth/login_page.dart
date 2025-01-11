@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -20,13 +21,13 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
-  final authProvider = Get.put(AuthProvider());
+  final authProvider = Get.put(AuthProvider(dio: Dio()));
   final UserinfoController user = Get.find<UserinfoController>();
   final TextEditingController idController = TextEditingController(); //추후 수정
   final TextEditingController pwController = TextEditingController(); //추후 수정
 
   //테스트용
-  RegisterController registerController = Get.put(RegisterController());
+  RegisterController registerController = Get.put(RegisterController(dio: Dio()));
 
   _submit() async{
     //await registerController.dupidCheck(idController.text);
@@ -45,9 +46,6 @@ class _LoginPageState extends State<LoginPage> {
       colorText: Colors.white);
     }
   }
-  
-  
-
 
   @override
   Widget build(BuildContext context) {

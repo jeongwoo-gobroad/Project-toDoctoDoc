@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -19,8 +20,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
-  final authProvider = Get.put(AuthProvider());
-  final UserinfoController user = Get.put(UserinfoController());
+  final authProvider = Get.put(AuthProvider(dio: Dio()));
+  final UserinfoController user = Get.put(UserinfoController(dio: Dio()));
   final TextEditingController idController = TextEditingController(); //추후 수정
   final TextEditingController pwController = TextEditingController(); //추후 수정
 
@@ -40,8 +41,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
   
-  
-
 
   @override
   Widget build(BuildContext context) {

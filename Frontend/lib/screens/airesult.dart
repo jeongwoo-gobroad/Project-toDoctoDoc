@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/controllers/query_controller.dart';
@@ -6,7 +7,7 @@ import 'package:to_doc/screens/result_edit.dart';
 class Airesult extends StatelessWidget {
 
   Airesult({super.key});
-  final QueryController queryController = Get.put(QueryController());
+  final QueryController queryController = Get.put(QueryController(dio: Dio()));
 
  @override
   Widget build(BuildContext context) {

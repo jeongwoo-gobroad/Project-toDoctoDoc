@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/controllers/myPost_controller.dart';
@@ -18,8 +19,8 @@ class PageEdit extends StatefulWidget {
 class _PageEditState extends State<PageEdit> {
   final TextEditingController _additionalMaterialController = TextEditingController();
   final TextEditingController _tagController = TextEditingController();
-  final MypostController mypostController = Get.put(MypostController());
-  final ViewController viewController = Get.put(ViewController());
+  final MypostController mypostController = Get.put(MypostController(dio: Dio()));
+  final ViewController viewController = Get.put(ViewController(dio:Dio()));
 
   _submit() async{
     String updatedAdditionalMaterial = _additionalMaterialController.text;

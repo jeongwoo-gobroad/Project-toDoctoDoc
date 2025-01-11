@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/provider/aboutpage_provider.dart';
@@ -6,7 +7,7 @@ import 'package:to_doc/provider/aboutpage_provider.dart';
 class Aboutpage extends StatelessWidget {
 
   Aboutpage({super.key});
-  final AboutpageProvider aboutprov = Get.put(AboutpageProvider());
+  final AboutpageProvider aboutprov = Get.put(AboutpageProvider(dio: Dio()));
 
   @override
   Widget build(BuildContext context) {

@@ -5,10 +5,17 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
+import 'package:dio/dio.dart';
+import '../auth/auth_dio.dart';
+
 class AiChatSaveController extends GetxController{
   var isLoading = false.obs;
+  final Dio dio;
 
-  Future<void> saveChat(String chatId) async{
+  AiChatSaveController({required this.dio});
+
+  Future<void> saveChat(String chatId) async {
+    dio.interceptors.add(CustomInterceptor());
     print(chatId);
 
     //토큰? Access Token으로 접근하고 1회 실패하면 Refresh Token으로 접근하면 되고, Refresh Token으로 접근하면 헤더에 Access_Token에 Access Token을 담고 Refresh_token에 Refresh Token을 담아서 줌.
@@ -19,25 +26,28 @@ class AiChatSaveController extends GetxController{
 
     print(token);
 
+    /*
     if(token == null){
       Get.snackbar('Login', '로그인이 필요합니다.');
       print('로그인이 필요합니다.');
       return;
     }
+    */
+
 
     try {
-      final response = await http.post(
-          Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/aichat/save'),
+      final response = await dio.post(
+        'http://jeongwoo-kim-web.myds.me:3000/mapp/aichat/save',
+        options: Options(
           headers: {
             'Content-Type': 'application/json',
-            'authorization': 'Bearer $token',
+            'accessToken': 'true',
           },
-          body: json.encode({
-            'chatid': chatId,
-          }),
+        ),
+        data: json.encode({'chatid': chatId,}),
       );
 
-      print('response code ${response.statusCode}');
+      //print('response code ${response.statusCode}');
 
       if (response.statusCode == 200) {
         print('saved');
@@ -52,7 +62,5 @@ class AiChatSaveController extends GetxController{
       Get.snackbar("오류", "문제가 발생했습니다. 다시 시도해주세요.");
       return;
     }
-
-
   }
 }

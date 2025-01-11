@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/aboutpage.dart';
@@ -25,7 +26,7 @@ class _HomeState extends State<Home> {
   final TextEditingController queryController = TextEditingController(); 
   final UserinfoController userController = Get.find<UserinfoController>();
  //추후 수정
-  final QueryController query = Get.put(QueryController());
+  final QueryController query = Get.put(QueryController(dio: Dio()));
   String? id;
   String? usernick;
   String? email;

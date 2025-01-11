@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -13,8 +14,8 @@ class MypostTemp extends StatefulWidget {
 }
 
 class _MypostTempState extends State<MypostTemp> {
-  final ViewController viewController = Get.put(ViewController());
-  final MypostController myPostController = Get.put(MypostController());
+  final ViewController viewController = Get.put(ViewController(dio:Dio()));
+  final MypostController myPostController = Get.put(MypostController(dio: Dio()));
 
   @override
   void initState() {

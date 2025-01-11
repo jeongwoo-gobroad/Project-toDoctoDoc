@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,7 +12,6 @@ import 'package:to_doc/navigation_menu.dart';
 
 
 class RegisterPage extends StatefulWidget {
-
   RegisterPage({super.key});
 
   @override
@@ -39,7 +39,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   final TextEditingController extraController = TextEditingController();
 
-  RegisterController registerController = Get.put(RegisterController());
+  RegisterController registerController = Get.put(RegisterController(dio: Dio()));
 
   _submit() async{
 

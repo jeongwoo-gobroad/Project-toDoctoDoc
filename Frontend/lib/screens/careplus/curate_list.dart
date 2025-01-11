@@ -24,7 +24,7 @@ class _CurationScreenState extends State<CurationScreen>
   bool isPostExpanded = false;
   bool isAiExpanded = false;
   final CurateListController curateListController =
-      Get.put(CurateListController());
+      Get.put(CurateListController(dio:Dio()));
   final ViewController viewController = Get.find<ViewController>();
   final AiChatListController aiChatListController = Get.put(AiChatListController(dio: Dio()));
   final ChatController chatController = Get.put(ChatController());

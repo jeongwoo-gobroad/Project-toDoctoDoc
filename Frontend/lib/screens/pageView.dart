@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
@@ -10,7 +11,7 @@ import 'package:to_doc/screens/page_edit.dart';
 class Pageview extends StatelessWidget {
   Pageview({super.key});
   final ViewController viewController = Get.find<ViewController>();
-  MypostController mypostController = Get.put(MypostController());
+  MypostController mypostController = Get.put(MypostController(dio: Dio()));
   UserinfoController userinfoController = Get.find<UserinfoController>();
     /*title.value = data['content']['title'];
       details.value = data['content']['details'];

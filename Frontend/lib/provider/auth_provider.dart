@@ -1,21 +1,43 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
+import '../auth/auth_dio.dart';
+
 class AuthProvider extends ChangeNotifier{
   String? _token;
   String? _refreshToken;
 
+  final Dio dio;
+
+  AuthProvider({required this.dio});
 
   Future<Map<String, dynamic>> login(String userid, String password) async{
-    final url = Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/login');
-    print(url);
+    //dio.interceptors.add(CustomInterceptor());
+
+    //final url = Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/login');
+    //print(url);
 
     try{
+
+      final response = await dio.post(
+        'http://jeongwoo-kim-web.myds.me:3000/mapp/login',
+        options:
+          Options(headers: {
+            'Content-Type': 'application/json',
+          },),
+        data: json.encode({
+          'userid' : userid,
+          'password' : password,
+        }),
+      );
+
+      /*
       final response = await http.post(
         url,
         headers: {
@@ -27,10 +49,11 @@ class AuthProvider extends ChangeNotifier{
           'password' : password,
         }),
       );
+       */
 
       if(response.statusCode == 200){
 
-        final data = json.decode(json.decode(response.body));
+        final data = json.decode(response.data);
         //token, refreshToken
         // _token = data;
         _token = data['content']['token'];

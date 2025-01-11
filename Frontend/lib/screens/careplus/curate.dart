@@ -1,4 +1,5 @@
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -8,7 +9,7 @@ import 'package:to_doc/screens/careplus/curate_feed.dart';
 class Curate extends StatelessWidget {
 
   Curate({super.key});
-  CurateListController curateListController = Get.put(CurateListController());
+  CurateListController curateListController = Get.put(CurateListController(dio:Dio()));
 
   Future<void> _getList() async {
 

@@ -41,16 +41,6 @@ class AichatLoadController extends GetxController {
       )
     );
 
-    /*
-    final response = await http.get(
-      Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/aichat/get/$chatId'),
-      headers: {
-        'Content-Type':'application/json',
-        'authorization':'Bearer $token',
-      },
-    );
-
-     */
 
     if(response.statusCode==200){
       final data = json.decode(response.data);
@@ -59,9 +49,6 @@ class AichatLoadController extends GetxController {
       print(data);
 
       List<dynamic> contentList = data['content']['response'];
-
-      //print('response');
-      //print(contentList);
 
       for (var chat in contentList) {
         if (chat['role'] == 'user') {

@@ -52,21 +52,6 @@ class _AiChatListState extends State<AiChatList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      /*
-      appBar: AppBar(
-        centerTitle: true,
-        title: InkWell(
-          onTap: () {
-            /*to about page*/
-            //Get.to(() => Aboutpage());
-          },
-          child: Text('Ai 채팅 목록',
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
-        ),
-      ),
-
-       */
-
       body :
         Column (
           children: [Expanded(

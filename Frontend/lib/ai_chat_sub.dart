@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -25,8 +26,8 @@ class AiChatSub extends StatefulWidget {
 }
 
 class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
-  AiChatController aiChatController = Get.put(AiChatController());
-  AiChatSaveController aiChatSaveController = Get.put(AiChatSaveController());
+  AiChatController aiChatController = Get.put(AiChatController(dio: Dio()));
+  AiChatSaveController aiChatSaveController = Get.put(AiChatSaveController(dio: Dio()));
   TextEditingController textEditingController = Get.put(TextEditingController());
   final scrollController = ScrollController();
 
