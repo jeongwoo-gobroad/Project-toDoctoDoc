@@ -12,7 +12,7 @@ const Doctor = require("../../../../models/Doctor");
 const Chat = require("../../../../models/Chat");
 const User = mongoose.model("User", UserSchema);
 
-router.get(["/dm/list"], 
+router.get(["/list"], 
     checkIfLoggedIn,
     isDoctorThenProceed,
     async (req, res, next) => {
@@ -24,6 +24,8 @@ router.get(["/dm/list"],
                     {path: 'chats', populate: {path: 'user', select: 'usernick'}}
                 ]
             );
+
+            // console.log(usr);
 
             const chats = usr.chats;
 
@@ -42,7 +44,7 @@ router.get(["/dm/list"],
     }
 );
 
-router.get(["/dm"],
+router.get(["/"],
     checkIfLoggedIn,
     isDoctorThenProceed,
     async (req, res, next) => {
@@ -86,7 +88,7 @@ router.get(["/dm"],
     }
 );
 
-router.get(["/dm/:id"],
+router.get(["/:id"],
     checkIfLoggedIn,
     isDoctorThenProceed,
     async (req, res, next) => {
@@ -118,7 +120,7 @@ router.get(["/dm/:id"],
     }
 );
 
-router.delete(["/dm/:id"],
+router.delete(["/:id"],
     checkIfLoggedIn,
     isDoctorThenProceed,
     async (req, res, next) => {

@@ -76,11 +76,13 @@ const chatting_doctor = async (socket, next) => {
         
                     const unreadChats = JSON.parse(await redis.redisClient.get(userid));
         
-                    unreadChats.roomNo = {
-                        recentMessage: chat.chatList[chat.chatList.length - 1].message, 
-                        unread: 0, 
-                        createdAt: chat.chat.chatList[chat.chatList.length - 1].createdAt
-                    };
+                    if (chat.chatList.length > 0) {
+                        unreadChats.roomNo = {
+                            recentMessage: chat.chatList[chat.chatList.length - 1].message, 
+                            unread: 0, 
+                            createdAt: chat.chatList[chat.chatList.length - 1].createdAt
+                        };
+                    }
         
                     await setCacheForThreeDaysAsync(userid, unreadChats);
         
@@ -97,6 +99,8 @@ const chatting_doctor = async (socket, next) => {
                     const struct = JSON.parse(data);
         
                     const chat = await Chat.findById(struct.roomNo);
+
+                    // console.log(data);
 
                     const now = Date.now();
         

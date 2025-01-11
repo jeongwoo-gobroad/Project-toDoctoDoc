@@ -25,7 +25,7 @@ const chatting_user = async (socket, next) => {
                 return;
             }
     
-            console.log("Phase 1");
+            // console.log("Phase 1");
         
             socket.on('joinChat_user', async (data) => {
                 try {
@@ -39,7 +39,7 @@ const chatting_user = async (socket, next) => {
                         return;
                     }
     
-                    console.log("Phase 2");
+                    // console.log("Phase 2");
         
                     socket.join(roomNo);
                     let peopleCount = await redis.redisClient.get("room: " + roomNo);
@@ -74,7 +74,7 @@ const chatting_user = async (socket, next) => {
                         return;
                     }
     
-                    console.log("Phase 3");
+                    // console.log("Phase 3");
         
                     socket.leave(roomNo);
                     let peopleCount = await redis.redisClient.get("room: " + roomNo);
@@ -84,11 +84,13 @@ const chatting_user = async (socket, next) => {
         
                     const unreadChats = JSON.parse(await redis.redisClient.get(userid));
         
-                    unreadChats.roomNo = {
-                        recentMessage: chat.chatList[chat.chatList.length - 1].message, 
-                        unread: 0, 
-                        createdAt: chat.chat.chatList[chat.chatList.length - 1].createdAt
-                    };
+                    if (chat.chatList.length > 0) {
+                        unreadChats.roomNo = {
+                            recentMessage: chat.chatList[chat.chatList.length - 1].message, 
+                            unread: 0, 
+                            createdAt: chat.chatList[chat.chatList.length - 1].createdAt
+                        };
+                    }
         
                     // await redis.redisClient.set(userid, unreadChats);
                     await setCacheForThreeDaysAsync("room: " + roomNo, peopleCount);
@@ -114,7 +116,7 @@ const chatting_user = async (socket, next) => {
                         return;
                     }
         
-                    console.log("Phase 4");
+                    // console.log("Phase 4");
         
                     chat.chatList.push({role: "user", message: struct.message, createdAt: now});
                     await chat.save();
@@ -126,7 +128,7 @@ const chatting_user = async (socket, next) => {
     
                         socket.emit("unread_doctor", "-");
                     } else {
-                        socket.to(struct.roomNo).emit("recvChat_user", {role: "user", message: struct.message, createdAt: now});
+                        socket.to(struct.roomNo).emit("recvChat_doctor", {role: "user", message: struct.message, createdAt: now});
                     }
         
                     return;

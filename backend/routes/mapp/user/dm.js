@@ -71,7 +71,7 @@ router.get(["/dm"],
                     $push: {chats: newChat._id}
                 });
                 await Doctor.findByIdAndUpdate(did, {
-                    $push: {chats: newChat._id}``
+                    $push: {chats: newChat._id}
                 });
 
                 res.status(200).json(returnResponse(false, "returnedNewChatID", {chatid: newChat._id}));

@@ -13,7 +13,9 @@ const getCache = async (key) => {
 
 const setCache = (key, data) => {
     try {
-        redis.redisClient.set(key, JSON.stringify(data), "EX", process.env.ONE_WEEK_TO_SECONDS);
+        // THIS DOES NOT WORK AT ALL!
+        // redis.redisClient.set(key, JSON.stringify(data), "EX", process.env.ONE_WEEK_TO_SECONDS);
+        redis.redisClient.setEx(key, process.env.ONE_WEEK_TO_SECONDS, JSON.stringify(data));
     } catch (error) {
         return null;
     }
@@ -21,7 +23,8 @@ const setCache = (key, data) => {
 
 const setCacheForThreeDaysAsync = async (key, data) => {
     try {
-        redis.redisClient.set(key, JSON.stringify(data), "EX", process.env.THREE_DAYS_TO_SECONDS);
+        // await redis.redisClient.set(key, JSON.stringify(data), "EX", process.env.THREE_DAYS_TO_SECONDS);
+        await redis.redisClient.setEx(key, process.env.THREE_DAYS_TO_SECONDS, JSON.stringify(data));
     } catch (error) {
         return null;
     }
