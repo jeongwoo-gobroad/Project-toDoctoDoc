@@ -57,7 +57,7 @@ class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      socketService.onChatReceved((data) {
+      socketService.onChatReceived((data) {
         print('CALL BACK SUCCESS');
         setState(() {
           _messageList.add(

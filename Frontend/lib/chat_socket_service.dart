@@ -47,7 +47,7 @@ class ChatSocketService {
     //socket.on('aichat', (data) { print(data);} );
   }
 
-  void onChatReceved(Function callback) {
+  void onChatReceived(Function callback) {
     socket.on('aichat', (data) =>callback(data));
     /*
     {
