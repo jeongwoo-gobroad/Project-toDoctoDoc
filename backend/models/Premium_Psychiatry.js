@@ -29,7 +29,11 @@ const Premium_Psychiatry_Schema = new mongoose.Schema({
     stars: {
         type: Number,
         default: 4,
-    }
+    },
+    reviews: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Review'
+    }],
 });
 
 module.exports = mongoose.model("Premium_Psychiatry", Premium_Psychiatry_Schema);

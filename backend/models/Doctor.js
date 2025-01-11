@@ -61,6 +61,9 @@ const DoctorSchema = new mongoose.Schema({
     refreshToken: {
         type: String,
     },
+    myPsyID: {
+        type: String,
+    },
 });
 
 module.exports = mongoose.model("Doctor", DoctorSchema);

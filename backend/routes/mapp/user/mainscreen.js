@@ -165,6 +165,8 @@ router.patch(["/edit/:id"],
 
             return;
         } catch (error) {
+            console.error(error, "errorAtEditingPost");
+
             res.status(401).json(returnResponse(true, "editerror", "editerror"));
 
             return;

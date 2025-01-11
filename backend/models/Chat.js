@@ -31,6 +31,10 @@ const ChatSchema = new mongoose.Schema({
         type: Date,
         default: Date.now(),
     },
+    hasAppointmentDone: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 module.exports = mongoose.model("Chat", ChatSchema);

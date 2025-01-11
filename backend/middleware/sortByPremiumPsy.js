@@ -12,6 +12,7 @@ const topExposureForPremiumPsy = async (list) => {
             if (psy) {
                 list[i].isPremiumPsychiatry = true;
                 list[i].stars = psy.stars;
+                list[i].pid = psy._id;
                 /* swap */
                 const temp = list[index];
                 list[index] = list[i];

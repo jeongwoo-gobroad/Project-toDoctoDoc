@@ -19,6 +19,14 @@ const setCache = (key, data) => {
     }
 };
 
+const setCacheForThreeDaysAsync = async (key, data) => {
+    try {
+        redis.redisClient.set(key, JSON.stringify(data), "EX", process.env.THREE_DAYS_TO_SECONDS);
+    } catch (error) {
+        return null;
+    }
+};
+
 const delCache = (key) => {
     try {
         redis.redisClient.del(key);
@@ -27,4 +35,4 @@ const delCache = (key) => {
     }
 };
 
-module.exports = {getCache, setCache, delCache};
+module.exports = {getCache, setCache, setCacheForThreeDaysAsync, delCache};

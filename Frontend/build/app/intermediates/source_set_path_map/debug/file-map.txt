@@ -1,59 +1,61 @@
-com.example.to_doc.app-jetified-emoji2-1.2.0-0 C:\Users\junhy\.gradle\caches\transforms-3\00ced4e0c4fa573a256faffd17efb966\transformed\jetified-emoji2-1.2.0\res
-com.example.to_doc.app-jetified-lifecycle-livedata-core-ktx-2.7.0-1 C:\Users\junhy\.gradle\caches\transforms-3\046451f6d2033086855d7e37d75f625f\transformed\jetified-lifecycle-livedata-core-ktx-2.7.0\res
-com.example.to_doc.app-appcompat-1.6.1-2 C:\Users\junhy\.gradle\caches\transforms-3\060dbbff9fcabaffa8790a47cbba06e5\transformed\appcompat-1.6.1\res
-com.example.to_doc.app-jetified-savedstate-1.2.1-3 C:\Users\junhy\.gradle\caches\transforms-3\0a16aa6383478570d295c8b4140502f2\transformed\jetified-savedstate-1.2.1\res
-com.example.to_doc.app-preference-1.2.1-4 C:\Users\junhy\.gradle\caches\transforms-3\0af907e20cd304221e86acf16c90712a\transformed\preference-1.2.1\res
-com.example.to_doc.app-jetified-activity-1.8.1-5 C:\Users\junhy\.gradle\caches\transforms-3\17d8337d84594848b6b79b231591cb39\transformed\jetified-activity-1.8.1\res
-com.example.to_doc.app-jetified-appcompat-resources-1.6.1-6 C:\Users\junhy\.gradle\caches\transforms-3\1d070a9ea3459edf3f5c40d5785c2051\transformed\jetified-appcompat-resources-1.6.1\res
-com.example.to_doc.app-jetified-profileinstaller-1.3.1-7 C:\Users\junhy\.gradle\caches\transforms-3\1e40d107b7c835b250f39851da7b1cf0\transformed\jetified-profileinstaller-1.3.1\res
-com.example.to_doc.app-transition-1.4.1-8 C:\Users\junhy\.gradle\caches\transforms-3\1f0ecc8d28304472859d14550f1c0309\transformed\transition-1.4.1\res
-com.example.to_doc.app-browser-1.8.0-9 C:\Users\junhy\.gradle\caches\transforms-3\210b3f561f2ccf03186807b155ee965e\transformed\browser-1.8.0\res
-com.example.to_doc.app-core-runtime-2.2.0-10 C:\Users\junhy\.gradle\caches\transforms-3\226d7d03a0815510d167f1e7f64616f9\transformed\core-runtime-2.2.0\res
-com.example.to_doc.app-jetified-datastore-preferences-1.0.0-11 C:\Users\junhy\.gradle\caches\transforms-3\268c3153a5c85e4189d7f06edbd1697a\transformed\jetified-datastore-preferences-1.0.0\res
-com.example.to_doc.app-jetified-activity-ktx-1.8.1-12 C:\Users\junhy\.gradle\caches\transforms-3\28f3257d61bebac208a44d6cde330c5c\transformed\jetified-activity-ktx-1.8.1\res
-com.example.to_doc.app-jetified-android-maps-utils-3.6.0-13 C:\Users\junhy\.gradle\caches\transforms-3\29e051ea71bad5156dae0e5b2e5b2cde\transformed\jetified-android-maps-utils-3.6.0\res
-com.example.to_doc.app-jetified-core-ktx-1.13.1-14 C:\Users\junhy\.gradle\caches\transforms-3\2bb05a92e8dd51c8f48137b81c9f4c2e\transformed\jetified-core-ktx-1.13.1\res
-com.example.to_doc.app-swiperefreshlayout-1.1.0-15 C:\Users\junhy\.gradle\caches\transforms-3\3209a8a4ab4918753a2de6715868eee5\transformed\swiperefreshlayout-1.1.0\res
-com.example.to_doc.app-jetified-savedstate-ktx-1.2.1-16 C:\Users\junhy\.gradle\caches\transforms-3\3a62fcfbc2e13499e2b4f8b93c80ab3e\transformed\jetified-savedstate-ktx-1.2.1\res
-com.example.to_doc.app-jetified-core-1.0.0-17 C:\Users\junhy\.gradle\caches\transforms-3\3aa2a4d19dca954a8095e8372160e402\transformed\jetified-core-1.0.0\res
-com.example.to_doc.app-jetified-annotation-experimental-1.4.0-18 C:\Users\junhy\.gradle\caches\transforms-3\4d0f7049286f7c465d2abfda54ae2306\transformed\jetified-annotation-experimental-1.4.0\res
-com.example.to_doc.app-jetified-tracing-1.2.0-19 C:\Users\junhy\.gradle\caches\transforms-3\4f4f4d23d772bad407dc22480270484a\transformed\jetified-tracing-1.2.0\res
-com.example.to_doc.app-jetified-play-services-maps-18.2.0-20 C:\Users\junhy\.gradle\caches\transforms-3\61d62a1fd46b992b95bf6498a0856c7a\transformed\jetified-play-services-maps-18.2.0\res
-com.example.to_doc.app-jetified-security-crypto-1.1.0-alpha06-21 C:\Users\junhy\.gradle\caches\transforms-3\69b5a152483a5a9fe7e09c798bcc0cbd\transformed\jetified-security-crypto-1.1.0-alpha06\res
-com.example.to_doc.app-fragment-1.7.1-22 C:\Users\junhy\.gradle\caches\transforms-3\6f22ab5c0d68ddfafd63114f84327654\transformed\fragment-1.7.1\res
-com.example.to_doc.app-jetified-datastore-1.0.0-23 C:\Users\junhy\.gradle\caches\transforms-3\78833d6533465d3dffcaad659d41fc9f\transformed\jetified-datastore-1.0.0\res
-com.example.to_doc.app-jetified-lifecycle-process-2.7.0-24 C:\Users\junhy\.gradle\caches\transforms-3\7b76b6aa81fd3e8c5943d60fb955c9d8\transformed\jetified-lifecycle-process-2.7.0\res
-com.example.to_doc.app-core-1.13.1-25 C:\Users\junhy\.gradle\caches\transforms-3\7c156501733271f436557531ee1c8b80\transformed\core-1.13.1\res
-com.example.to_doc.app-slidingpanelayout-1.2.0-26 C:\Users\junhy\.gradle\caches\transforms-3\7d5dfec93076cac5eafda9fd99198eb4\transformed\slidingpanelayout-1.2.0\res
-com.example.to_doc.app-jetified-emoji2-views-helper-1.2.0-27 C:\Users\junhy\.gradle\caches\transforms-3\82d0e0baa76b009f24e623b469cd4fe5\transformed\jetified-emoji2-views-helper-1.2.0\res
-com.example.to_doc.app-jetified-lifecycle-viewmodel-ktx-2.7.0-28 C:\Users\junhy\.gradle\caches\transforms-3\85b8c67b632bf885020ea769ce9dc573\transformed\jetified-lifecycle-viewmodel-ktx-2.7.0\res
-com.example.to_doc.app-jetified-fragment-ktx-1.7.1-29 C:\Users\junhy\.gradle\caches\transforms-3\9657fe520b5863b7f1a0f28763f2205a\transformed\jetified-fragment-ktx-1.7.1\res
-com.example.to_doc.app-jetified-lifecycle-viewmodel-savedstate-2.7.0-30 C:\Users\junhy\.gradle\caches\transforms-3\9a0d8c61fafd0b80c27172abd7c53028\transformed\jetified-lifecycle-viewmodel-savedstate-2.7.0\res
-com.example.to_doc.app-coordinatorlayout-1.0.0-31 C:\Users\junhy\.gradle\caches\transforms-3\ae07e8a1fc1b971062e286e80e105e7b\transformed\coordinatorlayout-1.0.0\res
-com.example.to_doc.app-lifecycle-livedata-core-2.7.0-32 C:\Users\junhy\.gradle\caches\transforms-3\afbbef0c26440735d90dbb914c5d4e5d\transformed\lifecycle-livedata-core-2.7.0\res
-com.example.to_doc.app-jetified-window-java-1.2.0-33 C:\Users\junhy\.gradle\caches\transforms-3\b18a24d885d5bc9a3a3944d9abbbac9f\transformed\jetified-window-java-1.2.0\res
-com.example.to_doc.app-jetified-play-services-base-18.0.1-34 C:\Users\junhy\.gradle\caches\transforms-3\b212f01dce92cf1024a55ab466d7cf4b\transformed\jetified-play-services-base-18.0.1\res
-com.example.to_doc.app-jetified-window-1.2.0-35 C:\Users\junhy\.gradle\caches\transforms-3\b63f7937094259f64dc28b40ff59ec78\transformed\jetified-window-1.2.0\res
-com.example.to_doc.app-jetified-lifecycle-runtime-ktx-2.7.0-36 C:\Users\junhy\.gradle\caches\transforms-3\b6e848e8def33df84acd70da7814b81f\transformed\jetified-lifecycle-runtime-ktx-2.7.0\res
-com.example.to_doc.app-recyclerview-1.0.0-37 C:\Users\junhy\.gradle\caches\transforms-3\bc767ebf2b37c2fcdd78bd327c2de25b\transformed\recyclerview-1.0.0\res
-com.example.to_doc.app-webkit-1.12.0-38 C:\Users\junhy\.gradle\caches\transforms-3\c90a499ff0039ad9603ef6cd5f8843e9\transformed\webkit-1.12.0\res
-com.example.to_doc.app-lifecycle-livedata-2.7.0-39 C:\Users\junhy\.gradle\caches\transforms-3\d00920293754c7d4dcd101c069555d49\transformed\lifecycle-livedata-2.7.0\res
-com.example.to_doc.app-jetified-startup-runtime-1.1.1-40 C:\Users\junhy\.gradle\caches\transforms-3\de3f998f34d06213798f276579f6ec4a\transformed\jetified-startup-runtime-1.1.1\res
-com.example.to_doc.app-jetified-play-services-basement-18.0.0-41 C:\Users\junhy\.gradle\caches\transforms-3\e17954d4969880914a4ce0f3ccf51a8f\transformed\jetified-play-services-basement-18.0.0\res
-com.example.to_doc.app-lifecycle-viewmodel-2.7.0-42 C:\Users\junhy\.gradle\caches\transforms-3\e27717897775c59cceee9cefca062200\transformed\lifecycle-viewmodel-2.7.0\res
-com.example.to_doc.app-lifecycle-runtime-2.7.0-43 C:\Users\junhy\.gradle\caches\transforms-3\f6e8c7a239e5bbbfcef3d32918f927c2\transformed\lifecycle-runtime-2.7.0\res
-com.example.to_doc.app-debug-44 D:\ProjectToDocToDoc\to_doc\android\app\src\debug\res
-com.example.to_doc.app-main-45 D:\ProjectToDocToDoc\to_doc\android\app\src\main\res
-com.example.to_doc.app-pngs-46 D:\ProjectToDocToDoc\to_doc\build\app\generated\res\pngs\debug
-com.example.to_doc.app-resValues-47 D:\ProjectToDocToDoc\to_doc\build\app\generated\res\resValues\debug
-com.example.to_doc.app-packageDebugResources-48 D:\ProjectToDocToDoc\to_doc\build\app\intermediates\incremental\debug\packageDebugResources\merged.dir
-com.example.to_doc.app-packageDebugResources-49 D:\ProjectToDocToDoc\to_doc\build\app\intermediates\incremental\debug\packageDebugResources\stripped.dir
-com.example.to_doc.app-merged_res-50 D:\ProjectToDocToDoc\to_doc\build\app\intermediates\merged_res\debug
-com.example.to_doc.app-packaged_res-51 D:\ProjectToDocToDoc\to_doc\build\flutter_inappwebview_android\intermediates\packaged_res\debug
-com.example.to_doc.app-packaged_res-52 D:\ProjectToDocToDoc\to_doc\build\flutter_plugin_android_lifecycle\intermediates\packaged_res\debug
-com.example.to_doc.app-packaged_res-53 D:\ProjectToDocToDoc\to_doc\build\flutter_secure_storage\intermediates\packaged_res\debug
-com.example.to_doc.app-packaged_res-54 D:\ProjectToDocToDoc\to_doc\build\geocoding_android\intermediates\packaged_res\debug
-com.example.to_doc.app-packaged_res-55 D:\ProjectToDocToDoc\to_doc\build\google_maps_flutter_android\intermediates\packaged_res\debug
-com.example.to_doc.app-packaged_res-56 D:\ProjectToDocToDoc\to_doc\build\path_provider_android\intermediates\packaged_res\debug
-com.example.to_doc.app-packaged_res-57 D:\ProjectToDocToDoc\to_doc\build\shared_preferences_android\intermediates\packaged_res\debug
-com.example.to_doc.app-packaged_res-58 D:\ProjectToDocToDoc\to_doc\build\url_launcher_android\intermediates\packaged_res\debug
+com.example.to_doc.app-jetified-emoji2-1.2.0-0 C:\Users\kimje\.gradle\caches\transforms-3\00ced4e0c4fa573a256faffd17efb966\transformed\jetified-emoji2-1.2.0\res
+com.example.to_doc.app-jetified-lifecycle-livedata-core-ktx-2.7.0-1 C:\Users\kimje\.gradle\caches\transforms-3\046451f6d2033086855d7e37d75f625f\transformed\jetified-lifecycle-livedata-core-ktx-2.7.0\res
+com.example.to_doc.app-appcompat-1.6.1-2 C:\Users\kimje\.gradle\caches\transforms-3\060dbbff9fcabaffa8790a47cbba06e5\transformed\appcompat-1.6.1\res
+com.example.to_doc.app-jetified-savedstate-1.2.1-3 C:\Users\kimje\.gradle\caches\transforms-3\0a16aa6383478570d295c8b4140502f2\transformed\jetified-savedstate-1.2.1\res
+com.example.to_doc.app-preference-1.2.1-4 C:\Users\kimje\.gradle\caches\transforms-3\0af907e20cd304221e86acf16c90712a\transformed\preference-1.2.1\res
+com.example.to_doc.app-jetified-activity-1.8.1-5 C:\Users\kimje\.gradle\caches\transforms-3\17d8337d84594848b6b79b231591cb39\transformed\jetified-activity-1.8.1\res
+com.example.to_doc.app-jetified-appcompat-resources-1.6.1-6 C:\Users\kimje\.gradle\caches\transforms-3\1d070a9ea3459edf3f5c40d5785c2051\transformed\jetified-appcompat-resources-1.6.1\res
+com.example.to_doc.app-jetified-profileinstaller-1.3.1-7 C:\Users\kimje\.gradle\caches\transforms-3\1e40d107b7c835b250f39851da7b1cf0\transformed\jetified-profileinstaller-1.3.1\res
+com.example.to_doc.app-transition-1.4.1-8 C:\Users\kimje\.gradle\caches\transforms-3\1f0ecc8d28304472859d14550f1c0309\transformed\transition-1.4.1\res
+com.example.to_doc.app-browser-1.8.0-9 C:\Users\kimje\.gradle\caches\transforms-3\210b3f561f2ccf03186807b155ee965e\transformed\browser-1.8.0\res
+com.example.to_doc.app-core-runtime-2.2.0-10 C:\Users\kimje\.gradle\caches\transforms-3\226d7d03a0815510d167f1e7f64616f9\transformed\core-runtime-2.2.0\res
+com.example.to_doc.app-jetified-datastore-preferences-1.0.0-11 C:\Users\kimje\.gradle\caches\transforms-3\268c3153a5c85e4189d7f06edbd1697a\transformed\jetified-datastore-preferences-1.0.0\res
+com.example.to_doc.app-jetified-activity-ktx-1.8.1-12 C:\Users\kimje\.gradle\caches\transforms-3\28f3257d61bebac208a44d6cde330c5c\transformed\jetified-activity-ktx-1.8.1\res
+com.example.to_doc.app-jetified-android-maps-utils-3.6.0-13 C:\Users\kimje\.gradle\caches\transforms-3\29e051ea71bad5156dae0e5b2e5b2cde\transformed\jetified-android-maps-utils-3.6.0\res
+com.example.to_doc.app-jetified-core-ktx-1.13.1-14 C:\Users\kimje\.gradle\caches\transforms-3\2bb05a92e8dd51c8f48137b81c9f4c2e\transformed\jetified-core-ktx-1.13.1\res
+com.example.to_doc.app-swiperefreshlayout-1.1.0-15 C:\Users\kimje\.gradle\caches\transforms-3\3209a8a4ab4918753a2de6715868eee5\transformed\swiperefreshlayout-1.1.0\res
+com.example.to_doc.app-jetified-savedstate-ktx-1.2.1-16 C:\Users\kimje\.gradle\caches\transforms-3\3a62fcfbc2e13499e2b4f8b93c80ab3e\transformed\jetified-savedstate-ktx-1.2.1\res
+com.example.to_doc.app-jetified-core-1.0.0-17 C:\Users\kimje\.gradle\caches\transforms-3\3aa2a4d19dca954a8095e8372160e402\transformed\jetified-core-1.0.0\res
+com.example.to_doc.app-jetified-annotation-experimental-1.4.0-18 C:\Users\kimje\.gradle\caches\transforms-3\4d0f7049286f7c465d2abfda54ae2306\transformed\jetified-annotation-experimental-1.4.0\res
+com.example.to_doc.app-jetified-tracing-1.2.0-19 C:\Users\kimje\.gradle\caches\transforms-3\4f4f4d23d772bad407dc22480270484a\transformed\jetified-tracing-1.2.0\res
+com.example.to_doc.app-jetified-play-services-maps-18.2.0-20 C:\Users\kimje\.gradle\caches\transforms-3\61d62a1fd46b992b95bf6498a0856c7a\transformed\jetified-play-services-maps-18.2.0\res
+com.example.to_doc.app-jetified-security-crypto-1.1.0-alpha06-21 C:\Users\kimje\.gradle\caches\transforms-3\69b5a152483a5a9fe7e09c798bcc0cbd\transformed\jetified-security-crypto-1.1.0-alpha06\res
+com.example.to_doc.app-fragment-1.7.1-22 C:\Users\kimje\.gradle\caches\transforms-3\6f22ab5c0d68ddfafd63114f84327654\transformed\fragment-1.7.1\res
+com.example.to_doc.app-jetified-datastore-1.0.0-23 C:\Users\kimje\.gradle\caches\transforms-3\78833d6533465d3dffcaad659d41fc9f\transformed\jetified-datastore-1.0.0\res
+com.example.to_doc.app-jetified-lifecycle-process-2.7.0-24 C:\Users\kimje\.gradle\caches\transforms-3\7b76b6aa81fd3e8c5943d60fb955c9d8\transformed\jetified-lifecycle-process-2.7.0\res
+com.example.to_doc.app-core-1.13.1-25 C:\Users\kimje\.gradle\caches\transforms-3\7c156501733271f436557531ee1c8b80\transformed\core-1.13.1\res
+com.example.to_doc.app-slidingpanelayout-1.2.0-26 C:\Users\kimje\.gradle\caches\transforms-3\7d5dfec93076cac5eafda9fd99198eb4\transformed\slidingpanelayout-1.2.0\res
+com.example.to_doc.app-jetified-emoji2-views-helper-1.2.0-27 C:\Users\kimje\.gradle\caches\transforms-3\82d0e0baa76b009f24e623b469cd4fe5\transformed\jetified-emoji2-views-helper-1.2.0\res
+com.example.to_doc.app-jetified-lifecycle-viewmodel-ktx-2.7.0-28 C:\Users\kimje\.gradle\caches\transforms-3\85b8c67b632bf885020ea769ce9dc573\transformed\jetified-lifecycle-viewmodel-ktx-2.7.0\res
+com.example.to_doc.app-jetified-fragment-ktx-1.7.1-29 C:\Users\kimje\.gradle\caches\transforms-3\9657fe520b5863b7f1a0f28763f2205a\transformed\jetified-fragment-ktx-1.7.1\res
+com.example.to_doc.app-jetified-lifecycle-viewmodel-savedstate-2.7.0-30 C:\Users\kimje\.gradle\caches\transforms-3\9a0d8c61fafd0b80c27172abd7c53028\transformed\jetified-lifecycle-viewmodel-savedstate-2.7.0\res
+com.example.to_doc.app-coordinatorlayout-1.0.0-31 C:\Users\kimje\.gradle\caches\transforms-3\ae07e8a1fc1b971062e286e80e105e7b\transformed\coordinatorlayout-1.0.0\res
+com.example.to_doc.app-lifecycle-livedata-core-2.7.0-32 C:\Users\kimje\.gradle\caches\transforms-3\afbbef0c26440735d90dbb914c5d4e5d\transformed\lifecycle-livedata-core-2.7.0\res
+com.example.to_doc.app-jetified-window-java-1.2.0-33 C:\Users\kimje\.gradle\caches\transforms-3\b18a24d885d5bc9a3a3944d9abbbac9f\transformed\jetified-window-java-1.2.0\res
+com.example.to_doc.app-jetified-play-services-base-18.0.1-34 C:\Users\kimje\.gradle\caches\transforms-3\b212f01dce92cf1024a55ab466d7cf4b\transformed\jetified-play-services-base-18.0.1\res
+com.example.to_doc.app-jetified-window-1.2.0-35 C:\Users\kimje\.gradle\caches\transforms-3\b63f7937094259f64dc28b40ff59ec78\transformed\jetified-window-1.2.0\res
+com.example.to_doc.app-jetified-lifecycle-runtime-ktx-2.7.0-36 C:\Users\kimje\.gradle\caches\transforms-3\b6e848e8def33df84acd70da7814b81f\transformed\jetified-lifecycle-runtime-ktx-2.7.0\res
+com.example.to_doc.app-recyclerview-1.0.0-37 C:\Users\kimje\.gradle\caches\transforms-3\bc767ebf2b37c2fcdd78bd327c2de25b\transformed\recyclerview-1.0.0\res
+com.example.to_doc.app-webkit-1.12.0-38 C:\Users\kimje\.gradle\caches\transforms-3\c90a499ff0039ad9603ef6cd5f8843e9\transformed\webkit-1.12.0\res
+com.example.to_doc.app-lifecycle-livedata-2.7.0-39 C:\Users\kimje\.gradle\caches\transforms-3\d00920293754c7d4dcd101c069555d49\transformed\lifecycle-livedata-2.7.0\res
+com.example.to_doc.app-jetified-startup-runtime-1.1.1-40 C:\Users\kimje\.gradle\caches\transforms-3\de3f998f34d06213798f276579f6ec4a\transformed\jetified-startup-runtime-1.1.1\res
+com.example.to_doc.app-jetified-play-services-basement-18.0.0-41 C:\Users\kimje\.gradle\caches\transforms-3\e17954d4969880914a4ce0f3ccf51a8f\transformed\jetified-play-services-basement-18.0.0\res
+com.example.to_doc.app-lifecycle-viewmodel-2.7.0-42 C:\Users\kimje\.gradle\caches\transforms-3\e27717897775c59cceee9cefca062200\transformed\lifecycle-viewmodel-2.7.0\res
+com.example.to_doc.app-lifecycle-runtime-2.7.0-43 C:\Users\kimje\.gradle\caches\transforms-3\f6e8c7a239e5bbbfcef3d32918f927c2\transformed\lifecycle-runtime-2.7.0\res
+com.example.to_doc.app-debug-44 D:\SynologyDrive\_Main Archive\_University Materials\_myProject\Project_mentally\frontend\android\app\src\debug\res
+com.example.to_doc.app-main-45 D:\SynologyDrive\_Main Archive\_University Materials\_myProject\Project_mentally\frontend\android\app\src\main\res
+com.example.to_doc.app-pngs-46 D:\SynologyDrive\_Main Archive\_University Materials\_myProject\Project_mentally\frontend\build\app\generated\res\pngs\debug
+com.example.to_doc.app-resValues-47 D:\SynologyDrive\_Main Archive\_University Materials\_myProject\Project_mentally\frontend\build\app\generated\res\resValues\debug
+com.example.to_doc.app-packageDebugResources-48 D:\SynologyDrive\_Main Archive\_University Materials\_myProject\Project_mentally\frontend\build\app\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.example.to_doc.app-packageDebugResources-49 D:\SynologyDrive\_Main Archive\_University Materials\_myProject\Project_mentally\frontend\build\app\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.example.to_doc.app-merged_res-50 D:\SynologyDrive\_Main Archive\_University Materials\_myProject\Project_mentally\frontend\build\app\intermediates\merged_res\debug
+com.example.to_doc.app-packaged_res-51 D:\SynologyDrive\_Main Archive\_University Materials\_myProject\Project_mentally\frontend\build\flutter_inappwebview_android\intermediates\packaged_res\debug
+com.example.to_doc.app-packaged_res-52 D:\SynologyDrive\_Main Archive\_University Materials\_myProject\Project_mentally\frontend\build\flutter_plugin_android_lifecycle\intermediates\packaged_res\debug
+com.example.to_doc.app-packaged_res-53 D:\SynologyDrive\_Main Archive\_University Materials\_myProject\Project_mentally\frontend\build\flutter_secure_storage\intermediates\packaged_res\debug
+com.example.to_doc.app-packaged_res-54 D:\SynologyDrive\_Main Archive\_University Materials\_myProject\Project_mentally\frontend\build\geocoding_android\intermediates\packaged_res\debug
+com.example.to_doc.app-packaged_res-55 D:\SynologyDrive\_Main Archive\_University Materials\_myProject\Project_mentally\frontend\build\google_maps_flutter_android\intermediates\packaged_res\debug
+com.example.to_doc.app-packaged_res-56 D:\SynologyDrive\_Main Archive\_University Materials\_myProject\Project_mentally\frontend\build\kakao_map_plugin\intermediates\packaged_res\debug
+com.example.to_doc.app-packaged_res-57 D:\SynologyDrive\_Main Archive\_University Materials\_myProject\Project_mentally\frontend\build\path_provider_android\intermediates\packaged_res\debug
+com.example.to_doc.app-packaged_res-58 D:\SynologyDrive\_Main Archive\_University Materials\_myProject\Project_mentally\frontend\build\shared_preferences_android\intermediates\packaged_res\debug
+com.example.to_doc.app-packaged_res-59 D:\SynologyDrive\_Main Archive\_University Materials\_myProject\Project_mentally\frontend\build\url_launcher_android\intermediates\packaged_res\debug
+com.example.to_doc.app-packaged_res-60 D:\SynologyDrive\_Main Archive\_University Materials\_myProject\Project_mentally\frontend\build\webview_flutter_android\intermediates\packaged_res\debug
