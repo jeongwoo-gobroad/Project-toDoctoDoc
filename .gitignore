@@ -17,6 +17,8 @@
 /frontend/.svn/
 /frontend/.swiftpm/
 /frontend/migrate_working_dir/
+/frontend/build/
+
 
 /frontend_doctor/*.class
 /frontend_doctor/*.log
@@ -24,6 +26,7 @@
 /frontend_doctor/*.swp
 /frontend_doctor/.DS_Store
 /frontend_doctor/.build/
+/frontend_doctor/build/
 /frontend_doctor/.buildlog/
 /frontend_doctor/.history
 /frontend_doctor/.svn/

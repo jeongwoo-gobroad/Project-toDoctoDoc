@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'chat_bubble_listview.dart';
 import 'controllers/aichat_load_controller.dart';
 import 'package:to_doc/chat_object.dart';
-import 'ai_chat_sub.dart';
+import 'ai_chat_screen.dart';
 import 'package:dio/dio.dart';
 
 

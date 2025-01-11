@@ -1,12 +1,12 @@
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ChatSocketService {
+class AiChatSocketService {
   late io.Socket socket;
   late var RoomCode;
   bool chatOngoing = false;
 
-  ChatSocketService(String chatRoomCode, String token) {
+  AiChatSocketService(String chatRoomCode, String token) {
     //final prefs = SharedPreferences.getInstance();
     //final token = prefs.getString('jwt_token');
 

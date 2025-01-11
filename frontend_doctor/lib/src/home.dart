@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'dm_list.dart';
+
+// jeongwoox7
+// aa860104
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -14,11 +18,13 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-          onPressed: (){/* to DM page */},
+          onPressed: (){
+            Get.to ( () => DMList());
+            },
           child: const Icon(Icons.chat_bubble_outline_rounded),
-          
-          
-      ),
+
+
+          ),
       
 
       appBar: AppBar(

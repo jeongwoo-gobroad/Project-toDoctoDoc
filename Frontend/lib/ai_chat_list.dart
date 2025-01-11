@@ -9,7 +9,7 @@ import 'package:to_doc/controllers/aichat_delete_coltroller.dart';
 import 'package:dio/dio.dart';
 
 import 'ai_chat_oldview.dart';
-import 'ai_chat_sub.dart';
+import 'ai_chat_screen.dart';
 
 enum MenuType {
   edit(tostring: 'temp', toIcon: Icon(CupertinoIcons.scissors)),

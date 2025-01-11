@@ -6,6 +6,7 @@ import 'package:to_doc/controllers/careplus/chat_controller.dart';
 import 'package:to_doc/controllers/careplus/curate_list_controller.dart';
 import 'package:to_doc/controllers/userInfo_controller.dart';
 import 'package:to_doc/controllers/view_controller.dart';
+import 'package:to_doc/screens/chat/dm_list.dart';
 import 'package:to_doc/screens/pageView.dart';
 import 'package:to_doc/ai_chat_oldview.dart';
 import 'package:to_doc/controllers/aichat_load_controller.dart';
@@ -27,7 +28,7 @@ class _CurationScreenState extends State<CurationScreen>
       Get.put(CurateListController(dio:Dio()));
   final ViewController viewController = Get.find<ViewController>();
   final AiChatListController aiChatListController = Get.put(AiChatListController(dio: Dio()));
-  final ChatController chatController = Get.put(ChatController());
+  final ChatController chatController = Get.put(ChatController(dio: Dio()));
   final UserinfoController userinfoController = Get.find<UserinfoController>();
 
   String formatDate(String date) {
@@ -262,7 +263,7 @@ class _CurationScreenState extends State<CurationScreen>
                 onPressed: () {
                   print('doctor ID : ${comment['doctor']['_id']}');
                   print('user ID : ${userinfoController.id}');
-                  //chatController.requestChat('67763d058b0c374bed083641', '677fbcfcd77a92c816208849');
+                  reQuestChat(userinfoController.uid.toString(), comment['doctor']['_id']);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.purple[600],
@@ -283,6 +284,11 @@ class _CurationScreenState extends State<CurationScreen>
         ),
       ),
     );
+  }
+
+  void reQuestChat(String userId, String doctorId) async {
+    await chatController.requestChat(userId, doctorId);
+    Get.offAll(()=> DMList());
   }
 
   @override

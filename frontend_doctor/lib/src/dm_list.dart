@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:to_doc/controllers/careplus/chat_controller.dart';
-import 'package:to_doc/controllers/careplus/chat_data_model.dart';
-import 'package:to_doc/screens/chat/chat_screen.dart';
 
-import '../../socket_service/chat_socket_service.dart';
+import 'chat_controller.dart';
+import 'chat_screen.dart';
+import 'chat_socket_service.dart';
+
 
 class DMList extends StatefulWidget {
-  
+
   @override
   State<DMList> createState() => _DMListState();
 }
@@ -48,7 +48,7 @@ class _DMListState extends State<DMList> {
 
   @override
   Widget build(BuildContext context) {
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('채팅 목록'),
@@ -87,7 +87,7 @@ class _DMListState extends State<DMList> {
                     print(chat.id);
                     socketService.joinChat(chat.id);
                     Get.to(()=> ChatScreen(socketService: socketService, chatId: chat.id));
-                  
+
                   },
                   child: Container(
                     padding: const EdgeInsets.all(16),
@@ -101,7 +101,7 @@ class _DMListState extends State<DMList> {
                     ),
                     child: Row(
                       children: [
-                        
+
                         const SizedBox(width: 16),
                         Expanded(
                           child: Column(
@@ -111,7 +111,7 @@ class _DMListState extends State<DMList> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    chat.doctor.name ?? '의사 이름 없음',
+                                    chat.user.name ?? '의사 이름 없음',
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,

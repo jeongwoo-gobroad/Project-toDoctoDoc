@@ -8,7 +8,7 @@ import 'package:to_doc/controllers/aichat_controller.dart';
 import 'package:to_doc/controllers/aichat_save_coltroller.dart';
 
 import 'chat_bubble_listview.dart';
-import 'chat_socket_service.dart';
+import 'socket_service/aichat_socket_service.dart';
 import 'chat_object.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:bubble/bubble.dart';
@@ -33,7 +33,7 @@ class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
 
   var chatId = '';
   List<ChatObject> _messageList = [];
-  late ChatSocketService socketService;
+  late AiChatSocketService socketService;
 
   void asyncNew() async {
     if (widget.isNewChat) {
@@ -58,7 +58,7 @@ class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt_token');
 
-    socketService = ChatSocketService(chatId, token!);
+    socketService = AiChatSocketService(chatId, token!);
     WidgetsBinding.instance.addObserver(this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {

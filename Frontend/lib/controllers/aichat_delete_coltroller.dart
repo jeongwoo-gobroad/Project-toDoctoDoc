@@ -42,7 +42,6 @@ class AiChatDeleteController extends GetxController{
       ),
     );
 
-
     if(response.statusCode == 200){
       Get.snackbar('Success', '채팅을 삭제했습니다. ${response.statusCode})');
     }

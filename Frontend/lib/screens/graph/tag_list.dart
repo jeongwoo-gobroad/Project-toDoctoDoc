@@ -26,16 +26,12 @@ class _TagListState extends State<TagList> {
   }
   Future<void> _searchByTag() async {
     searchResults.clear();
-   
-      
-      searchResults.value = await mypostController.tagSearch(widget.tag);
-      
-      print(searchResults);
-
-      if(searchResults.isEmpty){
-        _resetSearch();
-        Get.snackbar('Error', '검색 결과가 없습니다.');
-      }
+    searchResults.value = await mypostController.tagSearch(widget.tag);
+    print(searchResults);
+    if(searchResults.isEmpty){
+      _resetSearch();
+      Get.snackbar('Error', '검색 결과가 없습니다.');
+    }
   }
   Future<void> _onRefresh() async {
     await _searchByTag();

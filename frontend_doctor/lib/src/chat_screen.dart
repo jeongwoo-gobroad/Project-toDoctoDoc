@@ -7,10 +7,10 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:to_doc/chat_bubble_listview.dart';
-import 'package:to_doc/chat_object.dart';
-import 'package:to_doc/controllers/careplus/chat_controller.dart';
-import 'package:to_doc/socket_service/chat_socket_service.dart';
+
+import 'chat_controller.dart';
+import 'chat_object.dart';
+import 'chat_socket_service.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key, required this.socketService, required this.chatId}) : super(key:key);
@@ -40,7 +40,7 @@ class _ChatScreen extends State<ChatScreen> {
       //setState(() {
       for (var chat in data['chatList']) {
         //print(chat['message']);
-        _messageList.add(ChatObject(content: chat['message'], role: chat['role'] == 'user' ? 'user' : 'doctor', createdAt:null));
+        _messageList.add(ChatObject(content: chat['message'], role: chat['role'] == 'doctor' ? 'doctor' : 'user', createdAt:null));
       }
       //});
 
@@ -55,7 +55,7 @@ class _ChatScreen extends State<ChatScreen> {
 
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.socketService.onUserReceived((data) {
+      widget.socketService.onDoctorReceivec((data) {
         print('user chat received');
         print('data1');
         print(data);
@@ -64,9 +64,7 @@ class _ChatScreen extends State<ChatScreen> {
         //print('data2');
         //print(data2);
 
-        setState(() {
-          _messageList.add(ChatObject(content: data['message'], role: 'doctor', createdAt: DateTime.now()));
-        });
+        if (this.mounted) setState(() {_messageList.add(ChatObject(content: data['message'], role: 'user', createdAt: DateTime.now()));});
       });
     });
   }
@@ -92,7 +90,7 @@ class _ChatScreen extends State<ChatScreen> {
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
       }
     } */
-    // 
+    //
     // String getFormattedTime(String? timestamp) {
     //   if (timestamp == null) return '';
     //   try {
@@ -104,7 +102,7 @@ class _ChatScreen extends State<ChatScreen> {
     //   }
     // }
 
-    // 추후 구현 같은 user 연속 챗 동일 시간시 마지막 챗만 시간뜨도록록 
+    // 추후 구현 같은 user 연속 챗 동일 시간시 마지막 챗만 시간뜨도록록
     // bool shouldShowTime(int index) {
     //   if (index == controller.chat.length - 1) return true;
 
@@ -116,7 +114,7 @@ class _ChatScreen extends State<ChatScreen> {
     //   final currentDate = currentMsg['date'];
     //   final nextDate = nextMsg['date'];
 
-    //   
+    //
     //   return currentRole != nextRole || currentDate != nextDate;
     // }
 
@@ -129,7 +127,7 @@ class _ChatScreen extends State<ChatScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('채팅'),
+          title: Text('채팅 BY doctor'),
           centerTitle: true,
         ),
         body: Column(
@@ -141,7 +139,7 @@ class _ChatScreen extends State<ChatScreen> {
                 if (widget.socketService.ischatFetchLoading.value) {
                   return const Center(child: CircularProgressIndicator());
                 }
-      /*              WidgetsBinding.instance.addPostFrameCallback((_) {
+                /*              WidgetsBinding.instance.addPostFrameCallback((_) {
                   scrollToBottom();
                 });*/
                 return ListView.builder(
@@ -149,7 +147,7 @@ class _ChatScreen extends State<ChatScreen> {
                   itemCount: _messageList.length,
                   itemBuilder: (context, index) {
                     final chatList = _messageList[index];
-                    final isUser = _messageList[index].role == 'user';
+                    final isUser = _messageList[index].role == 'doctor';
                     final showTime = true;
 
                     return Padding(
@@ -219,13 +217,13 @@ class _ChatScreen extends State<ChatScreen> {
                           vertical: 12,
                         ),
                       ),
-                      onSubmitted: (value) {
+/*                      onSubmitted: (value) {
                         if (value.isNotEmpty) {
                           widget.socketService.sendMessage(widget.chatId, value);
                           messageController.clear();
                           setState(() {
                             _messageList.add(ChatObject(content: value,
-                                role: 'user',
+                                role: 'doctor',
                                 createdAt: DateTime.now()));
                             print(_messageList);
                           });
@@ -238,7 +236,7 @@ class _ChatScreen extends State<ChatScreen> {
                           });
 
                         }
-                      },
+                      },*/
                     ),
                   ),
                   SizedBox(width: 10),
@@ -249,7 +247,7 @@ class _ChatScreen extends State<ChatScreen> {
                         print(_messageList);
 
                         setState(() {
-                          _messageList.add(ChatObject(content: messageController.text, role: 'user', createdAt: DateTime.now()));
+                          _messageList.add(ChatObject(content: messageController.text, role: 'doctor', createdAt: DateTime.now()));
                         });
                         messageController.clear();
 

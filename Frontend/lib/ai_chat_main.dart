@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/aboutpage.dart';
-import 'ai_chat_sub.dart';
+import 'ai_chat_screen.dart';
 import 'ai_chat_list.dart';
 import 'chat_object.dart';
 import 'controllers/aichat_controller.dart';
