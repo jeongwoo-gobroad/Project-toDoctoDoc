@@ -36,12 +36,6 @@ const chatting_doctor = async (socket, next) => {
                         return;
                     }
         
-                    socket.join(roomNo);
-                    let peopleCount = await redis.redisClient.get("room: " + roomNo);
-                    peopleCount++;
-                    // await redis.redisClient.set("room: " + roomNo, peopleCount);
-                    await setCacheForThreeDaysAsync("room: " + roomNo, peopleCount);
-        
                     const unreadChats = JSON.parse(await redis.redisClient.get(userid));
                     if (unreadChats && unreadChats.roomNo) {
                         delete unreadChats.roomNo;
@@ -61,30 +55,7 @@ const chatting_doctor = async (socket, next) => {
                 try {
                     const roomNo = data;
         
-                    const chat = await Chat.findById(roomNo);
-        
-                    if (chat.doctor != userid) {  
-                        socket.emit("error", "notYourChat");
-        
-                        return;
-                    }
-        
                     socket.leave(roomNo);
-                    let peopleCount = await redis.redisClient.get("room: " + roomNo);
-                    peopleCount--;
-                    await setCacheForThreeDaysAsync("room: " + roomNo, peopleCount);
-        
-                    const unreadChats = JSON.parse(await redis.redisClient.get(userid));
-        
-                    if (chat.chatList.length > 0) {
-                        unreadChats.roomNo = {
-                            recentMessage: chat.chatList[chat.chatList.length - 1].message, 
-                            unread: 0, 
-                            createdAt: chat.chatList[chat.chatList.length - 1].createdAt
-                        };
-                    }
-        
-                    await setCacheForThreeDaysAsync(userid, unreadChats);
         
                     socket.emit("returnLeftChat", "-");
                 } catch (error) {
@@ -113,10 +84,17 @@ const chatting_doctor = async (socket, next) => {
                     chat.chatList.push({role: "doctor", message: struct.message, createdAt: now});
                     await chat.save();
         
-                    if (await redis.redisClient.get("room: " + struct.roomNo) == 1) {
-                        const unreadChats = JSON.parse(await redis.redisClient.get(chat.user));
+                    if (socket.nsp.adapter.rooms.get(struct.roomNo).size == 1) {
+                        let unreadChats = JSON.parse(await getCache(chat.user));
         
-                        unreadChats.roomNo = {recentMessage: chat.chatList[chat.chatList.length - 1], unread: unreadChats.roomNo.unread + 1, createdAt: now};
+                        if (unreadChats) {
+                            unreadChats[struct.roomNo] = {recentMessage: chat.chatList[chat.chatList.length - 1], unread: unreadChats[struct.roomNo].unread + 1, createdAt: now};
+                        } else {
+                            unreadChats = {};
+                            unreadChats[struct.roomNo] = {recentMessage: chat.chatList[chat.chatList.length - 1], unread: 1, createdAt: now};
+                        }
+
+                        await setCacheForThreeDaysAsync(chat.user, unreadChats);
 
                         socket.emit("unread_user", "-");
                     } else {
@@ -129,6 +107,10 @@ const chatting_doctor = async (socket, next) => {
         
                     console.log(error, "errorAtSendChat");
                 }
+            });
+
+            socket.on('disconnect', (data) => {
+                
             });
 
         } catch (error) {

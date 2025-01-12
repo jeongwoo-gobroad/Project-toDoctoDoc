@@ -5,6 +5,7 @@ const UserSchema = require("../../../models/User");
 const Doctor = require("../../../models/Doctor");
 const User = mongoose.model('User', UserSchema);
 const jwt = require("jsonwebtoken");
+const { getCache } = require("../../../middleware/redisCaching");
 
 const chatting_main = async (socket, next) => {
     const token = socket.handshake.query.token;
@@ -17,7 +18,7 @@ const chatting_main = async (socket, next) => {
         try {
             // console.log("chatList");
 
-            const unreadChats = JSON.parse(await redis.redisClient.get(userid));
+            const unreadChats = JSON.parse(await getCache(userid));
 
             socket.emit('returnChatList', unreadChats);
         } catch (error) {

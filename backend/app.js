@@ -11,18 +11,12 @@ const SocketIO = require("socket.io");
 const http = require("http");
 const { wrap } = require("module");
 const cors = require("cors");
-const { url } = require("inspector");
 const redis = require("./config/redis");
+const socket = require("./routes/socket/socket").setServer;
 
 const app = express();
 const server = http.createServer(app);
-const io = SocketIO(server, {
-    path: '/msg',
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
-    },
-});
+const io = socket(server);
 
 const port = process.env.PORT || 3000;
 const errorHandler = expressErrorHandler({
@@ -90,7 +84,6 @@ app.use('/mapp', require("./routes/mapp"));
 
 app.use(expressErrorHandler.httpError(404));
 app.use(errorHandler);
-
 
 server.listen(port, () => {
     console.log(`Server working on port ${port}`);
