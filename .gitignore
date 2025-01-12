@@ -4,6 +4,7 @@
 /backend/certificate.crt
 /backend/private.key
 /auxliary/
+/upload-keystore.jks
 # Miscellaneous
 /frontend/*.class
 /frontend/*.log
@@ -181,3 +182,7 @@ app.*.map.json
 /Frontend/android/app/debug
 /Frontend/android/app/profile
 /Frontend/android/app/release
+/Frontend/android/app/key.properties
+/Frontend/android/key.properties
+/frontend/android/app/key.properties
+/frontend/android/key.properties

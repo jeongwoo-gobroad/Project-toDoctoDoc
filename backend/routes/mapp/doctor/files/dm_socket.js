@@ -87,8 +87,10 @@ const chatting_doctor = async (socket, next) => {
                     if (socket.nsp.adapter.rooms.get(struct.roomNo).size == 1) {
                         let unreadChats = JSON.parse(await getCache(chat.user));
         
-                        if (unreadChats) {
+                        if (unreadChats && unreadChats[struct.roomNo]) {
                             unreadChats[struct.roomNo] = {recentMessage: chat.chatList[chat.chatList.length - 1], unread: unreadChats[struct.roomNo].unread + 1, createdAt: now};
+                        } else if (unreadChats && !unreadChats[struct.roomNo]) {
+                            unreadChats[struct.roomNo] = {recentMessage: chat.chatList[chat.chatList.length - 1], unread: 1, createdAt: now};
                         } else {
                             unreadChats = {};
                             unreadChats[struct.roomNo] = {recentMessage: chat.chatList[chat.chatList.length - 1], unread: 1, createdAt: now};
