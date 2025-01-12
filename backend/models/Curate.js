@@ -28,7 +28,7 @@ const CurateSchema = new mongoose.Schema({
         required: true,
         default: Date.now()
     },
-    isRead: {
+    isNotRead: {
         type: Boolean,
         default: false,
     },

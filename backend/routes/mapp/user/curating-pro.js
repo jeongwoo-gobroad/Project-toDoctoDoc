@@ -1,25 +1,15 @@
 require("dotenv").config;
 const express = require("express");
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
 const UserSchema = require("../../../models/User");
 const returnResponse = require("../standardResponseJSON");
-const jwt = require("jsonwebtoken");
-const { generateToken, getTokenInformation } = require("../../auth/jwt");
+const { getTokenInformation } = require("../../auth/jwt");
 const { checkIfLoggedIn, checkIfNotLoggedIn, ifPremiumThenProceed } = require("../checkingMiddleWare");
-const { route } = require("../main");
-const returnLongLatOfAddress = require("../../../middleware/getcoordinate");
 const router = express.Router();
-const Premium_Psychiatry = require("../../../models/Premium_Psychiatry");
 
 const User = mongoose.model("User", UserSchema);
-const Chat = require("../../../models/Chat");
-const AIChat = require("../../../models/AIChat");
-const returnListOfPsychiatry = require("../../../middleware/getListOfPsychiatry");
-const topExposureForPremiumPsy = require("../../../middleware/sortByPremiumPsy");
-const { ifDailyRequestNotExceededThenProceed, ifDailyCurateNotExceededThenProceed } = require("../limitMiddleWare");
+const { ifDailyCurateNotExceededThenProceed } = require("../limitMiddleWare");
 const Curate = require("../../../models/Curate");
-const { ifLoggedInThenProceed } = require("../../checkLogin");
 const Comment = require("../../../models/Comment");
 
 router.get(["/list"],
