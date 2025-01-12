@@ -29,7 +29,7 @@ router.get(["/list"],
         const user = await getTokenInformation(req, res);
 
         try {
-            const info = await User.findById(user.userid).populate('curates', '_id date comments');
+            const info = await User.findById(user.userid).populate('curates', '_id date comments isNotRead');
             const curates = info.curates;
 
             res.status(200).json(returnResponse(false, "careplus/list", curates));
@@ -64,6 +64,11 @@ router.get(["/post/:id"],
                 res.status(800).json(returnResponse(true, "notYourCarePlusPost", "-"));
     
                 return;
+            }
+
+            if (curate.isNotRead) {
+                curate.isNotRead = false;
+                await curate.save();
             }
 
             res.status(200).json(returnResponse(false, "careplus/post", curate));

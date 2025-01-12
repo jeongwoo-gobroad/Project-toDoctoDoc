@@ -28,6 +28,10 @@ const CurateSchema = new mongoose.Schema({
         required: true,
         default: Date.now()
     },
+    isRead: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 module.exports = mongoose.model("Curate", CurateSchema);
