@@ -1,4 +1,5 @@
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:to_doc/controllers/graph_controller.dart';
 import 'package:get/get.dart';
@@ -6,7 +7,7 @@ import 'package:get/get.dart';
 class GraphBoard extends StatelessWidget {
 
   GraphBoard({super.key});
-  TagGraphController tagGraphController = Get.put(TagGraphController());
+  TagGraphController tagGraphController = Get.put(TagGraphController(dio: Dio()));
 
   Future<void> _graph() async {
 

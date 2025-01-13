@@ -1,6 +1,6 @@
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
-import 'chat_object.dart';
+import '../../chat_object.dart';
 
 class ChatMaker extends StatelessWidget {
   final scrollController;

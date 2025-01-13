@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
@@ -16,7 +17,7 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
   //List<dynamic> hospitalList = [];
   bool isLoading = true;
   late ScrollController _scrollController;
-  final MapController mapController = Get.put(MapController());
+  final MapController mapController = Get.put(MapController(dio: Dio()));
   UserinfoController userinfoController = Get.find<UserinfoController>();
   double _mapHeight = 0.5; //지도 비율율
   bool isradiusNotSelected = true;

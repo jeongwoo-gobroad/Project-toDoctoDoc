@@ -7,9 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:to_doc/controllers/aichat_controller.dart';
 import 'package:to_doc/controllers/aichat_save_coltroller.dart';
 
+import '../../chat_object.dart';
+import '../../socket_service/aichat_socket_service.dart';
 import 'chat_bubble_listview.dart';
-import 'socket_service/aichat_socket_service.dart';
-import 'chat_object.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:bubble/bubble.dart';
 

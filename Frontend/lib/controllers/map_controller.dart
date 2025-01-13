@@ -7,6 +7,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:intl/intl.dart';
 
+import '../auth/auth_dio.dart';
+import 'package:dio/dio.dart';
+
+
 class MapController extends GetxController{
   
   var psychiatryList = <Map<String, dynamic>>[].obs;
@@ -16,29 +20,48 @@ class MapController extends GetxController{
   String currentRadius = '1';
   final RxSet<Marker> markers = <Marker>{}.obs;
 
+  final Dio dio;
+
+  MapController({required this.dio});
+
+
   Future<bool> getMapInfo(String radius, {int page = 1}) async{
-    
-    final prefs = await SharedPreferences.getInstance();
+    dio.interceptors.add(CustomInterceptor());
+
+/*    final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt_token');
     
     if(token == null){
-
       Get.snackbar('Login', '로그인이 필요합니다.');
       print('로그인이 필요합니다.');
       return false;
-    }
+    }*/
+
+
     try {
       isLoading.value = true;
-      final response = await http.get(
+
+      final response = await dio.get(
+        'http://jeongwoo-kim-web.myds.me:3000/mapp/curate/around?radius=$radius',
+        options: Options(
+          headers: {
+            'Content-Type':'application/json',
+            'accessToken': 'true',
+          },
+        )
+      );
+
+
+/*      final response = await http.get(
         Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/curate/around?radius=$radius'),
         headers: {
           'Content-Type':'application/json',
           'Authorization': 'Bearer $token', 
         },
-      );
+      );*/
 
       if (response.statusCode == 200) {
-        final data = json.decode(json.decode(response.body));
+        final data = json.decode(response.data);
         markers.clear(); //초기화화
 
         print(data);

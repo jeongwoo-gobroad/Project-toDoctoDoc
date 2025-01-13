@@ -29,8 +29,6 @@ class _ChatScreen extends State<ChatScreen> {
   List<ChatObject> _messageList = [];
 
   void asyncBefore() async {
-
-
     widget.socketService.onReturnJoinedChat((data) {
       print('chat List received');
       //final decodedData = json.decode(data);

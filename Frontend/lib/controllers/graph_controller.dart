@@ -7,16 +7,24 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc/controllers/class/graph_model.dart';
 
+import '../auth/auth_dio.dart';
+import 'package:dio/dio.dart';
+
 class TagGraphController extends GetxController{
-  
+  final Dio dio;
+
   //var psychiatryList = <Map<String, dynamic>>[].obs;
   
   var _tagList = <String, int>{}.obs;      
   var _tagGraph = <List<String>>[].obs;
-  var tagPositions = <String, Offset>{}.obs; 
+  var tagPositions = <String, Offset>{}.obs;
+
+  TagGraphController({required this.dio});
+
   Future<void> getGraph() async{
-    
-    final prefs = await SharedPreferences.getInstance();
+    dio.interceptors.add(CustomInterceptor());
+
+/*    final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt_token');
     
     if(token == null){
@@ -24,19 +32,32 @@ class TagGraphController extends GetxController{
       Get.snackbar('Login', '로그인이 필요합니다.');
       print('로그인이 필요합니다.');
       return;
-    }
+    }*/
+
+
     // try {
       //isLoading.value = true;
-      final response = await http.get(
+
+    final response = await dio.get(
+      'http://jeongwoo-kim-web.myds.me:3000/mapp/graphBoard',
+      options: Options(
+        headers: {
+          'Content-Type':'application/json',
+          'accessToken': 'true',
+        },
+      )
+    );
+
+/*      final response = await http.get(
         Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/graphBoard'),
         headers: {
           'Content-Type':'application/json',
           'Authorization': 'Bearer $token', 
         },
-      );
+      );*/
       
       if (response.statusCode == 200) {
-        final data = json.decode(json.decode(response.body));
+        final data = json.decode(response.data);
         final tagGraphData = TagGraphData.fromJson(data);
         
         // print(tagGraphData.tagList);

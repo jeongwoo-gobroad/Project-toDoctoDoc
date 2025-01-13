@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:to_doc/chat_bubble_listview.dart';
+import 'package:to_doc/screens/aichat/chat_bubble_listview.dart';
 import 'package:to_doc/chat_object.dart';
 import 'package:to_doc/controllers/careplus/chat_controller.dart';
 import 'package:to_doc/socket_service/chat_socket_service.dart';

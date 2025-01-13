@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:math';
@@ -13,7 +14,7 @@ class TagGraphBoard extends StatefulWidget {
 }
 
 class _TagGraphBoardState extends State<TagGraphBoard> {
-  final TagGraphController graphController = Get.put(TagGraphController());
+  final TagGraphController graphController = Get.put(TagGraphController(dio: Dio()));
    final TransformationController _transformationController = TransformationController();
   final double minScale = 0.5;
   final double maxScale = 2.5;
