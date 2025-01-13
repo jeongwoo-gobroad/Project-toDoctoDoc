@@ -3,8 +3,10 @@
 /backend/ca_bundle.crt
 /backend/certificate.crt
 /backend/private.key
+/backend/todoctodoc-firebase-adminsdk.json
 /auxliary/
 /upload-keystore.jks
+./firebaseAppId.txt
 # Miscellaneous
 /frontend/*.class
 /frontend/*.log

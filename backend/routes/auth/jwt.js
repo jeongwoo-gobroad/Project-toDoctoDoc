@@ -116,7 +116,7 @@ const getTokenInformation = async (req, res) => {
     } catch (error) {
         if (error.name === "TokenExpiredError") {
             return -1;
-        }
+        } 
 
         return null;
     }

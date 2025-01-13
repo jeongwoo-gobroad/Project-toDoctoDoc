@@ -13,6 +13,7 @@ const { wrap } = require("module");
 const cors = require("cors");
 const redis = require("./config/redis");
 const socket = require("./routes/socket/socket").setServer;
+const connectFCM = require("./routes/mapp/push/fcm");
 
 const app = express();
 const server = http.createServer(app);
@@ -34,8 +35,9 @@ app.use(session({
     cookie: {secure: false}
 }));
 
-redis.connectRedis().then(console.log("redis connection success")).catch(console.log("redis connection failed"));
-connectDB().then(console.log("MongoDB connection success")).catch(console.log("MongoDB connection failed"));
+redis.connectRedis().then(console.log("redis connection success"));
+connectDB().then(console.log("MongoDB connection success"));
+connectFCM();
 serverWorks.serverSideWorks();
 
 app.use(expressLayouts);

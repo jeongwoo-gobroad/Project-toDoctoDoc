@@ -10,6 +10,8 @@ const checkIfLoggedIn = async (req, res, next) => {
 
         return;
     } else if (rest && rest === -1) {
+        console.log("Expired token");
+
         res.status(419).json(returnResponse(true, "token_expired", "토큰이 만료되었습니다."));
 
         return;

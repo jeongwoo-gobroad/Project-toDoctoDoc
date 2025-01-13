@@ -84,7 +84,7 @@ const chatting_user = async (socket, next) => {
         
                         return;
                     }
-                    // console.log(struct.roomNo);
+                    // console.log("Patient: ", struct.roomNo);
                     // console.log(socket.nsp.adapter.rooms.get(struct.roomNo).size);
                     // console.log("Phase 4")
          

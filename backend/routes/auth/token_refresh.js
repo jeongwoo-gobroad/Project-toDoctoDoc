@@ -6,11 +6,14 @@ const mongoose = require("mongoose");
 const Doctor = require("../../models/Doctor");
 const Admin = require("../../models/Admin");
 const returnResponse = require("../mapp/standardResponseJSON");
+const { generateToken, generateRefreshToken } = require("./jwt");
 const User = mongoose.model("User", UserSchema);
 const router = require('express').Router();
 
 router.post(["/tokenRefresh"], 
     async (req, res, next) => {
+        // console.log("Refresh request");
+
         try {
             const decoded = jwt.verify(req.headers["authorization"]?.split(" ")[1], secretKey);
             
@@ -70,6 +73,8 @@ router.post(["/tokenRefresh"],
 
                     return;
                 }
+                // console.log("Token refreshed successfully");
+
                 res.status(200).json(returnResponse(false, "returnedTokenSuccessfully", {accessToken: token, refreshToken: refreshToken}));
     
                 return payload; 
@@ -80,6 +85,8 @@ router.post(["/tokenRefresh"],
                 return;
             }
         } catch (error) {
+            console.log(error, "errorAtTokenRefreshing");
+
             if (error.name === "TokenExpiredError") {
                 res.status(419).json(returnResponse(true, "tokenExpired", "-"));
 

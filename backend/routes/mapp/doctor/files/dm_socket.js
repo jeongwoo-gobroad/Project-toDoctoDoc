@@ -5,7 +5,7 @@ const UserSchema = require("../../../../models/User");
 const Doctor = require("../../../../models/Doctor");
 const User = mongoose.model('User', UserSchema);
 const jwt = require("jsonwebtoken");
-const { setCacheForThreeDaysAsync } = require("../../../../middleware/redisCaching");
+const { setCacheForThreeDaysAsync, getCache } = require("../../../../middleware/redisCaching");
 
 const chatting_doctor = async (socket, next) => {
     const token = socket.handshake.query.token;
@@ -35,6 +35,8 @@ const chatting_doctor = async (socket, next) => {
         
                         return;
                     }
+
+                    socket.join(roomNo);
         
                     const unreadChats = JSON.parse(await redis.redisClient.get(userid));
                     if (unreadChats && unreadChats.roomNo) {
@@ -80,7 +82,9 @@ const chatting_doctor = async (socket, next) => {
         
                         return;
                     }         
-        
+                    
+                    // console.log("Doctor: ", struct.roomNo);
+
                     chat.chatList.push({role: "doctor", message: struct.message, createdAt: now});
                     await chat.save();
         
