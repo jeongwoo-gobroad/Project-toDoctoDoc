@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:to_doc/controllers/myPost_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc/controllers/view_controller.dart';
+import 'package:to_doc/navigation_menu.dart';
 import 'package:to_doc/screens/pageView.dart';
 
 
@@ -46,7 +47,13 @@ class _MypostTempState extends State<MypostTemp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('data')),
+      appBar: AppBar(title: Text('data'), 
+      leading: IconButton(
+    icon: Icon(Icons.menu),
+    onPressed: () {
+      Get.to(()=> NavigationMenu());
+    },),
+      ),
 
       body: Obx((){
         if(controller.isLoading.value){

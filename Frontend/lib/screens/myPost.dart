@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc/controllers/myPost_controller.dart';
 import 'package:to_doc/controllers/view_controller.dart';
+import 'package:to_doc/navigation_menu.dart';
 import 'package:to_doc/screens/pageView.dart';
 
 class MypostTemp extends StatefulWidget {
@@ -41,7 +42,13 @@ class _MypostTempState extends State<MypostTemp> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('내 게시물'),
+        leading: IconButton(
+    icon: Icon(Icons.arrow_back),
+    onPressed: () {
+      Get.offAll(()=> NavigationMenu());
+    },),
       ),
+      
       body: Obx(() {
         if (myPostController.isLoading.value) {
           return const Center(

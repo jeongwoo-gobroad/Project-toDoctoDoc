@@ -98,21 +98,6 @@ class _HomeState extends State<Home> {
         ),
 
       //appBar
-      drawer: Obx(() => SideMenu(userController.usernick.value,
-        userController.email.value), ),
-      appBar: AppBar(
-        centerTitle: true,
-        title: InkWell(
-          onTap: (){
-            /*to about page*/
-            Get.to(()=> Aboutpage());
-          },
-          child: Text('토닥toDoc', style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
-        ),
-        actions: [
-          
-        ],
-      ),
 
       
       body: isLoading ?  Center(child: CircularProgressIndicator())  //아직 갱신안됐으면 로딩창띄움움
