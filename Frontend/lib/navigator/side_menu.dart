@@ -4,6 +4,8 @@ import 'package:to_doc/navigation_menu.dart';
 import 'package:to_doc/screens/myPost.dart';
 import 'package:to_doc/screens/user_edit.dart';
 
+import '../screens/chat/dm_list.dart';
+
 class SideMenu extends StatelessWidget {
   final String? usernick, email;
   const SideMenu(this.usernick, this.email ,{super.key});
@@ -49,14 +51,14 @@ class SideMenu extends StatelessWidget {
             trailing: Icon(Icons.navigate_next),
           ),
           ListTile(
-            leading: Icon(Icons.home),
-            title: Text('홈'),
-            onTap: (){},
+            leading: Icon(Icons.chat),
+            title: Text('큐레이팅 DM'),
+            onTap: (){Get.to(()=>DMList());},
             trailing: Icon(Icons.navigate_next),
           ),
           ListTile(
-            leading: Icon(Icons.home),
-            title: Text('홈'),
+            leading: Icon(Icons.settings),
+            title: Text('설정'),
             onTap: (){},
             trailing: Icon(Icons.navigate_next),
           ),

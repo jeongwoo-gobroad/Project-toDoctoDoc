@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:to_doc/home.dart';
 import 'package:to_doc/navigation_menu.dart';
 import 'package:to_doc/screens/chat/dm_list.dart';
 import 'package:to_doc/screens/myPost.dart';
@@ -31,7 +32,7 @@ class SideMenu extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.home),
             title: Text('홈'),
-            onTap: (){Get.to(()=> NavigationMenu());},
+            onTap: (){Get.to(()=> Home());},
             trailing: Icon(Icons.navigate_next),
 
           ),

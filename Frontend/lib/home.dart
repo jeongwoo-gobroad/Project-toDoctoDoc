@@ -32,6 +32,7 @@ class _HomeState extends State<Home> {
   String? email;
   int randIndex = 0;
   int randIndex2 = 0;
+  int randIndex3 = 0;
   bool isLoading = true;
   Future<void> _getUserInfo() async{
     final prefs = await SharedPreferences.getInstance();
@@ -47,6 +48,7 @@ class _HomeState extends State<Home> {
     final random = Random();
     randIndex = random.nextInt(welcomeMessages.length);
     randIndex2 = random.nextInt(mindfulnessQuotes.length);
+    randIndex3 = random.nextInt(queryQuotes.length);
     // TODO: implement initState
     super.initState();
     _getUserInfo();
@@ -82,6 +84,11 @@ class _HomeState extends State<Home> {
     "순간의 호흡 속에서 마음의 평화를 발견할 수 있다.",
   ];
 
+  final List<String> queryQuotes = [
+    '무엇이 당신을 힘들게 하나요?',
+    '당신의 걱정거리는 무엇인가요?'
+  ];
+
   ChatController chatController = Get.put(ChatController(dio: Dio()));
 
   @override
@@ -112,7 +119,7 @@ class _HomeState extends State<Home> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      '${welcomeMessages[randIndex]} ${userController.usernick.value ?? '로그인이 필요합니다.'}',
+                      '${welcomeMessages[randIndex]} ${userController.usernick.value ?? '로그인이 필요합니다.'}님',
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -133,7 +140,7 @@ class _HomeState extends State<Home> {
                             horizontal: 14,
                             vertical: 20,
                           ),
-                          hintText: '샘플 텍스트',
+                          hintText: '${queryQuotes[randIndex3]}',
                           suffixIcon: IconButton(
                             
                             onPressed: () async{

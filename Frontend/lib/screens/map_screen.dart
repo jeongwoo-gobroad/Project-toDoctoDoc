@@ -89,7 +89,9 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('근처 마음병원 찾기',
-            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+        ),
       ),
       body: Obx(
         () => CustomScrollView(
