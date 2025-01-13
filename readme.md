@@ -28,6 +28,11 @@ The number of people suffering from mental illness increases every year in the c
 Please refer to /documentation.docx
 
 ---
+### Design Architecture
+
+Please refer to /uxDesign
+
+---
 ### Version History
 
 * #### 0.8.0
