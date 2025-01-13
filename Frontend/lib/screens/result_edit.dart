@@ -49,14 +49,14 @@ class _ResultEditState extends State<ResultEdit> {
           TextButton(
             onPressed: () {
               // 게시판으로 이동하고 이전화면으로 돌아갈 수 없게
-              Get.offAll(() => MypostTemp());
+              Get.off(() => MypostTemp());
             },
             child: Text('예'),
           ),
           TextButton(
             onPressed: () {
               // 아니오 버튼: 홈으로 이동
-              Get.offAll(
+              Get.off(
                   () => NavigationMenu()); // Get.offAll은 모든 이전 화면을 제거하고 홈으로 이동
             },
             child: Text('아니오'),

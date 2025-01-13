@@ -86,7 +86,8 @@ class _HomeState extends State<Home> {
 
   final List<String> queryQuotes = [
     '무엇이 당신을 힘들게 하나요?',
-    '당신의 걱정거리는 무엇인가요?'
+    '당신의 걱정거리는 무엇인가요?',
+    '고민거리를 입력해주세요.',
   ];
 
   ChatController chatController = Get.put(ChatController(dio: Dio()));
@@ -105,8 +106,20 @@ class _HomeState extends State<Home> {
         ),
 
       //appBar
-
-      
+      drawer: Obx(() => SideMenu(
+          userController.usernick.value,
+          userController.email.value
+        )),
+       appBar: AppBar(
+          centerTitle: true,
+          title: InkWell(
+            onTap: () {
+              Get.to(() => Aboutpage());
+            },
+            child: Text('토닥toDoc',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+          ),
+        ),
       body: isLoading ?  Center(child: CircularProgressIndicator())  //아직 갱신안됐으면 로딩창띄움움
         : 
           Obx(()=>

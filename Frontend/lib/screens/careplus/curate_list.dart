@@ -289,7 +289,7 @@ class _CurationScreenState extends State<CurationScreen>
 
   void reQuestChat(String userId, String doctorId) async {
     await chatController.requestChat(userId, doctorId);
-    Get.offAll(()=> DMList());
+    Get.to(()=> DMList());
   }
 
   @override

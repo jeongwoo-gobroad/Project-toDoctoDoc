@@ -41,16 +41,7 @@ class NavigationMenu extends StatelessWidget {
           userController.usernick.value,
           userController.email.value
         )),
-        appBar: AppBar(
-          centerTitle: true,
-          title: InkWell(
-            onTap: () {
-              Get.to(() => Aboutpage());
-            },
-            child: Text('토닥toDoc',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
-          ),
-        ),
+        
         bottomNavigationBar: Obx(
           () => NavigationBar(
             height: 60,

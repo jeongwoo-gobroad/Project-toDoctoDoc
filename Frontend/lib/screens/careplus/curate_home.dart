@@ -2,19 +2,24 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/controllers/careplus/curate_list_controller.dart';
+import 'package:to_doc/controllers/userInfo_controller.dart';
+import 'package:to_doc/navigator/side_menu.dart';
 import 'package:to_doc/screens/careplus/curate_feed.dart';
 
 class CurationHomeScreen extends StatelessWidget {
 
 
   CurateListController curateListController = Get.put(CurateListController(dio:Dio()));
-
+  UserinfoController userinfoController = Get.find<UserinfoController>();
   @override
   Widget build(BuildContext context) {
 
 
     return Scaffold(
-      
+      drawer: Obx(() => SideMenu(
+          userinfoController.usernick.value,
+          userinfoController.email.value
+        )),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

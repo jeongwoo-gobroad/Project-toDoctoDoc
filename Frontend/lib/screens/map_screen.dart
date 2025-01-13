@@ -6,6 +6,8 @@ import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:to_doc/controllers/map_controller.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/controllers/userInfo_controller.dart';
+import 'package:to_doc/navigator/side_menu.dart';
+
 //import 'package:to_doc/map/marker.dart';
 
 class MapAndListScreen extends StatefulWidget {
@@ -26,6 +28,8 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
   late KakaoMapController kakaoMapController; //카카오 맵 컨트롤러러
   List<CustomOverlay> customOverlays = [];
   //Set<Marker> markers = {}; //마커들 set
+   bool isSortByStars = false;
+  bool showPremiumOnly = false;
 
   @override
   void initState() {
@@ -83,11 +87,45 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
     });
   }
 
+  void _toggleSortByStars() {
+    setState(() {
+      isSortByStars = !isSortByStars;
+      if (isSortByStars) {
+        mapController.psychiatryList.sort((a, b) {
+          int starsA = a['stars'] ?? 0;
+          int starsB = b['stars'] ?? 0;
+          return starsB.compareTo(starsA);
+        });
+      } else {
+        //거리순 다시 정렬 
+        mapController.psychiatryList.sort((a, b) {
+          int distanceA = int.parse(a['distance'].toString());
+          int distanceB = int.parse(b['distance'].toString());
+          return distanceA.compareTo(distanceB);
+        });
+      }
+    });
+  }
+  void _togglePremiumOnly() { //프리미엄만 보여주기기
+    setState(() {
+      showPremiumOnly = !showPremiumOnly;
+      if (showPremiumOnly) {
+        mapController.psychiatryList.removeWhere((hospital) => 
+          !(hospital['isPremiumPsychiatry'] ?? false));
+      } else {
+        mapController.getMapInfo(mapController.currentRadius);
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      drawer: Obx(() => SideMenu(
+          userinfoController.usernick.value,
+          userinfoController.email.value
+        )),
       appBar: AppBar(
         title: Text('근처 마음병원 찾기',
             style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
@@ -310,45 +348,127 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          InkWell(
-            onTap: () {
-              setState(() {
-                isDropdownOpen = !isDropdownOpen;
-              });
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '${mapController.currentRadius}km',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+          
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // 별점정렬 
+              Container(
+                margin: EdgeInsets.only(right: 8),
+                child: InkWell(
+                  onTap: _toggleSortByStars,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSortByStars ? Colors.amber : Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.star,
+                          color: isSortByStars ? Colors.white : Colors.amber,
+                          size: 20,
+                        ),
+                        SizedBox(width: 4),
+                        Text(
+                          '후기순',
+                          style: TextStyle(
+                            color: isSortByStars ? Colors.white : Colors.black87,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(width: 8),
-                  Icon(
-                    isDropdownOpen
-                        ? Icons.arrow_drop_up
-                        : Icons.arrow_drop_down,
-                    color: Colors.black54,
-                  ),
-                ],
+                ),
               ),
-            ),
+              // 프리미엄필터터
+              Container(
+                margin: EdgeInsets.only(right: 8),
+                child: InkWell(
+                  onTap: _togglePremiumOnly,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: showPremiumOnly ? Colors.amber : Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.verified,
+                          color: showPremiumOnly ? Colors.white : Colors.amber,
+                          size: 20,
+                        ),
+                        SizedBox(width: 4),
+                        Text(
+                          '프리미엄',
+                          style: TextStyle(
+                            color: showPremiumOnly ? Colors.white : Colors.black87,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    isDropdownOpen = !isDropdownOpen;
+                  });
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '${mapController.currentRadius}km',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Icon(
+                        isDropdownOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                        color: Colors.black54,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
           if (isDropdownOpen)
             Container(
@@ -375,15 +495,12 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
                       });
                     },
                     child: Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                       width: 100,
                       decoration: BoxDecoration(
                         border: Border(
                           bottom: BorderSide(
-                            color: index != 4
-                                ? Colors.grey.shade200
-                                : Colors.transparent,
+                            color: index != 4 ? Colors.grey.shade200 : Colors.transparent,
                             width: 1,
                           ),
                         ),
