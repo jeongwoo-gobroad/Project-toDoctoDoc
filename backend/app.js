@@ -5,7 +5,6 @@ const expressLayouts = require("express-ejs-layouts");
 const cookieParser = require("cookie-parser");
 const methodOverride = require("method-override");
 const connectDB = require("./config/db");
-const serverWorks = require("./serverSideWorks/tagCollection");
 const expressErrorHandler = require('express-error-handler');
 const SocketIO = require("socket.io");
 const http = require("http");
@@ -14,6 +13,7 @@ const cors = require("cors");
 const redis = require("./config/redis");
 const socket = require("./routes/socket/socket").setServer;
 const connectFCM = require("./routes/mapp/push/fcm");
+const intervalWorks = require("./serverSideWorks/intervalWorks");
 
 const app = express();
 const server = http.createServer(app);
@@ -38,7 +38,7 @@ app.use(session({
 redis.connectRedis().then(console.log("redis connection success"));
 connectDB().then(console.log("MongoDB connection success"));
 connectFCM();
-serverWorks.serverSideWorks();
+intervalWorks();
 
 app.use(expressLayouts);
 app.set("view engine", "ejs");

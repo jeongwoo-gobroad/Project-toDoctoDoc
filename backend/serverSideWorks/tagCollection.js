@@ -1,19 +1,12 @@
 const interval = 5000;
 const Post = require("../models/Post");
 const asyncHandler = require("express-async-handler");
+const { removeSpacesAndHashes } = require("../middleware/usefulFunctions");
 
 const tagMap = new Map();
 const tagGraph = [];
 
-const removeSpacesAndHashes = (input) => { 
-    if (input && input.length > 0) {
-        return input.replace(/[\s#]/g, '');
-    } 
-
-    return "";
-};
-
-const serverSideWorks_tagCollection = async () => {
+const tagCollection = async () => {
     const allItems = await Post.find();
     const tempMap = new Map();
 
@@ -48,8 +41,4 @@ const serverSideWorks_tagCollection = async () => {
     // console.log(tagGraph);
 };
 
-const serverSideWorks = asyncHandler(async () => {
-    setInterval(serverSideWorks_tagCollection, interval);
-});
-
-module.exports = {serverSideWorks, tagMap, tagGraph, removeSpacesAndHashes};
+module.exports = {tagCollection, tagMap, tagGraph };

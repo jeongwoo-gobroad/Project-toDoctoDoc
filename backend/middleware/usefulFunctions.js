@@ -15,5 +15,13 @@ const getQuote = (sentence) => {
 
     return sentence.match(regex)[1];
 }
- 
-module.exports = {getLastSegment, getQuote};
+
+const removeSpacesAndHashes = (input) => { 
+    if (input && input.length > 0) {
+        return input.replace(/[\s#]/g, '');
+    } 
+
+    return "";
+};
+
+module.exports = {getLastSegment, getQuote, removeSpacesAndHashes};
