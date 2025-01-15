@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const Post = require("../models/Post")
 const { removeSpacesAndHashes } = require("../middleware/usefulFunctions");
-const { tagMap } = require("./tagCollection");
 
 const bubbleMap = new Map();
 
@@ -18,9 +17,9 @@ const bubbleCollection = async () => {
         tags.forEach((tag) => {
             if (tag.length > 0) {
                 if (bubbleMap.has(tag)) {
-                    let count = tagMap.get(tag);
+                    let count = bubbleMap.get(tag);
                     count++;
-                    tagMap.set(tag, count);
+                    bubbleMap.set(tag, count);
                     if (count > maxVal) {
                         maxVal = count;
                     }
