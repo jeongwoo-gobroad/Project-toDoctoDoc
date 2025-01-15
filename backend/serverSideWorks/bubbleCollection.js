@@ -1,6 +1,13 @@
 const mongoose = require("mongoose");
 const Post = require("../models/Post")
-const { removeSpacesAndHashes } = require("../middleware/usefulFunctions");
+
+const removeSpacesAndHashes = (input) => { 
+    if (input && input.length > 0) {
+        return input.replace(/[\s#]/g, '');
+    } 
+
+    return "";
+};
 
 const bubbleMap = new Map();
 
