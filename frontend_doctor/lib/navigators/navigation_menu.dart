@@ -23,7 +23,7 @@ class NavigationMenu extends StatelessWidget {
           onDestinationSelected: (index) => controller.selectedIndex.value = index,  
           destinations: [
             const NavigationDestination(icon: Icon(Icons.home), label: '홈'),
-            const NavigationDestination(icon: Icon(Icons.place), label: '지나간 일정'),
+            const NavigationDestination(icon: Icon(Icons.chat_bubble_outline), label: 'DM'),
             const NavigationDestination(icon: Icon(Icons.fact_check), label: '큐레이팅'),
             const NavigationDestination(icon: Icon(Icons.settings), label: '설정'),
         

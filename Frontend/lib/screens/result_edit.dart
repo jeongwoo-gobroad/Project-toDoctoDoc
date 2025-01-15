@@ -49,7 +49,9 @@ class _ResultEditState extends State<ResultEdit> {
           TextButton(
             onPressed: () {
               // 게시판으로 이동하고 이전화면으로 돌아갈 수 없게
-              Get.off(() => MypostTemp());
+              //Get.off(() => MypostTemp());
+              Get.until((route) => route.isFirst);
+              Get.to(() => MypostTemp());
             },
             child: Text('예'),
           ),

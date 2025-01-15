@@ -31,6 +31,7 @@ class _CurateFeedState extends State<CurateFeed> {
     curateListController.getList();
     final random = Random();
     randomIndex = random.nextInt(images.length);
+    _sortList();
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
   }
@@ -128,7 +129,7 @@ class _CurateFeedState extends State<CurateFeed> {
                                 color: Colors.white,
                               ),
                               label: Text(
-                                isAscending ? '오래된 순' : '최신 순',
+                                isAscending ? '최신 순' : '오래된 순',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,

@@ -17,7 +17,6 @@ class NavigationMenu extends StatelessWidget {
   DateTime? currentBackPressTime;
   UserinfoController userController = Get.find<UserinfoController>();
   NavigationMenu({super.key});
-  
 
   @override
   Widget build(BuildContext context) {
@@ -26,22 +25,48 @@ class NavigationMenu extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvoked: (bool didPop) {
+        //기존코드드
+        // DateTime now = DateTime.now();
+        // if (currentBackPressTime == null ||
+        //     now.difference(currentBackPressTime!) > Duration(seconds: 2)) {
+        //   currentBackPressTime = now;
+        //   Get.snackbar('알림', '종료하시려면 뒤로가기를 한번 더 눌러주세요.',
+        //       snackPosition: SnackPosition.BOTTOM);
+        // } else {
+        //   SystemNavigator.pop();
+        // }
+
+        //alertdialog 기반 (안될시 위코드로 변경)
         DateTime now = DateTime.now();
         if (currentBackPressTime == null ||
             now.difference(currentBackPressTime!) > Duration(seconds: 2)) {
           currentBackPressTime = now;
-          Get.snackbar('알림', '종료하시려면 뒤로가기를 한번 더 눌러주세요.',
-              snackPosition: SnackPosition.BOTTOM);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('알림'),
+                content: Text('종료하시겠습니까?'),
+                actions: [
+                  TextButton(
+                    onPressed: () => SystemNavigator.pop(),
+                    child: Text('예'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text('아니오'),
+                  ),
+                ],
+              );
+            },
+          );
         } else {
           SystemNavigator.pop();
         }
       },
       child: Scaffold(
         drawer: Obx(() => SideMenu(
-          userController.usernick.value,
-          userController.email.value
-        )),
-        
+            userController.usernick.value, userController.email.value)),
         bottomNavigationBar: Obx(
           () => NavigationBar(
             height: 60,
