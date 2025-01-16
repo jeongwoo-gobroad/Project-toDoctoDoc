@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
 import 'package:dio/dio.dart';
-import '../auth/auth_dio.dart';
+import '../../auth/auth_dio.dart';
 
 class AiChatController extends GetxController{
   final Dio dio;

@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:to_doc/controllers/aichat_controller.dart';
-import 'package:to_doc/controllers/aichat_save_coltroller.dart';
+import 'package:to_doc/controllers/aichat/aichat_controller.dart';
+import 'package:to_doc/controllers/aichat/aichat_save_coltroller.dart';
 
 import '../../chat_object.dart';
 import '../../socket_service/aichat_socket_service.dart';

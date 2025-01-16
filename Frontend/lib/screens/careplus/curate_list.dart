@@ -8,10 +8,9 @@ import 'package:to_doc/controllers/userInfo_controller.dart';
 import 'package:to_doc/controllers/view_controller.dart';
 import 'package:to_doc/screens/chat/dm_list.dart';
 import 'package:to_doc/screens/pageView.dart';
-import 'package:to_doc/controllers/aichat_load_controller.dart';
-import 'package:to_doc/controllers/ai_chat_list_controller.dart';
 import 'package:intl/intl.dart';
 
+import '../../controllers/aichat/ai_chat_list_controller.dart';
 import '../aichat/ai_chat_oldview.dart';
 
 class CurationScreen extends StatefulWidget {

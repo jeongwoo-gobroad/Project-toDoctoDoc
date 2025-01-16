@@ -4,8 +4,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:to_doc/chat_object.dart';
 
-import '../auth/auth_dio.dart';
 import 'package:dio/dio.dart';
+
+import '../../auth/auth_dio.dart';
 
 class AichatLoadController extends GetxController {
   var isLoading = false.obs;

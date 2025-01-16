@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:to_doc/controllers/ai_chat_list_controller.dart';
 import 'package:to_doc/aboutpage.dart';
-import 'package:to_doc/controllers/aichat_delete_coltroller.dart';
+import 'package:to_doc/controllers/aichat/aichat_delete_coltroller.dart';
 import 'package:dio/dio.dart';
 
+import '../../controllers/aichat/ai_chat_list_controller.dart';
 import 'ai_chat_oldview.dart';
 import 'ai_chat_screen.dart';
 

@@ -5,7 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'dart:convert';
 
-import '../auth/auth_dio.dart';
+import '../../auth/auth_dio.dart';
+
 
 
 class AiChatListController extends GetxController {

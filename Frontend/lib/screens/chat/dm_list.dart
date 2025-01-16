@@ -7,6 +7,7 @@ import 'package:to_doc/controllers/careplus/chat_controller.dart';
 import 'package:to_doc/controllers/careplus/chat_data_model.dart';
 import 'package:to_doc/screens/chat/chat_screen.dart';
 
+import '../../auth/auth_dio.dart';
 import '../../socket_service/chat_socket_service.dart';
 
 class DMList extends StatefulWidget {
@@ -85,8 +86,9 @@ class _DMListState extends State<DMList> {
                 return InkWell(
                   onTap: () {
                     print(chat.id);
+                    linkTest();
                     socketService.joinChat(chat.id);
-                    Get.to(()=> ChatScreen(socketService: socketService, chatId: chat.id));
+                    Get.to(()=> ChatScreen(socketService: socketService, chatId: chat.id, unreadMsg: chat.unreadMsg,));
                   
                   },
                   child: Container(
@@ -150,4 +152,25 @@ class _DMListState extends State<DMList> {
       ),
     );
   }
+
+  void linkTest() async {
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
+
+    final response = await dio.get(
+        'http://jeongwoo-kim-web.myds.me:3000/dm',
+        options:
+        Options(headers: {
+          'Content-Type':'application/json',
+          'accessToken': 'true',
+        },
+        )
+    );
+
+    print(response.statusCode);
+    print(response);
+  }
+
+
+
 }
