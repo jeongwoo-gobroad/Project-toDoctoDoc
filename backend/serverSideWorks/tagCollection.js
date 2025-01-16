@@ -1,14 +1,7 @@
 const interval = 5000;
 const Post = require("../models/Post");
 const asyncHandler = require("express-async-handler");
-
-const removeSpacesAndHashes = (input) => { 
-    if (input && input.length > 0) {
-        return input.replace(/[\s#]/g, '');
-    } 
-
-    return "";
-};
+const removeSpacesAndHashes = require("../middleware/usefulFunctions").removeSpacesAndHashes;
 
 const tagMap = new Map();
 const tagGraph = [];
