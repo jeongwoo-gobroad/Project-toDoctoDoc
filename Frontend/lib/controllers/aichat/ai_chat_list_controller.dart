@@ -1,8 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'dart:convert';
 
 import '../../auth/auth_dio.dart';
@@ -22,18 +19,6 @@ class AiChatListController extends GetxController {
 
     isLoading.value = true;
 
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
-
-    print('로그인중');
-
-
-    if(token == null){
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return;
-    }
-
     final response = await dio.get(
         'http://jeongwoo-kim-web.myds.me:3000/mapp/aichat/list',
         options: Options(
@@ -44,15 +29,6 @@ class AiChatListController extends GetxController {
         )
     );
 
-    /*
-    final response = await http.get(
-      Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/aichat/list'),
-      headers: {
-        'Content-Type':'application/json',
-        'authorization':'Bearer $token',
-      },
-    );
-    */
 
     if(response.statusCode == 200){
       isEmpty.value = false;

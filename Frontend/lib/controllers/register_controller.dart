@@ -1,13 +1,14 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:provider/provider.dart';
 
 import '../auth/auth_dio.dart';
+import '../auth/auth_secure.dart';
 
 class RegisterController extends GetxController{
   final Dio dio;
@@ -83,8 +84,12 @@ class RegisterController extends GetxController{
         ///
         print(_token); 
 
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('jwt_token', _token!);
+        final SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
+        storage.saveAccessToken(_token!);
+
+
+        //final prefs = await SharedPreferences.getInstance();
+        //await prefs.setString('jwt_token', _token!);
 
         return{
           'success': true,

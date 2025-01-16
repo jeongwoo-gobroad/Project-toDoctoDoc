@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -8,8 +9,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
 import '../auth/auth_dio.dart';
+import '../auth/auth_secure.dart';
 
 class AuthProvider extends ChangeNotifier{
+  SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
   String? _token;
   String? _refreshToken;
 
@@ -17,14 +20,9 @@ class AuthProvider extends ChangeNotifier{
 
   AuthProvider({required this.dio});
 
-  Future<Map<String, dynamic>> login(String userid, String password) async{
-    //dio.interceptors.add(CustomInterceptor());
-
-    //final url = Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/login');
-    //print(url);
+  Future<Map<String, dynamic>> login(String userid, String password, bool autoLogin, bool firstLogin) async{
 
     try{
-
       final response = await dio.post(
         'http://jeongwoo-kim-web.myds.me:3000/mapp/login',
         options:
@@ -36,20 +34,6 @@ class AuthProvider extends ChangeNotifier{
           'password' : password,
         }),
       );
-
-      /*
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          
-        },
-        body: json.encode({
-          'userid' : userid,
-          'password' : password,
-        }),
-      );
-       */
 
       if(response.statusCode == 200){
 
@@ -63,10 +47,19 @@ class AuthProvider extends ChangeNotifier{
         print(_refreshToken);
 
         // _token = data['content'];
-        
-        final prefs = await SharedPreferences.getInstance();
+
+
+        await storage.saveAccessToken(_token!);
+        await storage.saveRefreshToken(_refreshToken!);
+
+        if (autoLogin && firstLogin) {
+          await storage.userSave(userid, password);
+        }
+
+
+/*        final prefs = await SharedPreferences.getInstance();
         await prefs.setString('jwt_token', _token!);
-        await prefs.setString('ref_token', _refreshToken!);
+        await prefs.setString('ref_token', _refreshToken!);*/
 
 
         notifyListeners();

@@ -1,13 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:to_doc/controllers/careplus/chat_controller.dart';
 import 'package:to_doc/controllers/careplus/chat_data_model.dart';
 import 'package:to_doc/screens/chat/chat_screen.dart';
 
 import '../../auth/auth_dio.dart';
+import '../../auth/auth_secure.dart';
 import '../../socket_service/chat_socket_service.dart';
 
 class DMList extends StatefulWidget {
@@ -21,8 +22,9 @@ class _DMListState extends State<DMList> {
   late ChatSocketService socketService;
 
   void startsocket() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
+    final SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
+
+    final token = await storage.readAccessToken();
 
     if (token == null) {
       Get.snackbar('Login', '로그인이 필요합니다.');
@@ -88,7 +90,11 @@ class _DMListState extends State<DMList> {
                     print(chat.id);
                     linkTest();
                     socketService.joinChat(chat.id);
-                    Get.to(()=> ChatScreen(socketService: socketService, chatId: chat.id, unreadMsg: chat.unreadMsg,));
+                    Get.to(()=> ChatScreen(socketService: socketService, chatId: chat.id, unreadMsg: 0,))?.whenComplete(() {
+                      setState(() {
+                        controller.getChatList();
+                      });
+                    });
                   
                   },
                   child: Container(

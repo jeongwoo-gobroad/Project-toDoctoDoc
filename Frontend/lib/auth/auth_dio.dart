@@ -4,33 +4,20 @@ import 'package:get/get.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
 import '../screens/intro.dart';
+import 'auth_secure.dart';
 
-/*
-final dioProvider = Provider<Dio>((ref) {
-  final dio = Dio();
-
-  //final storage = ref.watch(secureStorageProvider);
-
-  dio.interceptors.add();
-
-  return dio;
-});
-
- */
 
 class CustomInterceptor extends Interceptor {
+  SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
 
   @override void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
-    // TODO: implement onRequest
-    final prefs = await SharedPreferences.getInstance();
-
     if (options.headers['accessToken'] == 'true') {
       options.headers.remove('accessToken');
-      final accessToken = prefs.getString('jwt_token');
+
+      final accessToken = await storage.readAccessToken();
 
       print('dio login');
       print(accessToken);
@@ -41,7 +28,8 @@ class CustomInterceptor extends Interceptor {
     } else if (options.headers['refreshToken'] == 'true') {
       options.headers.remove('refreshToken');
 
-      final refreshToken = prefs.getString('ref_token');
+      final refreshToken = await storage.readRefreshToken();
+
       options.headers.addAll({
         'authorization': 'Bearer $refreshToken',
       });
@@ -54,9 +42,7 @@ class CustomInterceptor extends Interceptor {
 
   @override
   void onError(DioException error, ErrorInterceptorHandler handler) async {
-    final prefs = await SharedPreferences.getInstance();
-    final accessToken = prefs.getString('jwt_token');
-    final refreshToken = prefs.getString('ref_token');
+    final refreshToken = await storage.readRefreshToken();
 
     print('ERror');
 
@@ -75,8 +61,7 @@ class CustomInterceptor extends Interceptor {
         if (error.response?.statusCode == 419) {
           // 기기의 자동 로그인 정보 삭제
 
-          await prefs.clear();
-
+          storage.deleteEveryToken();
 
           print('리프래시 토큰 오류');
           Get.snackbar('Error', '로그인이 만료되었습니다.');
@@ -114,8 +99,8 @@ class CustomInterceptor extends Interceptor {
         final _accessToken = data['content']['accessToken'];
         final _refreshToken = data['content']['refreshToken'];
 
-        await prefs.setString('jwt_token', _accessToken);
-        await prefs.setString('ref_token', _refreshToken);
+        await storage.saveAccessToken(_accessToken);
+        await storage.saveRefreshToken(_refreshToken);
 
         print(data['content']['accessToken']);
         print(data['content']['refreshToken']);

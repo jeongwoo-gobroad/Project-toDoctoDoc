@@ -42,18 +42,25 @@ class _ChatScreen extends State<ChatScreen> {
     }
   }
 
-
   void asyncBefore() async {
     widget.socketService.onReturnJoinedChat((data) {
       print('chat List received');
-
       print(data);
-      print(data['chatList']);
+      print('sub');
+      print(data['chat']['chatList']);
+
+      if (data['unread'] == -1) {
+        updateunread = 0;
+      }
+      else {
+        updateunread = data['unread'];
+      }
 
       DateTime? chatTime;
+      var chatList = data['chat'];
 
       //setState(() {
-      for (var chat in data['chatList']) {
+      for (var chat in chatList['chatList']) {
         //print(chat['message']);
 
         if (chat['createdAt'] == null) {
@@ -82,6 +89,18 @@ class _ChatScreen extends State<ChatScreen> {
         });
       });
     });
+
+/*
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.socketService.onUnreadMsg((data) {
+        setState(() {
+          print(updateunread);
+          updateunread++;
+        });
+      });
+    });
+*/
+
   }
 
   @override
@@ -108,16 +127,6 @@ class _ChatScreen extends State<ChatScreen> {
       }
     } */
     // 
-    // String getFormattedTime(String? timestamp) {
-    //   if (timestamp == null) return '';
-    //   try {
-    //     final dateTime = DateTime.parse(timestamp);
-    //     final formatter = DateFormat('a h:mm', 'ko_KR');
-    //     return formatter.format(dateTime);
-    //   } catch (e) {
-    //     return '';
-    //   }
-    // }
 
 
      bool shouldShowTime(int index) {
@@ -136,7 +145,6 @@ class _ChatScreen extends State<ChatScreen> {
        if (index == 0) {
          return true;
        }
-
        return _messageList[index].createdAt?.day != _messageList[index-1].createdAt?.day;
      }
 
@@ -175,7 +183,6 @@ class _ChatScreen extends State<ChatScreen> {
         ),
         body: Column(
           children: [
-            //ChatMaker(scrollController: _scrollController, messageList: _messageList),
             Expanded(
 
               child: Obx(() {
@@ -229,8 +236,6 @@ class _ChatScreen extends State<ChatScreen> {
                                 ),
                                 SizedBox(width: 8),
                               ],
-
-
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -254,12 +259,8 @@ class _ChatScreen extends State<ChatScreen> {
                                         style: TextStyle(fontSize: 10),
                                       ),
                                     ),
-                                  ] else ... [
-
-
-                                  ],
-                                ],
-                              ),
+                                  ]
+                                ],),
 
 
                               Flexible(
@@ -281,9 +282,7 @@ class _ChatScreen extends State<ChatScreen> {
                                         style: TextStyle(fontSize: 15),
                                       ),
                                     ),
-
-                                  ],
-                                ),
+                                  ],),
                               ),
 
                               if (!isUser && shouldShowTime(index)) ...[
@@ -296,10 +295,8 @@ class _ChatScreen extends State<ChatScreen> {
                                 ),
                               ],
 
-                            ],
-                          ),
-                        ],
-                      ),
+                            ],),
+                        ],),
                     );
                   },
                 );
@@ -337,12 +334,10 @@ class _ChatScreen extends State<ChatScreen> {
                     },
                     child: Text('전송'),
                   ),
-                ],
-              ),
+                ],),
             ),
 
-          ],
-        ),
+          ],),
       ),
     );
   }

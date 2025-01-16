@@ -28,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
   _submit() async{
     Map result = await authProvider.login(
       idController.text,
-      pwController.text,
+      pwController.text, true, true,
     );
     if(result['success'] == true){
       user.getInfo();

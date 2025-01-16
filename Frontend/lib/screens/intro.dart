@@ -1,7 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
+import 'package:to_doc/auth/auth_secure.dart';
 import 'package:to_doc/auth/login_page.dart';
 import 'package:to_doc/auth/register_page.dart';
+import 'package:to_doc/home.dart';
+
+import '../provider/auth_provider.dart';
 
 
 
@@ -15,9 +21,32 @@ class Intro extends StatefulWidget {
 class _IntroState extends State<Intro> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
+
+  final authProvider = Get.put(AuthProvider(dio: Dio()));
+  final SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
+
+
+  void autoLogin() async {
+    final userId = await storage.readUserId();
+    final userPw = await storage.readUserPw();
+    
+    if (userId != null && userPw != null) {
+      var result = await authProvider.login(userId, userPw, false, false);
+
+      if (result['success'] == true) {
+        Get.off(()=> Home());
+      }
+    }
+    else {
+
+    }
+  }
+
+
   @override
   void initState() {
     super.initState();
+    //autoLogin();
     _animationController =
         AnimationController(duration: const Duration(seconds: 2), vsync: this);
     //페이드인
@@ -77,7 +106,9 @@ class _IntroState extends State<Intro> with SingleTickerProviderStateMixin {
                       borderRadius: BorderRadius.circular(15),
                     )
                   ),
-                  onPressed: (){Get.to(()=> RegisterPage());}, 
+                  onPressed: (){
+                    Get.to(()=> RegisterPage());
+                    },
                   child: Text('시작하기', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
                   ),
                 
@@ -92,7 +123,7 @@ class _IntroState extends State<Intro> with SingleTickerProviderStateMixin {
                       foregroundColor: const Color.fromARGB(255, 58, 68, 58),
 
                       ),
-                      onPressed: (){Get.to(()=> LoginPage());}, 
+                      onPressed: () => {Get.to(()=> LoginPage())},
                       child: Text('로그인',style: TextStyle(fontWeight: FontWeight.bold,),)
                     )
 

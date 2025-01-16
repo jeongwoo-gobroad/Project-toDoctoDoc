@@ -21,7 +21,6 @@ void main() async{
   await initializeDateFormatting();
 
   WidgetsFlutterBinding.ensureInitialized();
-  
 
   //  AuthRepository.initialize(
   //   appKey: dotenv.env['APP_KEY'] ?? '',

@@ -6,13 +6,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ChatSocketService {
   //var chat = <Map<String, dynamic>>[].obs;
-  final ischatFetchLoading = false.obs;
+  var ischatFetchLoading = false.obs;
 
   late io.Socket socket;
   late var RoomCode;
   bool chatOngoing = false;
 
+  var chatList;
+
   ChatSocketService(String token) {
+    ischatFetchLoading = true.obs;
+
     try {
       socket = io.io(
           'http://jeongwoo-kim-web.myds.me:3000/dm',
@@ -28,6 +32,7 @@ class ChatSocketService {
 
       socket?.onConnect((_) {
         print('Socket 연결 성공');
+        ischatFetchLoading = true.obs;
         socket?.emit('chatList', null);
       });
 
@@ -50,12 +55,15 @@ class ChatSocketService {
         print(data);
       });
 
-      /*
       socket?.on('returnChatList', (data) {
         print('받은 채팅 리스트:');
+
         print(data);
+        chatList = json.decode(data);
+
+        print('returnchatList');
+        print(chatList);
       });
-*/
 
     } catch (e) {
       print('Socket 초기화 에러: $e');
@@ -63,38 +71,27 @@ class ChatSocketService {
     }
   }
 
+  void onUnreadMsg(Function callback) {
+    socket?.on('unread_doctor', (data) => callback());
+  }
+
   void onReturnJoinedChat(Function callback) {
     socket?.on('returnJoinedChat', (data) => callback(data));
-    /*
-    {
-      //chat.value = List<Map<String, dynamic>>.from(data['chatList']);
-      ischatFetchLoading.value = false;
-      //print(chat);
-    });
-*/
     print('받은 joinchat:');
-    //print(data['chatList']);
   }
 
   void onMsgListReceived(Function callback) {
     socket?.on('chatList', (data) => callback(data));
-
-/*    {
-      final decodedData = json.decode(data);
-      print(decodedData);
-    });*/
   }
 
   void onUserReceived(Function callback) {
     socket?.on('recvChat_user', (data) => callback(data));
-
     print('유저 메세지 수신');
   }
   void onDoctorReceivec(Function callback) {
     socket?.on('recvChat_doctor', (data) =>callback(data));
     print('의사 메시지 수신:');
   }
-
 
   void joinChat(String chatId) {
     ischatFetchLoading.value = true;
@@ -103,7 +100,6 @@ class ChatSocketService {
     socket?.emit('joinChat_user', chatId);
 
     ischatFetchLoading.value = false;
-    //socket?.on('joinChat_user', (data) { print(data);} );
   }
 
   void leaveChat(String chatId) {
@@ -116,8 +112,6 @@ class ChatSocketService {
     print('chatId: $chatId');
     print('메시지 전송: $message');
     socket?.emit('sendChat_user', json.encode({'roomNo': chatId, 'message': message}));
-    //socket?.emit('sendChat_doctor', {'roomNo': chatId, 'message': message});
-    //socket?.emit('sendChat', {'roomNo': chatId, 'message': message});
   }
 
 

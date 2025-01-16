@@ -92,6 +92,8 @@ class ChatController extends GetxController{
 
     if(response.statusCode == 200){
       final data = json.decode(response.data);
+
+      print('chatlist');
       print(data);
       final chatResponse = ChatResponse.fromMap(data);
       chatList.assignAll(chatResponse.content);

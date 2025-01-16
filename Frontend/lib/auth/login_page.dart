@@ -9,9 +9,6 @@ import 'package:to_doc/navigation_menu.dart';
 import 'package:to_doc/provider/auth_provider.dart';
 
 
-
-  
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -26,14 +23,17 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController idController = TextEditingController(); //추후 수정
   final TextEditingController pwController = TextEditingController(); //추후 수정
 
+  bool _autoLogin = false;
+
   //테스트용
   RegisterController registerController = Get.put(RegisterController(dio: Dio()));
 
-  _submit() async{
+  _submit(bool autologin) async{
     //await registerController.dupidCheck(idController.text);
     Map result = await authProvider.login(
       idController.text,
       pwController.text,
+      autologin, true,
     );
     if(result['success'] == true){
       Get.snackbar('Login', '로그인에 성공하였습니다.');
@@ -123,14 +123,27 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 24),
-                      
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text('자동 로그인',style: TextStyle(fontSize:15),),
+                          Checkbox(value: _autoLogin, onChanged: (bool? value) {
+                            setState(() {
+                              _autoLogin = value!;
+                            });
+                          }),
+                        ],
+                      ),
+
+
                       SizedBox(
                         width: double.infinity,
                         height: 48,
                         child: ElevatedButton(
 
-                          onPressed: _submit,
+                          onPressed: () => _submit(_autoLogin),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color.fromARGB(255, 212, 212, 212),
                             foregroundColor: const Color.fromARGB(255, 35, 40, 35),
@@ -148,11 +161,9 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ],),
                 ),
-              ],
-            ),
+              ],),
           ),
         ),
       ),

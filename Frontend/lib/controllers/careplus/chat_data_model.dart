@@ -36,7 +36,6 @@ class ChatContent {
   final DateTime date;
   final List<ChatMessage> chatList;
   final int? v;
-  final int unreadMsg;
 
   ChatContent({
     required this.id,
@@ -45,15 +44,9 @@ class ChatContent {
     required this.date,
     required this.chatList,
     this.v,
-    required this.unreadMsg,
   });
 
   factory ChatContent.fromMap(Map<String, dynamic> map) {
-    int tempunread = 0;
-    if (map['unread'] != null) {
-      tempunread = map['unread'];
-    }
-
     return ChatContent(
       id: map['_id'].toString(),
       user: map['user']?.toString(),
@@ -63,7 +56,6 @@ class ChatContent {
           ?.map((item) => ChatMessage.fromMap(item as Map<String, dynamic>))
           .toList() ?? [],
       v: map['__v'],
-      unreadMsg: tempunread,
     );
   }
 }

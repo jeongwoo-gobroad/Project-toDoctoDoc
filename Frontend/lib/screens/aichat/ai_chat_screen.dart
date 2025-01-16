@@ -1,9 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:to_doc/auth/auth_secure.dart';
+import 'package:to_doc/auth/login_test.dart';
 import 'package:to_doc/controllers/aichat/aichat_controller.dart';
 import 'package:to_doc/controllers/aichat/aichat_save_coltroller.dart';
 
@@ -31,6 +34,8 @@ class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
   TextEditingController textEditingController = Get.put(TextEditingController());
   final scrollController = ScrollController();
 
+  final SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
+
   var chatId = '';
   List<ChatObject> _messageList = [];
   late AiChatSocketService socketService;
@@ -55,8 +60,14 @@ class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
 
     });
 
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
+    //final prefs = await SharedPreferences.getInstance();
+    //final token = prefs.getString('jwt_token');
+
+    final token = await storage.readAccessToken();
+    if (token == null) {
+      Get.snackbar('tokenError', '로그인 토큰 에러.');
+      Get.offAll(()=> LoginPage());
+    }
 
     socketService = AiChatSocketService(chatId, token!);
     WidgetsBinding.instance.addObserver(this);

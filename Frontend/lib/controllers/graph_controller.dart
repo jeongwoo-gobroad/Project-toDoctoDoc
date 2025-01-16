@@ -24,20 +24,6 @@ class TagGraphController extends GetxController{
   Future<void> getGraph() async{
     dio.interceptors.add(CustomInterceptor());
 
-/*    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
-    
-    if(token == null){
-
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return;
-    }*/
-
-
-    // try {
-      //isLoading.value = true;
-
     final response = await dio.get(
       'http://jeongwoo-kim-web.myds.me:3000/mapp/graphBoard',
       options: Options(
@@ -47,22 +33,11 @@ class TagGraphController extends GetxController{
         },
       )
     );
-
-/*      final response = await http.get(
-        Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/graphBoard'),
-        headers: {
-          'Content-Type':'application/json',
-          'Authorization': 'Bearer $token', 
-        },
-      );*/
       
       if (response.statusCode == 200) {
         final data = json.decode(response.data);
         final tagGraphData = TagGraphData.fromJson(data);
-        
-        // print(tagGraphData.tagList);
-        // print(tagGraphData.tagGraph);
-        //print(content);
+
         _tagList.value = Map<String, int>.from(tagGraphData.tagList);
         _tagGraph.value = List<List<String>>.from(tagGraphData.tagGraph.map((item) => List<String>.from(item)));
 
