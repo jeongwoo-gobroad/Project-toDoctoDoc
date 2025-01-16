@@ -30,6 +30,7 @@ const chatting_user = async (socket, next) => {
             socket.on('joinChat_user', async (data) => {
                 try {
                     const roomNo = data;
+                    let unread = -1;
         
                     const chat = await Chat.findById(roomNo);
         
@@ -45,12 +46,13 @@ const chatting_user = async (socket, next) => {
         
                     const unreadChats = JSON.parse(await redis.redisClient.get(userid));
                     if (unreadChats && unreadChats.roomNo) {
+                        unread = unreadChats.unread;
                         delete unreadChats.roomNo;
                         // await redis.redisClient.set(userid, unreadChats);
                         await setCacheForThreeDaysAsync(userid, unreadChats);
                     }
                     
-                    socket.emit("returnJoinedChat", chat);
+                    socket.emit("returnJoinedChat", {chat: chat, unread: unread});
                 } catch (error) {
                     socket.emit("error", "errorAtJoinChat");
         

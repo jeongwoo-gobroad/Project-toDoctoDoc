@@ -7,7 +7,7 @@ const { ifDailyChatNotExceededThenProceed, ifDailyRequestNotExceededThenProceed 
 const returnResponse = require("../standardResponseJSON");
 const { getTokenInformation } = require("../../auth/jwt");
 const UserSchema = require("../../../models/User");
-const { removeSpacesAndHashes } = require("../../../serverSideWorks/tagCollection");
+const { removeSpacesAndHashes } = require("../../../middleware/usefulFunctions");
 const Post = require("../../../models/Post");
 const mongoose = require("mongoose");
 const returnLongLatOfAddress = require("../../../middleware/getcoordinate");
