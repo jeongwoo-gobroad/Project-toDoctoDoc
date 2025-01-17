@@ -7,5 +7,6 @@ router.use('/curate', require("./files/curating"));
 router.use('/dm', require("./files/dm"));
 router.use('/review', require("./files/review"));
 router.use('/premium', require("./files/premiumify"));
+router.use('/appointment', require("./files/appointment"));
 
 module.exports = router; 
