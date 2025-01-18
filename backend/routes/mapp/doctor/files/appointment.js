@@ -9,6 +9,7 @@ const router = express.Router();
 
 const User = mongoose.model("User", UserSchema);
 const Doctor = require("../../../../models/Doctor");
+const Appointment = require("../../../../models/Appointment");
 
 router.get(["/list"],
     checkIfLoggedIn,
@@ -17,7 +18,13 @@ router.get(["/list"],
         const doctor = await getTokenInformation(req, res);
 
         try {
-            
+            const information = await Doctor.findById(doctor.userid).populate('appointments').populate('user', 'usernick');
+
+            const appointment = information.appointments;
+
+            res.status(200).json(returnResponse(false, "appointmentListForDoctor", appointment));
+
+            return;
         } catch (error) {
             console.error(error, "error at /appointment/list GET");
 
@@ -33,9 +40,26 @@ router.post(["/set"],
     isDoctorThenProceed,
     async (req, res, next) => {
         const doctor = await getTokenInformation(req, res);
+        const {uid, time} = req.body; // time 객체는 GMT 기준으로 1995-12-17T03:24:00 의 형태로 나타내야 함.
 
         try {
-            
+            const appointment = await Appointment.create({
+                user: uid,
+                doctor: doctor.userid,
+                appointmentTime: new Date(time)
+            });
+
+            await Doctor.findByIdAndUpdate(doctor.userid, {
+                $push: {appointments: appointment._id}
+            });
+
+            await User.findByIdAndUpdate(uid, {
+                $push: {appointments: appointment._id}
+            });
+
+            res.status(200).json(returnResponse(false, "setAppointment", "-"));
+
+            return;
         } catch (error) {
             console.error(error, "error at /appointment/set POST");
 
