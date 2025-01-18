@@ -29,7 +29,7 @@ router.post(["/query"],
 
             try {
                 const completion = await target.chat.completions.create({
-                    "model": "o1-mini",
+                    "model": "gpt-4o-mini",
                     "store": false,
                     "messages": [
                         {
@@ -52,6 +52,8 @@ router.post(["/query"],
 
                 return;
             } catch (error) {
+                console.log(error, "errorAtOpenAIPrompt");
+
                 res.status(401).json(returnResponse(true, "openaierror", "openaierror"));
 
                 return;
