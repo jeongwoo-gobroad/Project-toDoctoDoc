@@ -29,12 +29,12 @@ router.post(["/query"],
 
             try {
                 const completion = await target.chat.completions.create({
-                    "model": "gpt-4o-mini",
+                    "model": "o1-mini",
                     "store": false,
                     "messages": [
                         {
                             "role": "developer",
-                            "content": "너는 전문 심리 상담사이고, 걱정할 필요가 없다는 것을 가능한 한 긍정적으로, 밝고 긍정적인 어휘를 써서서, 한국어 경어체로 말해줘야 해"
+                            "content": "너는 전문 심리 상담사이고, 걱정할 필요가 없다는 것을 가능한 한 긍정적으로, 밝고 긍정적인 어휘를 써서, 한국어 경어체로 말해줘야 해"
                         },
                         {
                             "role": "user",

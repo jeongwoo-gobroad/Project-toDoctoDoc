@@ -75,9 +75,16 @@ router.patch(["/set"],
     isDoctorThenProceed,
     async (req, res, next) => {
         const doctor = await getTokenInformation(req, res);
+        const {appid, time} = req.body; // time 객체는 GMT 기준으로 1995-12-17T03:24:00 의 형태로 나타내야 함.
 
         try {
-            
+            const appointment = await Appointment.findByIdAndUpdate(appid, {
+                appointmentTime: time
+            });
+
+            res.status(200).json(returnResponse(false, "editedAppointment", "-"));
+
+            return;
         } catch (error) {
             console.error(error, "error at /appointment/set PATCH");
 
@@ -93,9 +100,20 @@ router.delete(["/set"],
     isDoctorThenProceed,
     async (req, res, next) => {
         const doctor = await getTokenInformation(req, res);
+        const {appid, uid} = req.body;
 
         try {
-            
+            await Appointment.findByIdAndDelete(appid);
+            await Doctor.findByIdAndUpdate(doctor.userid, {
+                $pull: {appointments: appid}
+            });
+            await User.findByIdAndUpdate(uid, {
+                $pull: {appointments: appid}
+            });
+
+            res.status(200).json(returnResponse(false, "deletedAppointment", "-"));
+
+            return;
         } catch (error) {
             console.error(error, "error at /appointment/set DELETE");
 
