@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Appointment = require("./Appointment");
 
 const BubbleSchema = new mongoose.Schema({
     role: {
@@ -33,6 +34,10 @@ const ChatSchema = new mongoose.Schema({
     date: {
         type: Date,
         default: Date.now(),
+    },
+    appointment: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Appointment',
     },
     hasAppointmentDone: {
         type: Boolean,

@@ -10,6 +10,7 @@ const router = express.Router();
 const User = mongoose.model("User", UserSchema);
 const Doctor = require("../../../../models/Doctor");
 const Appointment = require("../../../../models/Appointment");
+const Chat = require("../../../../models/Chat");
 
 router.get(["/list"],
     checkIfLoggedIn,
@@ -40,7 +41,7 @@ router.post(["/set"],
     isDoctorThenProceed,
     async (req, res, next) => {
         const doctor = await getTokenInformation(req, res);
-        const {uid, time} = req.body; // time 객체는 GMT 기준으로 1995-12-17T03:24:00 의 형태로 나타내야 함.
+        const {cid, uid, time} = req.body; // time 객체는 GMT 기준으로 1995-12-17T03:24:00 의 형태로 나타내야 함.
 
         try {
             const appointment = await Appointment.create({
@@ -55,6 +56,10 @@ router.post(["/set"],
 
             await User.findByIdAndUpdate(uid, {
                 $push: {appointments: appointment._id}
+            });
+
+            await Chat.findByIdAndUpdate(cid, {
+                appointment: appointment._id
             });
 
             res.status(200).json(returnResponse(false, "setAppointment", "-"));
@@ -79,7 +84,8 @@ router.patch(["/set"],
 
         try {
             const appointment = await Appointment.findByIdAndUpdate(appid, {
-                appointmentTime: time
+                appointmentTime: time,
+                appointmentEditedAt: Date.now()
             });
 
             res.status(200).json(returnResponse(false, "editedAppointment", "-"));
@@ -100,7 +106,7 @@ router.delete(["/set"],
     isDoctorThenProceed,
     async (req, res, next) => {
         const doctor = await getTokenInformation(req, res);
-        const {appid, uid} = req.body;
+        const {cid, appid, uid} = req.body;
 
         try {
             await Appointment.findByIdAndDelete(appid);
@@ -109,6 +115,9 @@ router.delete(["/set"],
             });
             await User.findByIdAndUpdate(uid, {
                 $pull: {appointments: appid}
+            });
+            await Chat.findByIdAndUpdate(cid, {
+                appointment: null
             });
 
             res.status(200).json(returnResponse(false, "deletedAppointment", "-"));

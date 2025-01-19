@@ -9,6 +9,7 @@ router.use('/', require("./mapp/user/graphboard"));
 router.use('/doctor', require("./mapp/doctor/route"));
 router.use('/curate', require("./mapp/user/curating"));
 router.use('/careplus', require("./mapp/user/curating-pro"));
+router.use('/careplus', require("./mapp/user/appointment"));
 router.use('/careplus', require("./mapp/user/dm"));
 router.use('/', require("./auth/token_refresh"));
 router.use('/review', require("./mapp/user/review"));
