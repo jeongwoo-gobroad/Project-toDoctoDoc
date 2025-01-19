@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:to_doc_for_doc/src/curate/curate_detail_screen.dart';
 import 'package:to_doc_for_doc/src/curate_screen.dart';
 import 'package:to_doc_for_doc/src/home.dart';
+import 'package:to_doc_for_doc/src/profile_screen.dart';
 import 'package:to_doc_for_doc/src/test_screen.dart';
 
 
@@ -25,7 +26,7 @@ class NavigationMenu extends StatelessWidget {
             const NavigationDestination(icon: Icon(Icons.home), label: '홈'),
             const NavigationDestination(icon: Icon(Icons.chat_bubble_outline), label: 'DM'),
             const NavigationDestination(icon: Icon(Icons.fact_check), label: '큐레이팅'),
-            const NavigationDestination(icon: Icon(Icons.settings), label: '설정'),
+            const NavigationDestination(icon: Icon(Icons.person_2_outlined), label: '프로필'),
         
           ],
         ),
@@ -41,6 +42,6 @@ class NavigationMenu extends StatelessWidget {
 class NavigationController extends GetxController{
   final Rx<int> selectedIndex = 0.obs; //home 상태관리
 
-  final screens = [Home(), TestScreen(), CurateScreen() , CurateDetailScreen()]; 
+  final screens = [Home(), TestScreen(), CurateScreen() , DoctorProfileView()]; 
 
 }

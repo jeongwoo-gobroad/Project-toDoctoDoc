@@ -10,14 +10,38 @@ import 'content_model.dart';
 class CurateController extends GetxController {
   Rx<CurateDetail?> curateDetail = Rx<CurateDetail?>(null);
   var isLoading = true.obs;
+  var forHomeLoading = true.obs;
   RxBool isPremium = false.obs;
   var CurateList = <Map<String, dynamic>>[].obs;
   var chatList = <Map<String, dynamic>>[].obs;
   var comments = <Map<String, dynamic>>[].obs;
   //var posts  
   var posts = <Map<String, dynamic>>[].obs;
+  RxString filterStatus = RxString('all');
   
   var curateItems = <ContentItem>[].obs;
+  RxString sortOrder = RxString('desc');
+
+  List<ContentItem> get sortedAndFilteredItems {
+    final tempList = [...filteredItems];
+    
+    if (sortOrder.value == 'desc') {
+      tempList.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    } else {
+      tempList.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+    }
+    return tempList;
+  } 
+  List<ContentItem> get filteredItems {
+    switch (filterStatus.value) {
+      case 'read':
+        return curateItems.where((item) => item.isRead).toList();
+      case 'unread':
+        return curateItems.where((item) => !item.isRead).toList();
+      default:
+        return curateItems;
+    }
+  }
 
   Future<bool> getCurateInfo(String radius) async{
     
@@ -30,7 +54,7 @@ class CurateController extends GetxController {
       print('로그인이 필요합니다.');
       return false;
     }
-
+    forHomeLoading.value = true;
     try {
       
       final response = await http.get(
@@ -53,6 +77,7 @@ class CurateController extends GetxController {
 
         // if(data is Map<String,dynamic> && data['content']['list'] is List){
         // List<dynamic> contentList = data['content']['list'];
+        forHomeLoading.value = false;
         return true;
 
       } else {

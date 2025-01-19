@@ -8,7 +8,7 @@ void main(){
 
 
   runApp(GetMaterialApp(
-    home: NavigationMenu()));
+    home: LoginPage()));
 
 
 }

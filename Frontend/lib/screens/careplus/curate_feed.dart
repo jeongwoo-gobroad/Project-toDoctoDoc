@@ -31,7 +31,8 @@ class _CurateFeedState extends State<CurateFeed> {
     curateListController.getList();
     final random = Random();
     randomIndex = random.nextInt(images.length);
-    _sortList();
+    //isAscending = false;
+    //_sortList(false);
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
   }
@@ -42,15 +43,17 @@ class _CurateFeedState extends State<CurateFeed> {
     return formattedDate;
   }
 
-  void _sortList() {
+  void _sortList([bool toggle = true]) {
     setState(() {
+    if (toggle) {
       isAscending = !isAscending;
-      curateListController.CurateList.sort((a, b) {
-        DateTime dateA = DateTime.parse(a['date']);
-        DateTime dateB = DateTime.parse(b['date']);
-        return isAscending ? dateA.compareTo(dateB) : dateB.compareTo(dateA);
-      });
+    }
+    curateListController.CurateList.sort((a, b) {
+      DateTime dateA = DateTime.parse(a['date']);
+      DateTime dateB = DateTime.parse(b['date']);
+      return isAscending ? dateA.compareTo(dateB) : dateB.compareTo(dateA);
     });
+  });
   }
 
   void _scrollListener() {
@@ -129,7 +132,7 @@ class _CurateFeedState extends State<CurateFeed> {
                                 color: Colors.white,
                               ),
                               label: Text(
-                                isAscending ? '최신 순' : '오래된 순',
+                                isAscending ? '오래된 순' : '최신 순',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,

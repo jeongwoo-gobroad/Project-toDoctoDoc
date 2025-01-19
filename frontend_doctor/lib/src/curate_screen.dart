@@ -73,10 +73,16 @@ class _CurateScreenState extends State<CurateScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        curateController.filterStatus.value = 'unread';
+                      },
                       child: Text('안읽음만 보기',
-                          style:
-                              TextStyle(color: Colors.black87, fontSize: 14)),
+                          style: TextStyle(
+                              color: curateController.filterStatus.value ==
+                                      'unread'
+                                  ? Colors.blue
+                                  : Colors.black87,
+                              fontSize: 14)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         padding:
@@ -90,10 +96,16 @@ class _CurateScreenState extends State<CurateScreen> {
                     ),
                     SizedBox(width: 8),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        curateController.filterStatus.value = 'read';
+                      },
                       child: Text('읽음만 보기',
-                          style:
-                              TextStyle(color: Colors.black87, fontSize: 14)),
+                          style: TextStyle(
+                              color:
+                                  curateController.filterStatus.value == 'read'
+                                      ? Colors.blue
+                                      : Colors.black87,
+                              fontSize: 14)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         padding:
@@ -107,12 +119,20 @@ class _CurateScreenState extends State<CurateScreen> {
                     ),
                     Spacer(),
                     DropdownButton<String>(
-                      value: '최신순',
+                      value: curateController.sortOrder.value == 'desc'
+                          ? '최신순'
+                          : '오래된순',
                       items: [
                         DropdownMenuItem(value: '최신순', child: Text('최신순')),
                         DropdownMenuItem(value: '오래된순', child: Text('오래된순')),
                       ],
-                      onChanged: (value) {},
+                      onChanged: (value) {
+                        if (value == '최신순') {
+                          curateController.sortOrder.value = 'desc';
+                        } else {
+                          curateController.sortOrder.value = 'asc';
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -142,7 +162,7 @@ class _CurateScreenState extends State<CurateScreen> {
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  final item = curateController.curateItems[index];
+                  final item = curateController.sortedAndFilteredItems[index];
                   return InkWell(
                     onTap: () async {
                       // print(item.id);
@@ -241,7 +261,7 @@ class _CurateScreenState extends State<CurateScreen> {
                     ),
                   );
                 },
-                childCount: curateController.curateItems.length,
+                childCount: curateController.sortedAndFilteredItems.length,
               ),
             )
           ],

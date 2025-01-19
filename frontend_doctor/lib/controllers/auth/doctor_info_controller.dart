@@ -7,16 +7,19 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 
 class DoctorInfoController extends GetxController {
   RxString id = "".obs;
-  RxString usernick = "".obs;
+  RxString name = "".obs;
   RxString email = "".obs;
   RxString postcode = "".obs;
   RxString detailAddress = "".obs;
   RxString extraAddress = "".obs;
   RxString address = "".obs;
+  RxString personalID = "".obs;
+  RxString phone = "".obs;
   final RxBool isLoading = false.obs;
   RxBool isPremium = false.obs;
   RxDouble longitude = 0.0.obs;
   RxDouble latitude = 0.0.obs;
+  
   //RxString address = "".obs;
   
   Future<void> getInfo() async {
@@ -41,26 +44,28 @@ class DoctorInfoController extends GetxController {
       final data = json.decode(json.decode(response.body));
       print(data);
       id.value = data['content']['id'];
-      usernick.value = data['content']['usernick'];
+      name.value = data['content']['name'];
       email.value = data['content']['email'];
-      postcode.value = data['content']['address']['postcode'].toString();
+      personalID.value = data['content']['personalID'];
+      phone.value = data['content']['phone'];
+      postcode.value = data['content']['address']['postcode'];
       address.value = data['content']['address']['address'];
       detailAddress.value = data['content']['address']['detailAddress'];
-      extraAddress.value = data['content']['address']['extraAddress'];
-      isPremium.value = data['content']['isPremium'];
+      //extraAddress.value = data['content']['address']['extraAddress'];
+      //isPremium.value = data['content']['isPremium'];
       latitude.value = data['content']['address']['latitude'];
       longitude.value = data['content']['address']['longitude'];
 
-      print(address.value);
-      print(extraAddress.value);
-      print(email.value);
-      print(detailAddress.value);
-      print(id.value);
-      print(latitude.value);
-      print(longitude.value);
+      // print(address.value);
+      // print(extraAddress.value);
+      // print(email.value);
+      // print(detailAddress.value);
+      // print(id.value);
+      // print(latitude.value);
+      // print(longitude.value);
 
       //로컬 저장
-      await saveUserInfo(data);
+      //await saveUserInfo(data);
 
     }
   }

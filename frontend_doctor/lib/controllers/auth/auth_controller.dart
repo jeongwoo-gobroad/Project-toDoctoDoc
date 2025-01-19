@@ -4,9 +4,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:to_doc_for_doc/controllers/auth/doctor_info_controller.dart';
 
 class AuthController extends GetxController {
   String? _token;
+  DoctorInfoController doctorInfoController = Get.put(DoctorInfoController());
 
   Future<bool> register(String id, String password, String password2, String name, String phone, String personalID, String doctorID, String postcode
    ,String address, String detailAddress, String extraAddress, String email) async{
@@ -96,6 +98,7 @@ class AuthController extends GetxController {
         ///
        
         Get.snackbar('Success', '로그인 성공');
+        await doctorInfoController.getInfo();
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('jwt_token', _token!);
 

@@ -19,10 +19,11 @@ class CurateListController extends GetxController {
   var CurateList = <Map<String, dynamic>>[].obs;
   var chatList = <Map<String, dynamic>>[].obs;
   var comments = <Map<String, dynamic>>[].obs;
-  //var posts  
+  //var posts
   var posts = <Map<String, dynamic>>[].obs;
-  UserinfoController userinfoController = Get.put(UserinfoController(dio: Dio()));
-  
+  UserinfoController userinfoController =
+      Get.put(UserinfoController(dio: Dio()));
+
   // if(userinfoController.isPremium == 'true'){
   //   isPremium.value = true;
   //   print('premium account');
@@ -31,13 +32,11 @@ class CurateListController extends GetxController {
   //   print('non-premium account');
   // }
 
-
   @override
   void onInit() {
     super.onInit();
     dio.interceptors.add(CustomInterceptor());
   }
-
 
   Future<void> getList() async {
     //final prefs = await SharedPreferences.getInstance();
@@ -58,7 +57,7 @@ class CurateListController extends GetxController {
       'http://jeongwoo-kim-web.myds.me:3000/mapp/careplus/list',
       options: Options(
         headers: {
-          'Content-Type':'application/json',
+          'Content-Type': 'application/json',
           'accessToken': 'true',
         },
       ),
@@ -83,13 +82,22 @@ class CurateListController extends GetxController {
 [677d595269eb1515eb40c500, 677d5b4169eb1515eb40c5a5, 677d5fa169eb1515eb40c6bb]
 [{_id: 677d595269eb1515eb40c500, comments: [], date: 2025-01-07T13:06:56.389Z}, {_id: 677d5b4169eb1515eb40c5a5, comments: [], date: 2025-01-07T13:06:56.389Z}, {_id: 677d5fa169eb1515eb40c6bb, comments: [], date: 2025-01-07T13:06:56.389Z}] */
 
-      if(data['content'] is List){
+      if (data['content'] is List) {
         List<dynamic> contentList = data['content'];
         //데이터
-        for(var post in contentList){
-          CurateList.value = (data['content'] as List).map((e) => e as Map<String,dynamic>).toList();
+        for (var post in contentList) {
+          CurateList.value = (data['content'] as List)
+              .map((e) => e as Map<String, dynamic>)
+              .toList();
           //print('Title: ${post['title']} Tag : ${post['tag']}');
         }
+        CurateList.value.sort((a, b) {
+          DateTime dateA = DateTime.parse(a['date']);
+          DateTime dateB = DateTime.parse(b['date']);
+          return dateB.compareTo(dateA); // 최신순 정렬
+        });
+
+        CurateList.refresh();
         print(CurateList.value);
       }
       //print(content);
@@ -112,9 +120,9 @@ class CurateListController extends GetxController {
     //isLoading.value = true;
     final response = await dio.get(
       'http://jeongwoo-kim-web.myds.me:3000/mapp/careplus/post/$id',
-      options:
-      Options(headers: {
-          'Content-Type':'application/json',
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
           'accessToken': 'true',
         },
       ),
@@ -153,10 +161,9 @@ class CurateListController extends GetxController {
 
       //print(content);
     }
-  
   }
 
-  Future<void> requestCurate() async{
+  Future<void> requestCurate() async {
 /*    final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt_token');
 
@@ -165,7 +172,7 @@ class CurateListController extends GetxController {
       print('로그인이 필요합니다.');
       return;
     }*/
-    if(userinfoController.isPremium.value == false){
+    if (userinfoController.isPremium.value == false) {
       Get.snackbar('Error', '프리미엄 계정이 아닙니다.');
       return;
     }
@@ -174,9 +181,10 @@ class CurateListController extends GetxController {
       'http://jeongwoo-kim-web.myds.me:3000/mapp/careplus/curate',
       options: Options(
         headers: {
-        'Content-Type':'application/json',
-        'accessToken': 'true',
-      },),
+          'Content-Type': 'application/json',
+          'accessToken': 'true',
+        },
+      ),
     );
 /*
     final response = await http.post(
