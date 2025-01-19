@@ -16,7 +16,7 @@ router.post(["/appointment"],
         const user = await getTokenInformation(req, res);
 
         try {
-            const {chatid} = req.body;
+            const { chatid } = req.body;
 
             const chat = await Chat.findById(chatid);
 

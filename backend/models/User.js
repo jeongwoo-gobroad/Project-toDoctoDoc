@@ -58,6 +58,10 @@ const UserSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Review'
     }],
+    appointments: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Appointment'
+    }],
     refreshToken: {
         type: String,
     },

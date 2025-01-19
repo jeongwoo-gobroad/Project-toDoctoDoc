@@ -54,6 +54,10 @@ const DoctorSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment'
     }],
+    appointments: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Appointment'
+    }],
     isVerified: {
         type: Boolean,
         required: true,

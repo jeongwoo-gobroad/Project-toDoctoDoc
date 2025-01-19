@@ -52,7 +52,7 @@ const chatting_user = async (socket, next) => {
                         await setCacheForThreeDaysAsync(userid, unreadChats);
                     }
                     
-                    socket.emit("returnJoinedChat", {chat: chat, unread: unread});
+                    socket.emit("returnJoinedChat_user", {chat: chat, unread: unread});
                 } catch (error) {
                     socket.emit("error", "errorAtJoinChat");
         
