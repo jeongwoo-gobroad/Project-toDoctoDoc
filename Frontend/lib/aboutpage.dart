@@ -18,11 +18,8 @@ class Aboutpage extends StatelessWidget {
 
       ),
       body: Obx((){
-
         if(aboutprov.isLoading.value == true){
           return Center(child: CircularProgressIndicator());
-
-
         }
         return Padding(
           padding: EdgeInsets.all(16),

@@ -19,17 +19,6 @@ class AiChatDeleteController extends GetxController{
     //로딩
     isLoading.value = true;
 
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
-
-    print('로그인중');
-
-    if(token == null){
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return;
-    }
-
     print(chatId);
 
     final response = await dio.delete(

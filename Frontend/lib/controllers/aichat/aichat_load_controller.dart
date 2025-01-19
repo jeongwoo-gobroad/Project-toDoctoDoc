@@ -23,15 +23,6 @@ class AichatLoadController extends GetxController {
     print('chat Loading');
     print(chatId);
 
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
-
-    if(token == null){
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return false;
-    }
-
     final response = await dio.get(
       'http://jeongwoo-kim-web.myds.me:3000/mapp/aichat/get/$chatId',
       options: Options(

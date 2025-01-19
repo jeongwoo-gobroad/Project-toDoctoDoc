@@ -31,8 +31,7 @@ class AboutpageProvider extends GetxController{
       options: Options(headers: {
         'Content-Type': 'application/json',
         //token?
-      },
-      ),
+      },),
     );
 
 
@@ -48,8 +47,9 @@ class AboutpageProvider extends GetxController{
      */
 
     if(response.statusCode==200){
-      final data = json.decode(response.data);
-      //print(data);
+      final data = response.data;
+      //final data = json.decode(response.data);
+      print(data);
       aboutData.value = data['content']['string'];
       print(aboutData);
     }
