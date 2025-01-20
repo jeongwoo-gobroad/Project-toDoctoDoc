@@ -42,28 +42,28 @@ class ChatService {
 
   
   void getChatList(Function(List<dynamic> data) onChatListReceived) {
-    _socket.emit('connection::chatList');
-    _socket.on('connection::chatList', (data) {
+    _socket.emit('chatList');
+    _socket.on('returnChatList', (data) {
       onChatListReceived(data);
     });
   }
 
  
   void joinChat(String roomNo, Function(dynamic chatData) onChatJoined) {
-    _socket.emit('connection::joinChat', roomNo);
-    _socket.on('connection::joinChat', (data) {
+    _socket.emit('joinChat_user', roomNo);
+    _socket.on('returnJoinedChat_user', (data) {
       onChatJoined(data);
     });
   }
 
   
   void leaveChat(String roomNo) {
-    _socket.emit('connection::leaveChat', roomNo);
+    _socket.emit('leaveChat_user', roomNo);
   }
 
   
   void sendMessage(String roomNo, String message) {
-    _socket.emit('connection::sendChat', {'roomNo': roomNo, 'message': message});
+    _socket.emit('sendChat_user', {'roomNo': roomNo, 'message': message});
   }
 
   
