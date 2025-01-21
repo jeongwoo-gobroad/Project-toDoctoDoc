@@ -105,8 +105,10 @@ const chatting_doctor = async (socket, next) => {
                         await setCacheForThreeDaysAsync(chat.user, unreadChats);
 
                         socket.emit("unread_user", "-");
+                        // console.log("doctor:: solo");
                     } else {
                         socket.to(struct.roomNo).emit("recvChat_user", {role: "doctor", message: struct.message, createdAt: now});
+                        // console.log("doctor:: both");
                     }
         
                     return;
