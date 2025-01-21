@@ -88,7 +88,7 @@ class _DMListState extends State<DMList> {
                 return InkWell(
                   onTap: () {
                     print(chat.id);
-                    linkTest();
+                    //linkTest();
                     socketService.joinChat(chat.id);
                     Get.to(()=> ChatScreen(socketService: socketService, chatId: chat.id, unreadMsg: 0,))?.whenComplete(() {
                       setState(() {
@@ -159,6 +159,7 @@ class _DMListState extends State<DMList> {
     );
   }
 
+/*
   void linkTest() async {
     Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
@@ -176,6 +177,7 @@ class _DMListState extends State<DMList> {
     print(response.statusCode);
     print(response);
   }
+*/
 
 
 

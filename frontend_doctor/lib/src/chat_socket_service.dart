@@ -64,7 +64,7 @@ class ChatSocketService {
   }
 
   void onReturnJoinedChat(Function callback) {
-    socket?.on('returnJoinedChat', (data) => callback(data));
+    socket?.on('returnJoinedChat_doctor', (data) => callback(data));
     /*
     {
       //chat.value = List<Map<String, dynamic>>.from(data['chatList']);
@@ -106,7 +106,7 @@ class ChatSocketService {
     //socket?.on('joinChat_user', (data) { print(data);} );
   }
 
-  void leaveChat(String chatId) {
+  Future<void> leaveChat(String chatId) async {
     print('채팅방 퇴장 요청 보냄');
     socket?.emit('leaveChat_doctor', chatId);
   }

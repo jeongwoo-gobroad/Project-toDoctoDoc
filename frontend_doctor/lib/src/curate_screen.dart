@@ -76,13 +76,6 @@ class _CurateScreenState extends State<CurateScreen> {
                       onPressed: () {
                         curateController.filterStatus.value = 'unread';
                       },
-                      child: Text('안읽음만 보기',
-                          style: TextStyle(
-                              color: curateController.filterStatus.value ==
-                                      'unread'
-                                  ? Colors.blue
-                                  : Colors.black87,
-                              fontSize: 14)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         padding:
@@ -93,12 +86,24 @@ class _CurateScreenState extends State<CurateScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
+                      child: Text('안읽음만 보기',
+                          style: TextStyle(color: curateController.filterStatus.value == 'unread' ? Colors.blue : Colors.black87, fontSize: 14)),
                     ),
                     SizedBox(width: 8),
                     ElevatedButton(
                       onPressed: () {
                         curateController.filterStatus.value = 'read';
                       },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        side: BorderSide(color: Colors.grey[300]!),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
                       child: Text('읽음만 보기',
                           style: TextStyle(
                               color:
@@ -106,16 +111,6 @@ class _CurateScreenState extends State<CurateScreen> {
                                       ? Colors.blue
                                       : Colors.black87,
                               fontSize: 14)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        side: BorderSide(color: Colors.grey[300]!),
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
                     ),
                     Spacer(),
                     DropdownButton<String>(

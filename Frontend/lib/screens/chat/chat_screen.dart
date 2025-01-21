@@ -17,8 +17,8 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreen();
 }
 
-class _ChatScreen extends State<ChatScreen> {
-  final ChatController controller = Get.put(ChatController(dio: Dio()));
+class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
+  //final ChatController controller = Get.put(ChatController(dio: Dio()));
   final ScrollController _scrollController = ScrollController();
 
   late int updateunread;
@@ -43,7 +43,7 @@ class _ChatScreen extends State<ChatScreen> {
   }
 
   void asyncBefore() async {
-    widget.socketService.onReturnJoinedChat((data) {
+    widget.socketService.onReturnJoinedChat_user((data) {
       print('chat List received');
       print(data);
       print('sub');
@@ -78,7 +78,12 @@ class _ChatScreen extends State<ChatScreen> {
       if (this.mounted) setState(() {});
 
     });
+
+
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
+
+
       widget.socketService.onUserReceived((data) {
         print('user chat received');
         print('data1');
@@ -89,24 +94,11 @@ class _ChatScreen extends State<ChatScreen> {
         });
       });
     });
-
-/*
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.socketService.onUnreadMsg((data) {
-        setState(() {
-          print(updateunread);
-          updateunread++;
-        });
-      });
-    });
-*/
-
   }
 
   @override
   void initState() {
     super.initState();
-
     updateunread = widget.unreadMsg;
     asyncBefore();
   }
@@ -114,20 +106,6 @@ class _ChatScreen extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final messageController = TextEditingController();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-      }
-    });
-
-/*    void scrollToBottom() {
-      if (_scrollController.hasClients) {
-        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-      }
-    } */
-    // 
-
 
      bool shouldShowTime(int index) {
        if (index == _messageList.length - 1) return true;
@@ -168,13 +146,12 @@ class _ChatScreen extends State<ChatScreen> {
        });
      }
 
-
     return PopScope(
       onPopInvokedWithResult:(didPop, result) async {
         if (widget.socketService.ischatFetchLoading.value) {
           return;
         }
-        widget.socketService.leaveChat(widget.chatId);
+        await widget.socketService.leaveChat(widget.chatId);
       },
       child: Scaffold(
         appBar: AppBar(
@@ -241,7 +218,7 @@ class _ChatScreen extends State<ChatScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.end,
 
                                 children: [
-                                  if (index + updateunread == _messageList.length - 1) ... [
+                                  if (index + updateunread == _messageList.length - 1 && isUser) ... [
                                     Container(
                                       padding: EdgeInsets.fromLTRB(0, 0, 12, 5),
                                       child: Text(
