@@ -4,10 +4,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc/controllers/careplus/chat_controller.dart';
-import 'package:to_doc/controllers/careplus/chat_data_model.dart';
 import 'package:to_doc/screens/chat/chat_screen.dart';
 
-import '../../auth/auth_dio.dart';
 import '../../auth/auth_secure.dart';
 import '../../socket_service/chat_socket_service.dart';
 
@@ -44,8 +42,8 @@ class _DMListState extends State<DMList> {
   @override
   void dispose() {
     // TODO: implement dispose
-    socketService.socket?.dispose();
-    socketService.socket?.disconnect();
+    socketService.socket.dispose();
+    socketService.socket.disconnect();
     super.dispose();
   }
 
@@ -90,7 +88,7 @@ class _DMListState extends State<DMList> {
                     print(chat.id);
                     //linkTest();
                     socketService.joinChat(chat.id);
-                    Get.to(()=> ChatScreen(socketService: socketService, chatId: chat.id, unreadMsg: 0,))?.whenComplete(() {
+                    Get.to(()=> ChatScreen(socketService: socketService, chatId: chat.id, unreadMsg: 0, doctorName: chat.doctor.name ?? '',))?.whenComplete(() {
                       setState(() {
                         controller.getChatList();
                       });

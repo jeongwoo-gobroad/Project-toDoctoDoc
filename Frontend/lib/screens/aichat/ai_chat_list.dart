@@ -27,7 +27,6 @@ class AiChatList extends StatefulWidget {
   State<AiChatList> createState() => _AiChatListState();
 }
 
-
 class _AiChatListState extends State<AiChatList> {
   AiChatListController aiChatListController = Get.put(AiChatListController(dio: Dio()));
   AiChatDeleteController aiChatDeleteController = Get.put(AiChatDeleteController(dio: Dio()));
@@ -45,7 +44,7 @@ class _AiChatListState extends State<AiChatList> {
 
   String formatDate(String date){
     DateTime dateTime = DateTime.parse(date);
-    String formattedDate = DateFormat('yyyy년 M월 d일 HH시 mm분').format(dateTime);
+    String formattedDate = DateFormat('yyyy.M.d. HH:mm').format(dateTime);
     return formattedDate;
   }
 
@@ -70,7 +69,6 @@ class _AiChatListState extends State<AiChatList> {
                 itemCount: aiChatListController.chatList.length,
                 itemBuilder: (context, int index) {
                   final chatRoom = aiChatListController.chatList[index];
-
                   print(chatRoom['title']);
                   return GestureDetector(
                     onTap: () {
@@ -113,7 +111,7 @@ class _AiChatListState extends State<AiChatList> {
                       title: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                          Text('${chatRoom['title']}', overflow: TextOverflow.ellipsis),
+                          Text('${chatRoom['title']}', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold),),
                           Text(formatDate(chatRoom['chatEditedAt']) ?? '',style: TextStyle(fontSize: 10, fontWeight: FontWeight.w100, color: Colors.grey),),
                         ],
                       ),
@@ -128,20 +126,10 @@ class _AiChatListState extends State<AiChatList> {
           ),
           Container (
             //width:  ,
-            decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(color: Colors.black.withValues(alpha: 0.5),
-                    spreadRadius: 5,
-                    blurRadius: 10,
-                    offset: Offset(0, 0),
-                  ),
-                ]
-            ),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 127, 57, 251),
+            child: FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color.fromRGBO(225, 234, 205, 100),
                 padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                foregroundColor: const Color.fromARGB(255, 127, 57, 251),
                 minimumSize: const Size(double.infinity, 15),
                 shape: BeveledRectangleBorder(),
                 //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7),),
@@ -154,7 +142,7 @@ class _AiChatListState extends State<AiChatList> {
               child: Text('새 채팅 시작하기', style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 17,
-                  color: Colors.white),
+                  color: Colors.black),
               ),
             ),
           ),

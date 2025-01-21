@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart';
 import 'package:to_doc/controllers/myPost_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc/controllers/userInfo_controller.dart';
@@ -26,35 +25,38 @@ class Pageview extends StatelessWidget {
     String formattedDate = DateFormat('yyyy년 M월 d일 HH시 mm분').format(dateTime);
 
     return formattedDate;
-
-
   }
+
   List<Widget> buildTagChips(String tags) {
   List<String> tagList = tags.split(',').map((tag) => tag.trim()).toList();
+
   return tagList
       .map(
         (tag) => Chip(
           label: Text(
-            tag,
+            '#$tag',
             style: TextStyle(
               fontSize: 12,
-              color: Colors.white,
+              color: Colors.grey,
+              decoration: TextDecoration.underline,
             ),
           ),
-          backgroundColor: Colors.blueAccent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          backgroundColor: Colors.white,
+          shape: const StadiumBorder(side: BorderSide(style: BorderStyle.none)),
+          padding: EdgeInsets.all(0),
+          labelPadding: EdgeInsets.fromLTRB(0, 0, 3, 0),
         ),
       )
       .toList();
   }
+
   @override
 @override
 Widget build(BuildContext context) {
   return Scaffold(
+    //backgroundColor: Color.fromRGBO(244, 242, 248, 20),
     appBar: AppBar(
-      title: Text(viewController.title.value, overflow: TextOverflow.ellipsis),
+      //title: Text(viewController.title.value, overflow: TextOverflow.ellipsis),
       actions: [
         PopupMenuButton(
           borderRadius: BorderRadius.circular(16),
@@ -63,10 +65,9 @@ Widget build(BuildContext context) {
               onTap: () {
                 if(viewController.uid != userinfoController.uid){
                   Get.snackbar('Error', '본인 게시물이 아닙니다.');
-                  
                 }
                 else{
-                Get.to(() => PageEdit(viewController));
+                  Get.to(() => PageEdit(viewController));
                 }
               },
               child: ListTile(
@@ -122,17 +123,82 @@ Widget build(BuildContext context) {
       ],
       centerTitle: true,
     ),
+
     body: Obx(
       () => SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.all(10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Center(
+                child: Container(
+
+                  width: double.infinity,
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    border: Border(bottom: BorderSide(color: Colors.black.withAlpha(50))),
+                  color: Colors.white,),
+
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.person_outline, size: 20, color: Colors.grey),
+                          SizedBox(width: 4),
+                          Text(
+                            viewController.usernick.value,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 8),
+
+                      Column(
+                       children: [
+                        Row(
+                          children: [
+                            Icon(Icons.access_time, size: 12, color: Colors.grey),
+                            SizedBox(width: 4),
+                            Text(
+                              formatDate(viewController.createdAt.value),
+                              style: TextStyle(color: Colors.grey, fontSize: 10),
+                            )
+                          ],
+                        ),
+                        if (true)
+                          Padding(
+                            padding: EdgeInsets.only(top: 4),
+                            child: Row(
+                              children: [
+                                Icon(Icons.edit, size: 12, color: Colors.grey),
+                                SizedBox(width: 4),
+                                Text(
+                                  formatDate(viewController.editedAt.value),
+                                  style: TextStyle(color: Colors.grey, fontSize: 10),
+                                )
+                              ],
+                            ),
+                          ),
+
+                       ]),
+                    ],
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 4),
+
               // 카드 섹션 (제목 + 태그)
               Card(
-                elevation: 2,
+                elevation: 0,
                 child: Container(
+                  color: Colors.white,
                   width: double.infinity,
                   padding: EdgeInsets.all(16),
                   child: Column(
@@ -141,81 +207,53 @@ Widget build(BuildContext context) {
                       Text(
                         viewController.title.value,
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 25,
                           fontWeight: FontWeight.bold,
                         ),
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                       ),
-                      SizedBox(height: 8),
-                      if (viewController.tag.value.isNotEmpty && 
-                        viewController.tag.value.trim().isNotEmpty)
+
+                      if (viewController.tag.value.isNotEmpty &&
+                          viewController.tag.value.trim().isNotEmpty) ...[
                         Wrap(
-                          spacing: 8.0,
-                          runSpacing: 4.0,
+                          spacing: 0.0,
+                          runSpacing: 0.0,
                           children: buildTagChips(viewController.tag.value),
                         ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(height: 4),
-              // 작성자 정보 및 시간
-              Center(
-            
-                child: Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.person_outline, size: 16, color: Colors.grey),
-                          SizedBox(width: 4),
-                          Text(
-                            viewController.usernick.value,
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
+                      ],
+
                       SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(Icons.access_time, size: 16, color: Colors.grey),
-                          SizedBox(width: 4),
-                          Text(
-                            formatDate(viewController.createdAt.value),
-                            style: TextStyle(color: Colors.grey, fontSize: 13),
-                          )
-                        ],
-                      ),
-                      if (true)
-                        Padding(
-                          padding: EdgeInsets.only(top: 4),
-                          child: Row(
-                            children: [
-                              Icon(Icons.edit, size: 16, color: Colors.grey),
-                              SizedBox(width: 4),
-                              Text(
-                                formatDate(viewController.editedAt.value),
-                                style: TextStyle(color: Colors.grey, fontSize: 13),
-                              )
-                            ],
-                          ),
+
+                      Text(
+                        viewController.details.value,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: const Color.fromARGB(255, 41, 41, 41),
                         ),
+                      ),
+                      SizedBox(height: 12),
+                      Text(
+                        viewController.additional_material.value,
+                        style: TextStyle(
+                          fontSize: 15,
+                          height: 1.5,
+                          color: const Color.fromARGB(255, 41, 41, 41),
+                        ),
+                      ),
+
+
                     ],
                   ),
                 ),
               ),
-              SizedBox(height: 4),
-              
-              Card(
-                elevation: 2,
+              // 작성자 정보 및 시간
+
+              /* Card(
+                color: Colors.white,
+                elevation: 0,
                 child: Container(
                   width: double.infinity,
                   padding: EdgeInsets.all(16),
@@ -235,14 +273,14 @@ Widget build(BuildContext context) {
                         viewController.additional_material.value,
                         style: TextStyle(
                           fontSize: 15,
-                          height: 1.5, 
+                          height: 1.5,
                           color: const Color.fromARGB(255, 41, 41, 41),
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
+              ),*/
             ],
           ),
         ),

@@ -3,23 +3,14 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:to_doc/auth/login_page.dart';
+import 'package:to_doc/app.dart';
 import 'package:to_doc/controllers/userInfo_controller.dart';
 import 'package:to_doc/controllers/view_controller.dart';
-import 'package:to_doc/home.dart';
-import 'package:to_doc/navigation_menu.dart';
-import 'package:to_doc/provider/auth_provider.dart';
-import 'package:to_doc/screens/airesult.dart';
 import 'package:to_doc/screens/intro.dart';
-import 'package:to_doc/screens/myPost.dart';
-import 'package:to_doc/screens/pageView.dart';
-import 'package:to_doc/screens/user_edit.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async{
   await initializeDateFormatting();
-
   WidgetsFlutterBinding.ensureInitialized();
 
   //  AuthRepository.initialize(
@@ -46,6 +37,19 @@ void main() async{
     // GetPage(name: '/navigationmenu', page: () => NavigationMenu()), // 라우트 이름 등록
     // GetPage(name: '/myposttemp', page: () => MypostTemp()),
     // ],
-    home: Intro()));
+    home: Intro(),
+    theme: ThemeData(
+        scaffoldBackgroundColor: Color.fromRGBO(255, 255, 255, 100),
+        navigationBarTheme: NavigationBarThemeData(
+            backgroundColor: Colors.white,
+            indicatorColor: Colors.white,
+        ),
+        appBarTheme: AppBarTheme(backgroundColor: Colors.white, scrolledUnderElevation: 0),
+        menuBarTheme: MenuBarThemeData(),
+        dialogTheme: DialogTheme(
+          backgroundColor: Colors.white,
+        )
+    )
+  ));
 }
 

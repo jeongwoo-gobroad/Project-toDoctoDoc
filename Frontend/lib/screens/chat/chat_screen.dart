@@ -8,10 +8,11 @@ import 'package:to_doc/controllers/careplus/chat_controller.dart';
 import 'package:to_doc/socket_service/chat_socket_service.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key, required this.socketService, required this.chatId, required this.unreadMsg}) : super(key:key);
+  const ChatScreen({Key? key, required this.socketService, required this.chatId, required this.unreadMsg, required this.doctorName}) : super(key:key);
   final ChatSocketService socketService;
   final String chatId;
   final int unreadMsg;
+  final String doctorName;
 
   @override
   State<ChatScreen> createState() => _ChatScreen();
@@ -118,7 +119,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
        return currentMsg.role != nextMsg.role || currentTime != nextTime;
      }
-
      bool shouldShowDate(int index) {
        if (index == 0) {
          return true;
@@ -155,8 +155,9 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('채팅'),
-          centerTitle: true,
+          title: Text('${widget.doctorName}', style: TextStyle(fontWeight: FontWeight.bold),),
+          //centerTitle: true,
+          shape: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
         ),
         body: Column(
           children: [
@@ -250,8 +251,8 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                                       padding: EdgeInsets.all(12),
                                       decoration: BoxDecoration(
                                         color: isUser
-                                            ? Colors.blue[100]
-                                            : Colors.grey[300],
+                                            ? Color.fromRGBO(225, 234, 205, 100)
+                                            : Color.fromRGBO(244, 242, 248, 20),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Text(
@@ -282,7 +283,45 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Row(
+
+              child: TextField(
+                maxLines: null,
+                controller: messageController,
+
+                onSubmitted: (value) {
+                  if (value.isNotEmpty) {
+                    sendText(value);
+                  }
+                },
+
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Color.fromRGBO(244, 242, 248, 20),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(40),
+                      borderSide: BorderSide(width: 0, style: BorderStyle.none)
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  hintText: '메시지를 입력하세요',
+
+                  suffixIcon: IconButton(
+                      onPressed: () {
+                        if (messageController.text.isNotEmpty) {
+                          sendText(messageController.text);
+                        }
+                      },
+                      icon: Icon(Icons.arrow_circle_right_outlined, size: 45)
+                  ),
+                ),
+              ),
+
+
+
+
+              /*child: Row(
                 children: [
                   Expanded(
                     child: TextField(
@@ -311,7 +350,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                     },
                     child: Text('전송'),
                   ),
-                ],),
+                ],),*/
             ),
 
           ],),

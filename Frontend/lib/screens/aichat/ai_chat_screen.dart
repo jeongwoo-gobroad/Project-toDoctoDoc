@@ -104,8 +104,10 @@ class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
           await aiChatSaveController.saveChat(chatId);
         },
         child: Scaffold(
+          backgroundColor: Colors.white,
             resizeToAvoidBottomInset: true,
             appBar: AppBar(
+              shape: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
               centerTitle: true,
               title: InkWell(
                 onTap: () {
@@ -122,7 +124,31 @@ class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
               child: Column(
                 children: [
                   ChatMaker(scrollController: scrollController, messageList: _messageList,),
-                  Stack(
+
+                  TextField(
+                    maxLines: null,
+                    controller: textEditingController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Color.fromRGBO(225, 234, 205, 100),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(40),
+                          borderSide: BorderSide(width: 0, style: BorderStyle.none)
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 15,
+                      ),
+                      hintText: '메세지 입력',
+
+                      suffixIcon: IconButton(
+                          onPressed: () => _handleSubmitted(textEditingController.text),
+                          icon: Icon(Icons.arrow_circle_right_outlined, size: 45)
+                      ),
+                    ),
+                  ),
+
+                  /*Stack(
                     children: [
                       ConstrainedBox( constraints: BoxConstraints(maxHeight: 150,),
                         child: Padding(
@@ -146,7 +172,7 @@ class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
                         )
                       )
                     ]
-                  ),
+                  ),*/
                 ]
               )
             )

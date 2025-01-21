@@ -5,11 +5,9 @@ import 'package:get/get.dart';
 import 'package:to_doc/auth/auth_secure.dart';
 import 'package:to_doc/auth/login_page.dart';
 import 'package:to_doc/auth/register_page.dart';
-
+import '../controllers/userInfo_controller.dart';
 import '../navigation_menu.dart';
 import '../provider/auth_provider.dart';
-
-
 
 class Intro extends StatefulWidget {
   const Intro({super.key});
@@ -24,6 +22,8 @@ class _IntroState extends State<Intro> with SingleTickerProviderStateMixin {
 
   final authProvider = Get.put(AuthProvider(dio: Dio()));
   final SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
+  final UserinfoController user = Get.find<UserinfoController>();
+
 
   bool awaitLogin = false;
 
@@ -34,15 +34,12 @@ class _IntroState extends State<Intro> with SingleTickerProviderStateMixin {
     final userId = await storage.readUserId();
     final userPw = await storage.readUserPw();
 
-    //Get.snackbar('AutoLogin Test', '$userId, $userPw.');
-    
     if (userId != null && userPw != null) {
       var result = await authProvider.login(userId, userPw, false, false);
 
-      //Get.snackbar('result', '$result.');
-
       if (result['success'] == true) {
         awaitLogin = false;
+        user.getInfo();
         Get.offAll(()=> NavigationMenu());
       }
       else {
@@ -55,12 +52,9 @@ class _IntroState extends State<Intro> with SingleTickerProviderStateMixin {
     });
   }
 
-
   @override
   void initState() {
     super.initState();
-    //autoLogin();
-
     autoLogin();
 
     _animationController =
@@ -78,10 +72,6 @@ class _IntroState extends State<Intro> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,7 +86,6 @@ class _IntroState extends State<Intro> with SingleTickerProviderStateMixin {
             children: [
               Expanded(
                 child: Center(
-
                   child: FadeTransition(
                     opacity: _animation,
                     child: Column(
@@ -138,7 +127,6 @@ class _IntroState extends State<Intro> with SingleTickerProviderStateMixin {
                       child: Text('시작하기', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
                       ),
 
-
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -146,19 +134,15 @@ class _IntroState extends State<Intro> with SingleTickerProviderStateMixin {
                         const Text('이미 계정이 있나요?'),
                         TextButton(
                           style: TextButton.styleFrom(
-                          foregroundColor: const Color.fromARGB(255, 58, 68, 58),
-
+                            foregroundColor: const Color.fromARGB(255, 58, 68, 58),
                           ),
                           onPressed: (awaitLogin == false) ? () => {Get.to(()=> LoginPage())} : null,
                           child: Text('로그인',style: TextStyle(fontWeight: FontWeight.bold,),)
                         )
-
                       ],
                     )
                   ],
-
                 ),
-
               )
             ],
           ),

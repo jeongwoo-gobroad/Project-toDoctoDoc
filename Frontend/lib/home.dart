@@ -6,14 +6,8 @@ import 'package:to_doc/controllers/careplus/chat_controller.dart';
 import 'package:to_doc/controllers/query_controller.dart';
 import 'package:to_doc/controllers/userInfo_controller.dart';
 import 'package:to_doc/navigator/side_menu.dart';
-import 'package:to_doc/provider/aboutpage_provider.dart';
 import 'package:to_doc/screens/airesult.dart';
-import 'package:to_doc/screens/chat/chatTest.dart';
-import 'package:to_doc/screens/chat/dm_list.dart';
-import 'package:to_doc/screens/chat/show.dart';
-import 'Other.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'dart:math';
 
 class Home extends StatefulWidget {
@@ -96,6 +90,7 @@ class _HomeState extends State<Home> {
   Widget build(context) {
     return Scaffold(
       //floating 아이콘 
+/*
         floatingActionButton: FloatingActionButton(
           onPressed: (){
             //chatController.getChatList();
@@ -104,6 +99,8 @@ class _HomeState extends State<Home> {
           },
           child: const Icon(Icons.chat_bubble_outline_rounded),
         ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+*/
 
       //appBar
       drawer: Obx(() => SideMenu(
@@ -122,93 +119,119 @@ class _HomeState extends State<Home> {
         ),
       body: isLoading ?  Center(child: CircularProgressIndicator())  //아직 갱신안됐으면 로딩창띄움움
         : 
-          Obx(()=>
-            SingleChildScrollView(
-            
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 120),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      '${welcomeMessages[randIndex]} ${userController.usernick.value ?? '로그인이 필요합니다.'}님',
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 35,
-                        fontWeight: FontWeight.bold,
-                      ),
-              
-              
-                    ),
-                    SizedBox(height: 50),
+          Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Obx(()=>
                     Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: TextField(
-                        controller: queryController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(40)),
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 20,
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                  
+                          SizedBox(height: 50),
+                  
+                          Icon(Icons.circle_outlined, size: 100,),
+                  
+                          SizedBox(height: 50),
+                  
+                          Text(
+                            '${welcomeMessages[randIndex]} ${userController.usernick.value ?? '로그인이 필요합니다.'}님',
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 35,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          hintText: '${queryQuotes[randIndex3]}',
-                          suffixIcon: IconButton(
-                            
-                            onPressed: () async{
-                              /*쿼리*/
-                              //input 
-                                final prefs = await SharedPreferences.getInstance();
-                                final token = prefs.getString('jwt_token');
-              
-                                if (token == null) {
-                                  Get.defaultDialog(
-                                    title: '로그인 필요',
-                                    middleText: '로그인이 필요합니다. 로그인 후 다시 시도해 주세요.',
-                                    confirm: ElevatedButton(
-                                      onPressed: () {
-                                        Get.back(); // 다이얼로그 닫기
-                                        // 로그인 페이지로 이동 코드 추가
-                                      },
-                                      child: Text('로그인'),
+                  
+                          SizedBox(height: 20),
+                  
+                          Container(
+                            decoration:
+                            BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Color.fromRGBO(225, 224, 226, 0)
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                  child: Text("\“", style: TextStyle(fontSize: 100, color:Color.fromRGBO(225, 234, 205, 100))),
+                                ),
+                                Container(
+                                  width: MediaQuery.of(context).size.width - 150,
+                                  child: Text(
+                                    '${mindfulnessQuotes[randIndex2]}',
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.clip,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    cancel: TextButton(
-                                      onPressed: () {
-                                        Get.back(); // 다이얼로그 닫기
-                                      },
-                                      child: Text('취소'),
-                                    ),
-                                  );
-                                } else {
-                                  // 로그인 되어 있을 때
-                                  query.sendQuery(queryController.text);
-                                  Get.to(() => Airesult());
-                                }
-                            },
-                          
-                            icon: Icon(Icons.arrow_circle_right_outlined, size: 45)
-                          ),
-                        ),
-              
-              
+                                  ),
+                                ),
+                                Container(
+                                  child: Text("\”", style: TextStyle(fontSize: 100, color:Color.fromRGBO(225, 234, 205, 100))),
+                                  padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                                ),
+                              ],
+                            ),
+                          ), //SizedBox(height: 50),
+                        ],
                       ),
                     ),
-                    SizedBox(height: 50),
-                    Text(
-                      '${mindfulnessQuotes[randIndex2]}',
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.clip,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    
-                  ],
+                  ),
                 ),
               ),
-            ),
+
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: TextField(
+
+                  controller: queryController,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Color.fromRGBO(225, 234, 205, 100),
+
+                    enabledBorder: OutlineInputBorder(borderSide: BorderSide.none,),
+
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(40),
+                        borderSide: BorderSide(width: 0, style: BorderStyle.none)
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 20,
+                    ),
+                    hintText: '${queryQuotes[randIndex3]}',
+                    hintStyle: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+
+                    prefixIcon: IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.mic)
+                    ),
+                    prefixIconConstraints: BoxConstraints(
+                      minWidth: 60,
+                    ),
+
+                    suffixIcon: IconButton(
+                        onPressed: () async{
+                            query.sendQuery(queryController.text);
+                            Get.to(() => Airesult());
+                        },
+                        icon: Icon(Icons.arrow_circle_right_outlined, size: 45)
+                    ),
+                  ),
+
+
+                ),
+              ),
+
+
+            ],
           ),
         );
     

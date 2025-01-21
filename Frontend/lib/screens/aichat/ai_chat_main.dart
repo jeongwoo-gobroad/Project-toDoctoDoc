@@ -20,28 +20,18 @@ class _AichatMain extends State<AichatMain> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.chat_bubble_outline_rounded),
-
-      ),
       drawer: Obx(() => SideMenu(
           userinfoController.usernick.value,
           userinfoController.email.value
         )),
 
       appBar: AppBar(
-        centerTitle: true,
+        //centerTitle: true,
         title: InkWell(
-          onTap: () {
-            /*to about page*/
-            Get.to(() => Aboutpage());
-          },
           child: Text('Ai와 채팅',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
         ),
-        actions: [
-        ],
+        shape: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
       ),
 
       body: AiChatList(),

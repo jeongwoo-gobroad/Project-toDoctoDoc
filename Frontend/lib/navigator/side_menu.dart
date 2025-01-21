@@ -16,6 +16,7 @@ class SideMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      backgroundColor: Colors.white,
       //backgroundColor: ,
       child: ListView(
         padding: EdgeInsets.zero,
@@ -24,8 +25,8 @@ class SideMenu extends StatelessWidget {
             accountName: Text(usernick.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black)),
             accountEmail: Text(email.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.black)),
             decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(1), bottomRight: Radius.circular(1)),
-            
+              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(1), bottomRight: Radius.circular(1)),
+              color: Color.fromRGBO(225, 234, 205, 100),
 
             ),
             //onDetailsPressed: (){},

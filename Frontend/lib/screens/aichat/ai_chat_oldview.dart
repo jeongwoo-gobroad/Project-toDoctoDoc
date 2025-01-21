@@ -46,6 +46,7 @@ class _AiChatOldViewState extends State<AiChatOldView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        shape: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
         centerTitle: true,
         title: InkWell(
           onTap: () {
@@ -65,11 +66,12 @@ class _AiChatOldViewState extends State<AiChatOldView> {
             child: Column(
               children: [
                 ChatMaker(scrollController: scrollController, messageList: _messageList,),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 51, 51, 51),
+
+                FilledButton(
+                  style: FilledButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(225, 234, 205, 100),
                       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                      foregroundColor: const Color.fromARGB(255, 51, 51, 51),
+                      foregroundColor: const Color.fromRGBO(225, 234, 205, 100),
                       minimumSize: const Size(double.infinity, 10),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -83,7 +85,7 @@ class _AiChatOldViewState extends State<AiChatOldView> {
                   child: Text('채팅 재개하기', style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
-                      color: Colors.white),),
+                      color: Colors.black),),
                 ),
               ],
             ),
