@@ -26,10 +26,18 @@ class SideMenu extends StatelessWidget {
             accountEmail: Text(email.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.black)),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.only(bottomLeft: Radius.circular(1), bottomRight: Radius.circular(1)),
-              color: Color.fromRGBO(225, 234, 205, 100),
+              color: Color.fromARGB(255, 225, 234, 205),
 
             ),
             //onDetailsPressed: (){},
+          ),
+          ListTile(
+            leading: Icon(Icons.workspace_premium, color: Colors.yellow,),
+            title: Text('프리미엄', style: TextStyle(color: Colors.yellow),),
+            onTap: (){
+
+            },
+            trailing: Icon(Icons.navigate_next, color: Colors.yellow,),
           ),
           ListTile(
             leading: Icon(Icons.home),
@@ -40,7 +48,7 @@ class SideMenu extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.person),
-            title: Text('내 프로필'),
+            title: Text('계정 설정'),
             onTap: (){
               Get.to(()=> UserEdit());
             },
@@ -58,19 +66,21 @@ class SideMenu extends StatelessWidget {
             onTap: (){Get.to(()=>DMList());},
             trailing: Icon(Icons.navigate_next),
           ),
+
           ListTile(
             leading: Icon(Icons.settings),
             title: Text('설정'),
             onTap: (){},
             trailing: Icon(Icons.navigate_next),
           ),
+
           ListTile(
             leading: Icon(Icons.logout, color: Colors.red,),
             title: Text('로그아웃', style: TextStyle(color:Colors.red,)),
             onTap: (){
               _logoutAlert(context);
               },
-            trailing: Icon(Icons.navigate_next),
+            trailing: Icon(Icons.navigate_next, color: Colors.red,),
           ),
 
         ],
@@ -120,7 +130,4 @@ class SideMenu extends StatelessWidget {
       },
     );
   }
-
-
-
 }

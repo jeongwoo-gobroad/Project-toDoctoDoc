@@ -371,14 +371,14 @@ class _CurationScreenState extends State<CurationScreen>
                                     itemBuilder: (context, index) {
                                       final chat = curateListController.chatList[index];
                                       return buildListItem(
-                                        id: chat['_id'],
-                                        title: chat['title'],
+                                        id: (chat['_id'] != null) ? chat['_id'] : '',
+                                        title: (chat['title'] != null) ? chat['title'] : '빈 제목',
                                         //subtitle: chat['lastMessage'],
                                         backgroundColor: Colors.blue[50]!,
                                         onTap: () async {
                                           //await viewController.openAiChat(chat['_id']);
                                           Get.to(() => AiChatOldView(
-                                                chatId: chat['_id'],
+                                                chatId: (chat['_id'] != null)? chat['_id'] : '',
                                                 chatTitle: (chat['title'] != null)
                                                     ? chat['title']
                                                     : '빈 제목',

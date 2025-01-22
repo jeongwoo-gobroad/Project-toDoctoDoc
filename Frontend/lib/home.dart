@@ -216,8 +216,10 @@ class _HomeState extends State<Home> {
 
                       suffixIcon: IconButton(
                           onPressed: () async{
+                            if (queryController.text != '') {
                               query.sendQuery(queryController.text);
                               Get.to(() => Airesult());
+                            }
                           },
                           icon: Icon(Icons.arrow_circle_right_outlined, size: 45)
                       ),

@@ -101,45 +101,55 @@ class PostListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: onTap,
-      title: Text(
-        post['title'] ?? '제목 없음',
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-      ),
-      subtitle: Column(
+      title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (post['tag'] != null && post['tag'].isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 4,
-                  horizontal: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.blue[50],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  '태그: ${post['tag']}',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.blueAccent,
-                  ),
+            Container(
+              padding: EdgeInsets.symmetric(
+                //vertical: 4,
+                //horizontal: 8,
+              ),
+              decoration: BoxDecoration(
+                //color: Colors.blue[50],
+                //borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                '#${post['tag']}',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
                 ),
               ),
             ),
-          const SizedBox(height: 4),
           Text(
-            '작성일: ${formatDate(post['createdAt'] ?? '')}',
-            style: const TextStyle(fontSize: 12, color: Colors.grey),
+            post['title'] ?? '제목 없음',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
+      ),
+      subtitle: Padding(
+        padding: const EdgeInsets.only(top: 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+/*            Text(
+              '${post['details']}',
+              overflow: TextOverflow.ellipsis,
+            ),*/
+
+            SizedBox(height: 4),
+            Text(
+              '작성일: ${formatDate(post['createdAt'] ?? '')}',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ],
+        ),
       ),
       trailing: const Icon(
         Icons.arrow_forward_ios,

@@ -1,11 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:intl/intl.dart';
-
 import 'package:dio/dio.dart';
 import '../auth/auth_dio.dart';
 
@@ -27,16 +21,6 @@ class MypostController extends GetxController{
 
 
   Future<bool> fetchMyPost() async {
-    //final prefs = await SharedPreferences.getInstance();
-    // token = prefs.getString('jwt_token');
-
-    /*
-    if(token == null){
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return false;
-    }
-     */
 
     isLoading.value = true;
 
@@ -49,18 +33,6 @@ class MypostController extends GetxController{
         },
       ),
     );
-
-
-    /*
-    final response = await http.get(
-      Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/myPosts'),
-      headers: {
-        'Content-Type':'application/json',
-        'authorization':'Bearer $token',
-      },
-    );
-    */
-
 
     if(response.statusCode==200){
       final data = json.decode(response.data);
@@ -97,17 +69,9 @@ class MypostController extends GetxController{
 
 
   Future<void> editMyPost(String postID, String additional_material, String? tag) async {
-    //final prefs = await SharedPreferences.getInstance();
-    //final token = prefs.getString('jwt_token');
     print('myPost: $postID $additional_material $tag');
 
-    /*
-    if(token == null){
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return;
-    }
-     */
+
     /** ID다를시 error */
     
     tag = (tag != null && tag.trim().isEmpty) ? null : tag; //공백 지우기기
@@ -132,16 +96,6 @@ class MypostController extends GetxController{
         data: json.encode(body),
       );
 
-      /*
-    final response = await http.patch(
-      Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/edit/$postID'),
-      headers: {
-        'Content-Type': 'application/json',
-        'authorization': 'Bearer $token',
-      },
-      body: json.encode(body),
-    );
-      */
 
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.data}');
@@ -174,16 +128,6 @@ class MypostController extends GetxController{
 
 
   Future<bool> deleteMyPost(String postID) async {
-    //final prefs = await SharedPreferences.getInstance();
-    //final token = prefs.getString('jwt_token');
-
-    /*
-    if(token == null){
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return false;
-    }
-     */
     /** ID다를시 error */
 
     isLoading.value = true;
@@ -232,15 +176,6 @@ class MypostController extends GetxController{
 
 
   Future<List<Map<String, dynamic>>> tagSearch(String tag) async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
-
-    if (token == null) {
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return [];
-    }
-
     isTagLoading.value = true;
 
     final response = await dio.get(
@@ -253,16 +188,6 @@ class MypostController extends GetxController{
       )
     );
 
-    /*
-    final response = await http.get(
-      Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/tagSearch/$tag'),
-      headers: {
-        'Content-Type': 'application/json',
-        'authorization': 'Bearer $token',
-      },
-    );
-     */
-
     if (response.statusCode == 200) {
       final data = json.decode(response.data);
       var tagList = <Map<String, dynamic>>[];
@@ -271,6 +196,7 @@ class MypostController extends GetxController{
         List<dynamic> contentList = data['content'];
         for(var post in contentList){
           tagList = (data['content'] as List).map((e) => e as Map<String,dynamic>).toList();
+          print(post);
           //print('Title: ${post['title']} Tag : ${post['tag']}');
         }
         

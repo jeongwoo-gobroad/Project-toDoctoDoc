@@ -60,7 +60,8 @@ class _AiChatListState extends State<AiChatList> {
     return Scaffold(
       body :
         Column (
-          children: [Expanded(
+          children: [
+            Expanded(
             child: Obx(() {
               if (aiChatListController.isLoading.value) {
                 return Center(child: CircularProgressIndicator());
@@ -121,53 +122,49 @@ class _AiChatListState extends State<AiChatList> {
 
 
                       title: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                              //
-                              SizedBox(
-                                  width: MediaQuery.of(context).size.width - 160,
-                                  child: Text('${chatRoom['title']}', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold),)),
-                              SizedBox(
-                                  width: 50,
-                                  child: Text(formatDate(chatRoom['chatEditedAt']) ?? '',style: TextStyle(fontSize: 10, fontWeight: FontWeight.w100, color: Colors.grey),)),
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          //
+                          SizedBox(
+                              width: MediaQuery.of(context).size.width - 160,
+                              child: Text('${(chatRoom['title'] != null) ? chatRoom['title'] : '제목 없음'}', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold),)),
+                          SizedBox(
+                              width: 50,
+                              child: Text(formatDate(chatRoom['chatEditedAt']) ?? '',style: TextStyle(fontSize: 10, fontWeight: FontWeight.w100, color: Colors.grey),)
+                          ),
                         ],
                       ),
                       subtitle: Text('${chatRoom['recentMessage']}', overflow: TextOverflow.ellipsis,),
-
-                      //trailing: Text(formatDate(chatRoom['chatEditedAt']) ?? ''),
                     ),
                   );
                 },
               );
             }),
-          ),
-          Container (
-            //width:  ,
-            child: FilledButton(
-              style: FilledButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 225, 234, 205),
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                minimumSize: const Size(double.infinity, 15),
-                shape: BeveledRectangleBorder(),
-                //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7),),
-              ),
-              onPressed: (){
-                Get.to(()=> AiChatSub(isNewChat : true, chatId : '', messageList: [],))?.whenComplete(() {
-                  setState(() { _onReload(); });
-                });},
-
-              child: Text('새 채팅 시작하기', style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 17,
-                  color: Colors.black),
+            ),
+            Container (
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 225, 234, 205),
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                  minimumSize: const Size(double.infinity, 15),
+                  shape: BeveledRectangleBorder(),
+                ),
+                onPressed: (){
+                  Get.to(()=> AiChatSub(isNewChat : true, chatId : '', messageList: [],))?.whenComplete(() {
+                    setState(() { _onReload(); });
+                  });},
+                child: Text('새 채팅 시작하기', style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                    color: Colors.black),
+                ),
               ),
             ),
-          ),
-
           ]
         ),
     );
   }
+
   void _onReload() async{
     await aiChatListController.getChatList();
   }

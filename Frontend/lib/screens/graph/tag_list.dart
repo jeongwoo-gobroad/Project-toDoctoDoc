@@ -1,4 +1,3 @@
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,6 +5,7 @@ import 'package:to_doc/controllers/myPost_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc/controllers/view_controller.dart';
 import 'package:to_doc/screens/pageView.dart';
+
 class TagList extends StatefulWidget {
   final String tag;
   const TagList({required this.tag, super.key});
@@ -49,13 +49,11 @@ class _TagListState extends State<TagList> {
     }
   }
 
-
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('태그: ${widget.tag}'),
+        title: Text('#${widget.tag}', style: TextStyle(fontWeight: FontWeight.bold),),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
@@ -85,38 +83,48 @@ class _TagListState extends State<TagList> {
                         await viewController.getFeed(post['_id']);
                         Get.to(() => Pageview());
                       },
-                      title: Text(
-                        post['title'] ?? '제목 없음',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (post['tag'] != null && post['tag'].isNotEmpty)
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                //vertical: 4,
+                                //horizontal: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                //color: Colors.blue[50],
+                                //borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                '#${post['tag']}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                          Text(
+                            post['title'] ?? '제목 없음',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ),
                       subtitle: Padding(
-                        padding: const EdgeInsets.only(top: 8),
+                        padding: const EdgeInsets.only(top: 0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (post['tag'] != null && post['tag'].isNotEmpty)
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: 4,
-                                  horizontal: 8,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue[50],
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  '태그: ${post['tag']}',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.blueAccent,
-                                  ),
-                                ),
-                              ),
+                            Text(
+                              '${post['details']}',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+
                             SizedBox(height: 4),
                             Text(
                               '작성일: ${formatDate(post['createdAt'] ?? '')}',
