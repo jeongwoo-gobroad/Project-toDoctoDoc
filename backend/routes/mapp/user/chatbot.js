@@ -159,12 +159,12 @@ router.post(["/save"],
             let messages = [
                 {
                     "role": "developer",
-                    "content": "너는 전문 심리 상담사이고, 내가 제시하는 걱정들에 대해서 걱정할 필요가 없다는 것을 가능한 한 긍정적으로, 밝고 긍정적인 어휘를 써서, 한국어 경어체로 말해줘야 해"
+                    "content": "너는 전문 심리 상담사이고, 내가 제시하는 걱정들에 대해서 걱정할 필요가 없다는 것을 가능한 한 긍정적으로, 밝고 긍정적인 어휘를 써서, 한국어 경어체로 말해줘야 해. 지금까지 나눈 대화에 어울리는 제목을 title 이라는 이름의 JSON 객체로 반환 해 줘."
                 }
             ];
     
             messages = messages.concat(chat.response);
-            messages = messages.concat([{"role": "user", "content": "지금까지 나눈 대화에 어울리는 제목을 유니코드가 아닌 아스키코드로 된 쌍따옴표 안에 넣어서 알려줘"}]);
+            //messages = messages.concat([{"role": "user", "content": "지금까지 나눈 대화에 어울리는 제목을 title 이라는 이름의 JSON 객체로 반환 해 줘"}]);
 
             const target = new openai({
                 apiKey: process.env.OPENAI_KEY,
@@ -175,9 +175,11 @@ router.post(["/save"],
                 "messages": messages
             });
 
-            // console.log(completion.choices[0].message.content);
+            // console.log(completion.choices[0].message.content.replaceAll('`', '').replaceAll('json', ''));
 
-            title = getQuote(completion.choices[0].message.content);
+            // title = getQuote(completion.choices[0].message.content);
+
+            title = JSON.parse(completion.choices[0].message.content.replaceAll('`', '').replaceAll('json', '')).title;
 
             // console.log(title);
 
