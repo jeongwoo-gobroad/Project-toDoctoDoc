@@ -17,11 +17,11 @@ const AIChatSchema = new mongoose.Schema({
     },
     chatCreatedAt: { 
         type: Date,
-        default: Date.now(),
+        default: Date.now,
     },
     chatEditedAt: {
         type: Date,
-        default: Date.now(),
+        default: Date.now,
     }
 });
 

@@ -14,11 +14,11 @@ const PostSchema = new mongoose.Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now(),
+        default: Date.now,
     },
     editedAt: {
         type: Date,
-        default: Date.now(),
+        default: Date.now,
     },
     tag: {
         type: String,

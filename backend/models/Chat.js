@@ -33,7 +33,7 @@ const ChatSchema = new mongoose.Schema({
     }],
     date: {
         type: Date,
-        default: Date.now(),
+        default: Date.now,
     },
     appointment: {
         type: mongoose.Schema.Types.ObjectId,

@@ -13,15 +13,15 @@ const AppointmentSchema = new mongoose.Schema({
     },
     appointmentTime: {
         type: Date,
-        default: Date.now(),
+        default: Date.now,
     },
     appointmentCreatedAt: { 
         type: Date,
-        default: Date.now(),
+        default: Date.now,
     },
     appointmentEditedAt: {
         type: Date,
-        default: Date.now(),
+        default: Date.now,
     }
 });
 

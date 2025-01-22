@@ -13,7 +13,7 @@ const CommentSchema = new mongoose.Schema({
     date: {
         type: Date,
         required: true,
-        default: Date.now()
+        default: Date.now
     },
     originalID: {
         type: mongoose.Schema.Types.ObjectId,

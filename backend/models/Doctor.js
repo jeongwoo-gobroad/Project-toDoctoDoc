@@ -13,7 +13,7 @@ const DoctorSchema = new mongoose.Schema({
     },
     accountCreatedAt: {
         type: Date,
-        default: Date.now(),
+        default: Date.now,
     },
     password: {
         type: String,

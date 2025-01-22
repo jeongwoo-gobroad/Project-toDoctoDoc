@@ -8,11 +8,11 @@ const Premium_Psychiatry_Schema = new mongoose.Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now(),
+        default: Date.now,
     },
     updatedAt: {
         type: Date,
-        default: Date.now()
+        default: Date.now
     },
     place_id: {
         type: String,
