@@ -98,7 +98,7 @@ class NavigationController extends GetxController {
   final screens = [
     Home(),
     AichatMain(),
-    TagGraphBoard(),
+    GraphBoard(),
     MapAndListScreen(),
     CurationHomeScreen()
   ];

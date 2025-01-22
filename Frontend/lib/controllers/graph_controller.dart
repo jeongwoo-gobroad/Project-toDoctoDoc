@@ -12,7 +12,7 @@ import 'package:dio/dio.dart';
 
 class TagGraphController extends GetxController{
   final Dio dio;
-
+  RxBool isLoading = false.obs;
   //var psychiatryList = <Map<String, dynamic>>[].obs;
   
   var _tagList = <String, int>{}.obs;      
@@ -22,6 +22,7 @@ class TagGraphController extends GetxController{
   TagGraphController({required this.dio});
 
   Future<void> getGraph() async{
+    isLoading.value = true;
     dio.interceptors.add(CustomInterceptor());
 
     final response = await dio.get(
@@ -43,10 +44,11 @@ class TagGraphController extends GetxController{
 
         print(tagList);
         print(tagGraph);
-
+        isLoading.value = false;
         
       } else{
           print('Error: ${response.statusCode}');
+          isLoading.value = false;
       }
 
   }
