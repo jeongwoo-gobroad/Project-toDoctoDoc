@@ -130,7 +130,7 @@ class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
                     controller: textEditingController,
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: Color.fromRGBO(225, 234, 205, 100),
+                      fillColor: Color.fromARGB(100, 225, 234, 205),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(40),
                           borderSide: BorderSide(width: 0, style: BorderStyle.none)

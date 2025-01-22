@@ -20,6 +20,10 @@ class _HomeState extends State<Home> {
   final TextEditingController queryController = TextEditingController(); 
   final UserinfoController userController = Get.find<UserinfoController>();
  //추후 수정
+
+  Color _green = Color.fromARGB(255, 225, 234, 205);
+
+
   final QueryController query = Get.put(QueryController(dio: Dio()));
   String? id;
   String? usernick;
@@ -150,16 +154,11 @@ class _HomeState extends State<Home> {
                           SizedBox(height: 20),
                   
                           Container(
-                            decoration:
-                            BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Color.fromRGBO(225, 224, 226, 0)
-                            ),
                             child: Row(
                               children: [
                                 Container(
                                   padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                                  child: Text("\“", style: TextStyle(fontSize: 100, color:Color.fromRGBO(225, 234, 205, 100))),
+                                  child: Text("\“", style: TextStyle(fontSize: 100, color:_green)),
                                 ),
                                 Container(
                                   width: MediaQuery.of(context).size.width - 150,
@@ -174,7 +173,7 @@ class _HomeState extends State<Home> {
                                   ),
                                 ),
                                 Container(
-                                  child: Text("\”", style: TextStyle(fontSize: 100, color:Color.fromRGBO(225, 234, 205, 100))),
+                                  child: Text("\”", style: TextStyle(fontSize: 100, color:_green)),
                                   padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                                 ),
                               ],
@@ -189,44 +188,43 @@ class _HomeState extends State<Home> {
 
               Padding(
                 padding: const EdgeInsets.all(16),
-                child: TextField(
-
-                  controller: queryController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Color.fromRGBO(225, 234, 205, 100),
-
-                    enabledBorder: OutlineInputBorder(borderSide: BorderSide.none,),
-
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(40),
-                        borderSide: BorderSide(width: 0, style: BorderStyle.none)
-                    ),
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 20,
-                    ),
-                    hintText: '${queryQuotes[randIndex3]}',
-                    hintStyle: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-
-                    prefixIcon: IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.mic)
-                    ),
-                    prefixIconConstraints: BoxConstraints(
-                      minWidth: 60,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: _green,
+                    borderRadius: BorderRadius.circular(40),
+                    border: Border(bottom: BorderSide.none),
                     ),
 
-                    suffixIcon: IconButton(
-                        onPressed: () async{
-                            query.sendQuery(queryController.text);
-                            Get.to(() => Airesult());
-                        },
-                        icon: Icon(Icons.arrow_circle_right_outlined, size: 45)
+                  child: TextField(
+                    controller: queryController,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 20,
+                      ),
+                      hintText: '${queryQuotes[randIndex3]}',
+                      hintStyle: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+
+                      prefixIcon: IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.mic)
+                      ),
+                      prefixIconConstraints: BoxConstraints(
+                        minWidth: 60,
+                      ),
+
+                      suffixIcon: IconButton(
+                          onPressed: () async{
+                              query.sendQuery(queryController.text);
+                              Get.to(() => Airesult());
+                          },
+                          icon: Icon(Icons.arrow_circle_right_outlined, size: 45)
+                      ),
                     ),
+
+
                   ),
-
-
                 ),
               ),
 

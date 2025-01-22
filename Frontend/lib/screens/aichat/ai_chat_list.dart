@@ -41,10 +41,17 @@ class _AiChatListState extends State<AiChatList> {
     super.initState();
     asyncLoad();
   }
-
   String formatDate(String date){
     DateTime dateTime = DateTime.parse(date);
-    String formattedDate = DateFormat('yyyy.M.d. HH:mm').format(dateTime);
+
+    String formattedDate;
+
+    if (dateTime.day == DateTime.now().day) {
+      formattedDate = DateFormat('HH:mm').format(dateTime);
+    }
+    else {
+      formattedDate = DateFormat('yyyy.M.d.').format(dateTime);
+    }
     return formattedDate;
   }
 
@@ -65,7 +72,8 @@ class _AiChatListState extends State<AiChatList> {
               }
               child:
               return ListView.builder(
-                padding: EdgeInsets.all(8.0),
+                shrinkWrap: true,
+                padding: EdgeInsets.all(2.0),
                 itemCount: aiChatListController.chatList.length,
                 itemBuilder: (context, int index) {
                   final chatRoom = aiChatListController.chatList[index];
@@ -81,6 +89,8 @@ class _AiChatListState extends State<AiChatList> {
                     },
 
                     child: ListTile(
+                      //minLeadingWidth : 1,
+                      //horizontalTitleGap: 0.0,
                       trailing: Column(
                         children: [
                           PopupMenuButton<MenuType>(
@@ -108,11 +118,18 @@ class _AiChatListState extends State<AiChatList> {
                           ),
                         ],
                       ),
+
+
                       title: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                          Text('${chatRoom['title']}', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold),),
-                          Text(formatDate(chatRoom['chatEditedAt']) ?? '',style: TextStyle(fontSize: 10, fontWeight: FontWeight.w100, color: Colors.grey),),
+                              //
+                              SizedBox(
+                                  width: MediaQuery.of(context).size.width - 160,
+                                  child: Text('${chatRoom['title']}', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold),)),
+                              SizedBox(
+                                  width: 50,
+                                  child: Text(formatDate(chatRoom['chatEditedAt']) ?? '',style: TextStyle(fontSize: 10, fontWeight: FontWeight.w100, color: Colors.grey),)),
                         ],
                       ),
                       subtitle: Text('${chatRoom['recentMessage']}', overflow: TextOverflow.ellipsis,),
@@ -128,7 +145,7 @@ class _AiChatListState extends State<AiChatList> {
             //width:  ,
             child: FilledButton(
               style: FilledButton.styleFrom(
-                backgroundColor: const Color.fromRGBO(225, 234, 205, 100),
+                backgroundColor: const Color.fromARGB(255, 225, 234, 205),
                 padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                 minimumSize: const Size(double.infinity, 15),
                 shape: BeveledRectangleBorder(),

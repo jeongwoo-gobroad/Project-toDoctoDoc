@@ -21,13 +21,14 @@ class ChatMaker extends StatelessWidget {
             controller: scrollController,
             itemBuilder: (_, int index) {
               return Bubble(
+
                 borderColor: Colors.white,
                 shadowColor: Colors.white,
                 nip: messageList[messageList.length-index-1].role == 'user' ? BubbleNip.rightBottom : BubbleNip.leftBottom,
                 alignment: messageList[messageList.length-index-1].role == 'user' ? Alignment.centerRight : Alignment.centerLeft,
                 color: messageList[messageList.length-index-1].role == 'user'
-                    ? Color.fromRGBO(225, 234, 205, 100)
-                    : Color.fromRGBO(244, 242, 248, 20) ,
+                    ? Color.fromARGB(255, 225, 234, 205)
+                    : Color.fromARGB(200, 244, 242, 248) ,
 
                 margin: const BubbleEdges.only(top: 8),
                 child: Text('${messageList[messageList.length-index-1].content}',

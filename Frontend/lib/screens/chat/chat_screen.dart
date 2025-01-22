@@ -21,7 +21,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   //final ChatController controller = Get.put(ChatController(dio: Dio()));
   final ScrollController _scrollController = ScrollController();
-
+  bool scrollLoading = true;
   late int updateunread;
 
   List<ChatObject> _messageList = [];
@@ -44,6 +44,8 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void asyncBefore() async {
+    scrollLoading = true;
+
     widget.socketService.onReturnJoinedChat_user((data) {
       print('chat List received');
       print(data);
@@ -76,15 +78,20 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       print(_messageList.length);
 
       // 나갔다 들어왔을 때 마운트 오류 발생해 해결
-      if (this.mounted) setState(() {});
-
+      if (this.mounted) {
+        setState(() {
+        Future.delayed(Duration(milliseconds: 50), () {
+          _scrollController.jumpTo(
+            _scrollController.position.maxScrollExtent * 2,
+          );
+        });
+      });
+      }
+      scrollLoading = false;
     });
-
 
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-
-
       widget.socketService.onUserReceived((data) {
         print('user chat received');
         print('data1');
@@ -92,6 +99,14 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
         setState(() {
           _messageList.add(ChatObject(content: data['message'], role: 'doctor', createdAt: DateTime.now()));
+
+          Future.delayed(Duration(milliseconds: 100), () {
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+            );
+          });
         });
       });
     });
@@ -164,7 +179,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
             Expanded(
 
               child: Obx(() {
-                if (widget.socketService.ischatFetchLoading.value) {
+                if (widget.socketService.ischatFetchLoading.value && scrollLoading) {
                   return const Center(child: CircularProgressIndicator());
                 }
       /*              WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -317,9 +332,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                   ),
                 ),
               ),
-
-
-
 
               /*child: Row(
                 children: [

@@ -39,6 +39,8 @@ void main() async{
     // ],
     home: Intro(),
     theme: ThemeData(
+
+
         scaffoldBackgroundColor: Color.fromRGBO(255, 255, 255, 100),
         navigationBarTheme: NavigationBarThemeData(
             backgroundColor: Colors.white,

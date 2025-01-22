@@ -69,9 +69,9 @@ class _AiChatOldViewState extends State<AiChatOldView> {
 
                 FilledButton(
                   style: FilledButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(225, 234, 205, 100),
+                      backgroundColor: const Color.fromARGB(255, 225, 234, 205),
                       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                      foregroundColor: const Color.fromRGBO(225, 234, 205, 100),
+                      foregroundColor: const Color.fromARGB(255, 225, 234, 205),
                       minimumSize: const Size(double.infinity, 10),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
