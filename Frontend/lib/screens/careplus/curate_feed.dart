@@ -38,7 +38,7 @@ class _CurateFeedState extends State<CurateFeed> {
   }
 
   String formatDate(String date){
-    DateTime dateTime = DateTime.parse(date).toUtc().add(Duration(hours: 9));
+    DateTime dateTime = DateTime.parse(date).toLocal();
     String formattedDate = DateFormat('yyyy년 M월 d일 HH시 mm분').format(dateTime);
     return formattedDate;
   }

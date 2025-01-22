@@ -70,7 +70,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
           chatTime = null;
         }
         else {
-          chatTime = DateTime.parse(chat['createdAt']);
+          chatTime = DateTime.parse(chat['createdAt']).toLocal();
         }
         _messageList.add(ChatObject(content: chat['message'], role: chat['role'] == 'user' ? 'user' : 'doctor', createdAt:chatTime));
       }

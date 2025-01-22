@@ -33,7 +33,7 @@ class _CurationScreenState extends State<CurationScreen>
 
   String formatDate(String date) {
     try {
-      DateTime dateTime = DateTime.parse(date).toUtc().add(Duration(hours: 9));
+      DateTime dateTime = DateTime.parse(date).toLocal();
       return DateFormat('yyyy년 M월 d일 HH시 mm분').format(dateTime);
     } catch (e) {
       return '날짜 정보 없음';

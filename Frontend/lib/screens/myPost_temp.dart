@@ -34,7 +34,7 @@ class _MypostTempState extends State<MypostTemp> {
   }
 
   String formatDate(String date){
-    DateTime dateTime = DateTime.parse(date);
+    DateTime dateTime = DateTime.parse(date).toLocal();
     String formattedDate = DateFormat('yyyy년 M월 d일 HH시 mm분').format(dateTime);
 
     return formattedDate;
