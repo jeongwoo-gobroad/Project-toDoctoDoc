@@ -10,6 +10,8 @@ const { checkIfLoggedIn, checkIfNotLoggedIn } = require("../checkingMiddleWare")
 const { route } = require("../main");
 const returnLongLatOfAddress = require("../../../middleware/getcoordinate");
 const router = express.Router();
+const { zodResponseFormat } = require("openai/helpers/zod");
+const titleSchema = require("./jsonSchema/title");
 
 const User = mongoose.model("User", UserSchema);
 const Chat = require("../../../models/Chat");
@@ -172,14 +174,15 @@ router.post(["/save"],
             const completion = await target.chat.completions.create({
                 "model": "gpt-4o-mini",
                 "store": false,
-                "messages": messages
+                "messages": messages,
+                "response_format": zodResponseFormat(titleSchema, "title"),
             });
 
-            // console.log(completion.choices[0].message.content.replaceAll('`', '').replaceAll('json', ''));
+            // console.log(completion.choices[0].message.content);
 
-            // title = getQuote(completion.choices[0].message.content);
+            // title = getQuote(completion.choices[0].message.content); Deprecated
 
-            title = JSON.parse(completion.choices[0].message.content.replaceAll('`', '').replaceAll('json', '')).title;
+            title = JSON.parse(completion.choices[0].message.content).title;
 
             // console.log(title);
 
