@@ -23,15 +23,15 @@ const bubbleCollection = async () => {
                     if (count > maxVal) {
                         maxVal = count;
                     }
+                } else {
+                    bubbleMap.set(tag, 1);
                 }
             }
         });
     });
 
-    bubbleMap.forEach((bubble) => {
-        let count = bubble;
-
-        console.log(count / maxVal);
+    bubbleMap.forEach((value, key, map) => {
+        bubbleMap.set(key, value / maxVal);
     });
 };
 

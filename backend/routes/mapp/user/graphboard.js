@@ -7,9 +7,10 @@ const { ifDailyChatNotExceededThenProceed } = require("../limitMiddleWare");
 const returnResponse = require("../standardResponseJSON");
 const { getTokenInformation } = require("../../auth/jwt");
 const UserSchema = require("../../../models/User");
-const { removeSpacesAndHashes, serverSideWorks, tagMap, tagGraph } = require("../../../serverSideWorks/tagCollection");
+const { tagMap, tagGraph } = require("../../../serverSideWorks/tagCollection");
 const Post = require("../../../models/Post");
 const mongoose = require("mongoose");
+const { bubbleMap } = require("../../../serverSideWorks/bubbleCollection");
 
 const User = mongoose.model("User", UserSchema);
 
@@ -31,10 +32,9 @@ router.get(["/tagSearch/:tag"],
 router.get(["/graphBoard"],
     checkIfLoggedIn,
     async (req, res, next) => {
-        const _tagList = JSON.stringify(Object.fromEntries(tagMap));
-        const _tagGraph = JSON.stringify(tagGraph);
+        const _bubbleList = JSON.stringify(bubbleMap)
 
-        res.status(200).json(returnResponse(false, "graphBoardData", {_tagList, _tagGraph}));
+        res.status(200).json(returnResponse(false, "graphBoardData", {_bubbleList}));
 
         return;
     }
