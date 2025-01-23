@@ -103,7 +103,7 @@ router.post(["/comment/:id"],
         try {
             const user = await getTokenInformation(req, res);
             const {comment} = req.body;
-            const curate = await Curate.findById(req.params.id).populate('comments', 'doctor');
+            const curate = await Curate.findById(req.params.id).populate('comments', 'doctor').populate('user', 'pushTokens');
 
             if (curate && comment.length > 0) {
                 for (const c of curate.comments) {
@@ -129,7 +129,7 @@ router.post(["/comment/:id"],
 
                 await curate.save();
 
-                await sendCuratePushNotification("eNMjTl99Sz2HLQR0SoCfFl:APA91bGShm3RZrcVfdcLKmxPM0ZperXjZF_206ypJI2eR7CXwhHqv2zlV1QylkT1kEqIHNtFf6LU-lF7Ap-dVDEm38jrfhEk7ytlnQonsJRHH2GEMCPUr44", {title: "Hello, world!", body: "body"});
+                await sendCuratePushNotification(curate.user.pushTokens, {title: "큐레이팅 요청 응답", body: newComment})
 
                 res.status(200).json(returnResponse(false, "doctor_curating_comment_success", "-"));
 

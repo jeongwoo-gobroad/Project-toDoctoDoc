@@ -78,7 +78,7 @@ const chatting_user = async (socket, next) => {
                 try {
                     const struct = JSON.parse(data);
         
-                    const chat = await Chat.findById(struct.roomNo);
+                    const chat = await Chat.findById(struct.roomNo).populate('doctor', 'pushTokens');
                     const now = Date.now();
         
                     if (chat.user != userid) {  
@@ -94,7 +94,7 @@ const chatting_user = async (socket, next) => {
                     await chat.save();
         
                     if (socket.nsp.adapter.rooms.get(struct.roomNo).size == 1) {
-                        let unreadChats = JSON.parse(await getCache(chat.doctor));
+                        let unreadChats = JSON.parse(await getCache(chat.doctor._id));
 
                         if (unreadChats && unreadChats[struct.roomNo]) {
                             unreadChats[struct.roomNo] = {recentMessage: chat.chatList[chat.chatList.length - 1], unread: unreadChats[struct.roomNo].unread + 1, createdAt: now};
@@ -105,7 +105,9 @@ const chatting_user = async (socket, next) => {
                             unreadChats[struct.roomNo] = {recentMessage: chat.chatList[chat.chatList.length - 1], unread: 1, createdAt: now};
                         }
 
-                        await setCacheForThreeDaysAsync(chat.doctor, unreadChats);
+                        await setCacheForThreeDaysAsync(chat.doctor._id, unreadChats);
+
+                        await sendDMPushNotification(chat.doctor.pushTokens, {title: "읽지 않은 환자로부터의 DM", body: chat.chatList[chat.chatList.length - 1]});
     
                         socket.emit("unread_doctor", "-");
 

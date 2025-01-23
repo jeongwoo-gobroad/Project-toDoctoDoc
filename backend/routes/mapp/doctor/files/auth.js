@@ -89,7 +89,7 @@ router.post(["/login"],
                 } else {
                     await Doctor.findByIdAndUpdate(doctor._id, {
                         refreshToken: refreshToken,
-                        $push: {pushToken: pushToken}
+                        $push: {pushTokens: pushToken}
                     });
                 }
 
@@ -121,9 +121,9 @@ router.get(["/logout"],
             const user = await getTokenInformation(req, res);
     
             await Doctor.findByIdAndUpdate(user.userid, {
-                refreshToken: refreshToken,
                 $pull: {pushToken: pushToken}
             });
+            console.log("pulled token");
     
             res.status(200).json(returnResponse(false, "loggedOut", "-"));
             

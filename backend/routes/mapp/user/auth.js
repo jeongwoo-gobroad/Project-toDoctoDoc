@@ -90,11 +90,14 @@ router.post(["/login"], async (req, res, next) => {
             await User.findByIdAndUpdate(user._id, {
                 refreshToken: refreshToken,
             });
+            console.log("Automated Login");
         } else {
+            console.log(pushToken);
             await User.findByIdAndUpdate(user._id, {
                 refreshToken: refreshToken,
-                $push: {pushToken: pushToken}
+                $push: {pushTokens: pushToken}
             });
+            console.log("pushToken inserted");
         }
 
         res.status(200).json(returnResponse(false, "logged_in", {token: token, refreshToken: refreshToken}));
@@ -115,9 +118,9 @@ router.get(["/logout"],
             const user = await getTokenInformation(req, res);
     
             await User.findByIdAndUpdate(user.userid, {
-                refreshToken: refreshToken,
                 $pull: {pushToken: pushToken}
             });
+            console.log("pulled token");
     
             res.status(200).json(returnResponse(false, "loggedOut", "-"));
             

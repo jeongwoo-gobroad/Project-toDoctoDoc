@@ -3,7 +3,7 @@ const serviceAccount = require("../../../todoctodoc-firebase-adminsdk.json");
 
 const connectFCM = async() => {
     try {
-        fcm.initializeApp({credential: fcm.credential.cert(serviceAccount)});
+        await fcm.initializeApp({credential: fcm.credential.cert(serviceAccount)});
         console.log("FCM connected");
     } catch (error) {
         console.error(error, "errorAtConnectFCM");
