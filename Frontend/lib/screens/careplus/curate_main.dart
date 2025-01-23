@@ -79,14 +79,19 @@ class _CurateMainState extends State<CurateMain> {
                         final curateList = curateListController.CurateList[index];
                         final commentCount = curateList['comments']?.length ?? 0;
                         return ListTile(
+                          minVerticalPadding: 10,
                           title: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                '${formatDate(curateList['date'])}에 신청한 큐레이팅',
-                                style: TextStyle(
-                                  //fontWeight: FontWeight.bold,
-                                  fontSize: 15.0,
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width - 100,
+                                child: Text(
+                                  '${formatDate(curateList['date'])}에 신청한 큐레이팅',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    //fontWeight: FontWeight.bold,
+                                    fontSize: 15.0,
+                                  ),
                                 ),
                               ),
                               Row(
@@ -201,7 +206,77 @@ class _CurateMainState extends State<CurateMain> {
                           ),
                           child: Text('전체보기', style: TextStyle(color: Colors.black),)),
                       ),
-                    )
+                    ),
+
+
+                    ElevatedButton(
+                      onPressed: () {
+
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.0),
+                              ),
+                              title: const Text(
+                                "큐레이팅 요청",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18.0,
+                                ),
+                              ),
+                              content: const Text(
+                                "주치의 큐레이팅 시스템을 활용하기 위해 본인의 AI 기반 고민 상담 기록을 제출하는 것에 동의합니다.",
+                                overflow: TextOverflow.clip,
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop(); //팝업닫기
+
+                                  },
+                                  child: const Text(
+                                    "취소",
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () async{
+                                    Navigator.of(context).pop();
+                                    await curateListController.requestCurate();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.purple[700],
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12.0),
+                                    ),
+                                  ),
+                                  child: const Text("확인"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple[900],
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(50),
+                        shadowColor: Colors.black,
+                        elevation: 8,
+                      ),
+                      child: const Text(
+                        "큐레이팅 받기",
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+
 
 
                   ],

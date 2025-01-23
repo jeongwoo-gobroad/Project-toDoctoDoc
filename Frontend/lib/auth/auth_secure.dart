@@ -5,6 +5,25 @@ class SecureStorage {
   SecureStorage({required this.storage,});
 
   //  리프레시 토큰 저장
+  Future<void> savePushToken(String pushToken) async {
+    try {
+      print('[SECURE_STORAGE] savePushToken: $pushToken');
+      await storage.write(key: 'push_token', value: pushToken);
+    } catch (e) {
+      print("[ERR] PushToken 저장 실패: $e");
+    }
+  }
+  Future<String?> readPushToken() async {
+    try {
+      final refreshToken = await storage.read(key: 'push_token');
+      print('[SECURE_STORAGE] readPushToken: $refreshToken');
+      return refreshToken;
+    } catch (e) {
+      print("[ERR] PushToken 불러오기 실패: $e");
+      return null;
+    }
+  }
+
   Future<void> saveRefreshToken(String refreshToken) async {
     try {
       print('[SECURE_STORAGE] saveRefreshToken: $refreshToken');

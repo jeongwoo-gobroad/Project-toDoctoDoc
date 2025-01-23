@@ -1,11 +1,14 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
+import 'package:restart_app/restart_app.dart';
 import 'package:to_doc/navigation_menu.dart';
 import 'package:to_doc/screens/myPost.dart';
 import 'package:to_doc/screens/user_edit.dart';
 
 import '../auth/auth_secure.dart';
+import '../provider/auth_provider.dart';
 import '../screens/chat/dm_list.dart';
 import '../screens/intro.dart';
 
@@ -89,9 +92,9 @@ class SideMenu extends StatelessWidget {
   }
 
   void onLogout() async {
-    SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
-    await storage.deleteEveryToken();
-    Get.offAll(()=> Intro());
+    final authProvider = Get.put(AuthProvider(dio: Dio()));
+    await authProvider.logout();
+    Restart.restartApp();
   }
 
   Future<void> _logoutAlert(BuildContext context) async {
