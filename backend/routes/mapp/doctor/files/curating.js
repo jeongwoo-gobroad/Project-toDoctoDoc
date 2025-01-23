@@ -14,6 +14,7 @@ const Doctor = require("../../../../models/Doctor");
 const nearbyPatientCurate = require("../../../../middleware/nearCurate");
 const Curate = require("../../../../models/Curate");
 const Comment = require("../../../../models/Comment");
+const sendCuratePushNotification = require("../../push/curatePush");
 
 router.get(["/"], 
     checkIfLoggedIn,
@@ -127,6 +128,8 @@ router.post(["/comment/:id"],
                 });
 
                 await curate.save();
+
+                await sendCuratePushNotification("eNMjTl99Sz2HLQR0SoCfFl:APA91bGShm3RZrcVfdcLKmxPM0ZperXjZF_206ypJI2eR7CXwhHqv2zlV1QylkT1kEqIHNtFf6LU-lF7Ap-dVDEm38jrfhEk7ytlnQonsJRHH2GEMCPUr44", {title: "Hello, world!", body: "body"});
 
                 res.status(200).json(returnResponse(false, "doctor_curating_comment_success", "-"));
 

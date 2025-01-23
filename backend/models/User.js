@@ -62,6 +62,9 @@ const UserSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Appointment'
     }],
+    pushTokens: [{
+        type: String,
+    }],
     refreshToken: {
         type: String,
     },

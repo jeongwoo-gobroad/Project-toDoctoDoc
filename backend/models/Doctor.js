@@ -58,6 +58,9 @@ const DoctorSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Appointment'
     }],
+    pushTokens: [{
+        type: String,
+    }],
     isVerified: {
         type: Boolean,
         required: true,

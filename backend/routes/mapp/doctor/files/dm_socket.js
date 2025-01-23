@@ -6,6 +6,7 @@ const Doctor = require("../../../../models/Doctor");
 const User = mongoose.model('User', UserSchema);
 const jwt = require("jsonwebtoken");
 const { setCacheForThreeDaysAsync, getCache } = require("../../../../middleware/redisCaching");
+const sendDMPushNotification = require("../../push/dmPush");
 
 const chatting_doctor = async (socket, next) => {
     const token = socket.handshake.query.token;
@@ -73,7 +74,7 @@ const chatting_doctor = async (socket, next) => {
                 try {
                     const struct = JSON.parse(data);
         
-                    const chat = await Chat.findById(struct.roomNo);
+                    const chat = await Chat.findById(struct.roomNo).populate('user', 'pushTokens');
 
                     // console.log(data);
 
@@ -91,7 +92,7 @@ const chatting_doctor = async (socket, next) => {
                     await chat.save();
         
                     if (socket.nsp.adapter.rooms.get(struct.roomNo).size == 1) {
-                        let unreadChats = JSON.parse(await getCache(chat.user));
+                        let unreadChats = JSON.parse(await getCache(chat.user._id));
         
                         if (unreadChats && unreadChats[struct.roomNo]) {
                             unreadChats[struct.roomNo] = {recentMessage: chat.chatList[chat.chatList.length - 1], unread: unreadChats[struct.roomNo].unread + 1, createdAt: now};
@@ -102,7 +103,9 @@ const chatting_doctor = async (socket, next) => {
                             unreadChats[struct.roomNo] = {recentMessage: chat.chatList[chat.chatList.length - 1], unread: 1, createdAt: now};
                         }
 
-                        await setCacheForThreeDaysAsync(chat.user, unreadChats);
+                        await setCacheForThreeDaysAsync(chat.user._id, unreadChats);
+
+                        await sendDMPushNotification(chat.user.pushTokens, {title: "읽지 않은 DM", body: chat.chatList[chat.chatList.length - 1]});
 
                         socket.emit("unread_user", "-");
                         // console.log("doctor:: solo");

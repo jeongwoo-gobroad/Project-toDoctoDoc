@@ -66,7 +66,7 @@ router.post(["/dupidcheck"],
 router.post(["/login"], 
     checkIfNotLoggedIn, 
     async (req, res, next) => {
-        const {userid, password} = req.body;
+        const {userid, password, pushToken} = req.body;
 
         try {
             const doctor = await Doctor.findOne({id: userid});
@@ -82,9 +82,16 @@ router.post(["/login"],
                 const token = generateToken(payload);
                 const refreshToken = generateRefreshToken();
 
-                await Doctor.findByIdAndUpdate(doctor._id, {
-                    refreshToken: refreshToken
-                });
+                if (pushToken === null) {
+                    await Doctor.findByIdAndUpdate(doctor._id, {
+                        refreshToken: refreshToken,
+                    });
+                } else {
+                    await Doctor.findByIdAndUpdate(doctor._id, {
+                        refreshToken: refreshToken,
+                        $push: {pushToken: pushToken}
+                    });
+                }
 
                 res.status(200).json(returnResponse(false, "logged_in", {token: token, refreshToken: refreshToken}));
 
@@ -105,6 +112,30 @@ router.post(["/login"],
         }
     }
 );
+
+router.get(["/logout"], 
+    checkIfLoggedIn,
+    async (req, res, next) => {
+        try {
+            const {pushToken} = req.body;
+            const user = await getTokenInformation(req, res);
+    
+            await Doctor.findByIdAndUpdate(user.userid, {
+                refreshToken: refreshToken,
+                $pull: {pushToken: pushToken}
+            });
+    
+            res.status(200).json(returnResponse(false, "loggedOut", "-"));
+            
+            return;
+        } catch (error) {
+            
+            res.status(403).json(returnResponse(true, "errorAtGetLogout", "-"));
+            return;
+        }
+    }
+);
+
 
 router.post(["/register"],
     checkIfNotLoggedIn,

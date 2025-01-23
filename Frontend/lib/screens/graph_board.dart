@@ -29,7 +29,7 @@ class _GraphBoardState extends State<GraphBoard> with SingleTickerProviderStateM
   void initState() {
     super.initState();
     
-    world = World(Vector2(0, 20.0));
+    world = World(Vector2(0, 500.0));
     groundBody = world.createBody(BodyDef());
     
     _controller = AnimationController(

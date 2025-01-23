@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const UserSchema = require("../../../models/User");
 const returnResponse = require("../standardResponseJSON");
 const jwt = require("jsonwebtoken");
-const { generateToken, generateRefreshToken } = require("../../auth/jwt");
+const { generateToken, generateRefreshToken, getTokenInformation } = require("../../auth/jwt");
 const { checkIfLoggedIn, checkIfNotLoggedIn } = require("../checkingMiddleWare");
 const returnLongLatOfAddress = require("../../../middleware/getcoordinate");
 const router = express.Router();
@@ -58,7 +58,7 @@ router.post(["/dupemailcheck"],
 
 router.post(["/login"], async (req, res, next) => {
     try {
-        const {userid, password} = req.body;
+        const {userid, password, pushToken} = req.body;
 
         const user = await User.findOne({id: userid});
 
@@ -72,7 +72,7 @@ router.post(["/login"], async (req, res, next) => {
         const isMatched = await bcrypt.compare(password, user.password);
 
         if (!isMatched) {
-            res.status(401).json(returnResponse(true, "no_pass_match", "패스워드가 일치하지 않습니다."));
+            res.status(402).json(returnResponse(true, "no_pass_match", "패스워드가 일치하지 않습니다."));
             return;
         }
 
@@ -86,19 +86,49 @@ router.post(["/login"], async (req, res, next) => {
         const token = generateToken(payload);
         const refreshToken = generateRefreshToken();
 
-        await User.findByIdAndUpdate(user._id, {
-            refreshToken: refreshToken
-        });
+        if (pushToken === null) {
+            await User.findByIdAndUpdate(user._id, {
+                refreshToken: refreshToken,
+            });
+        } else {
+            await User.findByIdAndUpdate(user._id, {
+                refreshToken: refreshToken,
+                $push: {pushToken: pushToken}
+            });
+        }
 
         res.status(200).json(returnResponse(false, "logged_in", {token: token, refreshToken: refreshToken}));
         
         return;
     } catch (error) {
         
-        res.status(401).json(returnResponse(true, "errorAtPostLogin", "-"));
+        res.status(403).json(returnResponse(true, "errorAtPostLogin", "-"));
         return;
     }
 });
+
+router.get(["/logout"], 
+    checkIfLoggedIn,
+    async (req, res, next) => {
+        try {
+            const {pushToken} = req.body;
+            const user = await getTokenInformation(req, res);
+    
+            await User.findByIdAndUpdate(user.userid, {
+                refreshToken: refreshToken,
+                $pull: {pushToken: pushToken}
+            });
+    
+            res.status(200).json(returnResponse(false, "loggedOut", "-"));
+            
+            return;
+        } catch (error) {
+            
+            res.status(403).json(returnResponse(true, "errorAtGetLogout", "-"));
+            return;
+        }
+    }
+);
 
 router.post(["/register"],
     checkIfNotLoggedIn,
