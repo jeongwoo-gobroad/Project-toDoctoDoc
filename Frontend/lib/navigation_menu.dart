@@ -9,6 +9,7 @@ import 'package:to_doc/navigator/side_menu.dart';
 import 'package:to_doc/screens/careplus/curate.dart';
 import 'package:to_doc/screens/careplus/curate_feed.dart';
 import 'package:to_doc/screens/careplus/curate_home.dart';
+import 'package:to_doc/screens/careplus/curate_main.dart';
 import 'package:to_doc/screens/graph_test.dart';
 import 'package:to_doc/screens/map_screen.dart';
 import 'package:to_doc/screens/graph_board.dart';
@@ -68,12 +69,12 @@ class NavigationMenu extends StatelessWidget {
         drawer: Obx(() => SideMenu(
             userController.usernick.value, userController.email.value)),
         bottomNavigationBar: Obx(
-          () => NavigationBar(
+              () => NavigationBar(
             height: 60,
             elevation: 0,
             selectedIndex: controller.selectedIndex.value,
             onDestinationSelected: (index) =>
-                controller.selectedIndex.value = index,
+            controller.selectedIndex.value = index,
             destinations: [
               const NavigationDestination(icon: Icon(Icons.home), label: '홈'),
               const NavigationDestination(icon: Icon(Icons.chat), label: 'AI 채팅'),
@@ -100,6 +101,6 @@ class NavigationController extends GetxController {
     AichatMain(),
     GraphBoard(),
     MapAndListScreen(),
-    CurationHomeScreen()
+    CurateMain()
   ];
 }
