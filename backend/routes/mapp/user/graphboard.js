@@ -32,9 +32,11 @@ router.get(["/tagSearch/:tag"],
 router.get(["/graphBoard"],
     checkIfLoggedIn,
     async (req, res, next) => {
-        const _bubbleList = JSON.stringify(bubbleMap)
+        const _bubbleList = JSON.stringify(Object.fromEntries(bubbleMap));
+        const _tagList = JSON.stringify(Object.fromEntries(tagMap));
+        const _tagGraph = JSON.stringify(tagGraph);
 
-        res.status(200).json(returnResponse(false, "graphBoardData", {_bubbleList}));
+        res.status(200).json(returnResponse(false, "graphBoardData", {_tagList: _tagList, _tagGraph: _tagGraph}));
 
         return;
     }

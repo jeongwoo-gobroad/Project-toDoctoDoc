@@ -32,7 +32,7 @@ const getMessageContext = (token, info) => {
 
 const sendDMPushNotification = async (deviceToken, info) => {
     try {
-        console.log(info);
+        // console.log(info);
         deviceToken.forEach(async (token) => {
             await fcm.messaging().send(getMessageContext(token, info));
         });
