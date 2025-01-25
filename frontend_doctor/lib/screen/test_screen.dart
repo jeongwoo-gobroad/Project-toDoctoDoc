@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc_for_doc/controllers/curate/curate_controller.dart';
@@ -6,7 +7,7 @@ import 'package:to_doc_for_doc/controllers/curate/curate_controller.dart';
 class TestScreen extends StatelessWidget {
   TestScreen({super.key});
 
-  CurateController curateController = Get.put(CurateController());
+  CurateController curateController = Get.put(CurateController(dio: Dio()));
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -7,8 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:intl/intl.dart';
 
-import 'auth_interceptor.dart';
-import 'chat_dart_model.dart';
+import 'auth/auth_interceptor.dart';
+import '../screen/chat_dart_model.dart';
 
 
 class ChatController extends GetxController{
@@ -23,18 +23,7 @@ class ChatController extends GetxController{
     dio.interceptors.add(CustomInterceptor());
   }
 
-
   Future<void> getChatList() async {
-/*    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
-
-    if (token == null) {
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return;
-    }*/
-
-
     final response = await dio.get(
       'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/dm/list',
       options:
@@ -45,16 +34,6 @@ class ChatController extends GetxController{
       ),
     );
 
-    /*
-    final response = await http.get(
-      Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/careplus/dm/list'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
-    */
-
     print(response);
 
     if(response.statusCode == 200){
@@ -62,8 +41,6 @@ class ChatController extends GetxController{
       print(data);
       final chatResponse = ChatResponse.fromMap(data);
       chatList.assignAll(chatResponse.content);
-
-      // print(chatResponse.content);
 
     }
     else{

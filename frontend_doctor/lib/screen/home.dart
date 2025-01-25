@@ -1,8 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc_for_doc/controllers/curate/curate_controller.dart';
-import 'package:to_doc_for_doc/src/curate/curate_detail_screen.dart';
-import 'dm_list.dart';
+import 'package:to_doc_for_doc/screen/curate/curate_detail_screen.dart';
+import 'screen/dm_list.dart';
 import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
@@ -13,7 +14,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  CurateController curateController = Get.put(CurateController());
+  CurateController curateController = Get.put(CurateController(dio: Dio()));
 
   String formatDate(String date) {
     try {

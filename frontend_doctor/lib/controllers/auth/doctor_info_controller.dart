@@ -1,9 +1,11 @@
 
+import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:to_doc_for_doc/controllers/auth/auth_interceptor.dart';
 
 class DoctorInfoController extends GetxController {
   RxString id = "".obs;
@@ -19,29 +21,40 @@ class DoctorInfoController extends GetxController {
   RxBool isPremium = false.obs;
   RxDouble longitude = 0.0.obs;
   RxDouble latitude = 0.0.obs;
+
+  final Dio dio;
+
+  DoctorInfoController({required this.dio});
+
+  @override
+  void onInit() {
+    super.onInit();
+    dio.interceptors.add(CustomInterceptor());
+  }
   
   //RxString address = "".obs;
   
   Future<void> getInfo() async {
-    final prefs = await SharedPreferences.getInstance();
+/*    final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt_token');
 
     if (token == null) {
       Get.snackbar('Login', '로그인이 필요합니다.');
       print('로그인이 필요합니다.');
       return;
-    }
+    }*/
 
-    final response = await http.get(
-      Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/doctorInfo'),
-      headers: {
-        'Content-Type': 'application/json',
-        'authorization': 'Bearer $token',
+    final response = await dio.get(
+      'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/doctorInfo',
+      options: Options(headers: {
+        'Content-Type':'application/json',
+        'accessToken':'true',
       },
+      ),
     );
 
     if (response.statusCode == 200) {
-      final data = json.decode(json.decode(response.body));
+      final data = json.decode(response.data);
       print(data);
       id.value = data['content']['id'];
       name.value = data['content']['name'];
@@ -74,13 +87,11 @@ class DoctorInfoController extends GetxController {
     await prefs.setString('id', data['content']['id']);
     await prefs.setString('email', data['content']['email']);
     await prefs.setString('usernick', data['content']['usernick']);
-    
   }
-
 
   Future<bool> editInfo(String usernick, String email, String postcode, String address, String detailAddress, String extraAddress
   , String password, String password2) async {
-    final prefs = await SharedPreferences.getInstance();
+/*    final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt_token');
     isLoading.value = true;
 
@@ -88,7 +99,8 @@ class DoctorInfoController extends GetxController {
       Get.snackbar('Login', '로그인이 필요합니다.');
       print('로그인이 필요합니다.');
       return false;
-    }
+    }*/
+
     Map<String, dynamic> body = {
         'usernick': usernick,
         'email': email,
@@ -104,30 +116,22 @@ class DoctorInfoController extends GetxController {
         body['password2'] = password2;
     }
 
-    final response = await http.patch(
-      Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/editUserInfo'),
-      headers: {
-        'Content-Type': 'application/json',
-        'authorization': 'Bearer $token',
-      },
-      body: json.encode(body)
-      
+    final response = await dio.patch(
+      'http://jeongwoo-kim-web.myds.me:3000/mapp/editUserInfo',
+      options: Options(headers: {
+        'Content-Type':'application/json',
+        'accessToken':'true',
+      },),
+      data: json.encode(body)
     );
 
       print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      print('Response body: ${response.data}');
     if (response.statusCode == 200) {
-    
-        
-        
-          await getInfo();  // 새로운정보 가져오기
-          return true;
-        
-         
+      await getInfo();  // 새로운정보 가져오기
+      return true;
     } 
     
     return false;
-  
   }
-  
 }

@@ -1,10 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc_for_doc/controllers/auth/doctor_info_controller.dart';
 
 class DoctorProfileView extends StatelessWidget {
   DoctorProfileView({super.key});
-  DoctorInfoController doctorInfoController = Get.put(DoctorInfoController());
+  DoctorInfoController doctorInfoController = Get.put(DoctorInfoController(dio: Dio()));
 
   @override
   Widget build(BuildContext context) {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:to_doc_for_doc/src/curate/curate_detail_screen.dart';
-import 'package:to_doc_for_doc/src/curate_screen.dart';
-import 'package:to_doc_for_doc/src/home.dart';
-import 'package:to_doc_for_doc/src/profile_screen.dart';
-import 'package:to_doc_for_doc/src/test_screen.dart';
+import 'package:to_doc_for_doc/screen/curate/curate_detail_screen.dart';
+import 'package:to_doc_for_doc/screen/curate/curate_screen.dart';
+import 'package:to_doc_for_doc/screen/home.dart';
+import 'package:to_doc_for_doc/screen/screen/profile_screen.dart';
+import 'package:to_doc_for_doc/screen/test_screen.dart';
 
 
 class NavigationMenu extends StatelessWidget {

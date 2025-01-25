@@ -1,10 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:to_doc_for_doc/controllers/curate/curate_controller.dart';
 import 'package:intl/intl.dart';
 class CurateDetailScreen extends StatelessWidget {
-  final controller = Get.put(CurateController());
+  final controller = Get.put(CurateController(dio: Dio()));
   //final String curateId;
   final TextEditingController commentController = TextEditingController();
   final TextEditingController editController = TextEditingController();

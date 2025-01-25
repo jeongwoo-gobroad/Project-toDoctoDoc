@@ -1,13 +1,25 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:to_doc_for_doc/controllers/auth/auth_interceptor.dart';
 import 'package:to_doc_for_doc/controllers/curate/curate_detail_model.dart';
 import 'content_model.dart';
 
 class CurateController extends GetxController {
+
+  final Dio dio;
+  CurateController({required this.dio});
+
+  @override
+  void onInit() {
+    super.onInit();
+    dio.interceptors.add(CustomInterceptor());
+  }
+
   Rx<CurateDetail?> curateDetail = Rx<CurateDetail?>(null);
   var isLoading = true.obs;
   var forHomeLoading = true.obs;
@@ -44,32 +56,22 @@ class CurateController extends GetxController {
   }
 
   Future<bool> getCurateInfo(String radius) async{
-    
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
-    
-    if(token == null){
-
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return false;
-    }
     forHomeLoading.value = true;
+
     try {
-      
-      final response = await http.get(
-        Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/curate?radius=$radius'),
-        headers: {
+      final response = await dio.get(
+        'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/curate?radius=$radius',
+        options: Options(headers: {
           'Content-Type':'application/json',
-          'Authorization': 'Bearer $token', 
-        },
+          'accessToken':'true',
+        },),
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(json.decode(response.body));
+        final data = json.decode(response.data);
         print(data);
 
-        final contentResponse = ContentResponse.fromResponseBody(response.body);
+        final contentResponse = ContentResponse.fromResponseBody(response.data);
         curateItems.value = contentResponse.content;
 
         //print(curateItems);
@@ -95,23 +97,16 @@ class CurateController extends GetxController {
   }
 
   Future<void> addComment(String id, String comment) async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
 
-    if (token == null) {
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return;
-    }
     // try {
     //isLoading.value = true;
-    final response = await http.post(
-      Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/curate/comment/$id'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: json.encode({
+    final response = await dio.post(
+      'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/curate/comment/$id',
+      options: Options(headers: {
+        'Content-Type':'application/json',
+        'accessToken':'true',
+      },),
+      data: json.encode({
           'comment': comment,
       }),
     );
@@ -127,23 +122,16 @@ class CurateController extends GetxController {
     }
   }
   Future<void> commentModify(String comment_id, String detail_id, String updatedComment) async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
-    /* 추후 댓글 doctor 속성과 doctorinfo에서 받아오는 id가 같은지를 확인 구현현 */
-    if (token == null) {
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return;
-    }
+
     // try {
     //isLoading.value = true;
-    final response = await http.patch(
-      Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/curate/commentModify/$comment_id'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: json.encode({
+    final response = await dio.patch(
+      'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/curate/commentModify/$comment_id',
+      options: Options(headers: {
+        'Content-Type':'application/json',
+        'accessToken':'true',
+      },),
+      data: json.encode({
           'comment': updatedComment,
       }),
     );
@@ -162,22 +150,14 @@ class CurateController extends GetxController {
     }
   }
   Future<void> commentDelete(String comment_id, String detail_id) async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
-    /* 추후 댓글 doctor 속성과 doctorinfo에서 받아오는 id가 같은지를 확인 구현현 */
-    if (token == null) {
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return;
-    }
     // try {
     //isLoading.value = true;
-    final response = await http.delete(
-      Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/curate/commentModify/$comment_id'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+    final response = await dio.delete(
+      'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/curate/commentModify/$comment_id',
+      options: Options(headers: {
+        'Content-Type':'application/json',
+        'accessToken':'true',
+      },),
       
     );
     //마찬가지로 내 댓글임을 확인하는 로직 구현할것
@@ -198,38 +178,24 @@ class CurateController extends GetxController {
   }
 
   Future<void> getCurateDetails(String id) async {
-    
-    
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
-
-    if (token == null) {
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return;
-    }
     // try {
     //isLoading.value = true;
     isLoading(true);
-    final response = await http.get(
-      Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/curate/details/$id'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+    final response = await dio.get(
+      'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/curate/details/$id',
+      options: Options(headers: {
+        'Content-Type':'application/json',
+        'accessToken':'true',
+      },),
     );
 
     if (response.statusCode == 200) {
-      final data = json.decode(json.decode(response.body));
+      final data = json.decode(response.data);
       print(data);
       final curateResponse = CurateDetailResponse.fromJson(data);
       curateDetail.value = curateResponse.content;
 
       //print(curateDetail[]);
-    
-
-      
-     
     }
     isLoading(false);
   }

@@ -100,17 +100,19 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         print('data1');
         print(data);
 
-        setState(() {
-          _messageList.add(ChatObject(content: data['message'], role: 'doctor', createdAt: DateTime.now()));
+        if (this.mounted) {
+          setState(() {
+            _messageList.add(ChatObject(content: data['message'], role: 'doctor', createdAt: DateTime.now()));
 
-          Future.delayed(Duration(milliseconds: 100), () {
-            _scrollController.animateTo(
-              _scrollController.position.maxScrollExtent,
-              duration: Duration(milliseconds: 300),
-              curve: Curves.easeOut,
-            );
+            Future.delayed(Duration(milliseconds: 100), () {
+              _scrollController.animateTo(
+                _scrollController.position.maxScrollExtent,
+                duration: Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+              );
+            });
           });
-        });
+        }
       });
     });
   }
@@ -169,6 +171,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         if (widget.socketService.ischatFetchLoading.value) {
           return;
         }
+
         await widget.socketService.leaveChat(widget.chatId);
       },
       child: Scaffold(

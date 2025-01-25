@@ -15,11 +15,11 @@ class ContentResponse {
   factory ContentResponse.fromResponseBody(String responseBody) {
     try {
       final decodedOnce = json.decode(responseBody);
-      final decodedTwice = json.decode(decodedOnce);
+      //final decodedTwice = json.decode(decodedOnce);
       return ContentResponse(
-        error: decodedTwice['error'] ?? false,
-        result: decodedTwice['result'] ?? '',
-        content: (decodedTwice['content'] as List)
+        error: decodedOnce['error'] ?? false,
+        result: decodedOnce['result'] ?? '',
+        content: (decodedOnce['content'] as List)
             .map((item) => ContentItem.fromJson(item))
             .toList(),
       );

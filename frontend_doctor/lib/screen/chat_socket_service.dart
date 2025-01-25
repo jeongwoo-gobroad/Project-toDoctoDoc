@@ -63,7 +63,7 @@ class ChatSocketService {
     }
   }
 
-  void onReturnJoinedChat(Function callback) {
+  void onReturnJoinedChat_doctor(Function callback) {
     socket?.on('returnJoinedChat_doctor', (data) => callback(data));
     /*
     {

@@ -31,7 +31,6 @@ class _LoginPageState extends State<LoginPage> {
   _submit(bool autologin) async{
     print('login test');
 
-
     //await registerController.dupidCheck(idController.text);
     Map result = await authProvider.login(
       idController.text,

@@ -1,20 +1,31 @@
+import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:to_doc_for_doc/controllers/auth/auth_secure.dart';
 import 'package:to_doc_for_doc/controllers/auth/doctor_info_controller.dart';
 
+import 'auth_interceptor.dart';
+
 class AuthController extends GetxController {
+  SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
   String? _token;
-  DoctorInfoController doctorInfoController = Get.put(DoctorInfoController());
+  final Dio dio;
+  String? _refreshToken;
+  String? _pushToken = null;
+
+  AuthController({required this.dio});
+
+  DoctorInfoController doctorInfoController = Get.put(DoctorInfoController(dio: Dio()));
 
   Future<bool> register(String id, String password, String password2, String name, String phone, String personalID, String doctorID, String postcode
    ,String address, String detailAddress, String extraAddress, String email) async{
 
     //personal id : 주민번호, doctorID : 의사 면허 번호
-
     String? _token;
     final url = Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/register');
 
@@ -45,7 +56,6 @@ class AuthController extends GetxController {
       print('register response code ${response.body}');
       
       if(response.statusCode == 200){
-
         final data = json.decode(json.decode(response.body));
 
         _token = data['content']['token'];
@@ -59,48 +69,51 @@ class AuthController extends GetxController {
         return true;
           
       }else{
-
         return false;
-          
       }
 
-      
     }catch(e){
       print('Error!: $e');
       return false;
     }
-
-    
-
   } 
 
+  Future<bool> login(String userid, String password, bool firstLogin, bool autoLogin) async {
 
-  Future<bool> login(String userid, String password) async {
+
     try {
-      final response = await http.post(
-        Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/login'),
-        headers: {
+      final response = await dio.post(
+        'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/login',
+        options: Options(headers: {
           'Content-Type': 'application/json',
-        },
-        body: json.encode({
+        },),
+        data: json.encode({
           'userid': userid,
           'password': password,
+          'pushToken': (firstLogin)? _pushToken : null,
         }),
       );
 
       if(response.statusCode == 200){
-        final data = json.decode(json.decode(response.body));
+        final data = json.decode(response.data);
 
         print(data);
 
         _token = data['content']['token'];
-        ///_refreshToken = data['content']['refreshToken'];
-        ///
-       
-        Get.snackbar('Success', '로그인 성공');
+        _refreshToken = data['content']['refreshToken'];
+
+        print('ACCESSTOKEN ----- : $_token');
+        print('REFRESHTOKEN------: $_refreshToken');
+
+       await storage.saveAccessToken(_token!);
+       await storage.saveRefreshToken(_refreshToken!);
+
+       if (firstLogin && autoLogin) {
+         await storage.userSave(userid, password);
+       }
+
+        //Get.snackbar('Success', '로그인 성공');
         await doctorInfoController.getInfo();
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('jwt_token', _token!);
 
         return true;
       }else if(response.statusCode ==601) {
