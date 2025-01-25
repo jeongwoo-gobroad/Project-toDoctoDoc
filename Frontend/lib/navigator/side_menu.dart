@@ -1,13 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
-import 'package:restart_app/restart_app.dart';
 import 'package:to_doc/navigation_menu.dart';
 import 'package:to_doc/screens/myPost.dart';
 import 'package:to_doc/screens/user_edit.dart';
 
-import '../auth/auth_secure.dart';
 import '../provider/auth_provider.dart';
 import '../screens/chat/dm_list.dart';
 import '../screens/intro.dart';
@@ -45,7 +42,7 @@ class SideMenu extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.home),
             title: Text('홈'),
-            onTap: (){Get.to(()=> NavigationMenu());},
+            onTap: (){Get.to(()=> NavigationMenu(startScreen : 0));},
             trailing: Icon(Icons.navigate_next),
 
           ),
@@ -94,7 +91,11 @@ class SideMenu extends StatelessWidget {
   void onLogout() async {
     final authProvider = Get.put(AuthProvider(dio: Dio()));
     await authProvider.logout();
-    Restart.restartApp();
+    print('logout');
+
+    Get.offAll(() => Intro());
+
+    //Restart.restartApp();
   }
 
   Future<void> _logoutAlert(BuildContext context) async {

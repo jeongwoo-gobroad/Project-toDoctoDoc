@@ -10,6 +10,11 @@ import 'package:to_doc/screens/airesult.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
 
+import 'package:to_doc/screens/graph_board.dart';
+import 'package:to_doc/screens/mypage.dart';
+
+import 'navigation_menu.dart';
+
 class Home extends StatefulWidget {
   @override
   State<Home> createState() => _HomeState();

@@ -51,7 +51,7 @@ class _MypostTempState extends State<MypostTemp> {
       leading: IconButton(
     icon: Icon(Icons.menu),
     onPressed: () {
-      Get.to(()=> NavigationMenu());
+      Get.to(()=> NavigationMenu(startScreen : 0));
     },),
       ),
 

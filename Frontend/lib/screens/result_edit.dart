@@ -59,7 +59,7 @@ class _ResultEditState extends State<ResultEdit> {
             onPressed: () {
               // 아니오 버튼: 홈으로 이동
               Get.off(
-                  () => NavigationMenu()); // Get.offAll은 모든 이전 화면을 제거하고 홈으로 이동
+                  () => NavigationMenu(startScreen : 0)); // Get.offAll은 모든 이전 화면을 제거하고 홈으로 이동
             },
             child: Text('아니오'),
           ),

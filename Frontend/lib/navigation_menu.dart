@@ -16,12 +16,20 @@ import 'package:to_doc/screens/graph_board.dart';
 
 class NavigationMenu extends StatelessWidget {
   DateTime? currentBackPressTime;
+  int startScreen;
   UserinfoController userController = Get.find<UserinfoController>();
-  NavigationMenu({super.key});
+  NavigationMenu({super.key, required this.startScreen});
+
 
   @override
   Widget build(BuildContext context) {
+    print('test nav');
+
     final controller = Get.put(NavigationController());
+
+    if (startScreen != 0) {
+      controller.setIndex(startScreen);
+    }
 
     return PopScope(
       canPop: false,
@@ -95,6 +103,12 @@ class NavigationMenu extends StatelessWidget {
 
 class NavigationController extends GetxController {
   final Rx<int> selectedIndex = 0.obs; //home 상태관리
+
+  void setIndex(int index) {
+    selectedIndex.value = index;
+  }
+
+
 
   final screens = [
     Home(),

@@ -60,6 +60,9 @@ class _GraphBoardState extends State<GraphBoard> with SingleTickerProviderStateM
     final sortedTags = graphController.tagList.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
+    //print(graphController.);
+    print(sortedTags);
+
     final maxCount = sortedTags.first.value.toDouble();
     final minCount = sortedTags.last.value.toDouble();
     

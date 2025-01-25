@@ -29,6 +29,9 @@ class _LoginPageState extends State<LoginPage> {
   RegisterController registerController = Get.put(RegisterController(dio: Dio()));
 
   _submit(bool autologin) async{
+    print('login test');
+
+
     //await registerController.dupidCheck(idController.text);
     Map result = await authProvider.login(
       idController.text,
@@ -36,9 +39,10 @@ class _LoginPageState extends State<LoginPage> {
       autologin, true,
     );
     if(result['success'] == true){
+      print('test succ');
       Get.snackbar('Login', '로그인에 성공하였습니다.');
       user.getInfo();
-      Get.offAll(()=> NavigationMenu());
+      Get.offAll(()=> NavigationMenu(startScreen : 0));
     }
     else{
       Get.snackbar('Login', '로그인에 실패하였습니다.',
