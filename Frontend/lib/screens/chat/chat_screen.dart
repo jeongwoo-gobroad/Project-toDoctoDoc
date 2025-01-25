@@ -21,8 +21,11 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   //final ChatController controller = Get.put(ChatController(dio: Dio()));
   final ScrollController _scrollController = ScrollController();
+
   bool scrollLoading = true;
+
   late int updateunread;
+  late bool isAppointment;
 
   List<ChatObject> _messageList = [];
 

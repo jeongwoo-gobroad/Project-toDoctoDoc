@@ -24,15 +24,6 @@ class ChatController extends GetxController{
   }
 
   Future<void> requestChat(String userID, String doctorID) async {
-/*    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
-
-    if (token == null) {
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return;
-    }*/
-
     print('유저아이디');
     print(userID);
 
