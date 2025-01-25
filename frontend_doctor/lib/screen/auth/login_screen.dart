@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:to_doc_for_doc/controllers/auth/auth_controller.dart';
-import 'package:to_doc_for_doc/navigators/navigation_menu.dart';
 
 import '../../controllers/auth/auth_secure.dart';
+import '../navigators/navigation_menu.dart';
 
 
 

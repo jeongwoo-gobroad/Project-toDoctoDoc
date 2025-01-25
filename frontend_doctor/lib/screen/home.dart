@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc_for_doc/controllers/curate/curate_controller.dart';
 import 'package:to_doc_for_doc/screen/curate/curate_detail_screen.dart';
-import 'screen/dm_list.dart';
+import 'chat/dm_list.dart';
 import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
