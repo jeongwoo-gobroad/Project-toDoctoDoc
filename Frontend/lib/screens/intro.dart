@@ -24,9 +24,7 @@ class _IntroState extends State<Intro> with SingleTickerProviderStateMixin {
   final SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
   final UserinfoController user = Get.find<UserinfoController>();
 
-
   bool awaitLogin = false;
-
 
   void autoLogin() async {
     awaitLogin = true;
@@ -40,7 +38,7 @@ class _IntroState extends State<Intro> with SingleTickerProviderStateMixin {
       if (result['success'] == true) {
         awaitLogin = false;
         user.getInfo();
-        Get.offAll(()=> NavigationMenu());
+        Get.offAll(()=> NavigationMenu(startScreen : 0));
       }
       else {
         Get.snackbar('자동 로그인 실패', '재로그인해주세요.');

@@ -87,7 +87,7 @@ class _RegisterPageState extends State<RegisterPage> {
     if(result['success']){
       Get.snackbar('Success', '회원가입 성공');
       user.getInfo();
-      Get.offAll(()=> NavigationMenu());
+      Get.offAll(()=> NavigationMenu(startScreen : 0));
     }
     else{
       Get.snackbar('Error', '회원가입에 실패했습니다. 다시 시도해주세요.');

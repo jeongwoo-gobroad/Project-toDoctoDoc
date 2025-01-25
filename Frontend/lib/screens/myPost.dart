@@ -45,7 +45,7 @@ class _MypostTempState extends State<MypostTemp> {
         leading: IconButton(
     icon: Icon(Icons.arrow_back),
     onPressed: () {
-      Get.offAll(()=> NavigationMenu());
+      Get.offAll(()=> NavigationMenu(startScreen : 0));
     },),
       ),
       

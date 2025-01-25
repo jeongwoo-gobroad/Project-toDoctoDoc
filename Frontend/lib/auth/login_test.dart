@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
     );
     if(result['success'] == true){
       user.getInfo();
-      Get.offAll(()=> NavigationMenu());
+      Get.offAll(()=> NavigationMenu(startScreen : 0));
     }
     else{
       Get.snackbar('Login', '로그인에 실패하였습니다.',

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,8 @@ class AuthProvider extends ChangeNotifier{
 
     if (_pushToken == null && firstLogin) {
       FirebaseMessaging fbMsg = FirebaseMessaging.instance;
-      String? fcmToken = await fbMsg.getToken(vapidKey: "BGRA_GV..........keyvalue");
+      String? fcmToken = await fbMsg.getToken(
+          vapidKey: "BENM2B6kWL-_t2ATlZN2JXE2c4wn0JohHDLTuSUJC5hsKZF-aGUHeBKUW9PPHfukDtb18JLmn1n3yzTj2u5TpHg");
       print("fcm token revisited ---- : $fcmToken");
 
       storage.savePushToken(fcmToken!);
@@ -68,12 +70,6 @@ class AuthProvider extends ChangeNotifier{
           await storage.userSave(userid, password);
         }
 
-
-/*        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('jwt_token', _token!);
-        await prefs.setString('ref_token', _refreshToken!);*/
-
-
         notifyListeners();
         return{
           'success': true,
@@ -82,7 +78,6 @@ class AuthProvider extends ChangeNotifier{
       }else{
         return{
           'success': false,
-          
         };
 
       }

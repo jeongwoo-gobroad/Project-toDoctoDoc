@@ -10,6 +10,7 @@ Future<void> fbMsgForegroundHandler(
     RemoteMessage message,
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin,
     AndroidNotificationChannel? channel) async {
+
   print('[FCM - Foreground] MESSAGE : ${message.data}');
 
   if (message.notification != null) {
