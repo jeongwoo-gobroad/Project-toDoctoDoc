@@ -6,6 +6,12 @@
 /backend/todoctodoc-firebase-adminsdk.json
 /auxliary/
 /upload-keystore.jks
+/frontend/android/app/key.jks
+/frontend/android/app/key.properties
+/Frontend/android/app/key.jks
+/Frontend/android/app/key.properties
+/frontend_doctor/android/app/key.jks
+/frontend_doctor/android/app/key.properties
 ./firebaseAppId.txt
 /Frontend/asset/data/
 /frontend/asset/data/

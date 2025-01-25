@@ -1,4 +1,4 @@
-package com.example.to_doc_for_doc
+package com.practicalproblemsolvers.toDoc.doctorVersion
 
 import io.flutter.embedding.android.FlutterActivity
 
