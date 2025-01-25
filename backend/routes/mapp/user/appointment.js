@@ -20,7 +20,13 @@ router.get(["/appointment/:cid"],
         const user = await getTokenInformation(req, res);
 
         try {
-            const chat = await Chat.findById(cid).populate('appointment');
+            const chat = await Chat.findById(cid).populate({
+                path: 'appointment',
+                populate: {
+                    path: 'doctor',
+                    select: 'name'
+                }
+            });
 
             if (chat.user != user.userid) {
                 res.status(401).json(returnResponse(true, "notYourChat", "-"));
@@ -35,6 +41,34 @@ router.get(["/appointment/:cid"],
             console.error(error, "errorAtUserAppointmentGET");
 
             res.status(403).json(returnResponse(true, "errorAtUserAppointmentGET", "-"));
+
+            return;
+        }
+    }
+);
+
+router.get(["/appointment/list"],
+    checkIfLoggedIn,
+    ifPremiumThenProceed,
+    async (req, res, next) => {
+        const user = await getTokenInformation(req, res);
+
+        try {
+            const usr = await User.findById(user.userid).populate({
+                path: 'appointments',
+                populate: {
+                    path: 'doctor',
+                    select: 'name'
+                }
+            });
+
+            const appointments = usr.appointments;
+
+            res.status(200).json(returnResponse(false, "appointments", appointments));
+        } catch (error) {
+            console.error(error, "errorAtUserAppointmentListGET");
+
+            res.status(403).json(returnResponse(true, "errorAtUserAppointmentListGET", "-"));
 
             return;
         }

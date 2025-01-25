@@ -212,7 +212,7 @@ router.get(["/myPosts"],
         const user = await getTokenInformation(req, res);
 
         try {
-            const userinfo = await User.findById(user.userid).populate("posts", "title tag createdAt _id");
+            const userinfo = await User.findById(user.userid).populate("posts", "title tag createdAt editedAt _id");
 
             const posts = userinfo.posts.sort((a, b) => {
                 return b.editedAt - a.editedAt;

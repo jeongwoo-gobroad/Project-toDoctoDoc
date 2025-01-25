@@ -34,7 +34,11 @@ const sendCuratePushNotification = async (deviceToken, info) => {
     try {
         // console.log(info);
         deviceToken.forEach(async (token) => {
-            await fcm.messaging().send(getMessageContext(token, info));
+            try {
+                await fcm.messaging().send(getMessageContext(token, info));
+            } catch (error) {
+                console.error(error, "errorAtsendDMPushNotification");
+            }
         });
     } catch (error) {
         console.error(error, "errorAtcurateDMPushNotification");

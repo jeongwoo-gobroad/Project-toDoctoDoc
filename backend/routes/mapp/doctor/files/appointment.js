@@ -19,8 +19,13 @@ router.get(["/list"],
         const doctor = await getTokenInformation(req, res);
 
         try {
-            const information = await Doctor.findById(doctor.userid).populate('appointments').populate('user', 'usernick');
-
+            const information = await Doctor.findById(doctor.userid).populate({
+                path: 'appointments',
+                populate: {
+                    path: 'user',
+                    select: 'usernick'
+                }
+            });
             const appointment = information.appointments;
 
             res.status(200).json(returnResponse(false, "appointmentListForDoctor", appointment));
