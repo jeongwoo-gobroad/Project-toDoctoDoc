@@ -89,7 +89,7 @@ router.post(["/login"],
                     });
                     setCacheForNDaysAsync("Device: " + doctor._id, pushToken, 270);
                 } else {
-                    if (await doctor.deviceIds.some((element) => {element === deviceId.toString()})) {
+                    if (doctor.deviceIds.includes(deviceId)) {
                         const prevToken = await getCache("Device: " + deviceId);
                         await Doctor.findByIdAndUpdate(doctor._id, {
                             refreshToken: refreshToken,

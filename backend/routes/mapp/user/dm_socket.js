@@ -79,7 +79,7 @@ const chatting_user = async (socket, next) => {
                 try {
                     const struct = JSON.parse(data);
         
-                    const chat = await Chat.findById(struct.roomNo).populate('doctor', 'pushTokens');
+                    const chat = await Chat.findById(struct.roomNo).populate('doctor', 'deviceIds');
                     const now = Date.now();
         
                     if (chat.user != userid) {  

@@ -47,8 +47,7 @@ const DoctorSchema = new mongoose.Schema({
         ref: 'Chat'
     }],
     curatesRead: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Curate'
+        type: String // Set화 시켜서 읽기 위함임.
     }],
     commentsWritten: [{
         type: mongoose.Schema.Types.ObjectId,

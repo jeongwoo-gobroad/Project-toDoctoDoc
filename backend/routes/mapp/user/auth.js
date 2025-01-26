@@ -93,7 +93,8 @@ router.post(["/login"], async (req, res, next) => {
             });
             setCacheForNDaysAsync("Device: " + user._id, pushToken, 270);
         } else {
-            if (await user.deviceIds.some((element) => {element === deviceId.toString()})) {
+            if (user.deviceIds.includes(deviceId)) {
+                // console.log("sameDevice");
                 const prevToken = await getCache("Device: " + deviceId);
                 await User.findByIdAndUpdate(user._id, {
                     refreshToken: refreshToken,
@@ -102,7 +103,7 @@ router.post(["/login"], async (req, res, next) => {
                     setCacheForNDaysAsync("Device: " + deviceId, pushToken, 270);
                 }
             } else {
-                console.log(deviceId, "->", pushToken); // 하지메떼노 등록
+                // console.log(deviceId, "->", pushToken); // 하지메떼노 등록
                 await User.findByIdAndUpdate(user._id, {
                     refreshToken: refreshToken,
                     $push: {deviceIds: deviceId}

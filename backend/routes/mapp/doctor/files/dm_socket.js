@@ -74,7 +74,7 @@ const chatting_doctor = async (socket, next) => {
                 try {
                     const struct = JSON.parse(data);
         
-                    const chat = await Chat.findById(struct.roomNo).populate('user', 'pushTokens');
+                    const chat = await Chat.findById(struct.roomNo).populate('user', 'deviceIds');
 
                     // console.log(data);
 
