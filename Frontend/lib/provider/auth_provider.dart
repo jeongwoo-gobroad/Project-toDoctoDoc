@@ -4,17 +4,15 @@ import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 
-import '../auth/auth_dio.dart';
 import '../auth/auth_secure.dart';
+import '../device_info.dart';
 
 class AuthProvider extends ChangeNotifier{
   SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
+
   String? _token;
   String? _refreshToken;
   String? _pushToken;
@@ -26,7 +24,7 @@ class AuthProvider extends ChangeNotifier{
   Future<Map<String, dynamic>> login(String userid, String password, bool autoLogin, bool firstLogin) async{
     _pushToken = await storage.readPushToken();
 
-    if (_pushToken == null && firstLogin) {
+    if (_pushToken == null) {
       FirebaseMessaging fbMsg = FirebaseMessaging.instance;
       String? fcmToken = await fbMsg.getToken(
           vapidKey: "BENM2B6kWL-_t2ATlZN2JXE2c4wn0JohHDLTuSUJC5hsKZF-aGUHeBKUW9PPHfukDtb18JLmn1n3yzTj2u5TpHg");
@@ -35,6 +33,13 @@ class AuthProvider extends ChangeNotifier{
       storage.savePushToken(fcmToken!);
       _pushToken = fcmToken;
     }
+
+    var deviceId = '';
+    deviceId = await initPlatformState();
+
+    print('AUTOLOGIN $autoLogin\nFIRSTLOGIN $firstLogin');
+    print('PUSHTOKEN $_pushToken');
+    print('DEVICE_ID $deviceId');
 
     try{
       final response = await dio.post(
@@ -46,7 +51,8 @@ class AuthProvider extends ChangeNotifier{
         data: json.encode({
           'userid' : userid,
           'password' : password,
-          'pushToken' : (firstLogin)? _pushToken : null,
+          'deviceId' : (autoLogin)? deviceId : null,
+          'pushToken' : (autoLogin)? _pushToken : null,
         }),
       );
 
@@ -61,7 +67,6 @@ class AuthProvider extends ChangeNotifier{
         print(_refreshToken);
 
         // _token = data['content'];
-
 
         await storage.saveAccessToken(_token!);
         await storage.saveRefreshToken(_refreshToken!);

@@ -23,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController idController = TextEditingController(); //추후 수정
   final TextEditingController pwController = TextEditingController(); //추후 수정
 
-  bool _autoLogin = false;
+  bool _autoLogin = true;
 
   //테스트용
   RegisterController registerController = Get.put(RegisterController(dio: Dio()));
