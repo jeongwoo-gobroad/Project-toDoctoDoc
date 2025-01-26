@@ -71,6 +71,10 @@ const DoctorSchema = new mongoose.Schema({
     myPsyID: {
         type: String,
     },
+    isCounselor: {
+        type: Boolean,
+        default: false
+    },
 });
 
 module.exports = mongoose.model("Doctor", DoctorSchema);

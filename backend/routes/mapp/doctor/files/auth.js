@@ -141,7 +141,7 @@ router.post(["/register"],
     checkIfNotLoggedIn,
     async (req, res, next) => {
         const {
-            id, password, password2, name, phone, personalID, doctorID, postcode, address, detailAddress, extraAddress, email
+            id, password, password2, name, phone, personalID, doctorID, postcode, address, detailAddress, extraAddress, email, isCounselor
         } = req.body;
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -172,6 +172,7 @@ router.post(["/register"],
                 phone: phone,
                 email: email,
                 isVerified: false,
+                isCounselor: isCounselor,
             });
 
             res.status(200).json(returnResponse(false, "register_pending", ""));
