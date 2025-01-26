@@ -30,7 +30,7 @@ const getMessageContext = (token, info) => {
     return message;
 };
 
-const sendDMPushNotification = async (deviceToken, info) => {
+const sendDMPushNotification = async (deviceIds, info) => {
     try {
         // console.log(info);
         deviceIds.forEach(async (deviceId) => {
