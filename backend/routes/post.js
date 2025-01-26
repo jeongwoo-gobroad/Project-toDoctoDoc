@@ -55,7 +55,7 @@ router.post(["/upload"],
             req.session.user = await User.findByIdAndUpdate(req.session.user._id,
                 {$push: {posts: newPost._id}},
                 {new: true}
-            )
+            );
 
             res.redirect("/posts/view/" + newPost._id);
         } catch (error) {

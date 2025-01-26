@@ -12,6 +12,7 @@ const Post = require("../../../models/Post");
 const mongoose = require("mongoose");
 const returnLongLatOfAddress = require("../../../middleware/getcoordinate");
 const bcrypt = require("bcrypt");
+const userEmitter = require("../../../events/eventDrivenLists");
 
 const User = mongoose.model("User", UserSchema);
 
@@ -88,12 +89,16 @@ router.post(["/upload"],
             await User.findByIdAndUpdate(user.userid,
                 {$push: {posts: newPost._id}},
                 {new: true}
-            )
+            );
+
+            userEmitter.emit('postUpdated', "-");
 
             res.status(200).json(returnResponse(false, "ai_answer", newPost));
 
             return;
         } catch (error) {
+            console.error(error, "errorAtPostUpload");
+
             res.status(401).json(returnResponse(true, "uploaderror", "uploaderror"));
 
             return;
@@ -163,6 +168,8 @@ router.patch(["/edit/:id"],
                 editedAt: Date.now(),
             }, {new: true});
 
+            userEmitter.emit('postUpdated', "-");
+
             res.status(200).json(returnResponse(false, "edit", post));
 
             return;
@@ -194,6 +201,8 @@ router.delete(["/delete/:id"],
             await User.findByIdAndUpdate(user.userid, {
                 $pull: {posts: req.params.id}
             });
+
+            userEmitter.emit('postUpdated', "-");
 
             res.status(200).json(returnResponse(false, "delete", "delete"));
 

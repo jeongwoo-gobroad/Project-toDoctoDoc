@@ -1,6 +1,4 @@
-const interval = 5000;
 const Post = require("../models/Post");
-const asyncHandler = require("express-async-handler");
 const removeSpacesAndHashes = require("../middleware/usefulFunctions").removeSpacesAndHashes;
 
 const tagMap = new Map();

@@ -13,7 +13,8 @@ const cors = require("cors");
 const redis = require("./config/redis");
 const socket = require("./routes/socket/socket").setServer;
 const connectFCM = require("./routes/mapp/push/fcm");
-const intervalWorks = require("./serverSideWorks/intervalWorks");
+const userEmitter = require("./events/eventDrivenLists");
+const tagRefreshWorks = require("./serverSideWorks/eventWorks");
 
 const app = express();
 const server = http.createServer(app);
@@ -36,7 +37,9 @@ app.use(session({
 redis.connectRedis().then(console.log("redis connection success"));
 connectDB().then(console.log("MongoDB connection success"));
 connectFCM();
-intervalWorks();
+
+/* event-driven */
+userEmitter.on('postUpdated', tagRefreshWorks);
 
 app.use(expressLayouts);
 app.set("view engine", "ejs");
