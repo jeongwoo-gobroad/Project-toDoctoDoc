@@ -87,7 +87,7 @@ router.post(["/login"], async (req, res, next) => {
         const token = generateToken(payload);
         const refreshToken = generateRefreshToken();
 
-        if (user.deviceIds.some(deviceId)) {
+        if (user.deviceIds && user.deviceIds.some(deviceId)) {
             await User.findByIdAndUpdate(user._id, {
                 refreshToken: refreshToken,
             });

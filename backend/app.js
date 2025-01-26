@@ -37,6 +37,7 @@ app.use(session({
 redis.connectRedis().then(console.log("redis connection success"));
 connectDB().then(console.log("MongoDB connection success"));
 connectFCM();
+tagRefreshWorks();
 
 /* event-driven */
 userEmitter.on('postUpdated', tagRefreshWorks);

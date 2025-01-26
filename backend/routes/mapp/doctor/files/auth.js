@@ -83,7 +83,7 @@ router.post(["/login"],
                 const token = generateToken(payload);
                 const refreshToken = generateRefreshToken();
 
-                if (doctor.deviceIds.some(deviceId)) {
+                if (doctor.deviceIds && doctor.deviceIds.some(deviceId)) {
                     await Doctor.findByIdAndUpdate(doctor._id, {
                         refreshToken: refreshToken,
                     });
