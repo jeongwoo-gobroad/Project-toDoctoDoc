@@ -83,17 +83,28 @@ router.post(["/login"],
                 const token = generateToken(payload);
                 const refreshToken = generateRefreshToken();
 
-                if (doctor.deviceIds && doctor.deviceIds.some(deviceId)) {
+                if (!deviceId) { // Desktop version
                     await Doctor.findByIdAndUpdate(doctor._id, {
                         refreshToken: refreshToken,
                     });
+                    setCacheForNDaysAsync("Device: " + doctor._id, pushToken, 270);
                 } else {
-                    console.log(deviceId, "->", pushToken);
-                    await Doctor.findByIdAndUpdate(doctor._id, {
-                        refreshToken: refreshToken,
-                        $push: {deviceIds: deviceId}
-                    });
-                    setCacheForNDaysAsync("Device_Doctor: " + deviceId, pushToken, 270);
+                    if (await doctor.deviceIds.some((element) => {element === deviceId.toString()})) {
+                        const prevToken = await getCache("Device: " + deviceId);
+                        await Doctor.findByIdAndUpdate(doctor._id, {
+                            refreshToken: refreshToken,
+                        });
+                        if (prevToken != pushToken) { // 만약 토큰이 갱신되었다면
+                            setCacheForNDaysAsync("Device: " + deviceId, pushToken, 270);
+                        }
+                    } else {
+                        console.log(deviceId, "->", pushToken); // 하지메떼노 등록
+                        await Doctor.findByIdAndUpdate(doctor._id, {
+                            refreshToken: refreshToken,
+                            $push: {deviceIds: deviceId}
+                        });
+                        setCacheForNDaysAsync("Device: " + deviceId, pushToken, 270);
+                    }
                 }
 
                 res.status(200).json(returnResponse(false, "logged_in", {token: token, refreshToken: refreshToken}));
@@ -109,7 +120,7 @@ router.post(["/login"],
                 return;
             }
         } catch (error) {
-            console.error(error);
+            console.error(error, "errorAtPostLogin_Doctor");
 
             res.status(401).json(returnResponse(true, "errorAtPostLogin", "-"));
         }
