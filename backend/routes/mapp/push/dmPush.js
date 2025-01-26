@@ -33,9 +33,9 @@ const getMessageContext = (token, info) => {
 const sendDMPushNotification = async (deviceToken, info) => {
     try {
         // console.log(info);
-        deviceToken.forEach(async (token) => {
+        deviceIds.forEach(async (deviceId) => {
             try {
-                await fcm.messaging().send(getMessageContext(token, info));
+                await fcm.messaging().send(getMessageContext(await getCache("Device: " + deviceId), info));
             } catch (error) {
                 console.error(error, "errorAtsendDMPushNotification");
             }

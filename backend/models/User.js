@@ -62,7 +62,7 @@ const UserSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Appointment'
     }],
-    pushTokens: [{
+    deviceIds: [{
         type: String,
     }],
     refreshToken: {

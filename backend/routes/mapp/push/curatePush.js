@@ -1,4 +1,5 @@
 const fcm = require("firebase-admin");
+const { getCache } = require("../../../middleware/redisCaching");
 
 const getMessageContext = (token, info) => {
     const message = {
@@ -30,18 +31,18 @@ const getMessageContext = (token, info) => {
     return message;
 };
 
-const sendCuratePushNotification = async (deviceToken, info) => {
+const sendCuratePushNotification = async (deviceIds, info) => {
     try {
         // console.log(info);
-        deviceToken.forEach(async (token) => {
+        deviceIds.forEach(async (deviceId) => {
             try {
-                await fcm.messaging().send(getMessageContext(token, info));
+                await fcm.messaging().send(getMessageContext(await getCache("Device: " + deviceId), info));
             } catch (error) {
-                console.error(error, "errorAtsendDMPushNotification");
+                console.error(error, "errorAtsendCuratePushNotification");
             }
         });
     } catch (error) {
-        console.error(error, "errorAtcurateDMPushNotification");
+        console.error(error, "errorAtcurateCuratePushNotification");
     }
 };
 

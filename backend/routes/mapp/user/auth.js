@@ -9,6 +9,7 @@ const { checkIfLoggedIn, checkIfNotLoggedIn } = require("../checkingMiddleWare")
 const returnLongLatOfAddress = require("../../../middleware/getcoordinate");
 const router = express.Router();
 const Doctor = require("../../../models/Doctor");
+const { setCacheForNDaysAsync, delCache } = require("../../../middleware/redisCaching");
 const User = mongoose.model("User", UserSchema);
 
 router.post(["/dupidcheck"], 
@@ -58,7 +59,7 @@ router.post(["/dupemailcheck"],
 
 router.post(["/login"], async (req, res, next) => {
     try {
-        const {userid, password, pushToken} = req.body;
+        const {userid, password, deviceId, pushToken} = req.body;
 
         const user = await User.findOne({id: userid});
 
@@ -86,17 +87,18 @@ router.post(["/login"], async (req, res, next) => {
         const token = generateToken(payload);
         const refreshToken = generateRefreshToken();
 
-        if (pushToken === null) {
+        if (user.deviceIds.some(deviceId)) {
             await User.findByIdAndUpdate(user._id, {
                 refreshToken: refreshToken,
             });
             // console.log("Automated Login");
         } else {
-            console.log(pushToken);
+            console.log(deviceId, "->", pushToken);
             await User.findByIdAndUpdate(user._id, {
                 refreshToken: refreshToken,
-                $push: {pushTokens: pushToken}
+                $push: {deviceIds: deviceId}
             });
+            setCacheForNDaysAsync("Device: " + deviceId, pushToken, 270);
             // console.log("pushToken inserted");
         }
 
@@ -114,13 +116,14 @@ router.get(["/logout"],
     checkIfLoggedIn,
     async (req, res, next) => {
         try {
-            const {pushToken} = req.body;
+            const {deviceId} = req.body;
             const user = await getTokenInformation(req, res);
     
             await User.findByIdAndUpdate(user.userid, {
-                $pull: {pushToken: pushToken}
+                $pull: {deviceIds: deviceId}
             });
-            console.log("pulled token");
+            delCache("Device: " + deviceId);
+            console.log("pulled device ID");
     
             res.status(200).json(returnResponse(false, "loggedOut", "-"));
             

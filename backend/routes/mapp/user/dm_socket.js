@@ -108,7 +108,7 @@ const chatting_user = async (socket, next) => {
 
                         await setCacheForThreeDaysAsync(chat.doctor._id, unreadChats);
 
-                        await sendDMPushNotification(chat.doctor.pushTokens, {title: "읽지 않은 환자로부터의 DM", body: chat.chatList[chat.chatList.length - 1]});
+                        await sendDMPushNotification(chat.doctor.deviceIds, {title: "읽지 않은 환자로부터의 DM", body: chat.chatList[chat.chatList.length - 1]});
     
                         socket.emit("unread_doctor", "-");
 

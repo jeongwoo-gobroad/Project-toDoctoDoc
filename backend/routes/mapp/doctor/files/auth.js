@@ -11,6 +11,7 @@ const router = express.Router();
 
 const User = mongoose.model("User", UserSchema);
 const Doctor = require("../../../../models/Doctor");
+const { setCacheForNDaysAsync } = require("../../../../middleware/redisCaching");
 
 router.post(["/dupemailcheck"],
     checkIfNotLoggedIn,
@@ -66,7 +67,7 @@ router.post(["/dupidcheck"],
 router.post(["/login"], 
     checkIfNotLoggedIn, 
     async (req, res, next) => {
-        const {userid, password, pushToken} = req.body;
+        const {userid, password, deviceId, pushToken} = req.body;
 
         try {
             const doctor = await Doctor.findOne({id: userid});
@@ -82,15 +83,17 @@ router.post(["/login"],
                 const token = generateToken(payload);
                 const refreshToken = generateRefreshToken();
 
-                if (pushToken === null) {
+                if (doctor.deviceIds.some(deviceId)) {
                     await Doctor.findByIdAndUpdate(doctor._id, {
                         refreshToken: refreshToken,
                     });
                 } else {
+                    console.log(deviceId, "->", pushToken);
                     await Doctor.findByIdAndUpdate(doctor._id, {
                         refreshToken: refreshToken,
-                        $push: {pushTokens: pushToken}
+                        $push: {deviceIds: deviceId}
                     });
+                    setCacheForNDaysAsync("Device_Doctor: " + deviceId, pushToken, 270);
                 }
 
                 res.status(200).json(returnResponse(false, "logged_in", {token: token, refreshToken: refreshToken}));
@@ -121,8 +124,9 @@ router.get(["/logout"],
             const user = await getTokenInformation(req, res);
     
             await Doctor.findByIdAndUpdate(user.userid, {
-                $pull: {pushToken: pushToken}
+                $pull: {deviceIds: deviceId}
             });
+            delCache("Device_Doctor: " + deviceId);
             console.log("pulled token");
     
             res.status(200).json(returnResponse(false, "loggedOut", "-"));

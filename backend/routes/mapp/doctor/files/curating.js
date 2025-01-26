@@ -129,7 +129,7 @@ router.post(["/comment/:id"],
 
                 await curate.save();
 
-                await sendCuratePushNotification(curate.user.pushTokens, {title: "큐레이팅 요청 응답", body: newComment})
+                await sendCuratePushNotification(curate.user.deviceIds, {title: "큐레이팅 요청 응답", body: newComment})
 
                 res.status(200).json(returnResponse(false, "doctor_curating_comment_success", "-"));
 

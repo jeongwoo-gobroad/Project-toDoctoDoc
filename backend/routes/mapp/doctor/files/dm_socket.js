@@ -105,7 +105,7 @@ const chatting_doctor = async (socket, next) => {
 
                         await setCacheForThreeDaysAsync(chat.user._id, unreadChats);
 
-                        await sendDMPushNotification(chat.user.pushTokens, {title: "읽지 않은 DM", body: chat.chatList[chat.chatList.length - 1]});
+                        await sendDMPushNotification(chat.user.deviceIds, {title: "읽지 않은 DM", body: chat.chatList[chat.chatList.length - 1]});
 
                         socket.emit("unread_user", "-");
                         // console.log("doctor:: solo");
