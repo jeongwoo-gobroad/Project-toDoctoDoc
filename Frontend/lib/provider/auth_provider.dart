@@ -34,7 +34,7 @@ class AuthProvider extends ChangeNotifier{
       _pushToken = fcmToken;
     }
 
-    var deviceId = '';
+    String? deviceId;
     deviceId = await initPlatformState();
 
     print('AUTOLOGIN $autoLogin\nFIRSTLOGIN $firstLogin');

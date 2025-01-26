@@ -72,10 +72,8 @@ clearSecureStorageOnReinstall() async {
   }
 
   var chk = prefs.getBool(key) as bool;
-
   if (chk) {
     storage.deleteEveryToken();
   }
-
   prefs.setBool(key, true);
 }

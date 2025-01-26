@@ -1,33 +1,25 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile_device_identifier/mobile_device_identifier.dart';
 
 
-Future<String> initPlatformState() async {
-  var deviceID = 'null';
+Future<String?> initPlatformState() async {
+  String? deviceID = 'null';
 
-  var deviceInfo = DeviceInfoPlugin();
 
   if (kIsWeb) {
-    var webInfo = await deviceInfo.webBrowserInfo;
-    deviceID = webInfo.vendor! +
-        webInfo.userAgent! +
-        webInfo.hardwareConcurrency.toString();
+    return null;
   }
   else {
-    if (Platform.isAndroid) {
-      var androidInfo = await deviceInfo.androidInfo;
-      deviceID = androidInfo.id!;
-    } else if (Platform.isIOS) {
-      var iosInfo = await deviceInfo.iosInfo;
-      deviceID = iosInfo.identifierForVendor!;
-    } else if (Platform.isLinux) {
-      var linuxInfo = await deviceInfo.linuxInfo;
-      deviceID = linuxInfo.machineId!;
+    var UUID = await MobileDeviceIdentifier().getDeviceId();
+    if (UUID == null){
+      print('DEVICE GET ERROR');
+      return null;
     }
+    deviceID = UUID;
   }
 
   print("DEVICE ID --------- $deviceID");
