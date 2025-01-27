@@ -1,5 +1,4 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
+\import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -233,7 +232,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                   controller: _scrollController,
                   itemCount: _messageList.length,
                   itemBuilder: (context, index) {
-                    final chatList = _messageList[index];
                     final isDoctor = _messageList[index].role == 'doctor';
                     final showTime = shouldShowTime(index);
                     final showDate = shouldShowDate(index);
