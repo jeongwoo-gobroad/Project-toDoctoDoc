@@ -216,13 +216,15 @@ class _CurateScreenState extends State<CurateScreen> {
                                 color: item.isRead ? Colors.green : Colors.grey,
                               ),
                               SizedBox(width: 8),
-                              Text(
-                                item.isRead ? '읽음' : '안읽음',
-                                style: TextStyle(
-                                  color:
-                                      item.isRead ? Colors.green : Colors.grey,
+                              
+                             Text(
+                                  item.isRead ? '읽음' : '안읽음',
+                                  style: TextStyle(
+                                    color:
+                                        item.isRead ? Colors.green : Colors.grey,
+                                  ),
                                 ),
-                              ),
+                              
                             ],
                           ),
                         ),

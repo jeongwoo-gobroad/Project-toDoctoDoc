@@ -4,11 +4,25 @@ import 'package:get/get.dart';
 
 import 'package:to_doc_for_doc/controllers/curate/curate_controller.dart';
 import 'package:intl/intl.dart';
-class CurateDetailScreen extends StatelessWidget {
+class CurateDetailScreen extends StatefulWidget {
+  @override
+  State<CurateDetailScreen> createState() => _CurateDetailScreenState();
+}
+
+class _CurateDetailScreenState extends State<CurateDetailScreen> {
   final controller = Get.put(CurateController(dio: Dio()));
+
   //final String curateId;
   final TextEditingController commentController = TextEditingController();
+
   final TextEditingController editController = TextEditingController();
+
+   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    controller.getCurateInfo('5');
+  }
   //CurateDetailScreen({required this.curateId});
   String formatDate(String date) {
     try {
@@ -18,6 +32,7 @@ class CurateDetailScreen extends StatelessWidget {
       return '날짜 정보 없음';
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
