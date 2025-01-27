@@ -22,6 +22,10 @@ const AppointmentSchema = new mongoose.Schema({
     appointmentEditedAt: {
         type: Date,
         default: Date.now,
+    },
+    isAppointmentApproved: {
+        type: Boolean,
+        default: false
     }
 });
 

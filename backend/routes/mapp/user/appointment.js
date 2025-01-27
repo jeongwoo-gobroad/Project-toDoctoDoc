@@ -12,6 +12,7 @@ const { ifDailyCurateNotExceededThenProceed } = require("../limitMiddleWare");
 const Curate = require("../../../models/Curate");
 const Comment = require("../../../models/Comment");
 const Chat = require("../../../models/Chat");
+const Appointment = require("../../../models/Appointment");
 
 router.get(["/appointment/:cid"],
     checkIfLoggedIn,
@@ -41,6 +42,45 @@ router.get(["/appointment/:cid"],
             console.error(error, "errorAtUserAppointmentGET");
 
             res.status(403).json(returnResponse(true, "errorAtUserAppointmentGET", "-"));
+
+            return;
+        }
+    }
+);
+
+router.post(["/appointment/approve"],
+    checkIfLoggedIn,
+    ifPremiumThenProceed,
+    async (req, res, next) => {
+        const user = await getTokenInformation(req, res);
+        const {appid} = req.body;
+
+        try {
+            const appointment = await Appointment.findById(appid);
+
+            if (!appointment) {
+                res.status(401).json(returnResponse(true, "noSuchAppointment", "-"));
+
+                return;
+            }
+
+            if (appointment.user != user.userid) {
+                res.status(402).json(returnResponse(true, "notOwner", "-"));
+
+                return;
+            }
+
+            appointment.isAppointmentApproved = true;
+
+            await appointment.save();
+
+            res.status.json(returnResponse(false, "appointmentApprovedByUser", "-"));
+
+            return;
+        } catch (error) {
+            console.error(error, "errorAtUserAppointmentApprove");
+
+            res.status(403).json(returnResponse(true, "errorAtUserAppointmentApprove", "-"));
 
             return;
         }

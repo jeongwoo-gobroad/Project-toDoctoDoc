@@ -126,6 +126,20 @@ const chatting_user = async (socket, next) => {
                 }
             });
 
+            socket.on('appointmentApproval', async (data) => {
+                try {
+                    const struct = JSON.parse(data);
+
+                    socket.to(struct.roomNo).emit("appointmentApproval", {});
+        
+                    return;
+                } catch (error) {
+                    socket.emit("error", "errorAtAppointmentApproval");
+        
+                    console.log(error, "errorAtAppointmentApproval");
+                }
+            });
+
             socket.on('disconnect', (data) => {
                 
             });

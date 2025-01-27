@@ -123,7 +123,8 @@ router.patch(["/set"],
         try {
             const appointment = await Appointment.findByIdAndUpdate(appid, {
                 appointmentTime: time,
-                appointmentEditedAt: Date.now()
+                appointmentEditedAt: Date.now(),
+                isAppointmentApproved: false
             });
 
             res.status(200).json(returnResponse(false, "editedAppointment", "-"));
