@@ -63,8 +63,8 @@ class AuthProvider extends ChangeNotifier{
         _token = data['content']['token'];
         _refreshToken = data['content']['refreshToken'];
         ///
-        print(_token);
-        print(_refreshToken);
+        print('ACCESSTOKEN ----- : $_token');
+        print('REFRESHTOKEN------: $_refreshToken');
 
         // _token = data['content'];
 

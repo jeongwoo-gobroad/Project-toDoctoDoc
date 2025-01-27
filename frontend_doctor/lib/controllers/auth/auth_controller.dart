@@ -1,15 +1,14 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
-import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:to_doc_for_doc/controllers/auth/auth_secure.dart';
 import 'package:to_doc_for_doc/controllers/auth/doctor_info_controller.dart';
 
-import 'auth_interceptor.dart';
+import '../../firebase/device_info.dart';
 
 class AuthController extends GetxController {
   SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
@@ -79,6 +78,25 @@ class AuthController extends GetxController {
   } 
 
   Future<bool> login(String userid, String password, bool firstLogin, bool autoLogin) async {
+    _pushToken = await storage.readPushToken();
+
+    /*if (_pushToken == null) {
+      FirebaseMessaging fbMsg = FirebaseMessaging.instance;
+      String? fcmToken = await fbMsg.getToken(
+          vapidKey: "BENM2B6kWL-_t2ATlZN2JXE2c4wn0JohHDLTuSUJC5hsKZF-aGUHeBKUW9PPHfukDtb18JLmn1n3yzTj2u5TpHg");
+      print("fcm token revisited ---- : $fcmToken");
+
+      storage.savePushToken(fcmToken!);
+      _pushToken = fcmToken;
+    }*/
+
+    String? deviceId;
+    deviceId = await initPlatformState();
+
+    print('AUTOLOGIN $autoLogin\nFIRSTLOGIN $firstLogin');
+    print('PUSHTOKEN $_pushToken');
+    print('DEVICE_ID $deviceId');
+
 
 
     try {
@@ -90,7 +108,8 @@ class AuthController extends GetxController {
         data: json.encode({
           'userid': userid,
           'password': password,
-          'pushToken': (firstLogin)? _pushToken : null,
+          'deviceId' : (autoLogin)? deviceId : null,
+          'pushToken' : (autoLogin)? _pushToken : null,
         }),
       );
 
@@ -98,7 +117,6 @@ class AuthController extends GetxController {
         final data = json.decode(response.data);
 
         print(data);
-
         _token = data['content']['token'];
         _refreshToken = data['content']['refreshToken'];
 

@@ -1,10 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
+
 import 'package:to_doc_for_doc/controllers/auth/auth_interceptor.dart';
 import 'package:to_doc_for_doc/controllers/curate/curate_detail_model.dart';
 import 'content_model.dart';
@@ -90,10 +87,7 @@ class CurateController extends GetxController {
     } catch (error) {
       print('An error occurred: $error');
       return false;
-    } 
-    
-
-
+    }
   }
 
   Future<void> addComment(String id, String comment) async {

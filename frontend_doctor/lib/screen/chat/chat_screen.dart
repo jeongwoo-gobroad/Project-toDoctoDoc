@@ -1,38 +1,36 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:to_doc_for_doc/controllers/appointment_controller.dart';
 
-import '../../controllers/chat_controller.dart';
 import '../../model/chat_object.dart';
 import '../../socket_service/chat_socket_service.dart';
+import 'appointmentBottomSheet.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key, required this.socketService, required this.chatId, required this.unreadMsg}) : super(key:key);
+  const ChatScreen({super.key, required this.socketService, required this.chatId, required this.unreadMsg, required this.userId, required this.userName});
   final ChatSocketService socketService;
   final String chatId;
   final int unreadMsg;
-
+  final String userId;
+  final String userName;
 
   @override
   State<ChatScreen> createState() => _ChatScreen();
 }
 
-
 class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
-  //final ChatController controller = Get.put(ChatController(dio: Dio()));
   final ScrollController _scrollController = ScrollController();
+  late AppointmentController appointmentController;
 
   bool scrollLoading = true;
 
   late int updateunread;
-  late bool isAppointment;
+  late String appointmentId;
 
   List<ChatObject> _messageList = [];
 
@@ -55,27 +53,36 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
   void asyncBefore() async {
     scrollLoading = true;
-
     widget.socketService.onReturnJoinedChat_doctor((data) {
+      print('APPOINTMENT IS?');
+
+      if (data['chat']['appointment'] != null) {
+
+        appointmentId = data['chat']['appointment'];
+        print(appointmentId);
+        appointmentController.isAppointmentExisted = true;
+        appointmentController.getAppointmentInformation(appointmentId);
+
+        if (data['chat']['hasAppointmentDone']) {
+          appointmentController.isAppointmentDone = true;
+        }
+
+      } else {
+        appointmentController.isLoading.value = false;
+      }
+
       print('chat List received');
       print(data);
-      print('sub');
-      print(data['chat']['chatList']);
 
       if (data['unread'] == -1) {
         updateunread = 0;
-      }
-      else {
+      } else {
         updateunread = data['unread'];
       }
 
       DateTime? chatTime;
       var chatList = data['chat'];
-
-      //setState(() {
       for (var chat in chatList['chatList']) {
-        //print(chat['message']);
-
         if (chat['createdAt'] == null) {
           chatTime = null;
         }
@@ -87,7 +94,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
       print(_messageList.length);
 
-      // 나갔다 들어왔을 때 마운트 오류 발생해 해결
       if (this.mounted) {
         setState(() {
           Future.delayed(Duration(milliseconds: 50), () {
@@ -127,6 +133,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    appointmentController = AppointmentController(userId: widget.userId, chatId: widget.chatId);
     updateunread = widget.unreadMsg;
     asyncBefore();
   }
@@ -189,22 +196,47 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         ),
         body: Column(
           children: [
-            Expanded(
 
+            Obx(() {
+              if (appointmentController.isLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              return Container(
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
+                ),
+                width: double.infinity,
+                height: (appointmentController.isAppointmentExisted)? 70 : 0,
+                child: Column(
+                  children: [
+                    if (appointmentController.isAppointmentExisted) ...[
+                      Text('약속이 존재합니다',
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
+                      Text('$appointmentId : 약속 ID',
+                        style: TextStyle(fontSize: 10),),
+                      Text('${appointmentController.appointmentTime}',
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),)
+                    ]
+                  ],
+                ),
+              );
+
+            }),
+
+            Expanded(
               child: Obx(() {
                 if (widget.socketService.ischatFetchLoading.value && scrollLoading) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                /*              WidgetsBinding.instance.addPostFrameCallback((_) {
-                  scrollToBottom();
-                });*/
                 return ListView.builder(
                   controller: _scrollController,
                   itemCount: _messageList.length,
                   itemBuilder: (context, index) {
                     final chatList = _messageList[index];
                     final isDoctor = _messageList[index].role == 'doctor';
-                    final showTime = true;
+                    final showTime = shouldShowTime(index);
+                    final showDate = shouldShowDate(index);
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(
@@ -213,7 +245,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                       ),
                       child: Column(
                         children: [
-                          if (shouldShowDate(index)) ... [
+                          if (showDate) ... [
                             Container(
                               padding: EdgeInsets.all(12),
                               decoration: BoxDecoration(
@@ -233,7 +265,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                                 : MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              //상대방 표시시
+//상대방 표시시
                               if (!isDoctor) ...[
                                 CircleAvatar(
                                   radius: 15,
@@ -247,7 +279,8 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                                 crossAxisAlignment: CrossAxisAlignment.end,
 
                                 children: [
-                                  if (index + updateunread == _messageList.length - 1 && isDoctor) ... [
+                                  if (index + updateunread == _messageList.length - 1 &&
+                                      isDoctor) ... [
                                     Container(
                                       padding: EdgeInsets.fromLTRB(0, 0, 12, 5),
                                       child: Text(
@@ -257,7 +290,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                                     ),
                                   ],
 
-                                  if (isDoctor && shouldShowTime(index))...[
+                                  if (isDoctor && showTime)...[
                                     Container(
                                       padding: EdgeInsets.fromLTRB(12, 0, 12, 5),
                                       child: Text(
@@ -291,7 +324,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                                   ],),
                               ),
 
-                              if (!isDoctor && shouldShowTime(index)) ...[
+                              if (!isDoctor && showTime) ...[
                                 Container(
                                   padding: EdgeInsets.all(12),
                                   child: Text(
@@ -338,36 +371,10 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
                   prefixIcon: IconButton(
                       onPressed: () {
-                        showModalBottomSheet(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return Container(
-                              height: 500,
-                              child: Column(
-                                children: [
-                                  Container(
-                                    //height: 300,
-                                    width: MediaQuery.of(context).size.width - 50,
-                                    child: TableCalendar(
-                                      locale: 'ko_KR',
-                                      firstDay: DateTime.now(),
-                                      lastDay: DateTime.utc(2030, 3, 14),
-                                      focusedDay: DateTime.now(),
-                                    ),
-                                  ),
 
-                                  Row(
-                                    children:[
-                                      TextButton(onPressed: () {}, child: Text('no')),
-                                      TextButton(onPressed: () {}, child: Text('yes')),
-                                    ]
-                                  )
-
-                                ],
-                              ),
-                            );
-                          }
-                        );
+                        setState(() {
+                          setAppointmentDay();
+                        });
 
                       },
                       icon: Icon(Icons.edit_calendar_outlined),
@@ -391,5 +398,18 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
 
-
+  setAppointmentDay() {
+    showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      context: context,
+      isScrollControlled: true,
+      builder: (_) {
+        return AppointmentBottomSheet(
+          userName: widget.userName,
+          appointmentController: appointmentController,
+        );
+      },
+    );
+  }
 }
+

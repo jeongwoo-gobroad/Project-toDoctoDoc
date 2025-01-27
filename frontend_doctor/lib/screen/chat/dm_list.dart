@@ -86,7 +86,12 @@ class _DMListState extends State<DMList> {
                   onTap: () {
                     print(chat.id);
                     socketService.joinChat(chat.id);
-                    Get.to(()=> ChatScreen(socketService: socketService, chatId: chat.id, unreadMsg: chat.unread,));
+                    Get.to(()=> ChatScreen(
+                        socketService: socketService,
+                        chatId: chat.id,
+                        unreadMsg: chat.unread,
+                        userName: chat.user.name ?? 'null',
+                        userId: chat.user.id ?? 'null'));
 
                   },
                   child: Container(
@@ -111,7 +116,7 @@ class _DMListState extends State<DMList> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    chat.user.name ?? '의사 이름 없음',
+                                    chat.user.name ?? '유저 이름 없음',
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,

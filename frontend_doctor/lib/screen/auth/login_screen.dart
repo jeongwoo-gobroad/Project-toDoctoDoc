@@ -37,6 +37,8 @@ class _LoginPageState extends State<LoginPage> {
     final userId = await storage.readUserId();
     final userPw = await storage.readUserPw();
 
+    print('AUTOLOGIN $userId, $userPw');
+
     if (userId != null && userPw != null) {
       var result = await authController.login(userId, userPw, false, false);
 
