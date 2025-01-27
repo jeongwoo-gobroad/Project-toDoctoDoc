@@ -13,7 +13,7 @@ class AppointmentController extends GetxController {
   DateTime initialDay = DateTime.now();
   TimeOfDay initialTime = TimeOfDay.now();
 
-  String appointmentId = '';
+  late String appointmentId = 'load';
 
   final String chatId;
   final String userId;
@@ -22,12 +22,6 @@ class AppointmentController extends GetxController {
 
   bool isAppointmentExisted = false;
   bool isAppointmentDone = false;
-
-
-  @override
-  void onInit() {
-    super.onInit();
-  }
 
   Future<bool> getAppointmentInformation(String appId) async {
     isAppointmentExisted = true;
@@ -55,6 +49,8 @@ class AppointmentController extends GetxController {
         print(data);
 
         appointmentId = data['content']['_id'];
+
+        print(appointmentId);
         appointmentTime = DateTime.parse(data['content']['appointmentTime']).toLocal();
 
         print('APPOINTMENT ID-------------- $appointmentId');
@@ -77,10 +73,10 @@ class AppointmentController extends GetxController {
 
 
   Future<bool> makeAppointment(DateTime selectedDay) async{
+    isLoading.value = true;
+
     Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
-
-    isLoading.value = true;
 
     DateTime dayToUTC = selectedDay.toUtc();
 
@@ -107,14 +103,16 @@ class AppointmentController extends GetxController {
         var data = json.decode(response.data);
         print(data);
         appointmentId = data['content']['_id'];
+        print(appointmentId);
 
         appointmentTime = selectedDay;
         initialDay  = DateTime(selectedDay.year,selectedDay.month,selectedDay.day);
         initialTime = TimeOfDay(hour: selectedDay.hour, minute: selectedDay.minute);
 
-        isLoading.value = false;
         isAppointmentDone = false;
         isAppointmentExisted = true;
+
+        isLoading.value = false;
         return true;
 
       } else {

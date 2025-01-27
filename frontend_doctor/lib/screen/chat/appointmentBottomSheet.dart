@@ -37,7 +37,6 @@ class _appointmentBottomSheet extends State<AppointmentBottomSheet> with Widgets
     selectedTime = widget.appointmentController.initialTime;
   }
 
-
   DateTime addDayTime(DateTime day, TimeOfDay time) {
     return DateTime(day.year, day.month, day.day, time.hour, time.minute);
   }
@@ -69,14 +68,13 @@ class _appointmentBottomSheet extends State<AppointmentBottomSheet> with Widgets
           ),
           actions: [
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 final finalTime = addDayTime(selectedDay, selectedTime);
-
                 if ((!widget.appointmentController.isAppointmentExisted) || widget.appointmentController.isAppointmentDone) {
-                  widget.appointmentController.makeAppointment(finalTime);
+                  await widget.appointmentController.makeAppointment(finalTime);
                 }
                 else {
-                  widget.appointmentController.editAppointment(finalTime);
+                  await widget.appointmentController.editAppointment(finalTime);
                 }
 
                 Navigator.of(context).pop();

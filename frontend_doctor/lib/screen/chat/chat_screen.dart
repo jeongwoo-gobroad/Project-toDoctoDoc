@@ -213,7 +213,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                     if (appointmentController.isAppointmentExisted) ...[
                       Text('약속이 존재합니다',
                         style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
-                      Text('$appointmentId : 약속 ID',
+                      Text('${appointmentController.appointmentId} : 약속 ID',
                         style: TextStyle(fontSize: 10),),
                       Text('${appointmentController.appointmentTime}',
                         style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),)
@@ -371,11 +371,9 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
                   prefixIcon: IconButton(
                       onPressed: () {
-
                         setState(() {
                           setAppointmentDay();
                         });
-
                       },
                       icon: Icon(Icons.edit_calendar_outlined),
                   ),
