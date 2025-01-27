@@ -37,6 +37,7 @@ class TagGraphController extends GetxController{
       
       if (response.statusCode == 200) {
         final data = json.decode(response.data);
+        print(data);
         final tagGraphData = TagGraphData.fromJson(data);
 
         _tagList.value = Map<String, int>.from(tagGraphData.tagList);
