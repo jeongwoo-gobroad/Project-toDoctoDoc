@@ -122,6 +122,20 @@ const chatting_doctor = async (socket, next) => {
                 }
             });
 
+            socket.on('appointmentRefresh', async (data) => {
+                try {
+                    const struct = JSON.parse(data);
+
+                    socket.to(struct.roomNo).emit("appointmentRefresh", {});
+        
+                    return;
+                } catch (error) {
+                    socket.emit("error", "errorAtAppointmentRefresh");
+        
+                    console.log(error, "errorAtAppointmentRefresh");
+                }
+            });
+
             socket.on('disconnect', (data) => {
                 
             });

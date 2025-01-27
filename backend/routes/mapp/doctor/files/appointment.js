@@ -41,12 +41,44 @@ router.get(["/list"],
     }
 );
 
+router.get(["/get/:appid"], 
+    checkIfLoggedIn,
+    isDoctorThenProceed,
+    async (req, res, next) => {
+        const doctor = await getTokenInformation(req, res);
+
+        console.log("Appointment get: ", req.params.appid);
+
+        try {
+            const appointment = await Appointment.findById(req.params.appid);
+
+            if (!appointment) {
+                res.status(201).json(returnResponse(false, "noSuchAppointment", "-"));
+
+                return;
+            } 
+
+            res.status(200).json(returnResponse(false, "appointmentGet", appointment));
+
+            return;
+        } catch (error) {
+            console.error(error, "error at /appointment/get GET");
+
+            res.status(403).json(returnResponse(true, "errorAtAppointmentGetting", "-"));
+
+            return;
+        }
+    }
+);
+
 router.post(["/set"],
     checkIfLoggedIn,
     isDoctorThenProceed,
     async (req, res, next) => {
         const doctor = await getTokenInformation(req, res);
         const {cid, uid, time} = req.body; // time 객체는 GMT 기준으로 1995-12-17T03:24:00 의 형태로 나타내야 함.
+
+        console.log("Appointment set: ", cid, uid, time);
 
         try {
             const appointment = await Appointment.create({
@@ -84,8 +116,9 @@ router.patch(["/set"],
     checkIfLoggedIn,
     isDoctorThenProceed,
     async (req, res, next) => {
-        const doctor = await getTokenInformation(req, res);
         const {appid, time} = req.body; // time 객체는 GMT 기준으로 1995-12-17T03:24:00 의 형태로 나타내야 함.
+
+        console.log("Appointment fix: ", appid, time);
 
         try {
             const appointment = await Appointment.findByIdAndUpdate(appid, {
@@ -112,6 +145,8 @@ router.delete(["/set"],
     async (req, res, next) => {
         const doctor = await getTokenInformation(req, res);
         const {cid, appid, uid} = req.body;
+
+        console.log("Appointment delete: ", appid);
 
         try {
             await Appointment.findByIdAndDelete(appid);
