@@ -99,7 +99,7 @@ router.post(["/set"],
                 appointment: appointment._id
             });
 
-            res.status(200).json(returnResponse(false, "setAppointment", "-"));
+            res.status(200).json(returnResponse(false, "setAppointment", appointment));
 
             return;
         } catch (error) {
