@@ -21,7 +21,7 @@ router.get(["/appointment/:cid"],
         const user = await getTokenInformation(req, res);
 
         try {
-            const chat = await Chat.findById(cid).populate({
+            const chat = await Chat.findById(req.params.cid).populate({
                 path: 'appointment',
                 populate: {
                     path: 'doctor',
@@ -74,7 +74,7 @@ router.post(["/appointment/approve"],
 
             await appointment.save();
 
-            res.status.json(returnResponse(false, "appointmentApprovedByUser", "-"));
+            res.status(200).json(returnResponse(false, "appointmentApprovedByUser", "-"));
 
             return;
         } catch (error) {
