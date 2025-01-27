@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc_for_doc/controllers/appointment_controller.dart';
@@ -9,7 +8,13 @@ import '../../socket_service/chat_socket_service.dart';
 import 'appointmentBottomSheet.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key, required this.socketService, required this.chatId, required this.unreadMsg, required this.userId, required this.userName});
+  const ChatScreen({super.key,
+    required this.socketService,
+    required this.chatId,
+    required this.unreadMsg,
+    required this.userId,
+    required this.userName});
+
   final ChatSocketService socketService;
   final String chatId;
   final int unreadMsg;
@@ -26,7 +31,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
   bool scrollLoading = true;
 
-  late int updateunread;
+  late int updateUnread;
   late String appointmentId;
 
   List<ChatObject> _messageList = [];
@@ -72,9 +77,9 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       print(data);
 
       if (data['unread'] == -1) {
-        updateunread = 0;
+        updateUnread = 0;
       } else {
-        updateunread = data['unread'];
+        updateUnread = data['unread'];
       }
 
       DateTime? chatTime;
@@ -105,14 +110,16 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.socketService.onUserReceived((data) {
+      widget.socketService.onDoctorReceived((data) {
         print('user chat received');
         print('data1');
         print(data);
 
         if (this.mounted) {
           setState(() {
-            _messageList.add(ChatObject(content: data['message'], role: 'user', createdAt: DateTime.now()));
+            _messageList.add(ChatObject(content: data['message'],
+                role: 'user',
+                createdAt: DateTime.now()));
 
             Future.delayed(Duration(milliseconds: 100), () {
               _scrollController.animateTo(
@@ -125,13 +132,39 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         }
       });
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.socketService.onAppointmentApproval((data) {
+        setState(() {
+          appointmentController.isAppointmentApproved = true;
+        });
+      });
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.socketService.onUnread_user((data) {
+        print('user is unread');
+        setState(() {
+          updateUnread++;
+        });
+      });
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.socketService.onReturnJoinedChat_user((data) {
+        print('user is connected');
+        setState(() {
+          updateUnread = 0;
+        });
+      });
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    appointmentController = AppointmentController(userId: widget.userId, chatId: widget.chatId);
-    updateunread = widget.unreadMsg;
+    appointmentController = AppointmentController(userId: widget.userId, chatId: widget.chatId, socketService: widget.socketService);
+    updateUnread = widget.unreadMsg;
     asyncBefore();
   }
 
@@ -161,8 +194,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       widget.socketService.sendMessage(widget.chatId, value);
       messageController.clear();
       setState(() {
-        updateunread++;
-
         _messageList.add(ChatObject(content: value,
             role: 'doctor',
             createdAt: DateTime.now()));
@@ -187,7 +218,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('DM', style: TextStyle(fontWeight: FontWeight.bold),),
+          title: Text(widget.userName, style: TextStyle(fontWeight: FontWeight.bold),),
           //centerTitle: true,
           shape: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
         ),
@@ -204,7 +235,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                   border: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
                 ),
                 width: double.infinity,
-                height: (appointmentController.isAppointmentExisted)? 70 : 0,
+                height: (appointmentController.isAppointmentExisted)? 80 : 0,
                 child: Column(
                   children: [
                     if (appointmentController.isAppointmentExisted) ...[
@@ -213,7 +244,16 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                       Text('${appointmentController.appointmentId} : 약속 ID',
                         style: TextStyle(fontSize: 10),),
                       Text('${appointmentController.appointmentTime}',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),)
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
+
+                      if (!appointmentController.isAppointmentApproved) ...[
+                        Text('상대방이 아직 승낙하지 않았습니다.',
+                          style: TextStyle(fontSize: 10, color: Colors.grey),),
+                      ]
+                      else ... [
+                        Text('상대방이 약속을 승낙했습니다.',
+                          style: TextStyle(fontSize: 10, color: Colors.grey),),
+                      ],
                     ]
                   ],
                 ),
@@ -275,7 +315,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                                 crossAxisAlignment: CrossAxisAlignment.end,
 
                                 children: [
-                                  if (index + updateunread == _messageList.length - 1 &&
+                                  if (index + updateUnread == _messageList.length - 1 &&
                                       isDoctor) ... [
                                     Container(
                                       padding: EdgeInsets.fromLTRB(0, 0, 12, 5),

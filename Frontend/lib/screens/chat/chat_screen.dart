@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc/chat_object.dart';
+import 'package:to_doc/controllers/careplus/appointment_controller.dart';
 import 'package:to_doc/controllers/careplus/chat_controller.dart';
 import 'package:to_doc/socket_service/chat_socket_service.dart';
 
@@ -19,12 +20,12 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
-  //final ChatController controller = Get.put(ChatController(dio: Dio()));
+  late AppointmentController appointmentController;
   final ScrollController _scrollController = ScrollController();
 
   bool scrollLoading = true;
 
-  late int updateunread;
+  late int updateUnread;
   late bool isAppointment;
 
   List<ChatObject> _messageList = [];
@@ -50,25 +51,41 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     scrollLoading = true;
 
     widget.socketService.onReturnJoinedChat_user((data) {
+      print('APPOINTMENT IS?');
+
+      if (data['chat']['appointment'] != null) {
+
+        var appointmentId = data['chat']['appointment'];
+        print(appointmentId);
+        appointmentController.isAppointmentExisted = true;
+        if (this.mounted) {
+          setState(() {
+            appointmentController.getAppointmentInformation(widget.chatId);
+          });
+        }
+
+        if (data['chat']['hasAppointmentDone']) {
+          appointmentController.isAppointmentDone = true;
+        }
+
+      } else {
+        appointmentController.isLoading.value = false;
+      }
+
       print('chat List received');
-      print(data);
-      print('sub');
       print(data['chat']['chatList']);
 
       if (data['unread'] == -1) {
-        updateunread = 0;
+        updateUnread = 0;
       }
       else {
-        updateunread = data['unread'];
+        updateUnread = data['unread'];
       }
 
       DateTime? chatTime;
       var chatList = data['chat'];
 
-      //setState(() {
       for (var chat in chatList['chatList']) {
-        //print(chat['message']);
-
         if (chat['createdAt'] == null) {
           chatTime = null;
         }
@@ -96,6 +113,8 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.socketService.onUserReceived((data) {
+        updateUnread = 0;
+
         print('user chat received');
         print('data1');
         print(data);
@@ -115,12 +134,80 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         }
       });
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.socketService.onAppointmentRefresh((data) {
+        print('on APPOINTMENT SET');
+        if (this.mounted) {
+          setState(() {
+            appointmentController.getAppointmentInformation(widget.chatId);
+          });
+        }
+      });
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.socketService.onReturnJoinedChat_doctor((data) {
+        setState(() {
+          print('onretrn doctor');
+          updateUnread = 0;
+        });
+      });
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.socketService.onUnread_doctor((data) {
+        setState(() {
+          print('onunread');
+          updateUnread++;
+        });
+      });
+    });
   }
+
+  Future<void> deleteAppointmentAlert(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('주의'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                  '약속을 확정하시겠습니까?',
+                  style: TextStyle(fontWeight: FontWeight.bold),),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                appointmentController.sendAppointmentApproval();
+                Navigator.of(context).pop();
+              },
+              style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.green)),
+              child: Text('승낙', style: TextStyle(color:Colors.black),),
+            ),
+            TextButton(
+              child: Text('취소', style: TextStyle(color: Colors.grey),),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
 
   @override
   void initState() {
     super.initState();
-    updateunread = widget.unreadMsg;
+    appointmentController =AppointmentController(widget.socketService, widget.chatId);
+    updateUnread = widget.unreadMsg;
     asyncBefore();
   }
 
@@ -150,11 +237,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
        widget.socketService.sendMessage(widget.chatId, value);
        messageController.clear();
        setState(() {
-         updateunread++;
-
-         _messageList.add(ChatObject(content: value,
-             role: 'user',
-             createdAt: DateTime.now()));
+         _messageList.add(ChatObject(content: value, role: 'user', createdAt: DateTime.now()));
          print(_messageList);
        });
        Future.delayed(Duration(milliseconds: 100), () {
@@ -182,15 +265,49 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         ),
         body: Column(
           children: [
-            Expanded(
 
+            Obx(() {
+              if (appointmentController.isLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              return Container(
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
+                ),
+                width: double.infinity,
+                //height: (appointmentController.isAppointmentExisted)? 100 : 0,
+                child: Column(
+                  children: [
+                    if (appointmentController.isAppointmentExisted) ...[
+                      Text('약속이 존재합니다',
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
+                      Text('${appointmentController.appointmentId} : 약속 ID',
+                        style: TextStyle(fontSize: 10),),
+                      Text('${appointmentController.appointmentTime}',
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
+
+                      if (!appointmentController.isAppointmentApproved) ...[
+                        TextButton(
+
+                            onPressed: () {
+                              deleteAppointmentAlert(context);
+                            },
+                            child: Text('승낙'),
+                          style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.blue)),
+                        ),
+                      ],
+                    ]
+                  ],
+                ),
+              );
+            }),
+
+            Expanded(
               child: Obx(() {
                 if (widget.socketService.ischatFetchLoading.value && scrollLoading) {
                   return const Center(child: CircularProgressIndicator());
                 }
-      /*              WidgetsBinding.instance.addPostFrameCallback((_) {
-                  scrollToBottom();
-                });*/
+
                 return ListView.builder(
                   controller: _scrollController,
                   itemCount: _messageList.length,
@@ -240,7 +357,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                                 crossAxisAlignment: CrossAxisAlignment.end,
 
                                 children: [
-                                  if (index + updateunread == _messageList.length - 1 && isUser) ... [
+                                  if (index + updateUnread == _messageList.length - 1 && isUser) ... [
                                     Container(
                                       padding: EdgeInsets.fromLTRB(0, 0, 12, 5),
                                       child: Text(
@@ -293,7 +410,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                                   ),
                                 ),
                               ],
-
                             ],),
                         ],),
                     );
@@ -338,44 +454,9 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                   ),
                 ),
               ),
-
-              /*child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: messageController,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: '메시지를 입력하세요',
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                      ),
-                      onSubmitted: (value) {
-                        if (value.isNotEmpty) {
-                          sendText(value);
-                        }
-                      },
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (messageController.text.isNotEmpty) {
-                        sendText(messageController.text);
-                      }
-                    },
-                    child: Text('전송'),
-                  ),
-                ],),*/
             ),
-
           ],),
       ),
     );
   }
-
-
-
 }

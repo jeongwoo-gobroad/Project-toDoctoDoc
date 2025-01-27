@@ -71,17 +71,23 @@ class ChatSocketService {
     }
   }
 
-  void onUnreadMsg(Function callback) {
-    socket?.on('unread_doctor', (data) => callback());
+  void onAppointmentRefresh(Function callback) {
+    print('test1 user');
+    socket.on('appointmentRefresh', (data) =>callback(data));
   }
+
 
   void onReturnJoinedChat_user(Function callback) {
     print('test1 user');
     socket.on('returnJoinedChat_user', (data) =>callback(data));
   }
+
+  void onUnread_doctor(Function callback) {
+    socket.on('unread_doctor ', (data) =>callback(data));
+  }
+
   void onReturnJoinedChat_doctor(Function callback) {
-    print('test1 doctor');
-    print('받은 joinchat:');
+    socket.on('returnJoinedChat_doctor', (data) =>callback(data));
   }
 
   void onMsgListReceived(Function callback) {
@@ -117,5 +123,9 @@ class ChatSocketService {
     socket?.emit('sendChat_user', json.encode({'roomNo': chatId, 'message': message}));
   }
 
+  void sendAppointmentApproval(String chatId) {
+    print('chatId: $chatId');
+    socket?.emit('appointmentApproval', json.encode({'roomNo': chatId}));
+  }
 
 }

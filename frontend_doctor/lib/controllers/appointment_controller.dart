@@ -5,10 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc_for_doc/controllers/auth/auth_interceptor.dart';
 
-class AppointmentController extends GetxController {
-  AppointmentController({required this.userId, required this.chatId});
+import '../socket_service/chat_socket_service.dart';
 
-  var isLoading = true.obs;
+class AppointmentController extends GetxController {
+  AppointmentController({required this.userId, required this.chatId, required this.socketService});
+
+final ChatSocketService socketService;
+
+var isLoading = true.obs;
 
   DateTime initialDay = DateTime.now();
   TimeOfDay initialTime = TimeOfDay.now();
@@ -22,6 +26,7 @@ class AppointmentController extends GetxController {
 
   bool isAppointmentExisted = false;
   bool isAppointmentDone = false;
+  bool isAppointmentApproved = false;
 
   Future<bool> getAppointmentInformation(String appId) async {
     isAppointmentExisted = true;
@@ -49,6 +54,8 @@ class AppointmentController extends GetxController {
         print(data);
 
         appointmentId = data['content']['_id'];
+
+        isAppointmentApproved = data['content']['isAppointmentApproved'];
 
         print(appointmentId);
         appointmentTime = DateTime.parse(data['content']['appointmentTime']).toLocal();
@@ -105,12 +112,15 @@ class AppointmentController extends GetxController {
         appointmentId = data['content']['_id'];
         print(appointmentId);
 
+        socketService.sendAppointmentRefresh(chatId);
+
         appointmentTime = selectedDay;
         initialDay  = DateTime(selectedDay.year,selectedDay.month,selectedDay.day);
         initialTime = TimeOfDay(hour: selectedDay.hour, minute: selectedDay.minute);
 
         isAppointmentDone = false;
         isAppointmentExisted = true;
+        isAppointmentApproved = false;
 
         isLoading.value = false;
         return true;
@@ -156,6 +166,10 @@ class AppointmentController extends GetxController {
         appointmentId = '';
         isAppointmentDone = false;
         isAppointmentExisted = false;
+        isAppointmentApproved = false;
+
+        socketService.sendAppointmentRefresh(chatId);
+
         isLoading.value = false;
         return true;
 
@@ -201,7 +215,11 @@ class AppointmentController extends GetxController {
         initialDay  = DateTime(appointmentTime.year,appointmentTime.month,appointmentTime.day);
         initialTime = TimeOfDay(hour: appointmentTime.hour, minute: appointmentTime.minute);
 
+        isAppointmentApproved = false;
         isAppointmentDone = false;
+
+
+        socketService.sendAppointmentRefresh(chatId);
         isLoading.value = false;
         return true;
 
