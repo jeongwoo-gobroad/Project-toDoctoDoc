@@ -127,8 +127,8 @@ class makeChatList extends StatelessWidget {
                               padding: EdgeInsets.all(12),
                               decoration: BoxDecoration(
                                 color: isUser
-                                    ? Color.fromRGBO(225, 234, 205, 100)
-                                    : Color.fromRGBO(244, 242, 248, 20),
+                                    ? Color.fromARGB(255, 225, 234, 205)
+                                    : Color.fromARGB(100, 244, 242, 248),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
