@@ -44,8 +44,6 @@ Future<void> firebaseStarter() async {
           // description
           importance: Importance.high,
         );
-
-
         await flutterLocalNotificationsPlugin
             .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()

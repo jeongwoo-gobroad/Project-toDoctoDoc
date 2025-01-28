@@ -13,7 +13,7 @@ import 'firebase/firebase_handler.dart';
 void main() async{
   await initializeDateFormatting();
 
-  clearSecureStorageOnReinstall();
+  //clearSecureStorageOnReinstall();
   firebaseStarter();
 
 

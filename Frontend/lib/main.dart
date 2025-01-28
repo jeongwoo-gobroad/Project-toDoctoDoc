@@ -18,7 +18,7 @@ void main() async{
   await initializeDateFormatting();
   WidgetsFlutterBinding.ensureInitialized();
 
-  clearSecureStorageOnReinstall();
+  //clearSecureStorageOnReinstall();
   firebaseStarter();
 
 //  AuthRepository.initialize(

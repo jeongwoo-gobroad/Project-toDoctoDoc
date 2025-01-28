@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc_for_doc/controllers/appointment_controller.dart';
+import 'package:to_doc_for_doc/screen/chat/dm_chat_list_maker.dart';
+import 'package:to_doc_for_doc/screen/chat/upper_appointment_information.dart';
 
 import '../../model/chat_object.dart';
 import '../../socket_service/chat_socket_service.dart';
@@ -35,23 +37,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   late String appointmentId;
 
   List<ChatObject> _messageList = [];
-
-  String formatTime(DateTime? dateTime) {
-    try {
-      return DateFormat('aa hh:mm', 'ko_KR').format(dateTime!);
-    } catch (e) {
-      return '--:--';
-    }
-  }
-
-  String formatDate(DateTime? dateTime) {
-    try {
-      return DateFormat('yyyy년 M월 d일 EEEE', 'ko_KR').format(dateTime!);
-    } catch (e) {
-      print(e);
-      return '날짜 정보 없음';
-    }
-  }
 
   void asyncBefore() async {
     scrollLoading = true;
@@ -172,23 +157,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final messageController = TextEditingController();
 
-    bool shouldShowTime(int index) {
-      if (index == _messageList.length - 1) return true;
-
-      final currentMsg = _messageList[index];
-      final nextMsg = _messageList[index + 1];
-
-      String currentTime = DateFormat('d HH mm').format(currentMsg.createdAt!);
-      String nextTime = DateFormat('d HH mm').format(nextMsg.createdAt!);
-
-      return currentMsg.role != nextMsg.role || currentTime != nextTime;
-    }
-    bool shouldShowDate(int index) {
-      if (index == 0) {
-        return true;
-      }
-      return _messageList[index].createdAt?.day != _messageList[index-1].createdAt?.day;
-    }
 
     void sendText(String value) {
       widget.socketService.sendMessage(widget.chatId, value);
@@ -224,159 +192,20 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         ),
         body: Column(
           children: [
-
             Obx(() {
               if (appointmentController.isLoading.value) {
                 return const Center(child: CircularProgressIndicator());
               }
-
-              return Container(
-                decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
-                ),
-                width: double.infinity,
-                height: (appointmentController.isAppointmentExisted)? 80 : 0,
-                child: Column(
-                  children: [
-                    if (appointmentController.isAppointmentExisted) ...[
-                      Text('약속이 존재합니다',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
-                      Text('${appointmentController.appointmentId} : 약속 ID',
-                        style: TextStyle(fontSize: 10),),
-                      Text('${appointmentController.appointmentTime}',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
-
-                      if (!appointmentController.isAppointmentApproved) ...[
-                        Text('상대방이 아직 승낙하지 않았습니다.',
-                          style: TextStyle(fontSize: 10, color: Colors.grey),),
-                      ]
-                      else ... [
-                        Text('상대방이 약속을 승낙했습니다.',
-                          style: TextStyle(fontSize: 10, color: Colors.grey),),
-                      ],
-                    ]
-                  ],
-                ),
-              );
-
+              return upperAppointmentInformation(appointmentController: appointmentController);
             }),
 
-            Expanded(
-              child: Obx(() {
-                if (widget.socketService.ischatFetchLoading.value && scrollLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                return ListView.builder(
-                  controller: _scrollController,
-                  itemCount: _messageList.length,
-                  itemBuilder: (context, index) {
-                    final isDoctor = _messageList[index].role == 'doctor';
-                    final showTime = shouldShowTime(index);
-                    final showDate = shouldShowDate(index);
+            Obx(() {
+              if (widget.socketService.ischatFetchLoading.value && scrollLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              return makeChatList(scrollController: _scrollController, messageList: _messageList, updateUnread: updateUnread,);
 
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 4.0,
-                        horizontal: 10.0,
-                      ),
-                      child: Column(
-                        children: [
-                          if (showDate) ... [
-                            Container(
-                              padding: EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[100],
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: Text(
-                                formatDate(_messageList[index].createdAt),
-                                style: TextStyle(fontSize: 13),
-                              ),
-                            ),
-                          ],
-
-                          Row(
-                            mainAxisAlignment: isDoctor
-                                ? MainAxisAlignment.end
-                                : MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-//상대방 표시시
-                              if (!isDoctor) ...[
-                                CircleAvatar(
-                                  radius: 15,
-                                  backgroundColor: Colors.grey[300],
-                                  child: Icon(Icons.person, color: Colors.grey[600]),
-                                ),
-                                SizedBox(width: 8),
-                              ],
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-
-                                children: [
-                                  if (index + updateUnread == _messageList.length - 1 &&
-                                      isDoctor) ... [
-                                    Container(
-                                      padding: EdgeInsets.fromLTRB(0, 0, 12, 5),
-                                      child: Text(
-                                        '여기까지 읽음',
-                                        style: TextStyle(fontSize: 10),
-                                      ),
-                                    ),
-                                  ],
-
-                                  if (isDoctor && showTime)...[
-                                    Container(
-                                      padding: EdgeInsets.fromLTRB(12, 0, 12, 5),
-                                      child: Text(
-                                        formatTime(_messageList[index].createdAt),
-                                        style: TextStyle(fontSize: 10),
-                                      ),
-                                    ),
-                                  ]
-                                ],),
-
-
-                              Flexible(
-                                child: Column(
-                                  crossAxisAlignment: isDoctor
-                                      ? CrossAxisAlignment.end
-                                      : CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.all(12),
-                                      decoration: BoxDecoration(
-                                        color: isDoctor
-                                            ? Color.fromARGB(255, 225, 234, 205)
-                                            : Color.fromARGB(100, 244, 242, 248),
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Text(
-                                        _messageList[index].content,
-                                        style: TextStyle(fontSize: 15),
-                                      ),
-                                    ),
-                                  ],),
-                              ),
-
-                              if (!isDoctor && showTime) ...[
-                                Container(
-                                  padding: EdgeInsets.all(12),
-                                  child: Text(
-                                    formatTime(_messageList[index].createdAt),
-                                    style: TextStyle(fontSize: 10),
-                                  ),
-                                ),
-                              ],
-
-                            ],),
-                        ],),
-                    );
-                  },
-                );
-              }),
-            ),
+            }),
 
             Padding(
               padding: const EdgeInsets.all(8.0),

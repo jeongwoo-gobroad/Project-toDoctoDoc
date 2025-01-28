@@ -10,9 +10,8 @@ import '../socket_service/chat_socket_service.dart';
 class AppointmentController extends GetxController {
   AppointmentController({required this.userId, required this.chatId, required this.socketService});
 
-final ChatSocketService socketService;
-
-var isLoading = true.obs;
+  final ChatSocketService socketService;
+  var isLoading = true.obs;
 
   DateTime initialDay = DateTime.now();
   TimeOfDay initialTime = TimeOfDay.now();
@@ -54,10 +53,7 @@ var isLoading = true.obs;
         print(data);
 
         appointmentId = data['content']['_id'];
-
         isAppointmentApproved = data['content']['isAppointmentApproved'];
-
-        print(appointmentId);
         appointmentTime = DateTime.parse(data['content']['appointmentTime']).toLocal();
 
         print('APPOINTMENT ID-------------- $appointmentId');
@@ -128,7 +124,6 @@ var isLoading = true.obs;
       } else {
         return false;
       }
-
     } catch (error) {
       print('An error occurred: $error');
       return false;
@@ -218,21 +213,16 @@ var isLoading = true.obs;
         isAppointmentApproved = false;
         isAppointmentDone = false;
 
-
         socketService.sendAppointmentRefresh(chatId);
         isLoading.value = false;
         return true;
 
       } else {
-
         return false;
       }
-
     } catch (error) {
       print('An error occurred: $error');
       return false;
     }
   }
-
-
 }

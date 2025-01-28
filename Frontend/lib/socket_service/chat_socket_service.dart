@@ -49,60 +49,32 @@ class ChatSocketService {
         print(data);
       });
 
-      socket?.on('returnChatList', (data) {
-        print('받은 채팅 리스트:');
-
-        print(data);
-        //chatList = json.decode(data);
-
-        //print('returnchatList');
-        //print(chatList);
-      });
-
       socket?.on('returnJoinedChat_doctor', (data) {
         print('test2 doctor');
         print(data);
       });
-
-
     } catch (e) {
       print('Socket 초기화 에러: $e');
       Get.snackbar('Error', '연결 중 오류가 발생했습니다.');
     }
   }
 
-  void onAppointmentRefresh(Function callback) {
-    print('test1 user');
-    socket.on('appointmentRefresh', (data) =>callback(data));
+  // 첫 입장
+  void onReturnJoinedChat_user(Function callback) {
+    socket.on('returnJoinedChat_user', (data) =>callback(data));
   }
 
-
-  void onReturnJoinedChat_user(Function callback) {
-    print('test1 user');
-    socket.on('returnJoinedChat_user', (data) =>callback(data));
+  // 의사 복귀
+  void onReturnJoinedChat_doctor(Function callback) {
+    socket.on('returnJoinedChat_doctor', (data) =>callback(data));
   }
 
   void onUnread_doctor(Function callback) {
     socket.on('unread_doctor ', (data) =>callback(data));
   }
 
-  void onReturnJoinedChat_doctor(Function callback) {
-    socket.on('returnJoinedChat_doctor', (data) =>callback(data));
-  }
 
-  void onMsgListReceived(Function callback) {
-    socket.on('chatList', (data) => callback(data));
-  }
-
-  void onUserReceived(Function callback) {
-    socket.on('recvChat_user', (data) => callback(data));
-    print('유저 메세지 수신');
-  }
-  void onDoctorReceivec(Function callback) {
-    socket.on('recvChat_doctor', (data) =>callback(data));
-    print('의사 메시지 수신:');
-  }
-
+  // 입 / 퇴장
   void joinChat(String chatId) {
     ischatFetchLoading.value = true;
     print('채팅방 입장 요청 보냄');
@@ -110,19 +82,25 @@ class ChatSocketService {
     socket.emit('joinChat_user', chatId);
     ischatFetchLoading.value = false;
   }
-
   Future<void> leaveChat(String chatId) async {
     print('채팅방 퇴장 요청 보냄');
     socket.emit('leaveChat_user', chatId);
   }
 
-  //유저측 전송
+  //유저측 송 / 수신
   void sendMessage(String chatId, String message) {
     print('chatId: $chatId');
     print('메시지 전송: $message');
     socket?.emit('sendChat_user', json.encode({'roomNo': chatId, 'message': message}));
   }
+  void onUserReceived(Function callback) {
+    socket.on('recvChat_user', (data) => callback(data));
+  }
 
+  // 약속 관련
+  void onAppointmentRefresh(Function callback) {
+    socket.on('appointmentRefresh', (data) =>callback(data));
+  }
   void sendAppointmentApproval(String chatId) {
     print('chatId: $chatId');
     socket?.emit('appointmentApproval', json.encode({'roomNo': chatId}));
