@@ -70,6 +70,10 @@ const DoctorSchema = new mongoose.Schema({
     myPsyID: {
         type: String,
     },
+    isPremiumPsy: {
+        type: Boolean,
+        default: false
+    },
     isCounselor: {
         type: Boolean,
         default: false

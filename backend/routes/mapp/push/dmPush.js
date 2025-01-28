@@ -14,7 +14,7 @@ const getMessageContext = (token, info) => {
         android:{
             priority: "high",
             notification: {
-                channelId: null //firebase Channel ID(android_channel_id)
+                channelId: "important_channel" //firebase Channel ID(android_channel_id) 
             }
         },
         apns: {
