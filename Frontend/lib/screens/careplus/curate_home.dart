@@ -6,6 +6,7 @@ import 'package:to_doc/controllers/userInfo_controller.dart';
 import 'package:to_doc/navigator/side_menu.dart';
 import 'package:to_doc/screens/careplus/curate_feed.dart';
 
+@deprecated
 class CurationHomeScreen extends StatelessWidget {
 
 

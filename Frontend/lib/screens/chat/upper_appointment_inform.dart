@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-import '../../controllers/careplus/appointment_controller.dart';
+import '../../controllers/careplus/chat_appointment_controller.dart';
 
 class upperAppointmentInform extends StatelessWidget {
   const upperAppointmentInform({super.key, required this.appointmentController});
 
-  final AppointmentController appointmentController;
+  final ChatAppointmentController appointmentController;
 
   Future<void> sendAppointmentApprovalAlert(BuildContext context) async {
     return showDialog<void>(
@@ -46,34 +47,47 @@ class upperAppointmentInform extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
-      ),
-      width: double.infinity,
-      //height: (appointmentController.isAppointmentExisted)? 100 : 0,
-      child: Column(
+    return Column(
         children: [
           if (appointmentController.isAppointmentExisted) ...[
-            Text('약속이 존재합니다',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
-            Text('${appointmentController.appointmentId} : 약속 ID',
-              style: TextStyle(fontSize: 10),),
-            Text('${appointmentController.appointmentTime}',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
-
-            if (!appointmentController.isAppointmentApproved) ...[
-              TextButton(
-                onPressed: () {
-                  sendAppointmentApprovalAlert(context);
-                },
-                style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.blue)),
-                child: Text('승낙'),
+            Container(
+              padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
+                //color: Color.fromARGB(255, 244, 242, 248),
+                ),
+              width: double.infinity,
+            //height: (appointmentController.isAppointmentExisted)? 100 : 0,
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.calendar_month),
+                          Text('이 의사와 약속이 있어요', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                        ],
+                      ),
+                      Text(DateFormat.yMMMEd('ko_KR').add_jm().format(appointmentController.appointment['appointmentTime']),
+                        style: TextStyle(fontSize: 15, ),),
+                    ],
+                  ),
+                  //Text('${appointmentController.appointmentId} : 약속 ID', style: TextStyle(fontSize: 10),),
+                  if (!appointmentController.isAppointmentApproved) ...[
+                    TextButton(
+                      onPressed: () {
+                        sendAppointmentApprovalAlert(context);
+                      },
+                      style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.blue)),
+                      child: Text('승낙'),
+                    ),
+                  ],
+                ],
               ),
-            ],
+            ),
           ]
         ],
-      ),
     );
   }
 }

@@ -47,6 +47,7 @@ class CustomInterceptor extends Interceptor {
     print('ERror');
 
     print(error.response?.statusCode);
+    print(error.message);
 
     // 인증 오류가 발생했을 경우: AccessToken의 만료
     if (error.response?.statusCode == 419) {

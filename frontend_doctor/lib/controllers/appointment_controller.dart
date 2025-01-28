@@ -21,16 +21,17 @@ class AppointmentController extends GetxController {
   final String chatId;
   final String userId;
 
-  late DateTime appointmentTime;
+  var temptime;
+  late DateTime appointmentTime = DateTime(0);
 
   bool isAppointmentExisted = false;
   bool isAppointmentDone = false;
   bool isAppointmentApproved = false;
 
   Future<bool> getAppointmentInformation(String appId) async {
-    isAppointmentExisted = true;
     isLoading.value = true;
 
+    isAppointmentExisted = true;
     Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
 
@@ -53,8 +54,12 @@ class AppointmentController extends GetxController {
         print(data);
 
         appointmentId = data['content']['_id'];
-        isAppointmentApproved = data['content']['isAppointmentApproved'];
+
+        temptime = data['content']['appointmentTime'];
+        print(temptime);
         appointmentTime = DateTime.parse(data['content']['appointmentTime']).toLocal();
+
+        isAppointmentApproved = data['content']['isAppointmentApproved'];
 
         print('APPOINTMENT ID-------------- $appointmentId');
         print('USER ID--------------------- $userId');
@@ -62,21 +67,17 @@ class AppointmentController extends GetxController {
 
         initialDay  = DateTime(appointmentTime.year,appointmentTime.month,appointmentTime.day);
         initialTime = TimeOfDay(hour: appointmentTime.hour, minute: appointmentTime.minute);
-
-        isLoading.value = false;
-        return true;
-      } else {
-        return false;
       }
     } catch (error) {
       print('An error occurred: $error');
       return false;
     }
+    isLoading.value = false;
+    return true;
   }
 
-
   Future<bool> makeAppointment(DateTime selectedDay) async{
-    isLoading.value = true;
+    isLoading = true.obs;
 
     Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());

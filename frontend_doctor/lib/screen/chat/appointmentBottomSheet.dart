@@ -10,8 +10,10 @@ class AppointmentBottomSheet extends StatefulWidget {
 
   AppointmentBottomSheet({
     required this.userName,
-    required this.appointmentController,
+    required this.appointmentController, this.alterParent,
   });
+
+  final alterParent;
 
   @override
   State<AppointmentBottomSheet> createState() => _appointmentBottomSheet();
@@ -65,14 +67,17 @@ class _appointmentBottomSheet extends State<AppointmentBottomSheet> with Widgets
           ),
           actions: [
             TextButton(
-              onPressed: () async {
+              onPressed: () {
                 final finalTime = addDayTime(selectedDay, selectedTime);
                 if ((!widget.appointmentController.isAppointmentExisted) || widget.appointmentController.isAppointmentDone) {
-                  await widget.appointmentController.makeAppointment(finalTime);
+                  widget.appointmentController.makeAppointment(finalTime);
                 }
                 else {
-                  await widget.appointmentController.editAppointment(finalTime);
+                  widget.appointmentController.editAppointment(finalTime);
                 }
+
+                widget.alterParent();
+
 
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();

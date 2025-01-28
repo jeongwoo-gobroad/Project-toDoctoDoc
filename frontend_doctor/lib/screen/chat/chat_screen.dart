@@ -29,7 +29,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   final ScrollController _scrollController = ScrollController();
-  late AppointmentController appointmentController;
+  late AppointmentController appointmentController = AppointmentController(userId: widget.userId, chatId: widget.chatId, socketService: widget.socketService);
 
   bool scrollLoading = true;
 
@@ -38,48 +38,43 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
   List<ChatObject> _messageList = [];
 
+  alterParent() {
+    setState(() {
+
+    });
+  }
+
   void asyncBefore() async {
-    scrollLoading = true;
     widget.socketService.onReturnJoinedChat_doctor((data) {
       print('APPOINTMENT IS?');
 
       if (data['chat']['appointment'] != null) {
-
         appointmentId = data['chat']['appointment'];
         print(appointmentId);
         appointmentController.isAppointmentExisted = true;
-        appointmentController.getAppointmentInformation(appointmentId);
 
-        if (data['chat']['hasAppointmentDone']) {
-          appointmentController.isAppointmentDone = true;
+        if (this.mounted) {
+          setState(() {
+            appointmentController.getAppointmentInformation(appointmentId);
+          });
         }
-
-      } else {
+        appointmentController.isAppointmentDone = data['chat']['hasAppointmentDone'];
+      }
+      else {
         appointmentController.isLoading.value = false;
       }
 
       print('chat List received');
       print(data);
 
-      if (data['unread'] == -1) {
-        updateUnread = 0;
-      } else {
-        updateUnread = data['unread'];
-      }
+      updateUnread = (data['unread'] == -1) ? 0 : data['unread'];
 
       DateTime? chatTime;
       var chatList = data['chat'];
       for (var chat in chatList['chatList']) {
-        if (chat['createdAt'] == null) {
-          chatTime = null;
-        }
-        else {
-          chatTime = DateTime.parse(chat['createdAt']).toLocal();
-        }
+        chatTime = (chat['createdAt'] == null)? null : DateTime.parse(chat['createdAt']).toLocal();
         _messageList.add(ChatObject(content: chat['message'], role: chat['role'] == 'doctor' ? 'doctor' : 'user', createdAt:chatTime));
       }
-
-      print(_messageList.length);
 
       if (this.mounted) {
         setState(() {
@@ -90,7 +85,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
           });
         });
       }
-      scrollLoading = false;
     });
 
     WidgetsBinding.instance.addObserver(this);
@@ -102,9 +96,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
         if (this.mounted) {
           setState(() {
-            _messageList.add(ChatObject(content: data['message'],
-                role: 'user',
-                createdAt: DateTime.now()));
+            _messageList.add(ChatObject(content: data['message'], role: 'user', createdAt: DateTime.now()));
 
             Future.delayed(Duration(milliseconds: 100), () {
               _scrollController.animateTo(
@@ -120,9 +112,11 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.socketService.onAppointmentApproval((data) {
-        setState(() {
-          appointmentController.isAppointmentApproved = true;
-        });
+        if (this.mounted) {
+          setState(() {
+            appointmentController.isAppointmentApproved = true;
+          });
+        }
       });
     });
 
@@ -147,17 +141,22 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    setState(() {
+      scrollLoading = true;
+      asyncBefore();
+    });
+
     super.initState();
-    appointmentController = AppointmentController(userId: widget.userId, chatId: widget.chatId, socketService: widget.socketService);
     updateUnread = widget.unreadMsg;
-    asyncBefore();
+
+    setState(() {
+      scrollLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final messageController = TextEditingController();
-
-
     void sendText(String value) {
       widget.socketService.sendMessage(widget.chatId, value);
       messageController.clear();
@@ -181,7 +180,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         if (widget.socketService.ischatFetchLoading.value) {
           return;
         }
-
         await widget.socketService.leaveChat(widget.chatId);
       },
       child: Scaffold(
@@ -196,15 +194,15 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
               if (appointmentController.isLoading.value) {
                 return const Center(child: CircularProgressIndicator());
               }
-              return upperAppointmentInformation(appointmentController: appointmentController);
+              return UpperAppointmentInformation(appointmentController: appointmentController);
             }),
+
 
             Obx(() {
               if (widget.socketService.ischatFetchLoading.value && scrollLoading) {
                 return const Center(child: CircularProgressIndicator());
               }
               return makeChatList(scrollController: _scrollController, messageList: _messageList, updateUnread: updateUnread,);
-
             }),
 
             Padding(
@@ -223,7 +221,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Color.fromARGB(255, 244, 242, 248),
-
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(40),
                       borderSide: BorderSide(width: 0, style: BorderStyle.none)
@@ -233,12 +230,10 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                     vertical: 10,
                   ),
                   hintText: '메시지를 입력하세요',
-
                   prefixIcon: IconButton(
                       onPressed: () {
-                        setState(() {
-                          setAppointmentDay();
-                        });
+                        setAppointmentDay();
+                        setState(() {});
                       },
                       icon: Icon(Icons.edit_calendar_outlined),
                   ),
@@ -254,12 +249,10 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                 ),
               ),
             ),
-
-          ],),
+        ],),
       ),
     );
   }
-
 
   setAppointmentDay() {
     showModalBottomSheet(
@@ -270,6 +263,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         return AppointmentBottomSheet(
           userName: widget.userName,
           appointmentController: appointmentController,
+          alterParent : alterParent,
         );
       },
     );

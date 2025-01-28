@@ -15,6 +15,8 @@ class CurateListController extends GetxController {
 
   CurateListController({required this.dio});
 
+  var isLoading = true.obs;
+
   RxBool isPremium = false.obs;
   var CurateList = <Map<String, dynamic>>[].obs;
   var chatList = <Map<String, dynamic>>[].obs;
@@ -39,20 +41,7 @@ class CurateListController extends GetxController {
   }
 
   Future<void> getList() async {
-    //final prefs = await SharedPreferences.getInstance();
-    //final token = prefs.getString('jwt_token');
-
-    /*
-    if (token == null) {
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return;
-    }
-
-     */
-
-    // try {
-    //isLoading.value = true;
+    isLoading.value = true;
     final response = await dio.get(
       'http://jeongwoo-kim-web.myds.me:3000/mapp/careplus/list',
       options: Options(
@@ -62,16 +51,6 @@ class CurateListController extends GetxController {
         },
       ),
     );
-
-    /*
-    final response = await http.get(
-      Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/careplus/list'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
-     */
 
     if (response.statusCode == 200) {
       final data = json.decode(response.data);
@@ -101,21 +80,12 @@ class CurateListController extends GetxController {
         print(CurateList.value);
       }
       //print(content);
+
+      isLoading.value = false;
     }
   }
 
   Future<void> getPost(String id) async {
-    //final prefs = await SharedPreferences.getInstance();
-    //final token = prefs.getString('jwt_token');
-
-    /*
-    if (token == null) {
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return;
-    }
-     */
-
     // try {
     //isLoading.value = true;
     final response = await dio.get(
@@ -127,15 +97,6 @@ class CurateListController extends GetxController {
         },
       ),
     );
-/*
-    final response = await http.get(
-      Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/careplus/post/$id'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
-*/
 
     if (response.statusCode == 200) {
       final data = json.decode(response.data);

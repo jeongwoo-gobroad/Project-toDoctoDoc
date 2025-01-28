@@ -1,11 +1,8 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:to_doc/chat_object.dart';
-import 'package:to_doc/controllers/careplus/appointment_controller.dart';
-import 'package:to_doc/controllers/careplus/chat_controller.dart';
+import 'package:to_doc/controllers/careplus/chat_appointment_controller.dart';
 import 'package:to_doc/screens/chat/dm_chat_list_maker.dart';
 import 'package:to_doc/screens/chat/upper_appointment_inform.dart';
 import 'package:to_doc/socket_service/chat_socket_service.dart';
@@ -22,7 +19,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
-  late AppointmentController appointmentController;
+  late ChatAppointmentController chatAppointmentController;
   final ScrollController _scrollController = ScrollController();
 
   bool scrollLoading = true;
@@ -39,15 +36,15 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       if (data['chat']['appointment'] != null) {
         var appointmentId = data['chat']['appointment'];
         print(appointmentId);
-        appointmentController.isAppointmentExisted = true;
+        chatAppointmentController.isAppointmentExisted = true;
         if (this.mounted) {
           setState(() {
-            appointmentController.getAppointmentInformation(widget.chatId);
+            chatAppointmentController.getAppointmentInformation(widget.chatId);
           });
         }
-        appointmentController.isAppointmentDone = data['chat']['hasAppointmentDone'];
+        chatAppointmentController.isAppointmentDone = data['chat']['hasAppointmentDone'];
       } else {
-        appointmentController.isLoading.value = false;
+        chatAppointmentController.isLoading.value = false;
       }
 
       print('chat List received');
@@ -108,7 +105,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         print('on APPOINTMENT SET');
         if (this.mounted) {
           setState(() {
-            appointmentController.getAppointmentInformation(widget.chatId);
+            chatAppointmentController.getAppointmentInformation(widget.chatId);
           });
         }
       });
@@ -140,7 +137,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    appointmentController =AppointmentController(widget.socketService, widget.chatId);
+    chatAppointmentController = ChatAppointmentController(widget.socketService, widget.chatId);
     updateUnread = widget.unreadMsg;
     asyncBefore();
   }
@@ -184,10 +181,10 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
             // 약속 알람 //
             Obx(() {
-              if (appointmentController.isLoading.value) {
+              if (chatAppointmentController.isLoading.value) {
                 return const Center(child: CircularProgressIndicator());
               }
-              return upperAppointmentInform(appointmentController: appointmentController);
+              return upperAppointmentInform(appointmentController: chatAppointmentController);
             }),
 
             // 채팅 리스트 //
@@ -209,10 +206,9 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                     sendText(value);
                   }
                 },
-
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Color.fromRGBO(244, 242, 248, 20),
+                  fillColor: Color.fromARGB(255, 244, 242, 248),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(40),
                       borderSide: BorderSide(width: 0, style: BorderStyle.none)
