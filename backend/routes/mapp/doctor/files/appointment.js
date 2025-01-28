@@ -45,7 +45,7 @@ router.get(["/get/:appid"],
     checkIfLoggedIn,
     isDoctorThenProceed,
     async (req, res, next) => {
-        const doctor = await getTokenInformation(req, res);
+        // const doctor = await getTokenInformation(req, res);
 
         // console.log("Appointment get: ", req.params.appid);
 

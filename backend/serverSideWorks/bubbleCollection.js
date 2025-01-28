@@ -1,13 +1,14 @@
 const Post = require("../models/Post")
 const removeSpacesAndHashes = require("../middleware/usefulFunctions").removeSpacesAndHashes;
 
-const bubbleMap = new Map();
+const tagCountBubbleMap = new Map();
 
 const bubbleCollection = async () => {
     const allItems = await Post.find();
-    let maxVal = 0;
+    let maxTagCountVal = 0;
+    let maxViewCountVal = 0;
     
-    bubbleMap.clear();
+    tagCountBubbleMap.clear();
 
     allItems.forEach((post) => {
         const tagLine = removeSpacesAndHashes(post.tag);
@@ -15,23 +16,33 @@ const bubbleCollection = async () => {
 
         tags.forEach((tag) => {
             if (tag.length > 0) {
-                if (bubbleMap.has(tag)) {
-                    let count = bubbleMap.get(tag);
-                    count++;
-                    bubbleMap.set(tag, count);
-                    if (count > maxVal) {
-                        maxVal = count;
+                if (tagCountBubbleMap.has(tag)) {
+                    const context = tagCountBubbleMap.get(tag);
+                    context.tagCount++;
+                    context.viewCount += post.views;
+                    tagCountBubbleMap.set(tag, context);
+                    if (context.tagCount > maxTagCountVal) {
+                        maxTagCountVal = context.tagCount;
+                    }
+                    if (context.viewCount > maxViewCountVal) {
+                        maxViewCountVal = context.viewCount;
                     }
                 } else {
-                    bubbleMap.set(tag, 1);
+                    tagCountBubbleMap.set(tag, {
+                        tagCount: 1,
+                        viewCount: post.views
+                    });
                 }
             }
         });
     });
 
-    bubbleMap.forEach((value, key, map) => {
-        bubbleMap.set(key, value / maxVal);
+    tagCountBubbleMap.forEach((value, key, map) => {
+        tagCountBubbleMap.set(key, {
+            tagCount: value.tagCount / maxTagCountVal,
+            viewCount: value.viewCount / maxViewCountVal
+        });
     });
 };
 
-module.exports = {bubbleMap, bubbleCollection};
+module.exports = {tagCountBubbleMap, bubbleCollection};

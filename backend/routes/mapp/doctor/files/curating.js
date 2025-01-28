@@ -105,7 +105,7 @@ router.post(["/comment/:id"],
         try {
             const user = await getTokenInformation(req, res);
             const {comment} = req.body;
-            const curate = await Curate.findById(req.params.id).populate('comments', 'doctor').populate('user', 'pushTokens');
+            const curate = await Curate.findById(req.params.id).populate('comments', 'doctor').populate('user', 'deviceIds');
 
             if (curate && comment.length > 0) {
                 for (const c of curate.comments) {

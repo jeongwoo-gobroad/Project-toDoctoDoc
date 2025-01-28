@@ -13,6 +13,7 @@ const mongoose = require("mongoose");
 const returnLongLatOfAddress = require("../../../middleware/getcoordinate");
 const bcrypt = require("bcrypt");
 const userEmitter = require("../../../events/eventDrivenLists");
+const { getCache, setCacheForNDaysAsync } = require("../../../middleware/redisCaching");
 
 const User = mongoose.model("User", UserSchema);
 
@@ -115,9 +116,22 @@ router.get(["/view/:id"],
             const post = await Post.findById(req.params.id).populate("user");
 
             let isOwner = false;
+            let viewed = JSON.parse(await getCache("User: " + user.userid));
 
             if (post.user._id == user.userid) {
                 isOwner = true;
+            }
+
+             /* logic for view counting */
+            if (!(viewed) || !viewed.includes(post._id.toString())) {
+                if (!viewed) {
+                    viewed = [];
+                }
+                viewed.push(post._id);
+                setCacheForNDaysAsync("User: " + user.userid, viewed, 1);
+                // console.log("View++ for postid", post._id, "view:", post.views + 1);
+                post.views++;
+                await post.save();
             }
 
             const pageContent = {
@@ -130,6 +144,7 @@ router.get(["/view/:id"],
                 tag: post.tag,
                 usernick: post.user.usernick,
                 userid: post.user._id,
+                views: post.views,
                 isOwner: isOwner,
             };
 
@@ -137,6 +152,8 @@ router.get(["/view/:id"],
 
             return;
         } catch (error) {
+            console.error(error, "errorAtUserPostView");
+
             res.status(401).json(returnResponse(true, "viewerror", "viewerror"));
 
             return;
