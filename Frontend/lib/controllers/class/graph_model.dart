@@ -1,79 +1,84 @@
+// Tag information model
 import 'dart:convert';
+class TagInfo {
+  final double tagCount;
+  final double viewCount;
 
-class TagGraphData {
-  final Map<String, int> tagList;
-  final List<List<String>> tagGraph;
-
-  TagGraphData({
-    required this.tagList,
-    required this.tagGraph,
+  TagInfo({
+    required this.tagCount,
+    required this.viewCount,
   });
 
-  factory TagGraphData.fromJson(Map<String, dynamic> json) {
-    
-    final content = json['content'] as Map<String, dynamic>;
-    
-    
-    Map<String, int> tagList;
-    final tagListRaw = content['_tagList'];
-    if (tagListRaw is String) {
-      
-      tagList = Map<String, int>.from(
-        jsonDecode(tagListRaw) as Map<String, dynamic>
-      );
-    } else {
-      
-      tagList = Map<String, int>.from(tagListRaw as Map<String, dynamic>);
-    }
-
-    
-    List<List<String>> tagGraph;
-    final tagGraphRaw = content['_tagGraph'];
-    if (tagGraphRaw is String) {
-      
-      final decoded = jsonDecode(tagGraphRaw) as List<dynamic>;
-      tagGraph = decoded
-          .map((pair) => (pair as List<dynamic>).map((e) => e as String).toList())
-          .toList();
-    } else {
-      
-      tagGraph = (tagGraphRaw as List<dynamic>)
-          .map((pair) => (pair as List<dynamic>).map((e) => e as String).toList())
-          .toList();
-    }
-
-    return TagGraphData(
-      tagList: tagList,
-      tagGraph: tagGraph,
+  factory TagInfo.fromJson(Map<String, dynamic> json) {
+    return TagInfo(
+      tagCount: (json['tagCount'] as num).toDouble(),
+      viewCount: (json['viewCount'] as num).toDouble(),
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'error': false,
-      'result': 'graphBoardData',
-      'content': {
-        '_tagList': jsonEncode(tagList),
-        '_tagGraph': jsonEncode(tagGraph),
-      }
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    'tagCount': tagCount,
+    'viewCount': viewCount,
+  };
+}
 
-  
-  int getTagFrequency(String tag) {
-    return tagList[tag] ?? 0;
-  }
+class Content {
+  final Map<String, TagInfo> bubbleList;
 
-  
-  List<String> getConnectedTags(String tag) {
-    List<String> connected = [];
-    for (var pair in tagGraph) {
-      if (pair[0] == tag) {
-        connected.add(pair[1]);
-      } else if (pair[1] == tag) {
-        connected.add(pair[0]);
-      }
+  Content({
+    required this.bubbleList,
+  });
+
+  factory Content.fromJson(Map<String, dynamic> json) {
+    var bubbleData = json['_bubbleList'];
+    if (bubbleData is String) {
+      bubbleData = jsonDecode(bubbleData);
     }
-    return connected;
+    
+    final Map<String, TagInfo> bubbleList = {};
+    
+    if (bubbleData is Map<String, dynamic>) {
+      bubbleData.forEach((key, value) {
+        if (value is Map<String, dynamic>) {
+          bubbleList[key] = TagInfo.fromJson(value);
+        }
+      });
+    }
+
+    return Content(bubbleList: bubbleList);
   }
+
+  Map<String, dynamic> toJson() => {
+    '_bubbleList': bubbleList.map((key, value) => MapEntry(key, value.toJson())),
+  };
+}
+class GraphBoardData {
+  final bool error;
+  final String result;
+  final Content content;
+
+  GraphBoardData({
+    required this.error,
+    required this.result,
+    required this.content,
+  });
+
+  factory GraphBoardData.fromJson(Map<String, dynamic> json) {
+    var contentData = json['content'];
+    if (contentData is String) {
+      contentData = jsonDecode(contentData);
+    }
+
+    return GraphBoardData(
+      error: json['error'] as bool,
+      result: json['result'] as String,
+      content: Content.fromJson(contentData as Map<String, dynamic>),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'error': error,
+    'result': result,
+    'content': content.toJson(),
+  };
 }

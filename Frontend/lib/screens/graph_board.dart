@@ -12,6 +12,7 @@ class Bubble {
   Offset velocity;
   double radius;
   String tag;
+  Color color;
   Offset? dragTarget;
   Offset? dragOffset;
 
@@ -20,6 +21,7 @@ class Bubble {
     this.velocity = Offset.zero,
     required this.radius,
     required this.tag,
+    required this.color,
   });
 }
 
@@ -52,6 +54,8 @@ class _GraphBoardState extends State<GraphBoard>
       duration: const Duration(days: 1),
     )..addListener(_updatePhysics);
 
+    //graphController.getGraph();
+
     graphController.getGraph().then((_) {
       _createTagBallsFromServerData();
       _controller.forward();
@@ -59,37 +63,88 @@ class _GraphBoardState extends State<GraphBoard>
   }
 
   void _createTagBallsFromServerData() {
-    final sortedTags = graphController.tagList.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
+    // final sortedTags = graphController.tagList.entries.toList()
+    //   ..sort((a, b) => b.value.compareTo(a.value));
 
-    final maxCount = sortedTags.first.value.toDouble();
-    final minCount = sortedTags.last.value.toDouble();
+    // final maxCount = sortedTags.first.value.toDouble();
+    // final minCount = sortedTags.last.value.toDouble();
 
-    screenWidth = MediaQuery.of(context).size.width;
-    screenHeight = MediaQuery.of(context).size.height;
+    // screenWidth = MediaQuery.of(context).size.width;
+    // screenHeight = MediaQuery.of(context).size.height;
 
-    final double startY = -100;
-    final double padding = 10;
+    // final double startY = -100;
+    // final double padding = 10;
 
-    for (final entry in sortedTags) {
-      final tag = entry.key;
-      final count = entry.value;
+    // for (final entry in sortedTags) {
+    //   final tag = entry.key;
+    //   final count = entry.value;
 
-      final normalizedSize = (count - minCount) / (maxCount - minCount);
-      final radius = 20.0 + (normalizedSize * 20.0);
+    //   final normalizedSize = (count - minCount) / (maxCount - minCount);
+    //   final radius = 20.0 + (normalizedSize * 20.0);
 
-      final position = Offset(
-        _random.nextDouble() * (screenWidth - radius * 2) + radius,
-        startY - _random.nextDouble() * 100,
-      );
+    //   final position = Offset(
+    //     _random.nextDouble() * (screenWidth - radius * 2) + radius,
+    //     startY - _random.nextDouble() * 100,
+    //   );
 
-      bubbles.add(Bubble(
-        position: position,
-        radius: radius,
-        tag: tag,
-        velocity: Offset(0, 0),
-      ));
-    }
+    //   bubbles.add(Bubble(
+    //     position: position,
+    //     radius: radius,
+    //     tag: tag,
+    //     velocity: Offset(0, 0),
+    //   ));
+    // }
+
+    final tags = graphController.tags;
+  
+  //태그 카운트 최대값
+  final maxTagCount = tags.values
+      .map((info) => info.tagCount)
+      .fold(0.0, (a, b) => a > b ? a : b);
+  
+  //조회수 최대값
+  final maxViewCount = tags.values
+      .map((info) => info.viewCount)
+      .fold(0.0, (a, b) => a > b ? a : b);
+
+  screenWidth = MediaQuery.of(context).size.width;
+  screenHeight = MediaQuery.of(context).size.height;
+
+  //final double startY = -100;
+  final double startY = -100;
+  const baseHue = 240.0;
+  const minLightness = 0.60; //최대 진함(조회수 높을 때)
+  const maxLightness = 0.90; //최대 연함(조회수 낮을 때)
+
+  tags.forEach((tag, info) {
+
+    final radius = 20.0 + (info.tagCount / maxTagCount) * 40.0;
+    
+    final lightness = maxLightness - 
+        (info.viewCount / maxViewCount) * (maxLightness - minLightness);
+    final hslColor = HSLColor.fromAHSL(
+      0.65, //투명도
+      baseHue, //색상
+      0.85, //채도
+      lightness.clamp(minLightness, maxLightness),
+    );
+    final color = hslColor.toColor();
+    
+    
+
+    final position = Offset(
+      _random.nextDouble() * (screenWidth - radius * 2) + radius,
+      startY - _random.nextDouble() * 100,
+    );
+
+    bubbles.add(Bubble(
+      position: position,
+      radius: radius,
+      tag: tag,
+      velocity: Offset(0, 0),
+      color: color,
+    ));
+  });
   }
 
   void _updatePhysics() {
@@ -245,7 +300,7 @@ class _GraphBoardState extends State<GraphBoard>
                       height: bubble.radius * 2,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.blue.withOpacity(0.8),
+                        color: bubble.color,
                       ),
                       child: Center(
                         child: Text(

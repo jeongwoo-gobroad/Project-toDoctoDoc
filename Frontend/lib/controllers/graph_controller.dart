@@ -19,6 +19,9 @@ class TagGraphController extends GetxController{
   var _tagGraph = <List<String>>[].obs;
   var tagPositions = <String, Offset>{}.obs;
 
+
+  final _tagInfoMap = <String, TagInfo>{}.obs;
+
   TagGraphController({required this.dio});
 
   Future<void> getGraph() async{
@@ -38,15 +41,21 @@ class TagGraphController extends GetxController{
       if (response.statusCode == 200) {
         final data = json.decode(response.data);
         print(data);
-        final tagGraphData = TagGraphData.fromJson(data);
-
-        _tagList.value = Map<String, int>.from(tagGraphData.tagList);
-        _tagGraph.value = List<List<String>>.from(tagGraphData.tagGraph.map((item) => List<String>.from(item)));
-
-        print(tagList);
-        print(tagGraph);
+        final tagGraphData = GraphBoardData.fromJson(data);
+        _tagInfoMap.value = tagGraphData.content.bubbleList;
+      
+        print('Loaded tags: ${_tagInfoMap.length}');
+        print('Tag data: $_tagInfoMap');
+        
         isLoading.value = false;
         
+        //임시시
+        // final tagInfo = _tagInfoMap['지각'];
+        // if (tagInfo != null) {
+
+        // print('태그 카운트: ${tagInfo.tagCount}');
+        // print('조회수: ${tagInfo.viewCount}');
+      
       } else{
           print('Error: ${response.statusCode}');
           isLoading.value = false;
@@ -54,6 +63,5 @@ class TagGraphController extends GetxController{
 
   }
   
-  Map<String, int> get tagList => Map<String, int>.from(_tagList);
-  List<List<String>> get tagGraph => List<List<String>>.from(_tagGraph);
+  Map<String, TagInfo> get tags => Map.from(_tagInfoMap);
 }
