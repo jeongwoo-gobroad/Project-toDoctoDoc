@@ -47,7 +47,7 @@ router.get(["/get/:appid"],
     async (req, res, next) => {
         const doctor = await getTokenInformation(req, res);
 
-        console.log("Appointment get: ", req.params.appid);
+        // console.log("Appointment get: ", req.params.appid);
 
         try {
             const appointment = await Appointment.findById(req.params.appid);
@@ -78,7 +78,7 @@ router.post(["/set"],
         const doctor = await getTokenInformation(req, res);
         const {cid, uid, time} = req.body; // time 객체는 GMT 기준으로 1995-12-17T03:24:00 의 형태로 나타내야 함.
 
-        console.log("Appointment set: ", cid, uid, time);
+        // console.log("Appointment set: ", cid, uid, time);
 
         try {
             const appointment = await Appointment.create({
@@ -118,7 +118,7 @@ router.patch(["/set"],
     async (req, res, next) => {
         const {appid, time} = req.body; // time 객체는 GMT 기준으로 1995-12-17T03:24:00 의 형태로 나타내야 함.
 
-        console.log("Appointment fix: ", appid, time);
+        // console.log("Appointment fix: ", appid, time);
 
         try {
             const appointment = await Appointment.findByIdAndUpdate(appid, {
@@ -147,7 +147,7 @@ router.delete(["/set"],
         const doctor = await getTokenInformation(req, res);
         const {cid, appid, uid} = req.body;
 
-        console.log("Appointment delete: ", appid);
+        // console.log("Appointment delete: ", appid);
 
         try {
             await Appointment.findByIdAndDelete(appid);
