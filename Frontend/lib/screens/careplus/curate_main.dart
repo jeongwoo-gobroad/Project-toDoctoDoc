@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc/controllers/careplus/appointment_controller.dart';
+import 'package:to_doc/screens/careplus/appointment_listview.dart';
 import 'package:to_doc/screens/chat/appointment_detail_screen.dart';
 
 import '../../controllers/careplus/curate_list_controller.dart';
@@ -29,11 +30,15 @@ class _CurateMainState extends State<CurateMain> {
     return formattedDate;
   }
 
+  asyncBefore() async {
+    await curateListController.getList();
+    await appointmentController.getAppointmentList();
+    setState(() {});
+  }
+
   void initState() {
     super.initState();
-    curateListController.getList();
-    appointmentController.getAppointmentList();
-    setState(() {});
+    asyncBefore();
   }
 
   @override
@@ -61,7 +66,9 @@ class _CurateMainState extends State<CurateMain> {
             children: [
 
               SizedBox(height: 10,),
-        
+
+              if (appointmentController.isAfterTodayAppointmentExist.value) ... [
+
               Container(
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Colors.white,),
                 width: MediaQuery.of(context).size.width - 20,
@@ -83,12 +90,12 @@ class _CurateMainState extends State<CurateMain> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              if (appointmentController.isAppointmentExisted
+                              if (appointmentController.isAfterTodayAppointmentExist
                                   .value) ... [
                                 Row(
                                   children: [
                                     Icon(Icons.calendar_month),
-                                    Text('가장 가까운 약속', style: TextStyle(
+                                    Text('가까운 약속이 있어요', style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 20),),
                                   ],
@@ -107,19 +114,20 @@ class _CurateMainState extends State<CurateMain> {
                           if (appointmentController.isLoading.value) {
                             return;
                           }
+                          Get.to(()=>AppointmentListview(appointmentController: appointmentController));
                         },
                         child: Container(
                           padding: EdgeInsets.fromLTRB(0, 50, 20, 0),
                           width: MediaQuery.of(context).size.width - 320,
                           decoration: BoxDecoration(
-                            border: Border(left: BorderSide(color: Colors.black))
+                            border: Border(left: BorderSide(color: Colors.grey))
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Text('더보기', style: TextStyle(
                                   color: Colors.grey, fontSize: 10),),
-                              Icon(Icons.arrow_forward_ios, color: Colors.grey,
+                              Icon(Icons.arrow_forward_ios, color: Colors.grey.shade100,
                                 size: 10,),
                             ],
                           ),
@@ -129,6 +137,7 @@ class _CurateMainState extends State<CurateMain> {
                   );
                 }),
               ),
+              ],
               SizedBox(height: 10,),
         
               Container(
@@ -361,8 +370,11 @@ class _CurateMainState extends State<CurateMain> {
     if (appointmentController.isLoading.value) {
       return;
     }
-    await appointmentController.getAppointmentInformation();
-    Get.to(() => AppointmentDetailScreen(appointment: appointmentController.appointment, hospital: appointmentController.hospital));
+    await appointmentController.getAppointmentInformation(appointmentController.appointmentList[appointmentController.nearAppointment]['_id']);
+    Get.to(() => AppointmentDetailScreen(
+        doctorName: appointmentController.appointmentList[appointmentController.nearAppointment]['doctor']['name'],
+        appointment: appointmentController.appointment,
+        hospital: appointmentController.hospital));
   }
 
 }

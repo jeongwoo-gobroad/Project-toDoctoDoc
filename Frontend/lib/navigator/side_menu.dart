@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:to_doc/controllers/careplus/appointment_controller.dart';
 import 'package:to_doc/navigation_menu.dart';
+import 'package:to_doc/screens/careplus/appointment_listview.dart';
 import 'package:to_doc/screens/myPost.dart';
 import 'package:to_doc/screens/user_edit.dart';
 
@@ -66,7 +68,14 @@ class SideMenu extends StatelessWidget {
             onTap: (){Get.to(()=>DMList());},
             trailing: Icon(Icons.navigate_next),
           ),
-
+          ListTile(
+            leading: Icon(Icons.calendar_month),
+            title: Text('예약 리스트'),
+            onTap: (){
+              onStartAppointmentListView();
+            },
+            trailing: Icon(Icons.navigate_next),
+          ),
           ListTile(
             leading: Icon(Icons.settings),
             title: Text('설정'),
@@ -86,6 +95,12 @@ class SideMenu extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  onStartAppointmentListView() async {
+    AppointmentController appointmentController = AppointmentController();
+    await appointmentController.getAppointmentList();
+    Get.to(()=>AppointmentListview(appointmentController: appointmentController));
   }
 
   void onLogout() async {

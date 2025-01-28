@@ -8,7 +8,7 @@ import '../../auth/auth_dio.dart';
 class AppointmentController extends GetxController {
   var isLoading = true.obs;
   late List<dynamic> appointmentList;
-  var isAppointmentExisted = false.obs;
+  var isAfterTodayAppointmentExist = true.obs;
 
   var nearAppointment = 0;
 
@@ -36,15 +36,30 @@ class AppointmentController extends GetxController {
       print('APPOINTMENT LIST -------------');
       print(appointmentList);
 
-      if (data['content'].isNotEmpty) {
-        isAppointmentExisted.value = true;
+      if (data['content'].isEmpty) {
+        isAfterTodayAppointmentExist.value = false;
+        isLoading.value = false;
+        return false;
       }
 
       appointmentList.sort((a, b) => a['appointmentTime'].compareTo(b['appointmentTime']));
 
+      nearAppointment = 0;
       for (var appointment in appointmentList) {
         appointment['appointmentTime'] = DateTime.parse(appointment['appointmentTime']).toLocal();
+
+        if (appointment['appointmentTime'].isBefore(DateTime.now())) {
+          nearAppointment++;
+        }
       }
+
+      if (appointmentList.length == nearAppointment) {
+        isAfterTodayAppointmentExist.value = false;
+      }
+      else {
+        isAfterTodayAppointmentExist.value = true;
+      }
+
 
       isLoading.value = false;
       return true;
@@ -56,11 +71,7 @@ class AppointmentController extends GetxController {
   }
 
 
-  Future<bool> getAppointmentInformation() async {
-    print('---------------');
-    print(appointmentList);
-    var appointmentId = appointmentList[nearAppointment]['_id'];
-
+  Future<bool> getAppointmentInformation(String appointmentId) async {
     print('APPOINTMENT ID ------ $appointmentId');
 
     isLoading.value = true;
