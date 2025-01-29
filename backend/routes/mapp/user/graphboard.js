@@ -10,7 +10,7 @@ const UserSchema = require("../../../models/User");
 const { tagMap, tagGraph } = require("../../../serverSideWorks/tagCollection");
 const Post = require("../../../models/Post");
 const mongoose = require("mongoose");
-const { bubbleMap } = require("../../../serverSideWorks/bubbleCollection");
+const { tagCountBubbleMap } = require("../../../serverSideWorks/bubbleCollection");
 
 const User = mongoose.model("User", UserSchema);
 
@@ -32,11 +32,12 @@ router.get(["/tagSearch/:tag"],
 router.get(["/graphBoard"],
     checkIfLoggedIn,
     async (req, res, next) => {
-        const _bubbleList = JSON.stringify(Object.fromEntries(bubbleMap));
-        const _tagList = JSON.stringify(Object.fromEntries(tagMap));
-        const _tagGraph = JSON.stringify(tagGraph);
+        const _bubbleList = JSON.stringify(Object.fromEntries(tagCountBubbleMap));
+        /* Deprecated */
+        // const _tagList = JSON.stringify(Object.fromEntries(tagMap));
+        // const _tagGraph = JSON.stringify(tagGraph);
 
-        res.status(200).json(returnResponse(false, "graphBoardData", {_tagList: _tagList, _tagGraph: _tagGraph}));
+        res.status(200).json(returnResponse(false, "graphBoardData", {_bubbleList: _bubbleList}));
 
         return;
     }

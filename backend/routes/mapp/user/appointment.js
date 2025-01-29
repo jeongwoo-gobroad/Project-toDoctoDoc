@@ -64,11 +64,11 @@ router.get(["/appointment/getWithAppid/:appid"],
         const user = await getTokenInformation(req, res);
 
         try {
-            const appointment = Appointment.findById(req.params.appid).populate('doctor', 'isPremiumPsy myPsyID');
+            const appointment = await Appointment.findById(req.params.appid).populate('doctor', 'isPremiumPsy myPsyID');
             let psy = null;
 
             if (appointment.user != user.userid) {
-                res.status(401).json(returnResponse(true, "notYourAppointment", "-"));
+                res.status(402).json(returnResponse(true, "notYourAppointment", "-"));
 
                 return;
             }

@@ -11,7 +11,7 @@ const router = express.Router();
 
 const User = mongoose.model("User", UserSchema);
 const Doctor = require("../../../../models/Doctor");
-const { setCacheForNDaysAsync } = require("../../../../middleware/redisCaching");
+const { setCacheForNDaysAsync, getCache } = require("../../../../middleware/redisCaching");
 
 router.post(["/dupemailcheck"],
     checkIfNotLoggedIn,
