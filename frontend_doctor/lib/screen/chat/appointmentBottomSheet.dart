@@ -1,16 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:to_doc_for_doc/controllers/appointment_controller.dart';
+import 'package:to_doc_for_doc/controllers/chat_appointment_controller.dart';
 
 class AppointmentBottomSheet extends StatefulWidget {
   final String userName;
 
-  final AppointmentController appointmentController;
+  final ChatAppointmentController chatAppointmentController;
 
   AppointmentBottomSheet({
     required this.userName,
-    required this.appointmentController, this.alterParent,
+    required this.chatAppointmentController, this.alterParent,
   });
 
   final alterParent;
@@ -27,13 +27,13 @@ class _appointmentBottomSheet extends State<AppointmentBottomSheet> with Widgets
   void initState() {
     super.initState();
 
-    if (!widget.appointmentController.isAppointmentExisted || widget.appointmentController.isAppointmentDone) {
-      widget.appointmentController.initialDay = DateTime.now();
-      widget.appointmentController.initialTime = TimeOfDay.now();
+    if (!widget.chatAppointmentController.isAppointmentExisted || widget.chatAppointmentController.isAppointmentDone) {
+      widget.chatAppointmentController.initialDay = DateTime.now();
+      widget.chatAppointmentController.initialTime = TimeOfDay.now();
     }
 
-    selectedDay = widget.appointmentController.initialDay;
-    selectedTime = widget.appointmentController.initialTime;
+    selectedDay = widget.chatAppointmentController.initialDay;
+    selectedTime = widget.chatAppointmentController.initialTime;
   }
 
   DateTime addDayTime(DateTime day, TimeOfDay time) {
@@ -51,7 +51,7 @@ class _appointmentBottomSheet extends State<AppointmentBottomSheet> with Widgets
             child: ListBody(
               //List Body를 기준으로 Text 설정
               children: <Widget>[
-                if ((!widget.appointmentController.isAppointmentExisted) || widget.appointmentController.isAppointmentDone) ...[
+                if ((!widget.chatAppointmentController.isAppointmentExisted) || widget.chatAppointmentController.isAppointmentDone) ...[
                   Text(
                     '${widget.userName}와 ${addDayTime(selectedDay, selectedTime).toString()}에 정말 예약신청하겠습니까?',
                     style: TextStyle(fontWeight: FontWeight.bold),),
@@ -69,11 +69,11 @@ class _appointmentBottomSheet extends State<AppointmentBottomSheet> with Widgets
             TextButton(
               onPressed: () {
                 final finalTime = addDayTime(selectedDay, selectedTime);
-                if ((!widget.appointmentController.isAppointmentExisted) || widget.appointmentController.isAppointmentDone) {
-                  widget.appointmentController.makeAppointment(finalTime);
+                if ((!widget.chatAppointmentController.isAppointmentExisted) || widget.chatAppointmentController.isAppointmentDone) {
+                  widget.chatAppointmentController.makeAppointment(finalTime);
                 }
                 else {
-                  widget.appointmentController.editAppointment(finalTime);
+                  widget.chatAppointmentController.editAppointment(finalTime);
                 }
 
                 widget.alterParent();
@@ -115,7 +115,7 @@ class _appointmentBottomSheet extends State<AppointmentBottomSheet> with Widgets
           actions: [
             TextButton(
               onPressed: () {
-                widget.appointmentController.deleteAppointment();
+                widget.chatAppointmentController.deleteAppointment();
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               },
@@ -172,7 +172,7 @@ class _appointmentBottomSheet extends State<AppointmentBottomSheet> with Widgets
                         ),
                       ),
 
-                      if ((!widget.appointmentController.isAppointmentExisted) || widget.appointmentController.isAppointmentDone) ...[
+                      if ((!widget.chatAppointmentController.isAppointmentExisted) || widget.chatAppointmentController.isAppointmentDone) ...[
                         Text('약속 잡기',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -194,7 +194,7 @@ class _appointmentBottomSheet extends State<AppointmentBottomSheet> with Widgets
                           onPressed: () async {
                             final selectedDateSub = await showDatePicker(
                               context: context,
-                              firstDate: widget.appointmentController.initialDay,
+                              firstDate: widget.chatAppointmentController.initialDay,
                               lastDate: DateTime(2030),
                             );
                             if (selectedDateSub != null) {
@@ -218,7 +218,7 @@ class _appointmentBottomSheet extends State<AppointmentBottomSheet> with Widgets
                         onPressed: () async {
                           final selectedTimeSub = await showTimePicker(
                             context: context,
-                            initialTime: widget.appointmentController.initialTime,
+                            initialTime: widget.chatAppointmentController.initialTime,
                           );
                           if (selectedTimeSub != null) {
                             setState(() {
@@ -242,7 +242,7 @@ class _appointmentBottomSheet extends State<AppointmentBottomSheet> with Widgets
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          if (widget.appointmentController.isAppointmentExisted && !widget.appointmentController.isAppointmentDone) ... [
+                          if (widget.chatAppointmentController.isAppointmentExisted && !widget.chatAppointmentController.isAppointmentDone) ... [
                             TextButton(
                                 style: TextButton.styleFrom(backgroundColor: Colors.red),
                                 onPressed: () {

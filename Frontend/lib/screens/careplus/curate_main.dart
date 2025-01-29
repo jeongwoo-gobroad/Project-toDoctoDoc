@@ -67,7 +67,7 @@ class _CurateMainState extends State<CurateMain> {
 
               SizedBox(height: 10,),
 
-              if (appointmentController.isAfterTodayAppointmentExist.value) ... [
+              if (appointmentController.approvedAppointment != -1 && appointmentController.isAfterTodayAppointmentExist.value) ... [
 
               Container(
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Colors.white,),
@@ -102,8 +102,8 @@ class _CurateMainState extends State<CurateMain> {
                                 ),
                                 SizedBox(height: 5),
                                 Text('${appointmentController
-                                    .appointmentList[appointmentController.nearAppointment]['doctor']['name']}, '
-                                    '${DateFormat.yMMMEd('ko_KR').add_jm().format(appointmentController.appointmentList[appointmentController.nearAppointment]['appointmentTime'])}'),
+                                    .appointmentList[appointmentController.approvedAppointment]['doctor']['name']}, '
+                                    '${DateFormat.yMMMEd('ko_KR').add_jm().format(appointmentController.appointmentList[appointmentController.approvedAppointment]['appointmentTime'])}'),
                               ],
                             ],
                           ),
@@ -275,7 +275,11 @@ class _CurateMainState extends State<CurateMain> {
                           width: double.infinity,
                           child: TextButton(
                             onPressed: () {
-                              Get.to(()=> DMList());
+                              Get.to(()=> DMList())?.whenComplete(() {
+                                setState(() {
+                                  asyncBefore();
+                                });
+                              });
                             },
                             style: TextButton.styleFrom(
                               shape: RoundedRectangleBorder(

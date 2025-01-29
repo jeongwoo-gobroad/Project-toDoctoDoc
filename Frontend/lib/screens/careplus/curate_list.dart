@@ -231,7 +231,7 @@ class _CurationScreenState extends State<CurationScreen>
                 Icon(Icons.person, size: 16, color: Colors.grey),
                 SizedBox(width: 8),
                 Text(
-                  comment['doctor']['name'],
+                  (comment['doctor'] == null) ? '' : comment['doctor']['name'],
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,

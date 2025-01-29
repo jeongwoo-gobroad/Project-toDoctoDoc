@@ -60,6 +60,7 @@ dependencies:
   flutter_local_notifications: ^18.0.1
   restart_app: ^1.3.2
   mobile_device_identifier: ^0.0.3
+  flutter_svg: ^2.0.17
 
 dev_dependencies:
   flutter_test:
@@ -106,6 +107,7 @@ flutter:
    - asset/images/image5.jpg
    - asset/images/image6.jpg
    - asset/images/image7.jpg
+   - asset/images/emoji/
   
 
   # An image asset can refer to one or more resolution-specific "variants", see

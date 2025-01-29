@@ -11,6 +11,7 @@ class AppointmentController extends GetxController {
   var isAfterTodayAppointmentExist = true.obs;
 
   var nearAppointment = 0;
+  var approvedAppointment = -1;
 
   late Map<String, dynamic> appointment;
   late Map<String, dynamic> hospital;
@@ -44,6 +45,7 @@ class AppointmentController extends GetxController {
 
       appointmentList.sort((a, b) => a['appointmentTime'].compareTo(b['appointmentTime']));
 
+      var index = 0;
       nearAppointment = 0;
       for (var appointment in appointmentList) {
         appointment['appointmentTime'] = DateTime.parse(appointment['appointmentTime']).toLocal();
@@ -51,6 +53,10 @@ class AppointmentController extends GetxController {
         if (appointment['appointmentTime'].isBefore(DateTime.now())) {
           nearAppointment++;
         }
+        else if (appointment['isAppointmentApproved'] && approvedAppointment == -1) {
+          approvedAppointment = index;
+        }
+        index++;
       }
 
       if (appointmentList.length == nearAppointment) {
@@ -106,6 +112,34 @@ class AppointmentController extends GetxController {
     }
   }
 
+  Future<bool> sendAppointmentReview(String appointmentId, int rating, String userScript) async {
+    print('APPOINTMENT ID ------ $appointmentId');
+
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
+
+    final response = await dio.post(
+      'http://jeongwoo-kim-web.myds.me:3000/mapp/careplus/appointment/review',
+      options: Options(headers: {
+        'Content-Type': 'application/json',
+        'accessToken': 'true',
+      },),
+      data: json.encode({
+        'appid' : appointmentId,
+        'rating': rating,
+        'content' : userScript,
+      })
+    );
+
+
+    if (response.statusCode == 200) {
+      return true;
+    }
+    else{
+      print('코드: ${response.statusCode}');
+      return false;
+    }
+  }
 
 
 }

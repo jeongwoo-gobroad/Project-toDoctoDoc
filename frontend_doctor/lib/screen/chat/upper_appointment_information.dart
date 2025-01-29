@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:intl/intl.dart';
 
-import '../../controllers/appointment_controller.dart';
+import '../../controllers/chat_appointment_controller.dart';
 
 class UpperAppointmentInformation extends StatelessWidget {
   const UpperAppointmentInformation(
       {super.key, required this.appointmentController});
 
-  final AppointmentController appointmentController;
+  final ChatAppointmentController appointmentController;
 
   @override
   Widget build(BuildContext context) {
-    if (appointmentController.isAppointmentExisted) {
+    if (appointmentController.isAppointmentExisted && !appointmentController.isAppointmentDone) {
       return Container(
         padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
         decoration: BoxDecoration(
@@ -35,18 +35,22 @@ class UpperAppointmentInformation extends StatelessWidget {
                   style: TextStyle(fontSize: 15,),),
               ],
             ),
-            Text('${appointmentController.appointmentId} : 약속 ID',
-              style: TextStyle(fontSize: 10),),
+            SizedBox(height:5),
+            //Text('${appointmentController.appointmentId} : 약속 ID', style: TextStyle(fontSize: 10),),
 
-            if (!appointmentController.isAppointmentApproved) ...[
-              Text('상대방이 아직 승낙하지 않았습니다.',
-                style: TextStyle(fontSize: 10, color: Colors.grey),),
-            ]
-            else
-              ... [
-                Text('상대방이 약속을 승낙했습니다.',
-                  style: TextStyle(fontSize: 10, color: Colors.grey),),
+            if (appointmentController.appointmentTime.isAfter(DateTime.now())) ... [
+              if (!appointmentController.isAppointmentApproved) ...[
+                Text('상대방이 아직 승낙하지 않았습니다.',
+                  style: TextStyle(color: Colors.grey),),
+              ]
+              else ... [
+                  Text('상대방이 약속을 승낙했습니다.',
+                    style: TextStyle(color: Colors.grey),),
               ],
+            ]
+            else ... [
+              Text('약속이 완료되지 않았습니다.', style: TextStyle(color: Colors.grey),),
+            ],
           ]
         ),
       );

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
+import 'package:to_doc/screens/careplus/appointment_rating_screen.dart';
 
 
 class AppointmentDetailScreen extends StatelessWidget {
@@ -8,6 +11,7 @@ class AppointmentDetailScreen extends StatelessWidget {
   final Map<String, dynamic> appointment;
   final Map<String, dynamic> hospital;
   final String doctorName;
+
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +37,22 @@ class AppointmentDetailScreen extends StatelessWidget {
             ),
 
 
+            if (appointment['hasAppointmentDone'] && !appointment['hasFeedbackDone']) ... [
+              TextButton(
+                  onPressed: () {
+                    showModalBottomSheet(
+                      backgroundColor: Colors.transparent,
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (_) {
+                        return AppointmentRatingScreen(doctorName: doctorName, appointmentId: appointment['_id'] );
+                      },
+                    );
+                  },
+                  child: Text('RATING (UNFINISHED)')
+              ),
+            ],
+
             Container(
               child: Column(
                 //crossAxisAlignment: CrossAxisAlignment.center,
@@ -49,6 +69,8 @@ class AppointmentDetailScreen extends StatelessWidget {
                   Text(appointment['doctor']['myPsyID'] ?? ''),
                   Text(DateFormat.yMMMEd('ko_KR').add_jm().format(DateTime.parse(appointment['appointmentTime']))),
                   Text(appointment['isAppointmentApproved'].toString()),
+                  Text(appointment['hasAppointmentDone'].toString()),
+                  Text(appointment['hasFeedbackDone'].toString()),
                   Text(appointment['appointmentCreatedAt'] ?? ''),
                   Text(appointment['appointmentEditedAt'] ?? ''),
                 ],

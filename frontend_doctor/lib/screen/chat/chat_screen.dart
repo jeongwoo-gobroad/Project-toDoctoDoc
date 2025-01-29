@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc_for_doc/controllers/appointment_controller.dart';
+import 'package:to_doc_for_doc/controllers/chat_appointment_controller.dart';
 import 'package:to_doc_for_doc/screen/chat/dm_chat_list_maker.dart';
 import 'package:to_doc_for_doc/screen/chat/upper_appointment_information.dart';
 
@@ -29,7 +30,8 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   final ScrollController _scrollController = ScrollController();
-  late AppointmentController appointmentController = AppointmentController(userId: widget.userId, chatId: widget.chatId, socketService: widget.socketService);
+  late ChatAppointmentController chatAppointmentController = ChatAppointmentController(userId: widget.userId, chatId: widget.chatId, socketService: widget.socketService);
+  final AppointmentController appointmentController = AppointmentController();
 
   bool scrollLoading = true;
 
@@ -38,11 +40,56 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
   List<ChatObject> _messageList = [];
 
-  alterParent() {
-    setState(() {
+  alterParent() { setState(() {}); }
 
-    });
+  Future<void> appointmentMustBeDoneAlert(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('주의'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                  '새 약속을 잡기 위해선 이전 약속을 완료하거나 삭제해야 합니다.',
+                  style: TextStyle(fontWeight: FontWeight.bold),),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                if (await chatAppointmentController.deleteAppointment()) {
+                  // todo 삭제 완료 메세지 추가 필요
+                  setState(() {});
+                }
+
+                Navigator.of(context).pop();
+              },
+              child: Text('약속 삭제', style: TextStyle(color:Colors.red),),
+            ),
+            TextButton(
+              style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.blue)),
+              child: Text('완료 확정', style: TextStyle(color: Colors.white),),
+              onPressed: () async {
+
+                if (await appointmentController.sendAppointmentIsDone(chatAppointmentController.appointmentId)) {
+                  Navigator.of(context).pop();
+                  chatAppointmentController.isAppointmentDone = true;
+                  setState(() {});
+                }
+                else {
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
+
 
   void asyncBefore() async {
     widget.socketService.onReturnJoinedChat_doctor((data) {
@@ -51,17 +98,17 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       if (data['chat']['appointment'] != null) {
         appointmentId = data['chat']['appointment'];
         print(appointmentId);
-        appointmentController.isAppointmentExisted = true;
+        chatAppointmentController.isAppointmentExisted = true;
 
         if (this.mounted) {
           setState(() {
-            appointmentController.getAppointmentInformation(appointmentId);
+            chatAppointmentController.getAppointmentInformation(appointmentId);
           });
         }
-        appointmentController.isAppointmentDone = data['chat']['hasAppointmentDone'];
+        chatAppointmentController.isAppointmentDone = data['chat']['hasAppointmentDone'];
       }
       else {
-        appointmentController.isLoading.value = false;
+        chatAppointmentController.isLoading.value = false;
       }
 
       print('chat List received');
@@ -114,7 +161,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       widget.socketService.onAppointmentApproval((data) {
         if (this.mounted) {
           setState(() {
-            appointmentController.isAppointmentApproved = true;
+            chatAppointmentController.isAppointmentApproved = true;
           });
         }
       });
@@ -191,10 +238,10 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         body: Column(
           children: [
             Obx(() {
-              if (appointmentController.isLoading.value) {
+              if (chatAppointmentController.isLoading.value) {
                 return const Center(child: CircularProgressIndicator());
               }
-              return UpperAppointmentInformation(appointmentController: appointmentController);
+              return UpperAppointmentInformation(appointmentController: chatAppointmentController);
             }),
 
 
@@ -232,6 +279,16 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                   hintText: '메시지를 입력하세요',
                   prefixIcon: IconButton(
                       onPressed: () {
+                        if (chatAppointmentController.isAppointmentExisted && chatAppointmentController.appointmentTime.isBefore(DateTime.now())) {
+                          if (!chatAppointmentController.isAppointmentDone) {
+                            appointmentMustBeDoneAlert(context);
+                            return;
+                          }
+                        }
+
+
+
+
                         setAppointmentDay();
                         setState(() {});
                       },
@@ -262,7 +319,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       builder: (_) {
         return AppointmentBottomSheet(
           userName: widget.userName,
-          appointmentController: appointmentController,
+          chatAppointmentController: chatAppointmentController,
           alterParent : alterParent,
         );
       },
