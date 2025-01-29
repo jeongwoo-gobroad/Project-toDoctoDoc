@@ -27,6 +27,10 @@ router.post(["/write"],
 
                 return;
             }
+            
+            if (stars < 0 || stars > 5) {
+                stars = 5;
+            }
 
             const review = await Review.create({
                 user: user.userid,
@@ -69,6 +73,10 @@ router.patch(["/edit/:id"],
                 res.status(401).json(returnResponse(true, "notYourReviewOrNoSuchReview", "-"));
 
                 return;
+            }
+
+            if (stars < 0 || stars > 5) {
+                stars = 5;
             }
 
             await Review.findByIdAndUpdate(req.params.id, {

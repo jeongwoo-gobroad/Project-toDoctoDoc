@@ -40,6 +40,8 @@ const isDoctorThenProceed = async (req, res, next) => {
 
     if (rest) {
         if (rest.isDoctor && doctor && doctor.isVerified) {
+            req.userid = rest.userid;
+
             next();
 
             return;

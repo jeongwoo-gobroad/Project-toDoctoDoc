@@ -161,4 +161,49 @@ router.get(["/appointment/list"],
     }
 );
 
+router.post(["/appointment/review"],
+    checkIfLoggedIn,
+    ifPremiumThenProceed,
+    async (req, res, next) => {
+        const user = await getTokenInformation(req, res);
+        const {appid, rating, content} = req.body;
+
+        try {
+            const appointment = await Appointment.findById(appid);
+
+            if (!appointment) {
+                res.status(401).json(returnResponse(true, "noSuchAppointment", "-"));
+
+                return;
+            }
+            
+            if (appointment.user != user.userid) {
+                res.status(402).json(returnResponse(true, "notYourAppointment", "-"));
+
+                return;
+            }
+
+            if (rating < 0 || rating > 2) {
+                rating = 2;
+            }
+
+            appointment.feedback.rating = rating;
+            appointment.feedback.content = content;
+            appointment.hasAppointmentDone = true;
+
+            await appointment.save();
+
+            res.status(200).json(returnResponse(false, "savedAppointmentReview", "-"));
+
+            return;
+        } catch (error) {
+            console.error(error, "errorAtUserAppointmentReview");
+
+            res.status(403).json(returnResponse(true, "errorAtUserAppointmentReview", "-"));
+
+            return;
+        }
+    }
+);
+
 module.exports = router;

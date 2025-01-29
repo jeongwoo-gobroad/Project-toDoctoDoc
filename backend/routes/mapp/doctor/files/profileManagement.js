@@ -4,16 +4,16 @@ const { getTokenInformation } = require("../../../auth/jwt");
 const { checkIfLoggedIn, isDoctorThenProceed } = require("../../checkingMiddleWare");
 const router = express.Router();
 const Doctor = require("../../../../models/Doctor");
-const multer = require("multer");
-const storage = multer.memoryStorage();
-const upload = multer({storage: storage});
+const upload = require("./multer/multer");
 
 router.post(['/upload'],
-    checkIfLoggedIn,
-    isDoctorThenProceed,
-    upload.single('profileImage'),
+    // checkIfLoggedIn,
+    // isDoctorThenProceed,
+    upload.single('file'),
     async (req, res, next) => {
+        console.log("img uploaded: ", JSON.stringify(req.file));
 
+        return;
     }
 );
 

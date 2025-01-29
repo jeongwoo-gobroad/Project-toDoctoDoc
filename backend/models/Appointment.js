@@ -1,5 +1,15 @@
 const mongoose = require("mongoose");
 
+const FeedbackSchema = new mongoose.Schema({
+    rating: {
+        type: Number,
+        default: 2,
+    },
+    content: {
+        type: String
+    },
+});
+
 const AppointmentSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -26,6 +36,17 @@ const AppointmentSchema = new mongoose.Schema({
     isAppointmentApproved: {
         type: Boolean,
         default: false
+    },
+    hasAppointmentDone: {
+        type: Boolean,
+        default: false,
+    },
+    hasFeedbackDone: {
+        type: Boolean,
+        default: false,
+    },
+    feedback: {
+        type: FeedbackSchema,
     }
 });
 

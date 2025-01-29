@@ -11,6 +11,7 @@ const User = mongoose.model("User", UserSchema);
 const Doctor = require("../../../../models/Doctor");
 const Appointment = require("../../../../models/Appointment");
 const Chat = require("../../../../models/Chat");
+const sendAppointmentDonePushNotification = require("../../push/appointmentDonePush");
 
 router.get(["/list"],
     checkIfLoggedIn,
@@ -168,6 +169,52 @@ router.delete(["/set"],
             console.error(error, "error at /appointment/set DELETE");
 
             res.status(403).json(returnResponse(true, "errorAtAppointmentDeleting", "-"));
+
+            return;
+        }
+    }
+);
+
+router.post(["/done"],
+    checkIfLoggedIn,
+    isDoctorThenProceed,
+    async (req, res, next) => {
+        const doctor = await getTokenInformation(req, res);
+        const {appid} = req.body;
+
+        try {
+            const appointment = await Appointment.findById(appid).populate({
+                path: 'user',
+                select: 'deviceIds',
+            }).populate({
+                path: 'doctor',
+                select: 'name',
+            });
+
+            if (!appointment) {
+                res.status(401).json(returnResponse(true, "noSuchAppointment", "-"));
+
+                return;
+            }
+
+            appointment.hasAppointmentDone = true;
+
+            await appointment.save();
+
+            sendAppointmentDonePushNotification(appointment.user.deviceIds, 
+                {
+                    title: `오늘 ${appointment.doctor.name} 과의 상담은 어땠나요?`,
+                    body: "오늘 상담의 피드백을 남겨주세요."
+                }
+            )
+
+            res.status(200).json(returnResponse(false, "madeAppointmentDone", "-"));
+
+            return;
+        } catch (error) {
+            console.error(error, "error at /appointment/done POST");
+
+            res.status(403).json(returnResponse(true, "errorAtAppointmentDone", "-"));
 
             return;
         }
