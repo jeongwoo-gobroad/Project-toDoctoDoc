@@ -146,6 +146,8 @@ router.get(["/appointment/list"],
                 }
             });
 
+            // console.log(usr.appointments);
+
             const appointments = usr.appointments;
 
             res.status(200).json(returnResponse(false, "appointments", appointments));
