@@ -176,9 +176,9 @@ router.post(["/appointment/review"],
 
                 return;
             }
-            
-            if (appointment.user != user.userid) {
-                res.status(402).json(returnResponse(true, "notYourAppointment", "-"));
+
+            if (appointment.user != user.userid || !appointment.hasAppointmentDone) {
+                res.status(402).json(returnResponse(true, "notYourAppointmentOrAppointmentIsNotDoneYet", "-"));
 
                 return;
             }
@@ -187,9 +187,11 @@ router.post(["/appointment/review"],
                 rating = 2;
             }
 
-            appointment.feedback.rating = rating;
-            appointment.feedback.content = content;
-            appointment.hasAppointmentDone = true;
+            appointment.feedback = {
+                rating: rating,
+                content: content,
+            }
+            appointment.hasFeedbackDone = true;
 
             await appointment.save();
 
