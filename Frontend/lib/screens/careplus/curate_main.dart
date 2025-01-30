@@ -33,12 +33,13 @@ class _CurateMainState extends State<CurateMain> {
   asyncBefore() async {
     await curateListController.getList();
     await appointmentController.getAppointmentList();
+    appointmentController.isLoading.value = false;
     setState(() {});
   }
 
   void initState() {
-    super.initState();
     asyncBefore();
+    super.initState();
   }
 
   @override
@@ -56,7 +57,6 @@ class _CurateMainState extends State<CurateMain> {
         //shape: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
         backgroundColor: Colors.grey.shade100,
       ),
-
       body: SingleChildScrollView(
         child: Align(
           alignment: Alignment.topCenter,
@@ -64,11 +64,8 @@ class _CurateMainState extends State<CurateMain> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-
               SizedBox(height: 10,),
-
               if (appointmentController.approvedAppointment != -1 && appointmentController.isAfterTodayAppointmentExist.value) ... [
-
               Container(
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Colors.white,),
                 width: MediaQuery.of(context).size.width - 20,
@@ -112,8 +109,11 @@ class _CurateMainState extends State<CurateMain> {
                       InkWell(
                         onTap: () {
                           if (appointmentController.isLoading.value) {
+                            print('test2');
                             return;
                           }
+
+                          print('test');
                           Get.to(()=>AppointmentListview(appointmentController: appointmentController));
                         },
                         child: Container(
@@ -378,7 +378,7 @@ class _CurateMainState extends State<CurateMain> {
     Get.to(() => AppointmentDetailScreen(
         doctorName: appointmentController.appointmentList[appointmentController.nearAppointment]['doctor']['name'],
         appointment: appointmentController.appointment,
-        hospital: appointmentController.hospital));
+        hospital: appointmentController.hospital))?.whenComplete(() {asyncBefore();});
   }
 
 }

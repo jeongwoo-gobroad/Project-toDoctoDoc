@@ -4,7 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'auth/auth_secure.dart';
+import '../auth/auth_secure.dart';
 import 'firebase_options.dart';
 import 'package:flutter/foundation.dart';
 

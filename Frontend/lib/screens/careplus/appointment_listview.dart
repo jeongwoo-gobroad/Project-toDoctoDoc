@@ -27,92 +27,49 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
     return false;
   }
 
+
   @override
   void initState() {
-    widget.appointmentController.getAppointmentList();
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.appointmentController.getAppointmentList();
+    });
+
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: InkWell(
-            child: Text('예약 리스트(가)',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
-          ),
-          bottom: TabBar(controller: tabController, tabs: [Tab(text: '지나간 약속',), Tab(text: '남은 약속',)])
-        ),
-        body: TabBarView(
-          controller: tabController,
-          physics: NeverScrollableScrollPhysics(),
-          children: [
-            Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    controller: scrollController,
-                    itemCount: widget.appointmentController.nearAppointment,
-                    itemBuilder: (context, index) {
-                      return Column(
-                        children: [
-                          if (checkIfDayChanged(index)) ... [
-                            Text(DateFormat.yMMMEd('ko_KR').format(widget.appointmentController.appointmentList[index]['appointmentTime'])),
-                          ],
-
-                          InkWell(
-                            onTap: () {
-                              gotoDetainScreen(index);
-                            },
-                            child: Container(
-                              width: double.infinity,
-                              padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                              decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.black), top: BorderSide(color: Colors.black),)),
-                              child: Column(
-                                children: [
-                                  Text('예약 ID ${widget.appointmentController.appointmentList[index]['_id']}'),
-                                  Text('의사 ID ${widget.appointmentController.appointmentList[index]['doctor']['name']}'),
-                                  Text('완료 : ${widget.appointmentController.appointmentList[index]['hasAppointmentDone']}'),
-                                  Text('승인 : ${widget.appointmentController.appointmentList[index]['isAppointmentApproved']}'),
-                                  Text('피드백 : ${widget.appointmentController.appointmentList[index]['hasFeedbackDone']}'),
-                                  Text('내용 : ${widget.appointmentController.appointmentList[index]['feedback']}'),
-
-
-                                  Text(DateFormat.yMMMEd('ko_KR').add_jm().format(widget.appointmentController.appointmentList[index]['appointmentTime'])),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    }
-                  ),
-                ),
-              ],
+    return PopScope(
+      onPopInvoked: (didPop) { if (widget.appointmentController.isLoading.value) {return;} },
+      child: Scaffold(
+          appBar: AppBar(
+            title: InkWell(
+              child: Text('예약 리스트(가)',
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
             ),
-
-
-            Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
+            bottom: TabBar(controller: tabController, tabs: [Tab(text: '지나간 약속',), Tab(text: '남은 약속',)])
+          ),
+          body: TabBarView(
+            controller: tabController,
+            physics: NeverScrollableScrollPhysics(),
+            children: [
+              Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
                       controller: scrollController,
-                      itemCount: widget.appointmentController.appointmentList.length - widget.appointmentController.nearAppointment,
+                      itemCount: widget.appointmentController.nearAppointment,
                       itemBuilder: (context, index) {
-                        if (!widget.appointmentController.appointmentList[index + widget.appointmentController.nearAppointment]['isAppointmentApproved']) {
-                          return SizedBox(height: 20, child: Text('미승인 약속입니다.'),);
-                        }
-
-
                         return Column(
                           children: [
-                            if (checkIfDayChanged(index + widget.appointmentController.nearAppointment)) ... [
-                              Text(DateFormat.yMMMEd('ko_KR').format(widget.appointmentController.appointmentList[index + widget.appointmentController.nearAppointment]['appointmentTime'])),
+                            if (checkIfDayChanged(index)) ... [
+                              Text(DateFormat.yMMMEd('ko_KR').format(widget.appointmentController.appointmentList[index]['appointmentTime'])),
                             ],
 
                             InkWell(
                               onTap: () {
-                                gotoDetainScreen(index + widget.appointmentController.nearAppointment);
+                                gotoDetainScreen(index);
                               },
                               child: Container(
                                 width: double.infinity,
@@ -120,22 +77,73 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
                                 decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.black), top: BorderSide(color: Colors.black),)),
                                 child: Column(
                                   children: [
-                                    Text('예약 ID ${widget.appointmentController.appointmentList[index + widget.appointmentController.nearAppointment]['_id']}'),
-                                    Text('의사 ID ${widget.appointmentController.appointmentList[index + widget.appointmentController.nearAppointment]['doctor']['name']}'),
-                                    Text(DateFormat.yMMMEd('ko_KR').add_jm().format(widget.appointmentController.appointmentList[index + widget.appointmentController.nearAppointment]['appointmentTime'])),
+                                    Text('예약 ID ${widget.appointmentController.appointmentList[index]['_id']}'),
+                                    Text('의사 ID ${widget.appointmentController.appointmentList[index]['doctor']['name']}'),
+                                    Text('완료 : ${widget.appointmentController.appointmentList[index]['hasAppointmentDone']}'),
+                                    Text('승인 : ${widget.appointmentController.appointmentList[index]['isAppointmentApproved']}'),
+                                    Text('피드백 : ${widget.appointmentController.appointmentList[index]['hasFeedbackDone']}'),
+                                    Text('내용 : ${widget.appointmentController.appointmentList[index]['feedback']}'),
+
+
+                                    Text(DateFormat.yMMMEd('ko_KR').add_jm().format(widget.appointmentController.appointmentList[index]['appointmentTime'])),
                                   ],
                                 ),
                               ),
                             ),
                           ],
                         );
+                      }
+                    ),
+                  ),
+                ],
+              ),
 
-                      }),
-                ),
-              ],
-            ),
-          ],
-        )
+
+              Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                        controller: scrollController,
+                        itemCount: widget.appointmentController.appointmentList.length - widget.appointmentController.nearAppointment,
+                        itemBuilder: (context, index) {
+                          if (!widget.appointmentController.appointmentList[index + widget.appointmentController.nearAppointment]['isAppointmentApproved']) {
+                            return SizedBox(height: 20, child: Text('미승인 약속입니다.'),);
+                          }
+
+
+                          return Column(
+                            children: [
+                              if (checkIfDayChanged(index + widget.appointmentController.nearAppointment)) ... [
+                                Text(DateFormat.yMMMEd('ko_KR').format(widget.appointmentController.appointmentList[index + widget.appointmentController.nearAppointment]['appointmentTime'])),
+                              ],
+
+                              InkWell(
+                                onTap: () {
+                                  gotoDetainScreen(index + widget.appointmentController.nearAppointment);
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                                  decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.black), top: BorderSide(color: Colors.black),)),
+                                  child: Column(
+                                    children: [
+                                      Text('예약 ID ${widget.appointmentController.appointmentList[index + widget.appointmentController.nearAppointment]['_id']}'),
+                                      Text('의사 ID ${widget.appointmentController.appointmentList[index + widget.appointmentController.nearAppointment]['doctor']['name']}'),
+                                      Text(DateFormat.yMMMEd('ko_KR').add_jm().format(widget.appointmentController.appointmentList[index + widget.appointmentController.nearAppointment]['appointmentTime'])),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+
+                        }),
+                  ),
+                ],
+              ),
+            ],
+          )
+      ),
     );
   }
 

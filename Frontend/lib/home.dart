@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:to_doc/aboutpage.dart';
+import 'package:to_doc/screens/aboutpage.dart';
 import 'package:to_doc/controllers/careplus/chat_controller.dart';
 import 'package:to_doc/controllers/query_controller.dart';
 import 'package:to_doc/controllers/userInfo_controller.dart';

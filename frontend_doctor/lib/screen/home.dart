@@ -24,6 +24,9 @@ class _HomeState extends State<Home> {
   String formatDate(String date) {
     try {
       DateTime dateTime = DateTime.parse(date).toUtc().add(Duration(hours: 9));
+
+      return DateFormat.yMd('ko_KR').add_Hm().format(dateTime);
+
       return DateFormat('yyyy년 M월 d일 HH시 mm분').format(dateTime);
     } catch (e) {
       return '날짜 정보 없음';
@@ -48,21 +51,17 @@ class _HomeState extends State<Home> {
               controller: scrollController,
               itemCount: appointmentController.appointmentList.length - appointmentController.nearAppointment,
               itemBuilder: (context, index) {
-                return InkWell(
-                  onTap: () {
-                    gotoDetainScreen(index + appointmentController.nearAppointment);
-                  },
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    decoration: BoxDecoration(border: BorderDirectional(bottom: BorderSide(color: Colors.grey.shade100))),
-                    height: 55,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('${appointmentController.appointmentList[index + appointmentController.nearAppointment]['user']['usernick']}와의 약속', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
-                        Text(DateFormat.yMMMEd('ko_KR').add_jm().format(appointmentController.appointmentList[index + appointmentController.nearAppointment]['appointmentTime'])),
-                      ],
-                    ),
+                return Container(
+                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  decoration: BoxDecoration(border: BorderDirectional(bottom: BorderSide(color: Colors.grey.shade100))),
+                  height: 55,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('${appointmentController.appointmentList[index + appointmentController.nearAppointment]['user']['usernick']}와의 약속', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
+                      Text(DateFormat.yMMMEd('ko_KR').add_jm().format(appointmentController.appointmentList[index + appointmentController.nearAppointment]['appointmentTime']),
+                        style: TextStyle(color: (appointmentController.appointmentList[index + appointmentController.nearAppointment]['appointmentTime'].day == DateTime.now().day)? Colors.red : null),),
+                    ],
                   ),
                 );
               },
@@ -71,10 +70,8 @@ class _HomeState extends State<Home> {
         ],
       ),
     );
-
   }
-
-
+  
   asyncBefore() async {
     await curateController.getCurateInfo('5');
     await appointmentController.getAppointmentList();
@@ -89,6 +86,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade100,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Get.to(() => DMList());
@@ -96,6 +94,7 @@ class _HomeState extends State<Home> {
         child: const Icon(Icons.chat_bubble_outline_rounded),
       ),
       appBar: AppBar(
+        backgroundColor: Colors.grey.shade100,
         centerTitle: true,
         title: Text('토닥toDoc - Doctor',
             style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
@@ -110,7 +109,7 @@ class _HomeState extends State<Home> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Colors.grey[300]!),
+                  //border: Border.all(color: Colors.grey[300]!),
                 ),
                 child: Center(
                   child: Column(
@@ -121,9 +120,9 @@ class _HomeState extends State<Home> {
                         decoration: BoxDecoration(
                           border: BorderDirectional(bottom: BorderSide(color: Colors.grey.shade300)),
                         ),
-                        child: Center(
-                          child: Text('다가오는 예약', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
+                        child: //Center(
+                          /*child: */Text('다가오는 예약', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          //),
                         ),
                       ),
                       SizedBox(width: 30),
@@ -171,7 +170,7 @@ class _HomeState extends State<Home> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: Colors.grey[300]!),
+                        //border: Border.all(color: Colors.grey[300]!),
                       ),
                       child: Center(
                         child: Text(
@@ -189,7 +188,7 @@ class _HomeState extends State<Home> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: Colors.grey[300]!),
+                        //border: Border.all(color: Colors.grey[300]!),
                       ),
                       child: Center(
                         child: Text(
@@ -207,7 +206,7 @@ class _HomeState extends State<Home> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: Colors.grey[300]!),
+                        //border: Border.all(color: Colors.grey[300]!),
                       ),
                       child: SizedBox(
                         height: 200,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:to_doc/aboutpage.dart';
+import 'package:to_doc/screens/aboutpage.dart';
 import 'package:to_doc/screens/aichat/ai_chat_main.dart';
 import 'package:to_doc/controllers/userInfo_controller.dart';
 import 'package:to_doc/home.dart';

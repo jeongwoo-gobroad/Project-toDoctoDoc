@@ -11,7 +11,7 @@ import 'package:to_doc/screens/intro.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 
 import 'auth/auth_secure.dart';
-import 'firebase_handler.dart';
+import 'firebase/firebase_handler.dart';
 
 
 void main() async{

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:to_doc_for_doc/controllers/appointment_controller.dart';
 import 'package:to_doc_for_doc/controllers/chat_appointment_controller.dart';
 import 'package:to_doc_for_doc/screen/chat/dm_chat_list_maker.dart';

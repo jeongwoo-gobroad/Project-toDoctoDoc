@@ -44,7 +44,9 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
 
                 if (await widget.appointmentController.sendAppointmentIsDone(widget.appointment['_id'])) {
                   // todo 완료 메세지 추가 필요
+                  widget.appointment['hasAppointmentDone'] = true;
                   Navigator.of(context).pop();
+                  setState(() {});
                 }
                 else {
                   Navigator.of(context).pop();
@@ -118,12 +120,8 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
               ),
             ] else ... [Center(child: Text('아직 피드백이 없습니다')),],
           ],
-
-
         ),
       ),
-
-
     );
   }
 }

@@ -67,11 +67,13 @@ class AppointmentController extends GetxController {
       }
 
 
+
       isLoading.value = false;
       return true;
     }
     else{
       print('코드: ${response.statusCode}');
+      isLoading.value = false;
       return false;
     }
   }

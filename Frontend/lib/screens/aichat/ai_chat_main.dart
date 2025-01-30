@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:to_doc/aboutpage.dart';
+import 'package:to_doc/screens/aboutpage.dart';
 import 'package:to_doc/controllers/userInfo_controller.dart';
 import 'package:to_doc/navigator/side_menu.dart';
 import 'ai_chat_list.dart';
