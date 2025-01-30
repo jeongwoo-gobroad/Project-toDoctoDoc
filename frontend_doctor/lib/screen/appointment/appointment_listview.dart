@@ -27,9 +27,14 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
     return false;
   }
 
+  asyncBefore() async {
+    await widget.appointmentController.getAppointmentList();
+  }
+
+
   @override
   void initState() {
-    widget.appointmentController.getAppointmentList();
+    asyncBefore();
     super.initState();
   }
 

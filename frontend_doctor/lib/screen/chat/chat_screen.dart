@@ -104,7 +104,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
             chatAppointmentController.getAppointmentInformation(appointmentId);
           });
         }
-        chatAppointmentController.isAppointmentDone = data['chat']['hasAppointmentDone'];
+        //chatAppointmentController.isAppointmentDone = data['chat']['hasAppointmentDone'];
       }
       else {
         chatAppointmentController.isLoading.value = false;
@@ -284,10 +284,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                             return;
                           }
                         }
-
-
-
-
                         setAppointmentDay();
                         setState(() {});
                       },

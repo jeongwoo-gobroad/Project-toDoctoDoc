@@ -71,7 +71,7 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-  
+
   asyncBefore() async {
     await curateController.getCurateInfo('5');
     await appointmentController.getAppointmentList();
@@ -89,7 +89,9 @@ class _HomeState extends State<Home> {
       backgroundColor: Colors.grey.shade100,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.to(() => DMList());
+          Get.to(() => DMList())?.whenComplete(() {
+            asyncBefore();
+          });
         },
         child: const Icon(Icons.chat_bubble_outline_rounded),
       ),

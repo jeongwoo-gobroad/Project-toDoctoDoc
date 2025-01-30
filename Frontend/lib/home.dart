@@ -10,11 +10,6 @@ import 'package:to_doc/screens/airesult.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
 
-import 'package:to_doc/screens/graph_board.dart';
-import 'package:to_doc/screens/mypage.dart';
-
-import 'navigation_menu.dart';
-
 class Home extends StatefulWidget {
   @override
   State<Home> createState() => _HomeState();
@@ -22,7 +17,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   //final AboutpageProvider aboutpage = Get.put(AboutpageProvider());
-  final TextEditingController queryController = TextEditingController(); 
+  final TextEditingController queryController = TextEditingController();
   final UserinfoController userController = Get.find<UserinfoController>();
  //추후 수정
 
@@ -183,7 +178,9 @@ class _HomeState extends State<Home> {
                                 ),
                               ],
                             ),
-                          ), //SizedBox(height: 50),
+                          ),
+
+                          //TextButton(onPressed: () {Get.to(() => HospitalRatingScreen());}, child: Text('TESTBUTTON')),
                         ],
                       ),
                     ),
