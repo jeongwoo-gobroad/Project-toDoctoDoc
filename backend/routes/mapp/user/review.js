@@ -9,6 +9,7 @@ const mongoose = require("mongoose");
 const Review = require("../../../models/Review");
 const Premium_Psychiatry = require("../../../models/Premium_Psychiatry");
 const Chat = require("../../../models/Chat");
+const Psychiatry = require("../../../models/Psychiatry");
 
 const User = mongoose.model("User", UserSchema);
 
@@ -20,14 +21,17 @@ router.post(["/write"],
         const {cid, pid, stars, content} = req.body;
 
         try {
-            const chat = await Chat.findById(cid);
+            const chat = await Chat.findById(cid).populate({
+                path: 'doctor',
+                select: 'isPremiumPsy'
+            });
 
             if (!chat.hasAppointmentDone) {
                 res.status(401).json(returnResponse("true", "cannotReviewNow", "-"));
 
                 return;
             }
-            
+
             if (stars < 0 || stars > 5) {
                 stars = 5;
             }
@@ -42,9 +46,16 @@ router.post(["/write"],
             await User.findByIdAndUpdate(user.userid, {
                 $push: {reviews: review._id}
             });
-            await Premium_Psychiatry.findByIdAndUpdate(pid, {
-                $push: {reviews: review._id}
-            });
+
+            if (chat.doctor.isPremiumPsy) {
+                await Premium_Psychiatry.findByIdAndUpdate(pid, {
+                    $push: {reviews: review._id}
+                });
+            } else {
+                await Psychiatry.findByIdAndUpdate(pid, {
+                    $push: {reviews: review._id}
+                });
+            }
 
             res.status(200).json(returnResponse(false, "reviewWritten", "-"));
 
@@ -116,9 +127,15 @@ router.delete(["/delete/:id"],
             await User.findByIdAndUpdate(user.userid, {
                 $pull: {reviews: req.params.id}
             });
-            await Premium_Psychiatry.findByIdAndUpdate(user.userid, {
-                $pull: {reviews: req.params.id}
-            });
+            if (await Premium_Psychiatry.findById(review.place_id)) {
+                await Premium_Psychiatry.findByIdAndUpdate(review.place_id, {
+                    $pull: {reviews: req.params.id}
+                });
+            } else {
+                await Psychiatry.findByIdAndUpdate(review.place_id, {
+                    $pull: {reviews: req.params.id}
+                });
+            }
             await Review.findByIdAndDelete(req.params.id);
 
             res.status(200).json(returnResponse(false, "reviewDeleted", "-"));

@@ -26,6 +26,10 @@ const Psychiatry_Schema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    reviews: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Review'
+    }],
 });
 
 module.exports = mongoose.model("Psychiatry", Psychiatry_Schema);

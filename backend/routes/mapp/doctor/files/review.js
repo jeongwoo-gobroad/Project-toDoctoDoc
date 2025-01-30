@@ -8,6 +8,7 @@ const router = express.Router();
 const Doctor = require("../../../../models/Doctor");
 const Chat = require("../../../../models/Chat");
 const Premium_Psychiatry = require("../../../../models/Premium_Psychiatry");
+const Psychiatry = require("../../../../models/Psychiatry");
 
 router.post(["/appointment"], 
     checkIfLoggedIn,
@@ -58,7 +59,12 @@ router.get(["/list"],
                 return;
             }
 
-            const psy = await Premium_Psychiatry.findById(doctor.myPsyID).populate('reviews', '-user');
+            let psy = null;
+            if (doctor.isPremiumPsy) {
+                psy = await Premium_Psychiatry.findById(doctor.myPsyID).populate('reviews', '-user');
+            } else {
+                psy = await Psychiatry.findById(doctor.myPsyID).populate('reviews', '-user');
+            }
 
             if (!psy) {
                 res.status(401).json(returnResponse(true, "noSuchPsy", "-"));
@@ -66,7 +72,7 @@ router.get(["/list"],
                 return;
             }
 
-            res.status(200).json(returnResponse(false, "returnedReviewList", psy));            
+            res.status(200).json(returnResponse(false, "returnedReviewList", {isPremiumPsy: doctor.isPremiumPsy, reviews: psy.reviews}));            
 
             return;
         } catch (error) {
