@@ -43,7 +43,7 @@ router.post(["/write"],
         const {pid, stars, content} = req.body;
 
         try {
-            if (!(await User.findById(appointment.user)).visitedPsys.toString().includes(appointment.psyId)) {
+            if (!(await User.findById(user.userid)).visitedPsys.toString().includes(pid)) {
                 res.status(401).json(returnResponse(true, "notVisitedYet", "-"));
 
                 return;
