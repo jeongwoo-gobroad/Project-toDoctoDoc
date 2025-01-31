@@ -1,4 +1,4 @@
-const Premium_Psychiatry = require("../models/Premium_Psychiatry");
+const Psychiatry = require("../models/Psychiatry");
 
 const topExposureForPremiumPsy = async (list) => {
     let index = 0;
@@ -7,9 +7,9 @@ const topExposureForPremiumPsy = async (list) => {
         for (let i = 0; i < list.length; i++) {
             const place_id = list[i].id;
             
-            const psy = await Premium_Psychiatry.findOne({place_id: place_id});
+            const psy = await Psychiatry.findOne({place_id: place_id});
 
-            if (psy) {
+            if (psy && psy.isPremiumPsy) {
                 list[i].isPremiumPsychiatry = true;
                 list[i].stars = psy.stars;
                 list[i].pid = psy._id;

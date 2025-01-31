@@ -87,6 +87,7 @@ router.post(["/set"],
                 doctor: doctor.userid,
                 appointmentTime: new Date(time),
                 chatId: cid,
+                psyId: (await Doctor.findById(doctor.userid)).myPsyID
             });
 
             await Doctor.findByIdAndUpdate(doctor.userid, {
@@ -202,9 +203,9 @@ router.post(["/done"],
 
             await appointment.save();
 
-            if (!(await Chat.findById(appointment.chatId)).hasAppointmentDone) {
-                await Chat.findByIdAndUpdate(appointment.chatId, {
-                    hasAppointmentDone: true,
+            if (!(await User.findById(appointment.user)).visitedPsys.toString().includes(appointment.psyId)) {
+                await User.findByIdAndUpdate(appointment.user, {
+                    $push: {visitedPsys: appointment.psyId}
                 });
             }
 

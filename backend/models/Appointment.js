@@ -21,6 +21,11 @@ const AppointmentSchema = new mongoose.Schema({
         ref: 'Doctor',
         required: true,
     },
+    psyId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Psychiatry',
+        required: true,
+    },
     appointmentTime: {
         type: Date,
         default: Date.now,

@@ -13,7 +13,6 @@ const Curate = require("../../../models/Curate");
 const Comment = require("../../../models/Comment");
 const Chat = require("../../../models/Chat");
 const Appointment = require("../../../models/Appointment");
-const Premium_Psychiatry = require("../../../models/Premium_Psychiatry");
 const Psychiatry = require("../../../models/Psychiatry");
 
 router.get(["/appointment/get/:cid"],
@@ -30,7 +29,6 @@ router.get(["/appointment/get/:cid"],
                     select: 'name',
                 }
             });
-            let psy = null;
 
             if (chat.user != user.userid) {
                 res.status(401).json(returnResponse(true, "notYourChat", "-"));
@@ -38,11 +36,7 @@ router.get(["/appointment/get/:cid"],
                 return;
             }
 
-            if (chat.doctor.isPremiumPsy) {
-                psy = await Premium_Psychiatry.findById(chat.doctor.myPsyID);
-            } else {
-                psy = await Psychiatry.findById(chat.doctor.myPsyID);
-            }
+            const psy = await Psychiatry.findById(chat.doctor.myPsyID);
 
             res.status(200).json(returnResponse(false, "appointment", {appointment: chat.appointment, psy: psy}));
 

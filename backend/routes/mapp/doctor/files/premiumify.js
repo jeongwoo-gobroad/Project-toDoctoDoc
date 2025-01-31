@@ -7,7 +7,6 @@ const { checkIfLoggedIn, isDoctorThenProceed } = require("../../checkingMiddleWa
 const router = express.Router();
 const Doctor = require("../../../../models/Doctor");
 const Chat = require("../../../../models/Chat");
-const Premium_Psychiatry = require("../../../../models/Premium_Psychiatry");
 
 router.post(["/premiumify"],
     checkIfLoggedIn,

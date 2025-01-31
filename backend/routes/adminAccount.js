@@ -16,9 +16,9 @@ const Address = mongoose.model("Address", AddressSchema);
 const Doctor = require("../models/Doctor");
 const Admin = require("../models/Admin");
 const Post = require("../models/Post");
-const Premium_Psychiatry = require("../models/Premium_Psychiatry");
 const { generateToken_web, generateRefreshToken_web } = require("./web_auth/jwt_web");
 const returnLongLatOfAddress = require("../middleware/getcoordinate");
+const Psychiatry = require("../models/Psychiatry");
 
 router.get(["/"], 
     loginMiddleWare.ifLoggedInThenProceed,
@@ -270,7 +270,7 @@ router.post(["/premiumify"],
         const { long, lat } = await returnLongLatOfAddress(address);
 
         try {
-            await Premium_Psychiatry.create({
+            await Psychiatry.create({
                 name: name,
                 place_id: place_id,
                 address: {
@@ -300,7 +300,7 @@ router.delete(["/premiumify/:id"],
     loginMiddleWare.isAdminThenProceed,
     async (req, res, next) => {
         try {
-            await Premium_Psychiatry.findByIdAndDelete(req.params.id);
+            await Psychiatry.findByIdAndDelete(req.params.id);
 
             res.redirect("/admin/premiumify");
         } catch (error) {
@@ -321,7 +321,7 @@ router.patch(["/premiumify/:id"],
         const { long, lat } = await returnLongLatOfAddress(address);
 
         try {
-            await Premium_Psychiatry.findByIdAndUpdate(req.params.id, {
+            await Psychiatry.findByIdAndUpdate(req.params.id, {
                 name: name,
                 place_id: place_id,
                 address: {

@@ -6,6 +6,10 @@ const Psychiatry_Schema = new mongoose.Schema({
         type: String, 
         default: "anonymous",
     },
+    isPremiumPsy: {
+        type: Boolean,
+        default: false,
+    },
     createdAt: {
         type: Date,
         default: Date.now,

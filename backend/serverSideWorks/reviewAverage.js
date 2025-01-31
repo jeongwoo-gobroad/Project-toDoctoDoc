@@ -1,16 +1,10 @@
-const PremiumPsy = require("../models/Premium_Psychiatry");
 const Psy = require("../models/Psychiatry");
 
-const reviewRefreshWorks = async (psyId, isPremium, prevRating, newRating, status) => {
-    let psy = null;
+const reviewRefreshWorks = async (psyId, prevRating, newRating, status) => {
     let newRecord = null;
 
     try {
-        if (isPremium) {
-            psy = await PremiumPsy.findById(psyId);
-        } else {
-            psy = await Psy.findById(psyId);
-        }
+        const psy = await Psy.findById(psyId);
 
         const previous = psy.stars * psy.reviews.length;
 

@@ -10,8 +10,6 @@ const { checkIfLoggedIn, checkIfNotLoggedIn } = require("../checkingMiddleWare")
 const { route } = require("../main");
 const returnLongLatOfAddress = require("../../../middleware/getcoordinate");
 const router = express.Router();
-const Premium_Psychiatry = require("../../../models/Premium_Psychiatry");
-
 const User = mongoose.model("User", UserSchema);
 const Chat = require("../../../models/Chat");
 const AIChat = require("../../../models/AIChat");

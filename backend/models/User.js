@@ -71,6 +71,10 @@ const UserSchema = new mongoose.Schema({
     recentCurateDate: {
         type: Date,
     },
+    visitedPsys: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Psychiatry',
+    }],
 });
 
 module.exports = UserSchema;

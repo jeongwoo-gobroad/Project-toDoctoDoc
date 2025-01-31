@@ -7,8 +7,9 @@ const { checkIfLoggedIn, isDoctorThenProceed } = require("../../checkingMiddleWa
 const router = express.Router();
 const Doctor = require("../../../../models/Doctor");
 const Chat = require("../../../../models/Chat");
-const Premium_Psychiatry = require("../../../../models/Premium_Psychiatry");
 const Psychiatry = require("../../../../models/Psychiatry");
+const Appointment = require("../../../../models/Appointment");
+const User = mongoose.model('User', UserSchema);
 
 router.post(["/appointment"], 
     checkIfLoggedIn,
@@ -17,19 +18,21 @@ router.post(["/appointment"],
         const user = await getTokenInformation(req, res);
 
         try {
-            const { chatid } = req.body;
+            const { appid } = req.body;
 
-            const chat = await Chat.findById(chatid);
+            const appointment = await Appointment.findById(appid);
 
-            if (!chat || chat.doctor != user.userid) {
+            if (!appointment || appointment.doctor != user.userid) {
                 res.status(401).json(returnResponse(true, "notYourAppointmentOrNoSuchChat", "-"));
 
                 return;
             }
 
-            chat.hasAppointmentDone = true;
-
-            await chat.save();
+            if (!(await User.findById(appointment.user)).visitedPsys.toString().includes(appointment.psyId)) {
+                await User.findByIdAndUpdate(appointment.user, {
+                    $push: {visitedPsys: appointment.psyId}
+                });
+            }
 
             res.status(200).json(returnResponse(false, "appointmentHasBeenDone", "-"));
 
@@ -59,12 +62,7 @@ router.get(["/list"],
                 return;
             }
 
-            let psy = null;
-            if (doctor.isPremiumPsy) {
-                psy = await Premium_Psychiatry.findById(doctor.myPsyID).populate('reviews', '-user');
-            } else {
-                psy = await Psychiatry.findById(doctor.myPsyID).populate('reviews', '-user');
-            }
+            const psy = await Psychiatry.findById(doctor.myPsyID).populate('reviews', '-user');
 
             if (!psy) {
                 res.status(401).json(returnResponse(true, "noSuchPsy", "-"));

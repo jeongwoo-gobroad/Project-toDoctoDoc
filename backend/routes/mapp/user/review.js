@@ -7,28 +7,44 @@ const { getTokenInformation } = require("../../auth/jwt");
 const UserSchema = require("../../../models/User");
 const mongoose = require("mongoose");
 const Review = require("../../../models/Review");
-const Premium_Psychiatry = require("../../../models/Premium_Psychiatry");
 const Chat = require("../../../models/Chat");
 const Psychiatry = require("../../../models/Psychiatry");
 const userEmitter = require("../../../events/eventDrivenLists");
 
 const User = mongoose.model("User", UserSchema);
 
+router.get(["/visited"],
+    checkIfLoggedIn,
+    ifPremiumThenProceed,
+    async (req, res, next) => {
+        const user = await getTokenInformation(req, res);
+
+        try {
+            const usr = await User.findById(user.userid).populate('visitedPsys');
+
+            res.status(200).json(returnResponse(false, "returnVisitedPsyList", usr.visitedPsys));
+
+            return;
+        } catch (error) {
+            res.status(403).json(returnResponse(true, "errorAtReviewVisited", "-"));
+
+            console.error(error, "errorAtUserVisitedGET");
+
+            return;
+        }
+    }
+);
+
 router.post(["/write"], 
     checkIfLoggedIn,
     ifPremiumThenProceed,
     async (req, res, next) => {
         const user = await getTokenInformation(req, res);
-        const {cid, pid, stars, content} = req.body;
+        const {pid, stars, content} = req.body;
 
         try {
-            const chat = await Chat.findById(cid).populate({
-                path: 'doctor',
-                select: 'isPremiumPsy'
-            });
-
-            if (!chat.hasAppointmentDone) {
-                res.status(401).json(returnResponse("true", "cannotReviewNow", "-"));
+            if (!(await User.findById(appointment.user)).visitedPsys.toString().includes(appointment.psyId)) {
+                res.status(401).json(returnResponse(true, "notVisitedYet", "-"));
 
                 return;
             }
@@ -48,17 +64,11 @@ router.post(["/write"],
                 $push: {reviews: review._id}
             });
 
-            if (chat.doctor.isPremiumPsy) {
-                userEmitter.emit('reviewUpdated', pid, true, 0, stars, -1);
-                await Premium_Psychiatry.findByIdAndUpdate(pid, {
-                    $push: {reviews: review._id}
-                });
-            } else {
-                userEmitter.emit('reviewUpdated', pid, false, 0, stars, -1);
-                await Psychiatry.findByIdAndUpdate(pid, {
-                    $push: {reviews: review._id}
-                });
-            }
+            userEmitter.emit('reviewUpdated', pid, 0, stars, -1);
+
+            await Psychiatry.findByIdAndUpdate(pid, {
+                $push: {reviews: review._id}
+            });
 
             res.status(200).json(returnResponse(false, "reviewWritten", "-"));
 
@@ -78,7 +88,7 @@ router.patch(["/edit/:id"],
     ifPremiumThenProceed,
     async (req, res, next) => {
         const user = await getTokenInformation(req, res);
-        const {stars, content, pid, isPremiumPsy} = req.body;
+        const {stars, content, pid} = req.body;
 
         try {
             const review = await Review.findById(req.params.id);
@@ -93,7 +103,7 @@ router.patch(["/edit/:id"],
                 stars = 5;
             }
 
-            userEmitter.emit('reviewUpdated', pid, isPremiumPsy, review.stars, stars, 0);
+            userEmitter.emit('reviewUpdated', pid, review.stars, stars, 0);
 
             await Review.findByIdAndUpdate(req.params.id, {
                 stars: stars,
@@ -119,7 +129,7 @@ router.delete(["/delete/:id"],
     ifPremiumThenProceed,
     async (req, res, next) => {
         const user = await getTokenInformation(req, res);
-        const {pid, isPremiumPsy} = req.body;
+        const {pid} = req.body;
 
         try {
             const review = await Review.findById(req.params.id);
@@ -130,20 +140,14 @@ router.delete(["/delete/:id"],
                 return;
             }
 
-            userEmitter.emit('reviewUpdated', pid, isPremiumPsy, review.stars, 0, 1);
+            userEmitter.emit('reviewUpdated', pid, review.stars, 0, 1);
 
             await User.findByIdAndUpdate(user.userid, {
                 $pull: {reviews: req.params.id}
             });
-            if (await Premium_Psychiatry.findById(review.place_id)) {
-                await Premium_Psychiatry.findByIdAndUpdate(review.place_id, {
-                    $pull: {reviews: req.params.id}
-                });
-            } else {
-                await Psychiatry.findByIdAndUpdate(review.place_id, {
-                    $pull: {reviews: req.params.id}
-                });
-            }
+            await Psychiatry.findByIdAndUpdate(review.place_id, {
+                $pull: {reviews: req.params.id}
+            });
             await Review.findByIdAndDelete(req.params.id);
 
             res.status(200).json(returnResponse(false, "reviewDeleted", "-"));
@@ -164,12 +168,7 @@ router.get(["/listing/:placeid"],
     ifPremiumThenProceed,
     async (req, res, next) => {
         try {
-            let reviews = false;
-            if (req.query.isPremium) {
-                reviews = await Premium_Psychiatry.findById(req.params.placeid).populate('reviews', '-user');
-            } else {
-                reviews = await Psychiatry.findById(req.params.placeid).populate('reviews', '-user');
-            }
+            const reviews = await Psychiatry.findById(req.params.placeid).populate('reviews', '-user');
 
             res.status(200).json(returnResponse(false, "reviewListing", reviews));
 
