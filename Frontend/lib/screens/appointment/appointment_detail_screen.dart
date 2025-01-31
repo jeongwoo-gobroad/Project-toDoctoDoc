@@ -12,6 +12,25 @@ class AppointmentDetailScreen extends StatelessWidget {
   final Map<String, dynamic> hospital;
   final String doctorName;
 
+  Widget placeInform(BuildContext context, Icon thisIcon, String description) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          SizedBox(
+            //width: MediaQuery.of(context).size.width * 1 / 20,
+            child: thisIcon,
+          ),
+          Container(
+            //color: Colors.blue,
+            width: MediaQuery.of(context).size.width * 3 / 4,
+            child: Text(description),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +56,7 @@ class AppointmentDetailScreen extends StatelessWidget {
             ),
 
 
+
             if (appointment['hasAppointmentDone'] && !appointment['hasFeedbackDone']) ... [
               TextButton(
                   onPressed: () {
@@ -52,6 +72,9 @@ class AppointmentDetailScreen extends StatelessWidget {
                   child: Text('RATING (UNFINISHED)')
               ),
             ],
+            placeInform(context, Icon(Icons.home), hospital['name']),
+            placeInform(context, Icon(Icons.person), doctorName),
+
 
             Container(
               child: Column(
@@ -61,12 +84,10 @@ class AppointmentDetailScreen extends StatelessWidget {
 
                   SizedBox(height: 5),
 
-                  Text(appointment['_id'] ?? ''),
-                  Text(appointment['user'] ?? ''),
-                  Text(appointment['doctor']['_id'] ?? ''),
-                  Text(doctorName),
-                  Text(appointment['doctor']['isPremiumPsy'].toString()),
-                  Text(appointment['doctor']['myPsyID'] ?? ''),
+                  //Text(appointment['_id'] ?? ''),
+                  //Text(appointment['user'] ?? ''),
+                  //Text(appointment['doctor']['_id'] ?? ''),
+                  //Text(appointment['doctor']['myPsyID'] ?? ''),
                   Text(DateFormat.yMMMEd('ko_KR').add_jm().format(DateTime.parse(appointment['appointmentTime']))),
                   Text(appointment['isAppointmentApproved'].toString()),
                   Text(appointment['hasAppointmentDone'].toString()),

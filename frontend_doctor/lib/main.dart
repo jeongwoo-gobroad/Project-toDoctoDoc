@@ -9,13 +9,10 @@ import 'package:to_doc_for_doc/screen/auth/login_screen.dart';
 import 'controllers/auth/auth_secure.dart';
 import 'firebase/firebase_handler.dart';
 
-
 void main() async{
   await initializeDateFormatting();
-
   //clearSecureStorageOnReinstall();
   firebaseStarter();
-
 
   runApp(GetMaterialApp(
     home: LoginPage(),
@@ -46,7 +43,6 @@ void main() async{
 
 clearSecureStorageOnReinstall() async {
   final SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
-
   String key = 'hasRunBefore';
   SharedPreferences prefs = await SharedPreferences.getInstance();
 

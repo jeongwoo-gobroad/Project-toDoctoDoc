@@ -10,8 +10,12 @@ class HospitalReviewController extends GetxController{
   var isMyReviewExisted = false;
   late Map<String,dynamic> myReviews;
 
-  Future<bool> postUserReview(String chatId, String placeId, double rating, String review) async {
+  Future<bool> postUserReview(String placeId, double rating, String review) async {
     isLoading = true.obs;
+
+    print(placeId);
+    print(rating);
+    print(review);
 
     Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
@@ -23,7 +27,6 @@ class HospitalReviewController extends GetxController{
           'accessToken': 'true',
         },),
         data: json.encode({
-          'cid' : chatId,
           'pid' : placeId,
           'stars' : rating,
           'content' : review,

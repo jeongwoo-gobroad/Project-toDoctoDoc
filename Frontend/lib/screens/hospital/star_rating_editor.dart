@@ -6,8 +6,10 @@ class StarRating extends StatelessWidget {
   final int starCount;
   final double rating;
   final RatingChangeCallback onRatingChanged;
+  final bool isControllable;
+  final double starSize;
 
-  StarRating({this.starCount = 5, this.rating = .0, required this.onRatingChanged});
+  StarRating({this.starCount = 5, this.rating = .0, required this.onRatingChanged, required this.isControllable, required this.starSize, });
 
   Widget buildStar(BuildContext context, int index) {
     Icon icon;
@@ -15,27 +17,34 @@ class StarRating extends StatelessWidget {
       icon = new Icon(
         Icons.star_border,
         color: Colors.grey,
-        size: 50,
+        size: starSize,
       );
     }
     else if (index > rating - 1 && index < rating) {
       icon = new Icon(
         Icons.star_half,
         color: Colors.yellow,
-        size: 50,
+        size: starSize,
       );
     } else {
       icon = new Icon(
         Icons.star,
         color: Colors.yellow,
-        size: 50,
+        size: starSize,
 
       );
     }
-    return new InkResponse(
-      onTap: onRatingChanged == null ? null : () => onRatingChanged(index + 1.0),
-      child: icon,
-    );
+
+    if (isControllable) {
+      return new InkResponse(
+        onTap: onRatingChanged == null ? null : () =>
+            onRatingChanged(index + 1.0),
+        child: icon,
+      );
+    }
+    else {
+      return icon;
+    }
   }
 
   @override

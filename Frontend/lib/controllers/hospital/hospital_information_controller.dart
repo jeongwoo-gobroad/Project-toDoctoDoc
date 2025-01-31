@@ -9,13 +9,14 @@ class HospitalInformationController extends GetxController{
 
   late String placeId;
 
-  late Map<String,dynamic> hospital;
-  late Map<String,dynamic> review;
+  //late Map<String,dynamic> hospital;
+  //late Map<String,dynamic> review;
+  late List<dynamic> review;
 
   var isReviewExisted = false;
   var isMyReviewExisted = false;
 
-
+  double averageRating = 0.0;
   List<int> reviewRatingArr = [];
 
 

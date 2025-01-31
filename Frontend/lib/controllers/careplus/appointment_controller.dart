@@ -47,6 +47,7 @@ class AppointmentController extends GetxController {
 
       var index = 0;
       nearAppointment = 0;
+      approvedAppointment = -1;
       for (var appointment in appointmentList) {
         appointment['appointmentTime'] = DateTime.parse(appointment['appointmentTime']).toLocal();
 
@@ -66,6 +67,8 @@ class AppointmentController extends GetxController {
         isAfterTodayAppointmentExist.value = true;
       }
 
+      print(nearAppointment);
+      print(approvedAppointment);
 
 
       isLoading.value = false;
@@ -98,6 +101,8 @@ class AppointmentController extends GetxController {
     if (response.statusCode == 200) {
       final data = json.decode(response.data);
       //contentList = data['content'];
+
+      print(data);
 
       appointment = data['content']['appointment'];
       hospital = data['content']['psy'];

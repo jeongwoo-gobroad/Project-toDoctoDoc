@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc/controllers/careplus/appointment_controller.dart';
 import 'package:to_doc/screens/careplus/appointment_listview.dart';
-import 'package:to_doc/screens/chat/appointment_detail_screen.dart';
+import 'package:to_doc/screens/appointment/appointment_detail_screen.dart';
 
 import '../../controllers/careplus/curate_list_controller.dart';
 import 'package:get/get.dart';
@@ -375,6 +375,9 @@ class _CurateMainState extends State<CurateMain> {
       return;
     }
     await appointmentController.getAppointmentInformation(appointmentController.appointmentList[appointmentController.nearAppointment]['_id']);
+
+
+
     Get.to(() => AppointmentDetailScreen(
         doctorName: appointmentController.appointmentList[appointmentController.nearAppointment]['doctor']['name'],
         appointment: appointmentController.appointment,

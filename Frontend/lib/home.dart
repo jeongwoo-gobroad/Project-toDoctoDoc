@@ -10,6 +10,9 @@ import 'package:to_doc/screens/airesult.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
 
+import 'package:to_doc/screens/hospital/hospital_detail_view.dart';
+import 'package:to_doc/screens/hospital/hospital_rating_screen.dart';
+
 class Home extends StatefulWidget {
   @override
   State<Home> createState() => _HomeState();
@@ -180,6 +183,7 @@ class _HomeState extends State<Home> {
                             ),
                           ),
 
+                          //TextButton(onPressed: () {Get.to(() => HospitalDetailView());}, child: Text('TESTBUTTON')),
                           //TextButton(onPressed: () {Get.to(() => HospitalRatingScreen());}, child: Text('TESTBUTTON')),
                         ],
                       ),

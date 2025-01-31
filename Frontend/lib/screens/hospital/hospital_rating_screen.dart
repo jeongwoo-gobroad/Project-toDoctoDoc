@@ -4,7 +4,9 @@ import 'package:to_doc/screens/hospital/star_rating_editor.dart';
 import '../../controllers/hospital/hospital_review_controller.dart';
 
 class HospitalRatingScreen extends StatefulWidget {
-  const HospitalRatingScreen({super.key});
+  const HospitalRatingScreen({super.key, required this.hospitalId});
+
+  final String hospitalId;
 
   @override
   State<HospitalRatingScreen> createState() => _HospitalRatingScreenState();
@@ -53,6 +55,8 @@ class _HospitalRatingScreenState extends State<HospitalRatingScreen> {
                 SizedBox(height: 50,),
                 StarRating(
                   rating: rating,
+                  starSize: 50,
+                  isControllable: true,
                   onRatingChanged: (rating) => setState(() => this.rating = rating),
                 ),
                 SizedBox(height: 20,),
@@ -123,7 +127,7 @@ class _HospitalRatingScreenState extends State<HospitalRatingScreen> {
                   height: 50,
                   child: ElevatedButton(
                       onPressed: () {
-
+                        hospitalReviewController.postUserReview(widget.hospitalId, rating, textEditingController.text);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:to_doc/controllers/careplus/appointment_controller.dart';
 import 'package:to_doc/navigation_menu.dart';
 import 'package:to_doc/screens/careplus/appointment_listview.dart';
+import 'package:to_doc/screens/hospital/visited_hospital_screen.dart';
 import 'package:to_doc/screens/myPost.dart';
 import 'package:to_doc/screens/user_edit.dart';
 
@@ -73,6 +74,14 @@ class SideMenu extends StatelessWidget {
             title: Text('예약 리스트'),
             onTap: (){
               onStartAppointmentListView();
+            },
+            trailing: Icon(Icons.navigate_next),
+          ),
+          ListTile(
+            leading: Icon(Icons.local_hospital),
+            title: Text('방문한 병원 리스트'),
+            onTap: (){
+              Get.to(()=>VisitedHospitalScreen());
             },
             trailing: Icon(Icons.navigate_next),
           ),
