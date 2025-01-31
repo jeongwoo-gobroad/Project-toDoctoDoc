@@ -51,11 +51,11 @@ const ifDailyRequestNotExceededThenProceed = async (req, res, next) => {
 const ifDailyChatNotExceededThenProceed = async (req, res, next) => {
     const user = await getTokenInformation(req, res);
 
-    if (user.isPremium) {
-        next();
+    // if (user.isPremium) {
+    //     next();
 
-        return;
-    }
+    //     return;
+    // }
 
     try {
         const db = await User.findById(user.userid);
@@ -73,13 +73,9 @@ const ifDailyChatNotExceededThenProceed = async (req, res, next) => {
     
             return;
         } else {
-            limits.dailyChatCount += 1;
+            // limits.dailyChatCount += 1;
     
             try {
-                await User.findByIdAndUpdate(user.userid, {
-                    limits: limits
-                });
-    
                 next();
     
                 return;

@@ -258,30 +258,29 @@ const aiChatting = async (socket, next) => {
         }
 
         const user = await User.findById(userid.user);
-    
-        // console.log("Phase 1");
-    
-        // console.log(socket);
-    
-        if (!user.isPremium) {
-            const limits = user.limits;
-            const current = new Date();
-    
-            if (new Date(limits.dailyChatDate) !== current.toDateString()) {
-                limits.dailyChatDate = current;
-                limits.dailyChatCount = 0;
-            }
-    
-            if (limits.dailyChatCount >= 50) {
-                socket.emit('aichat', "일일 대화 한도가 초과되었습니다. 하루에 50개의 말풍선만을 사용할 수 있습니다.");
-    
-                return;
-            }
-        }
         
         // await socket.join(roomNo);
     
         socket.on('aichat', async (data) => {
+            const current = new Date();
+    
+            if ((new Date(user.limits.dailyChatDate)).toLocaleDateString() !== current.toLocaleDateString()) {
+                user.limits.dailyChatDate = current;
+                user.limits.dailyChatCount = 0;
+            }
+    
+            if (user.limits.dailyChatCount >= 50) {
+                socket.emit('aichat', "죄송하지만, 일일 대화 한도가 초과되었습니다. 하루에 50개의 말풍선만을 사용할 수 있습니다.");
+    
+                return;
+            }
+
+            user.limits.dailyChatCount += 1;
+
+            // console.log(user.limits.dailyChatCount);
+
+            await user.save();
+
             const sentence = data;
     
             // console.log("Phase 2");
