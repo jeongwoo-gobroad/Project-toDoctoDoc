@@ -67,11 +67,7 @@ router.get(["/appointment/getWithAppid/:appid"],
                 return;
             }
 
-            if (appointment.doctor.isPremiumPsy) {
-                psy = await Premium_Psychiatry.findById(appointment.doctor.myPsyID);
-            } else {
-                psy = await Psychiatry.findById(appointment.doctor.myPsyID);
-            }
+            psy = await Psychiatry.findById(appointment.doctor.myPsyID);
 
             res.status(200).json(returnResponse(false, "appointment", {appointment: appointment, psy: psy}));
 

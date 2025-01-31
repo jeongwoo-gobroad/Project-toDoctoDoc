@@ -272,8 +272,8 @@ const aiChatting = async (socket, next) => {
                 limits.dailyChatCount = 0;
             }
     
-            if (limits.dailyChatCount >= 10) {
-                socket.emit('aichat', "일일 대화 한도가 초과되었습니다. 무료 계정은 하루에 10개의 말풍선만을 사용할 수 있습니다.");
+            if (limits.dailyChatCount >= 50) {
+                socket.emit('aichat', "일일 대화 한도가 초과되었습니다. 하루에 50개의 말풍선만을 사용할 수 있습니다.");
     
                 return;
             }

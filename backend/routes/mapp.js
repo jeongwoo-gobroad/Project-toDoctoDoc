@@ -11,6 +11,7 @@ router.use('/curate', require("./mapp/user/curating"));
 router.use('/careplus', require("./mapp/user/curating-pro"));
 router.use('/careplus', require("./mapp/user/appointment"));
 router.use('/careplus', require("./mapp/user/dm"));
+router.use('/limits', require("./mapp/user/checkLimits"));
 router.use('/', require("./auth/token_refresh"));
 router.use('/review', require("./mapp/user/review"));
 

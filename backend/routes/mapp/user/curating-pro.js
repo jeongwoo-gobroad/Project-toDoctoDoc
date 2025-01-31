@@ -14,7 +14,7 @@ const Comment = require("../../../models/Comment");
 
 router.get(["/list"],
     checkIfLoggedIn,
-    ifPremiumThenProceed,
+    // ifPremiumThenProceed,
     async (req, res, next) => {
         const user = await getTokenInformation(req, res);
 
@@ -37,7 +37,7 @@ router.get(["/list"],
 
 router.get(["/post/:id"],
     checkIfLoggedIn,
-    ifPremiumThenProceed,
+    // ifPremiumThenProceed,
     async (req, res, next) => {
         const user = await getTokenInformation(req, res);
 
@@ -76,7 +76,7 @@ router.get(["/post/:id"],
 
 router.delete(["/post/:id"],
     checkIfLoggedIn,
-    ifPremiumThenProceed,
+    // ifPremiumThenProceed,
     async (req, res, next) => {
         try {
             const user = await getTokenInformation(req, res);
@@ -120,7 +120,7 @@ router.delete(["/post/:id"],
 
 router.post(["/curate"], 
     checkIfLoggedIn,
-    ifPremiumThenProceed,
+    // ifPremiumThenProceed,
     ifDailyCurateNotExceededThenProceed,
     async (req, res, next) => {
         try {
@@ -160,6 +160,8 @@ router.post(["/curate"],
 
             return;
         } catch (error) {
+            console.error(error, "errorAtCurating");
+
             res.status(400).json(returnResponse(true, "curating failed", "-"));
 
             return;

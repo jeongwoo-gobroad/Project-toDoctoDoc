@@ -15,7 +15,7 @@ const User = mongoose.model("User", UserSchema);
 
 router.get(["/visited"],
     checkIfLoggedIn,
-    ifPremiumThenProceed,
+    // ifPremiumThenProceed,
     async (req, res, next) => {
         const user = await getTokenInformation(req, res);
 
@@ -37,7 +37,7 @@ router.get(["/visited"],
 
 router.post(["/write"], 
     checkIfLoggedIn,
-    ifPremiumThenProceed,
+    // ifPremiumThenProceed,
     async (req, res, next) => {
         const user = await getTokenInformation(req, res);
         const {pid, stars, content} = req.body;
@@ -85,7 +85,7 @@ router.post(["/write"],
 
 router.patch(["/edit/:id"], 
     checkIfLoggedIn,
-    ifPremiumThenProceed,
+    // ifPremiumThenProceed,
     async (req, res, next) => {
         const user = await getTokenInformation(req, res);
         const {stars, content, pid} = req.body;
@@ -126,7 +126,7 @@ router.patch(["/edit/:id"],
 
 router.delete(["/delete/:id"], 
     checkIfLoggedIn,
-    ifPremiumThenProceed,
+    // ifPremiumThenProceed,
     async (req, res, next) => {
         const user = await getTokenInformation(req, res);
         const {pid} = req.body;
@@ -165,7 +165,7 @@ router.delete(["/delete/:id"],
 
 router.get(["/listing/:placeid"], 
     checkIfLoggedIn,
-    ifPremiumThenProceed,
+    // ifPremiumThenProceed,
     async (req, res, next) => {
         try {
             const reviews = await Psychiatry.findById(req.params.placeid).populate('reviews', '-user');
@@ -185,7 +185,7 @@ router.get(["/listing/:placeid"],
 
 router.get(["/myReviews"],
     checkIfLoggedIn,
-    ifPremiumThenProceed,
+    // ifPremiumThenProceed,
     async (req, res, next) => {
         const user = await getTokenInformation(req, res);
 
