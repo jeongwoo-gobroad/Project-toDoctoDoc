@@ -10,6 +10,7 @@ const Review = require("../../../models/Review");
 const Premium_Psychiatry = require("../../../models/Premium_Psychiatry");
 const Chat = require("../../../models/Chat");
 const Psychiatry = require("../../../models/Psychiatry");
+const userEmitter = require("../../../events/eventDrivenLists");
 
 const User = mongoose.model("User", UserSchema);
 
@@ -48,10 +49,12 @@ router.post(["/write"],
             });
 
             if (chat.doctor.isPremiumPsy) {
+                userEmitter.emit('reviewUpdated', pid, true, 0, stars, -1);
                 await Premium_Psychiatry.findByIdAndUpdate(pid, {
                     $push: {reviews: review._id}
                 });
             } else {
+                userEmitter.emit('reviewUpdated', pid, false, 0, stars, -1);
                 await Psychiatry.findByIdAndUpdate(pid, {
                     $push: {reviews: review._id}
                 });
@@ -75,7 +78,7 @@ router.patch(["/edit/:id"],
     ifPremiumThenProceed,
     async (req, res, next) => {
         const user = await getTokenInformation(req, res);
-        const {stars, content} = req.body;
+        const {stars, content, pid, isPremiumPsy} = req.body;
 
         try {
             const review = await Review.findById(req.params.id);
@@ -89,6 +92,8 @@ router.patch(["/edit/:id"],
             if (stars < 0 || stars > 5) {
                 stars = 5;
             }
+
+            userEmitter.emit('reviewUpdated', pid, isPremiumPsy, review.stars, stars, 0);
 
             await Review.findByIdAndUpdate(req.params.id, {
                 stars: stars,
@@ -114,6 +119,7 @@ router.delete(["/delete/:id"],
     ifPremiumThenProceed,
     async (req, res, next) => {
         const user = await getTokenInformation(req, res);
+        const {pid, isPremiumPsy} = req.body;
 
         try {
             const review = await Review.findById(req.params.id);
@@ -123,6 +129,8 @@ router.delete(["/delete/:id"],
 
                 return;
             }
+
+            userEmitter.emit('reviewUpdated', pid, isPremiumPsy, review.stars, 0, 1);
 
             await User.findByIdAndUpdate(user.userid, {
                 $pull: {reviews: req.params.id}

@@ -28,7 +28,7 @@ const Premium_Psychiatry_Schema = new mongoose.Schema({
     },
     stars: {
         type: Number,
-        default: 4,
+        default: 5,
     },
     reviews: [{
         type: mongoose.Schema.Types.ObjectId,

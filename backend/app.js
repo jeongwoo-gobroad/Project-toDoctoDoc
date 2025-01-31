@@ -15,6 +15,7 @@ const socket = require("./routes/socket/socket").setServer;
 const connectFCM = require("./routes/mapp/push/fcm");
 const userEmitter = require("./events/eventDrivenLists");
 const tagRefreshWorks = require("./serverSideWorks/eventWorks");
+const reviewRefreshWorks = require("./serverSideWorks/reviewAverage");
 
 const app = express();
 const server = http.createServer(app);
@@ -41,6 +42,7 @@ tagRefreshWorks();
 
 /* event-driven */
 userEmitter.on('postUpdated', tagRefreshWorks);
+userEmitter.on('reviewUpdated', reviewRefreshWorks);
 
 app.use(expressLayouts);
 app.set("view engine", "ejs");

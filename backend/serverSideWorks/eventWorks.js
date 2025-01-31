@@ -5,7 +5,7 @@ const tagRefreshWorks =  (args) => {
     console.log("Event Driven:: Post Tag Updating");
     try {
         bubbleCollection();
-        tagCollection();
+        // tagCollection();
     } catch (error) {
         console.error(error, "errorAtPostTagUpdatingEvent");
     }
