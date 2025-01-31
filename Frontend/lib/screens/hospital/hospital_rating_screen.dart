@@ -34,6 +34,45 @@ class _HospitalRatingScreenState extends State<HospitalRatingScreen> {
   TextEditingController textEditingController = TextEditingController();
   HospitalReviewController hospitalReviewController = HospitalReviewController();
 
+  Future<void> sendReviewApprovalAlert(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('주의'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                  '리뷰를 정말 제출하시겠습니까?',
+                  style: TextStyle(fontWeight: FontWeight.bold),),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                hospitalReviewController.postUserReview(widget.hospitalId, rating, textEditingController.text);
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll(Colors.green)),
+              child: Text('승낙', style: TextStyle(color: Colors.black),),
+            ),
+            TextButton(
+              child: Text('취소', style: TextStyle(color: Colors.grey),),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,8 +166,9 @@ class _HospitalRatingScreenState extends State<HospitalRatingScreen> {
                   height: 50,
                   child: ElevatedButton(
                       onPressed: () {
-                        hospitalReviewController.postUserReview(widget.hospitalId, rating, textEditingController.text);
-                      },
+                        sendReviewApprovalAlert(context);
+
+                        },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         shape: RoundedRectangleBorder(
