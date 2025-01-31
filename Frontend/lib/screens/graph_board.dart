@@ -15,7 +15,6 @@ class Bubble {
   Color color;
   Offset? dragTarget;
   Offset? dragOffset;
-  bool isStable = false;
 
   Bubble({
     required this.position,
@@ -45,14 +44,14 @@ class _GraphBoardState extends State<GraphBoard>
   double screenWidth = 0;
   double screenHeight = 0;
   final double bottomNavHeight = 80;
-  bool _showTrash = false;
+
   @override
   void initState() {
     super.initState();
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 10),
+      duration: const Duration(days: 1),
     )..addListener(_updatePhysics);
 
     //graphController.getGraph();
@@ -183,25 +182,6 @@ class _GraphBoardState extends State<GraphBoard>
       }
     }
     setState(() {});
-    bool allStable = true;
-for (final bubble in bubbles) {
-  final groundY = screenHeight - bottomNavHeight - bubble.radius;
-  final isOnGround = bubble.position.dy >= groundY - 2.0;
-  final isVelocityLow = bubble.velocity.distance < 2.0;
-  
-  bubble.isStable = isVelocityLow;
-  if (!bubble.isStable) allStable = false;
-}
-
-if (allStable) {
-  if (!_showTrash) {
-    setState(() => _showTrash = true);
-  }
-} else {
-  if (_showTrash) {
-    setState(() => _showTrash = false);
-  }
-}
   }
 
   void _handleBubbleCollisions(double dt) {
@@ -298,20 +278,18 @@ if (allStable) {
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: Obx(() {
-      if (graphController.isLoading == true) {
-        return Center(child: CircularProgressIndicator());
-      } else {
-        return GestureDetector(
-          onPanStart: (d) => _handlePanStart(d.globalPosition),
-          onPanUpdate: (d) => _handlePanUpdate(d.globalPosition),
-          onPanEnd: (d) => _handlePanEnd(),
-          child: Stack(
-            children: [
-              // Existing bubbles
-              ...bubbles.map((bubble) {
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Obx(() {
+        if (graphController.isLoading == true) {
+          return Center(child: CircularProgressIndicator());
+        } else {
+          return GestureDetector(
+            onPanStart: (d) => _handlePanStart(d.globalPosition),
+            onPanUpdate: (d) => _handlePanUpdate(d.globalPosition),
+            onPanEnd: (d) => _handlePanEnd(),
+            child: Stack(
+              children: bubbles.map((bubble) {
                 return Positioned(
                   left: bubble.position.dx - bubble.radius,
                   top: bubble.position.dy - bubble.radius,
@@ -335,59 +313,12 @@ Widget build(BuildContext context) {
                   ),
                 );
               }).toList(),
-              
-              // Trash button
-              if (_showTrash)
-                Positioned(
-                  top: 30,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          bubbles.clear();
-                          _showTrash = false;
-                        });
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(30),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 10,
-                              offset: Offset(0, 4),
-                            )
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.delete_forever, color: Colors.white),
-                            SizedBox(width: 8),
-                            Text(
-                              'Clear All Bubbles',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        );
-      }
-    }),
-  );
-}
+            ),
+          );
+        }
+      }),
+    );
+  }
 
   @override
   void dispose() {

@@ -54,7 +54,7 @@ class _HomeState extends State<Home> {
     super.initState();
     _getUserInfo();
     query.queryLimit();
-    query.chatLimit();
+    //query.chatLimit();
   }
 
   // 환영 문구 리스트

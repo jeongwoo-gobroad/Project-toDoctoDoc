@@ -125,55 +125,12 @@ class QueryController extends GetxController {
       }
       userDate.value = data['content']['userDate'];
 
-      //print('query: ${query}, userTotal: ${userTotal}, userDate: ${userDate}');
+      print('query: ${query}, userTotal: ${userTotal}, userDate: ${userDate}');
     }
   
   }
 
-  Future<void> chatLimit() async {
-    dio.interceptors.add(CustomInterceptor());
-
-    final prefs = await SharedPreferences.getInstance();
-
-    final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/limits/chats',
-      options: Options(
-        headers: {
-          'Content-Type': 'application/json',
-          'accessToken': 'true',
-        },
-      ),
-    );
-
-    if (response.statusCode == 200) {
-      isLimited.value = false;
-      final data = json.decode(response.data);
-
-      print(data);
-      // query.value = data['content']['query'];
-
-      // DateTime serverDate = DateTime.parse(data['content']['userDate']);
-      // DateTime today = DateTime.now();
-      // // print(serverDate);
-      // // print(today);
-
-      // if (!_isSameDay(serverDate, today)) {
-      //   userTotal.value = 0;
-      // } else {
-      //   print('같은 날짜');
-      //   userTotal.value = data['content']['userTotal'];
-      // }
-      // if(_isLimited()){
-      //   isLimited.value = true;
-      // }
-      // else{
-      //   isLimited.value = false;
-      // }
-      // userDate.value = data['content']['userDate'];
-
-      //print('query: ${query}, userTotal: ${userTotal}, userDate: ${userDate}');
-    }
-  }
+  
   
 }
 /*
