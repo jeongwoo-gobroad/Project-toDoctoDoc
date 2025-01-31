@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../auth/auth_dio.dart';
 
 class AiChatController extends GetxController{
@@ -42,5 +43,71 @@ class AiChatController extends GetxController{
       return;
     }
     isLoading.value = false;
+  }
+
+
+
+  bool _isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+  bool _isLimited(){
+    if(chats.value == userTotal.value){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
+  RxBool isLimited = false.obs;
+  RxInt chats = 0.obs;
+  RxInt userTotal = 0.obs;
+  RxString userDate = "".obs;
+
+  Future<void> chatLimit() async {
+    dio.interceptors.add(CustomInterceptor());
+
+    final prefs = await SharedPreferences.getInstance();
+
+    final response = await dio.get(
+      'http://jeongwoo-kim-web.myds.me:3000/mapp/limits/chats',
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          'accessToken': 'true',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      isLimited.value = false;
+      final data = json.decode(response.data);
+
+      print(data);
+      chats.value = data['content']['chats'];
+
+      DateTime serverDate = DateTime.parse(data['content']['userDate']);
+      DateTime today = DateTime.now();
+      print(serverDate);
+      print(today);
+      userTotal.value = data['content']['userTotal'];
+      // if (!_isSameDay(serverDate, today)) {
+      //   userTotal.value = 0;
+      // } else {
+      //   print('같은 날짜');
+      //   userTotal.value = data['content']['userTotal'];
+      // }
+      if(_isLimited()){
+        isLimited.value = true;
+      }
+      else{
+        isLimited.value = false;
+      }
+      userDate.value = data['content']['userDate'];
+
+      print('chats: ${chats}, userTotal: ${userTotal}, userDate: ${userDate}');
+    }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/screens/aboutpage.dart';
@@ -17,6 +18,15 @@ class AichatMain extends StatefulWidget {
 }
 class _AichatMain extends State<AichatMain> {
   UserinfoController userinfoController = Get.find<UserinfoController>();
+  AiChatController aiChatController = Get.put(AiChatController(dio: Dio()));
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    aiChatController.chatLimit();
+    
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

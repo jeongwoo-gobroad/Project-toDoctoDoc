@@ -12,6 +12,11 @@ class Airesult extends StatelessWidget {
  @override
   Widget build(BuildContext context) {
     return Obx(() {
+      if (queryController.isLimited.value) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showQueryLimitDialog(context);
+      });
+    }
       if (queryController.isLoading.value) {
         // 로딩 상태일 때
         return Scaffold(
@@ -98,6 +103,25 @@ class Airesult extends StatelessWidget {
       }
     });
   }
+  void _showQueryLimitDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('쿼리 사용 제한'),
+        content: Text('오늘 사용 가능한 쿼리 횟수를 모두 사용했습니다.'),
+        actions: <Widget>[
+          TextButton(
+            child: Text('확인'),
+            onPressed: () {
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
 }
 
 

@@ -50,9 +50,9 @@ class AiChatListController extends GetxController {
         );
         chatList.refresh();
 
-        print(chatList);
-        print(chatList.length);
-        print(chatList[0]);
+        // print(chatList);
+        // print(chatList.length);
+        // print(chatList[0]);
       }
     }
     else if (response.statusCode == 201) {

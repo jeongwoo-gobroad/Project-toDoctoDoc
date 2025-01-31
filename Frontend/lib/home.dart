@@ -53,6 +53,8 @@ class _HomeState extends State<Home> {
     // TODO: implement initState
     super.initState();
     _getUserInfo();
+    query.queryLimit();
+    query.chatLimit();
   }
 
   // 환영 문구 리스트
@@ -95,6 +97,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(context) {
+    bool isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
     return Scaffold(
       //floating 아이콘 
 /*
@@ -153,7 +156,7 @@ class _HomeState extends State<Home> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                  
+                          if (!isKeyboardVisible) _buildQueryUsageDisplay(),
                           SizedBox(height: 20),
                   
                           Container(
@@ -179,6 +182,7 @@ class _HomeState extends State<Home> {
                                   child: Text("\”", style: TextStyle(fontSize: 100, color:_green)),
                                   padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                                 ),
+                                
                               ],
                             ),
                           ),
@@ -193,48 +197,42 @@ class _HomeState extends State<Home> {
               ),
 
               Padding(
-                padding: const EdgeInsets.all(16),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: _green,
-                    borderRadius: BorderRadius.circular(40),
-                    border: Border(bottom: BorderSide.none),
-                    ),
-
-                  child: TextField(
-                    controller: queryController,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 20,
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      if (isKeyboardVisible) _buildQueryUsageDisplay(),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: _green,
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        child: TextField(
+                          controller: queryController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 20),
+                            hintText: '${queryQuotes[randIndex3]}',
+                            hintStyle: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                            prefixIcon: IconButton(
+                              onPressed: () {},
+                              icon: Icon(Icons.mic),
+                            ),
+                            suffixIcon: IconButton(
+                              onPressed: () async {
+                                if (queryController.text.isNotEmpty) {
+                                  query.queryLimit();
+                                  query.sendQuery(queryController.text);
+                                  Get.to(() => Airesult());
+                                }
+                              },
+                              icon: Icon(Icons.arrow_circle_right_outlined, size: 45),
+                            ),
+                          ),
+                        ),
                       ),
-                      hintText: '${queryQuotes[randIndex3]}',
-                      hintStyle: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-
-                      prefixIcon: IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.mic)
-                      ),
-                      prefixIconConstraints: BoxConstraints(
-                        minWidth: 60,
-                      ),
-
-                      suffixIcon: IconButton(
-                          onPressed: () async{
-                            if (queryController.text != '') {
-                              query.sendQuery(queryController.text);
-                              Get.to(() => Airesult());
-                            }
-                          },
-                          icon: Icon(Icons.arrow_circle_right_outlined, size: 45)
-                      ),
-                    ),
-
-
+                    ],
                   ),
                 ),
-              ),
 
 
             ],
@@ -242,6 +240,21 @@ class _HomeState extends State<Home> {
         );
     
     
+  }
+  Widget _buildQueryUsageDisplay() {
+    return Obx(() => Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Text(
+        '일일 제한 횟수: 현재 - ${query.userTotal.value} / 총 - ${query.query.value}',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 16,
+          color: query.userTotal.value >= query.query.value 
+            ? Colors.red 
+            : Colors.black,
+        ),
+      ),
+    ));
   }
 }
 
