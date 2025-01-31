@@ -209,9 +209,9 @@ class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
         actions: <Widget>[
           TextButton(
             child: Text('확인'),
-            onPressed: () {
-              Navigator.of(context).popUntil((route) => route.isFirst);
-            },
+            onPressed: () =>
+              Navigator.of(context).popUntil((route) => route.isFirst)
+            ,
           ),
         ],
       );

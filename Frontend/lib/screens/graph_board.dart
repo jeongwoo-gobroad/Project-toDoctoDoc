@@ -35,15 +35,17 @@ class _GraphBoardState extends State<GraphBoard>
   late AnimationController _controller;
   final Random _random = Random();
   final List<Bubble> bubbles = [];
-  final double gravity = 180.0; //떨어지느속도도
-  final double restitution = 0.3; //튀는정도 (탄성)
-  final double springStrength = 10.0; //드래그 반응속도
-  final double collisionSpringStrength = 300.0; //서로 밀어내는 정도
+  final double gravity = 180.0;
+  final double restitution = 0.3;
+  final double springStrength = 10.0;
+  final double collisionSpringStrength = 300.0;
   final TagGraphController graphController =
       Get.put(TagGraphController(dio: Dio()));
   double screenWidth = 0;
   double screenHeight = 0;
   final double bottomNavHeight = 80;
+  bool showTrashCan = false;
+  final double trashCanHeight = 50.0;
 
   @override
   void initState() {
@@ -54,135 +56,109 @@ class _GraphBoardState extends State<GraphBoard>
       duration: const Duration(days: 1),
     )..addListener(_updatePhysics);
 
-    //graphController.getGraph();
-
     graphController.getGraph().then((_) {
       _createTagBallsFromServerData();
       _controller.forward();
     });
+
+    Timer(Duration(seconds: 5), () {
+      setState(() {
+        showTrashCan = true;
+      });
+    });
   }
 
   void _createTagBallsFromServerData() {
-    // final sortedTags = graphController.tagList.entries.toList()
-    //   ..sort((a, b) => b.value.compareTo(a.value));
-
-    // final maxCount = sortedTags.first.value.toDouble();
-    // final minCount = sortedTags.last.value.toDouble();
-
-    // screenWidth = MediaQuery.of(context).size.width;
-    // screenHeight = MediaQuery.of(context).size.height;
-
-    // final double startY = -100;
-    // final double padding = 10;
-
-    // for (final entry in sortedTags) {
-    //   final tag = entry.key;
-    //   final count = entry.value;
-
-    //   final normalizedSize = (count - minCount) / (maxCount - minCount);
-    //   final radius = 20.0 + (normalizedSize * 20.0);
-
-    //   final position = Offset(
-    //     _random.nextDouble() * (screenWidth - radius * 2) + radius,
-    //     startY - _random.nextDouble() * 100,
-    //   );
-
-    //   bubbles.add(Bubble(
-    //     position: position,
-    //     radius: radius,
-    //     tag: tag,
-    //     velocity: Offset(0, 0),
-    //   ));
-    // }
-
     final tags = graphController.tags;
-  
-  //태그 카운트 최대값
-  final maxTagCount = tags.values
-      .map((info) => info.tagCount)
-      .fold(0.0, (a, b) => a > b ? a : b);
-  
-  //조회수 최대값
-  final maxViewCount = tags.values
-      .map((info) => info.viewCount)
-      .fold(0.0, (a, b) => a > b ? a : b);
 
-  screenWidth = MediaQuery.of(context).size.width;
-  screenHeight = MediaQuery.of(context).size.height;
+    final maxTagCount = tags.values
+        .map((info) => info.tagCount)
+        .fold(0.0, (a, b) => a > b ? a : b);
+    final maxViewCount = tags.values
+        .map((info) => info.viewCount)
+        .fold(0.0, (a, b) => a > b ? a : b);
 
-  //final double startY = -100;
-  final double startY = -100;
-  const baseHue = 240.0;
-  const minLightness = 0.60; //최대 진함(조회수 높을 때)
-  const maxLightness = 0.90; //최대 연함(조회수 낮을 때)
+    screenWidth = MediaQuery.of(context).size.width;
+    screenHeight = MediaQuery.of(context).size.height;
 
-  tags.forEach((tag, info) {
+    const baseHue = 240.0;
+    const minLightness = 0.60;
+    const maxLightness = 0.90;
 
-    final radius = 20.0 + (info.tagCount / maxTagCount) * 40.0;
-    
-    final lightness = maxLightness - 
-        (info.viewCount / maxViewCount) * (maxLightness - minLightness);
-    final hslColor = HSLColor.fromAHSL(
-      0.65, //투명도
-      baseHue, //색상
-      0.85, //채도
-      lightness.clamp(minLightness, maxLightness),
-    );
-    final color = hslColor.toColor();
-    
-    
+    tags.forEach((tag, info) {
+      final radius = 20.0 + (info.tagCount / maxTagCount) * 40.0;
+      final lightness = maxLightness -
+          (info.viewCount / maxViewCount) * (maxLightness - minLightness);
+      final hslColor = HSLColor.fromAHSL(
+        0.65,
+        baseHue,
+        0.85,
+        lightness.clamp(minLightness, maxLightness),
+      );
+      final color = hslColor.toColor();
 
-    final position = Offset(
-      _random.nextDouble() * (screenWidth - radius * 2) + radius,
-      startY - _random.nextDouble() * 100,
-    );
+      final position = Offset(
+        _random.nextDouble() * (screenWidth - radius * 2) + radius,
+        -100 - _random.nextDouble() * 100,
+      );
 
-    bubbles.add(Bubble(
-      position: position,
-      radius: radius,
-      tag: tag,
-      velocity: Offset(0, 0),
-      color: color,
-    ));
-  });
+      bubbles.add(Bubble(
+        position: position,
+        radius: radius,
+        tag: tag,
+        velocity: Offset(0, 0),
+        color: color,
+      ));
+    });
   }
 
   void _updatePhysics() {
-    final dt = 1 / 60;
-    screenWidth = MediaQuery.of(context).size.width;
-    screenHeight = MediaQuery.of(context).size.height;
-    _handleBubbleCollisions(dt);
-    for (final bubble in bubbles) {
-      if (bubble.dragTarget != null) {
-        final toTarget = bubble.dragTarget! - bubble.position;
-        bubble.velocity += toTarget * springStrength * dt;
-        bubble.velocity *= 0.9;
-      } else {
-        bubble.velocity += Offset(0, gravity) * dt;
-      }
-
-      bubble.position += bubble.velocity * dt;
-
-      final groundY = screenHeight - bottomNavHeight - bubble.radius;
-      if (bubble.position.dy > groundY) {
-        bubble.position = Offset(bubble.position.dx, groundY);
-        bubble.velocity =
-            Offset(bubble.velocity.dx, -bubble.velocity.dy * restitution);
-      }
-
-      if (bubble.position.dx - bubble.radius < 0) {
-        bubble.position = Offset(bubble.radius, bubble.position.dy);
-        bubble.velocity =
-            Offset(-bubble.velocity.dx * restitution, bubble.velocity.dy);
-      } else if (bubble.position.dx + bubble.radius > screenWidth) {
-        bubble.position =
-            Offset(screenWidth - bubble.radius, bubble.position.dy);
-        bubble.velocity =
-            Offset(-bubble.velocity.dx * restitution, bubble.velocity.dy);
-      }
+  final dt = 1 / 60;
+  screenWidth = MediaQuery.of(context).size.width;
+  screenHeight = MediaQuery.of(context).size.height;
+  _handleBubbleCollisions(dt);
+  
+  for (int i = bubbles.length - 1; i >= 0; i--) {
+    final bubble = bubbles[i];
+    
+    if (bubble.dragTarget != null) {
+      final toTarget = bubble.dragTarget! - bubble.position;
+      bubble.velocity += toTarget * springStrength * dt;
+      bubble.velocity *= 0.9;
+    } else {
+      bubble.velocity += Offset(0, gravity) * dt;
     }
-    setState(() {});
+
+    bubble.position += bubble.velocity * dt;
+
+    final groundY = screenHeight - bottomNavHeight - bubble.radius;
+    if (bubble.position.dy > groundY) {
+      bubble.position = Offset(bubble.position.dx, groundY);
+      bubble.velocity =
+          Offset(bubble.velocity.dx, -bubble.velocity.dy * restitution);
+    }
+
+    if (bubble.position.dx - bubble.radius < 0) {
+      bubble.position = Offset(bubble.radius, bubble.position.dy);
+      bubble.velocity =
+          Offset(-bubble.velocity.dx * restitution, bubble.velocity.dy);
+    } else if (bubble.position.dx + bubble.radius > screenWidth) {
+      bubble.position =
+          Offset(screenWidth - bubble.radius, bubble.position.dy);
+      bubble.velocity =
+          Offset(-bubble.velocity.dx * restitution, bubble.velocity.dy);
+    }
+
+  
+    if (showTrashCan && bubble.position.dy < trashCanHeight) {
+      setState(() {
+        bubbles.removeAt(i);
+      });
+    }
   }
+  
+  setState(() {});
+}
 
   void _handleBubbleCollisions(double dt) {
     for (int i = 0; i < bubbles.length; i++) {
@@ -243,12 +219,19 @@ class _GraphBoardState extends State<GraphBoard>
   }
 
   void _handlePanEnd() {
-    for (final bubble in bubbles) {
+    for (int i = 0; i < bubbles.length; i++) {
+      final bubble = bubbles[i];
       if (bubble.dragOffset != null) {
-        setState(() {
-          bubble.dragOffset = null;
-          bubble.dragTarget = null;
-        });
+        if (showTrashCan && bubble.position.dy < trashCanHeight) {
+          setState(() {
+            bubbles.removeAt(i);
+          });
+        } else {
+          setState(() {
+            bubble.dragOffset = null;
+            bubble.dragTarget = null;
+          });
+        }
         break;
       }
     }
@@ -289,30 +272,54 @@ class _GraphBoardState extends State<GraphBoard>
             onPanUpdate: (d) => _handlePanUpdate(d.globalPosition),
             onPanEnd: (d) => _handlePanEnd(),
             child: Stack(
-              children: bubbles.map((bubble) {
-                return Positioned(
-                  left: bubble.position.dx - bubble.radius,
-                  top: bubble.position.dy - bubble.radius,
-                  child: GestureDetector(
-                    onTap: () => _searchTagDetails(bubble.tag, 1),
+              children: [
+                if (showTrashCan)
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
                     child: Container(
-                      width: bubble.radius * 2,
-                      height: bubble.radius * 2,
+                      height: trashCanHeight,
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: bubble.color,
+                        color: Colors.red.withOpacity(0.3),
+                        borderRadius: BorderRadius.vertical(
+                          bottom: Radius.circular(20),
+                        ),
                       ),
                       child: Center(
-                        child: Text(
-                          bubble.tag,
-                          style: TextStyle(color: Colors.white),
-                          textAlign: TextAlign.center,
+                        child: Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                          size: 40,
                         ),
                       ),
                     ),
                   ),
-                );
-              }).toList(),
+                ...bubbles.map((bubble) {
+                  return Positioned(
+                    left: bubble.position.dx - bubble.radius,
+                    top: bubble.position.dy - bubble.radius,
+                    child: GestureDetector(
+                      onTap: () => _searchTagDetails(bubble.tag, 1),
+                      child: Container(
+                        width: bubble.radius * 2,
+                        height: bubble.radius * 2,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: bubble.color,
+                        ),
+                        child: Center(
+                          child: Text(
+                            bubble.tag,
+                            style: TextStyle(color: Colors.white),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ],
             ),
           );
         }

@@ -43,7 +43,7 @@ class _AiChatListState extends State<AiChatList> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    aiChatController.chatLimit();
+    //aiChatController.chatLimit();
     asyncLoad();
   }
 
@@ -59,36 +59,34 @@ class _AiChatListState extends State<AiChatList> {
     }
     return formattedDate;
   }
-  void _showQueryLimitDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('채팅 사용 제한'),
-        content: Text('오늘 사용 가능한 채팅 횟수를 모두 사용했습니다.'),
-        actions: <Widget>[
-          TextButton(
-            child: Text('확인'),
-            onPressed: () {
-              Navigator.of(context).popUntil((route) => route.isFirst);
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
+//   void _showQueryLimitDialog(BuildContext context) {
+//   showDialog(
+//     context: context,
+//     builder: (BuildContext context) {
+//       return AlertDialog(
+//         title: Text('채팅 사용 제한'),
+//         content: Text('오늘 사용 가능한 채팅 횟수를 모두 사용했습니다.'),
+//         actions: <Widget>[
+//           TextButton(
+//             child: Text('확인'),
+//             onPressed: () => Get.back
+//           ),
+//         ],
+//       );
+//     },
+//   );
+// }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(children: [
         Expanded(
           child: Obx(() {
-            if (aiChatController.isLimited.value) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                _showQueryLimitDialog(context);
-              });
-            }
+            // if (aiChatController.isLimited.value) {
+            //   WidgetsBinding.instance.addPostFrameCallback((_) {
+            //     _showQueryLimitDialog(context);
+            //   });
+            // }
             if (aiChatListController.isLoading.value) {
               return Center(child: CircularProgressIndicator());
             }
