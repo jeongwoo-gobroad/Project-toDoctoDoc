@@ -15,8 +15,6 @@ const socket = require("./routes/socket/socket").setServer;
 const connectFCM = require("./routes/mapp/push/fcm");
 const userEmitter = require("./events/eventDrivenLists");
 const tagRefreshWorks = require("./serverSideWorks/eventWorks");
-const { setInterval } = require("timers/promises");
-const subMessage = require("./routes/mapp/dm/kafkaSubscribe");
 
 const app = express();
 const server = http.createServer(app);
@@ -43,13 +41,6 @@ tagRefreshWorks();
 
 /* event-driven */
 userEmitter.on('postUpdated', tagRefreshWorks);
-setInterval(() => {
-    subMessage("678281688937bd1a777db9a7");
-}, 30);
-userEmitter.on('chatDataReceived', (data) => {
-    console.log("Wow");
-    console.log(data);
-});
 
 app.use(expressLayouts);
 app.set("view engine", "ejs");
