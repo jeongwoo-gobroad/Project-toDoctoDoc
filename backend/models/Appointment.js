@@ -47,7 +47,12 @@ const AppointmentSchema = new mongoose.Schema({
     },
     feedback: {
         type: FeedbackSchema,
-    }
+    },
+    chatId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Chat',
+        required: true,
+    },
 });
 
 module.exports = mongoose.model("Appointment", AppointmentSchema);

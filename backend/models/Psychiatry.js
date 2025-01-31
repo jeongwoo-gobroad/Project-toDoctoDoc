@@ -26,6 +26,10 @@ const Psychiatry_Schema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    stars: {
+        type: Number,
+        default: 4,
+    },
     reviews: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Review'

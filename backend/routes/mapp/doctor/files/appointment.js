@@ -85,7 +85,8 @@ router.post(["/set"],
             const appointment = await Appointment.create({
                 user: uid,
                 doctor: doctor.userid,
-                appointmentTime: new Date(time)
+                appointmentTime: new Date(time),
+                chatId: cid,
             });
 
             await Doctor.findByIdAndUpdate(doctor.userid, {
@@ -200,6 +201,12 @@ router.post(["/done"],
             appointment.hasAppointmentDone = true;
 
             await appointment.save();
+
+            if (!(await Chat.findById(appointment.chatId)).hasAppointmentDone) {
+                await Chat.findByIdAndUpdate(appointment.chatId, {
+                    hasAppointmentDone: true,
+                });
+            }
 
             sendAppointmentDonePushNotification(appointment.user.deviceIds, 
                 {

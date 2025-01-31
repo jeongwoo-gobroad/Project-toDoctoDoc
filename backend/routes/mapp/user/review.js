@@ -156,7 +156,12 @@ router.get(["/listing/:placeid"],
     ifPremiumThenProceed,
     async (req, res, next) => {
         try {
-            const reviews = await Premium_Psychiatry.findById(req.params.placeid).populate('reviews', '-user');
+            let reviews = false;
+            if (req.query.isPremium) {
+                reviews = await Premium_Psychiatry.findById(req.params.placeid).populate('reviews', '-user');
+            } else {
+                reviews = await Psychiatry.findById(req.params.placeid).populate('reviews', '-user');
+            }
 
             res.status(200).json(returnResponse(false, "reviewListing", reviews));
 

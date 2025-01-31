@@ -7,6 +7,7 @@ const User = mongoose.model('User', UserSchema);
 const jwt = require("jsonwebtoken");
 const { setCacheForThreeDaysAsync, getCache } = require("../../../../middleware/redisCaching");
 const sendDMPushNotification = require("../../push/dmPush");
+const pubMessage = require("../../dm/kafkaPublish");
 
 const chatting_doctor = async (socket, next) => {
     const token = socket.handshake.query.token;
@@ -112,6 +113,7 @@ const chatting_doctor = async (socket, next) => {
                     } else {
                         socket.to(struct.roomNo).emit("recvChat_user", {role: "doctor", message: struct.message, createdAt: now});
                         // console.log("doctor:: both");
+                        pubMessage("chat-dm-room", {role: "doctor", message: struct.message, createdAt: now});
                     }
         
                     return;
