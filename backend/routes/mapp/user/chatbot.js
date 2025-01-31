@@ -113,7 +113,7 @@ router.get(["/new"],
 
 router.get(["/get/:chatid"],
     checkIfLoggedIn,
-    ifDailyChatNotExceededThenProceed,
+    // ifDailyChatNotExceededThenProceed,
     async (req, res, next) => {
         try {
             const user = await getTokenInformation(req, res);
@@ -264,7 +264,7 @@ const aiChatting = async (socket, next) => {
         socket.on('aichat', async (data) => {
             const current = new Date();
     
-            if ((new Date(user.limits.dailyChatDate)).toLocaleDateString() !== current.toLocaleDateString()) {
+            if (user.limits.dailyChatDate.toLocaleDateString() !== current.toLocaleDateString()) {
                 user.limits.dailyChatDate = current;
                 user.limits.dailyChatCount = 0;
             }
