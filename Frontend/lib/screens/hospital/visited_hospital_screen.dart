@@ -50,7 +50,7 @@ class _VisitedHospitalScreenState extends State<VisitedHospitalScreen> {
           builder: (context, scrollController) {
             return SingleChildScrollView(
                 controller: scrollController,
-                child: SizedBox(height: 5000, child: HospitalDetailView(hospital: hospital))
+                child: SizedBox(height: 2000, child: HospitalDetailView(hospital: hospital))
             );
           }
         );

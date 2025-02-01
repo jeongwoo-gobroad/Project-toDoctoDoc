@@ -20,12 +20,10 @@ class CurationScreen extends StatefulWidget {
   _CurationScreenState createState() => _CurationScreenState();
 }
 
-class _CurationScreenState extends State<CurationScreen>
-    with SingleTickerProviderStateMixin {
+class _CurationScreenState extends State<CurationScreen> with SingleTickerProviderStateMixin {
   bool isPostExpanded = false;
   bool isAiExpanded = false;
-  final CurateListController curateListController =
-      Get.put(CurateListController(dio:Dio()));
+  final CurateListController curateListController = Get.put(CurateListController(dio:Dio()));
   final ViewController viewController = Get.find<ViewController>();
   final AiChatListController aiChatListController = Get.put(AiChatListController(dio: Dio()));
   final ChatController chatController = Get.put(ChatController(dio: Dio()));
@@ -57,12 +55,19 @@ class _CurationScreenState extends State<CurationScreen>
   }
   Future<void> _onRefresh() async{
     await curateListController.getPost(widget.currentId);
+    setState(() {});
+  }
+
+  asyncBefore() async {
+    await aiChatListController.getChatList();
+    await curateListController.getPost(widget.currentId);
+    setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    aiChatListController.getChatList();
+    asyncBefore();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 150),
       vsync: this,
@@ -306,6 +311,26 @@ class _CurationScreenState extends State<CurationScreen>
           onRefresh: _onRefresh,
           child: CustomScrollView(
             slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (curateListController.isLoading.value) ...[
+                        Center(child: CircularProgressIndicator()),
+                      ]
+                      else ... [
+                        Text('AI 요약', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+                        SizedBox(height: 10,),
+                        Text(curateListController.deepCurate),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),

@@ -19,7 +19,7 @@ class HospitalDetailView extends StatefulWidget {
 
 class _HospitalDetailViewState extends State<HospitalDetailView> {
   ScrollController pictureScrollController = ScrollController();
-  //HospitalInformationController hospitalInformationController = HospitalInformationController();
+
 
   Widget chartRow(BuildContext context, String label, double pct) {
     return Row(
@@ -119,18 +119,19 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
 
   Widget placeInform(Icon thisIcon, String description) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           SizedBox(
               //width: MediaQuery.of(context).size.width * 1 / 20,
               child: thisIcon,
           ),
+          SizedBox(width: 10,),
           Container(
-              color: Colors.blue,
+              //color: Colors.blue,
               width: MediaQuery.of(context).size.width * 3 / 4,
-              child: Text(description),
+              child: Text(description, maxLines: 2, overflow: TextOverflow.ellipsis,),
           ),
         ],
       ),
@@ -141,18 +142,46 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-        centerTitle: true,
-        title: Text(widget.hospital['name'],
-        style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+    appBar: AppBar(
+      titleSpacing: 20,
+      automaticallyImplyLeading: false,
+      title: Text(widget.hospital['name'], style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+      actions: <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Icon(Icons.verified, size: 25,
+              color: (widget.hospital['isPremiumPsy']) ? Colors.amber : Colors.grey
+          ),
+        ),
+      ],
     ),
     body: Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // TODO 병원 사진 LIST
-        //(height: 40, color: Colors.blue,),
+        //(height: 40, color: Colors,),
+
+        // TODO 간단한 병원 주소 및 연락처
         Container(
-          height: 300,
+          margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          /*decoration: BoxDecoration(
+            border: Border.all(color: Colors.red),
+          ),*/
+          child: Column(
+            children: [
+              placeInform(Icon(Icons.fmd_good_outlined, size: 30),
+                  '${widget.hospital['address']['address']} ${widget.hospital['address']['detailAddress']} ${widget.hospital['address']['extraAddress']}, ${widget.hospital['address']['postcode']}'),
+              placeInform(
+                  Icon(CupertinoIcons.time, size: 30), '시간(가)'),
+              placeInform(
+                  Icon(CupertinoIcons.phone, size: 30), widget.hospital['phone']),
+            ],
+
+          ),
+        ),
+
+        Container(
+          height: 250,
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             //controller: pictureScrollController,
@@ -171,31 +200,11 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
           ),
         ),
 
-
-        // TODO 간단한 병원 주소 및 연락처
-        Container(
-          margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.red),
-          ),
-          child: Column(
-            children: [
-              placeInform(Icon(Icons.fmd_good_outlined, size: 30),
-                  'ㅇㅇ리 ㅇㅇ면 ㅇㅇ읍 oo층 12123'),
-              placeInform(
-                  Icon(CupertinoIcons.time, size: 30), '10:00~10:00'),
-              placeInform(
-                  Icon(CupertinoIcons.phone, size: 30), '010-0000-0000'),
-            ],
-
-          ),
-        ),
-
         TextButton(
             onPressed: () {
               Get.to(()=>HospitalRatingScreen(hospitalId: widget.hospital['_id'],));
             },
-            child: Text('REVIEW'),
+            child: Text('리뷰 쓰기 (예외처리 안함 조심)'),
         ),
         
         
@@ -211,19 +220,19 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
               Column(
                 //mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Text('4.0',
+                  Text(widget.hospital['stars'].toString(),
                     //${{hospitalInformationController.averageRating}}',
                     style: TextStyle(fontWeight: FontWeight.bold,
                         fontSize: 50,
                         height: 1),),
                   StarRating(
-                    rating: 4.0,
+                    rating: widget.hospital['stars'],
                     starSize: 20,
                     isControllable: false,
                     onRatingChanged: (rating) => {},
                   ),
                   //SizedBox(height: 5,),
-                  Text('(10000개)'),
+                  Text('(${widget.hospital['reviews'].length ?? 0}개)'),
                 ],
               ),
 
@@ -262,15 +271,6 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
             reviewWidget(
                 'dafd', 1.5, 'asdgagsagagasgdagagagddgag\nafsadfafa',
                 DateTime.now(), false),
-            reviewWidget(
-                'asdf', 5.0, 'afdasfasfdfadfasdfad', DateTime.now(),
-                false),
-            reviewWidget(
-                'asdf', 5.0, 'afdasfasfdfadfasdfad', DateTime.now(),
-                true),
-            reviewWidget(
-                'asdf', 5.0, 'afdasfasfdfadfasdfad', DateTime.now(),
-                false),
           ],
         ),
 

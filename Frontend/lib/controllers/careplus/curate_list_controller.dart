@@ -23,8 +23,9 @@ class CurateListController extends GetxController {
   var comments = <Map<String, dynamic>>[].obs;
   //var posts
   var posts = <Map<String, dynamic>>[].obs;
-  UserinfoController userinfoController =
-      Get.put(UserinfoController(dio: Dio()));
+  UserinfoController userinfoController = Get.put(UserinfoController(dio: Dio()));
+
+  String deepCurate = 'null';
 
   // if(userinfoController.isPremium == 'true'){
   //   isPremium.value = true;
@@ -54,8 +55,11 @@ class CurateListController extends GetxController {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.data);
+      print('------------data');
       print(data);
       final ids = (data['content'] as List).map((item) => item['_id']).toList();
+      print('------------ids');
+
       print(ids); // _id 값 리스트 출력
       /*{error: false, result: careplus/list, content: [{_id: 677d595269eb1515eb40c500, comments: [], date: 2025-01-07T13:06:56.389Z}, {_id: 677d5b4169eb1515eb40c5a5, comments: [], date: 2025-01-07T13:06:56.389Z}, {_id: 677d5fa169eb1515eb40c6bb, comments: [], date: 2025-01-07T13:06:56.389Z}]}
 [677d595269eb1515eb40c500, 677d5b4169eb1515eb40c5a5, 677d5fa169eb1515eb40c6bb]
@@ -77,6 +81,8 @@ class CurateListController extends GetxController {
         });
 
         CurateList.refresh();
+
+        print('curatelist----------------');
         print(CurateList.value);
       }
       //print(content);
@@ -87,7 +93,7 @@ class CurateListController extends GetxController {
 
   Future<void> getPost(String id) async {
     // try {
-    //isLoading.value = true;
+    isLoading.value = true;
     final response = await dio.get(
       'http://jeongwoo-kim-web.myds.me:3000/mapp/careplus/post/$id',
       options: Options(
@@ -102,26 +108,42 @@ class CurateListController extends GetxController {
       final data = json.decode(response.data);
       print(data);
       //final posts = data['content']['posts'] as List;
-      if (data['content'] != null && data['content']['posts'] is List) {
+      if (data['content'] == null) {
+        isLoading.value = false;
+
+        return;
+      }
+
+
+      deepCurate = 'AI 요약이 없습니다';
+      if (data['content']['posts'] is List) {
         posts.value = (data['content']['posts'] as List)
             .map((e) => e as Map<String, dynamic>)
             .toList();
       }
-      if (data['content'] != null && data['content']['ai_chats'] is List) {
+      if (data['content']['ai_chats'] is List) {
         chatList.value = (data['content']['ai_chats'] as List)
             .map((e) => e as Map<String, dynamic>)
             .toList();
       }
-      if (data['content'] != null && data['content']['comments'] is List) {
+      if (data['content']['comments'] is List) {
         comments.value = (data['content']['comments'] as List)
             .map((e) => e as Map<String, dynamic>)
             .toList();
       }
+      if (data['content']['deepCurate'] != null) {
+        deepCurate = data['content']['deepCurate'];
+        print(deepCurate);
+      }
+
+      print('comment-----------------');
       print(comments);
       //print(posts);
 
       //print(content);
     }
+
+    isLoading.value = false;
   }
 
   Future<void> requestCurate() async {

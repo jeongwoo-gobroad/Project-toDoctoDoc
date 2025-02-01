@@ -12,12 +12,46 @@ class HospitalInformationController extends GetxController{
   //late Map<String,dynamic> hospital;
   //late Map<String,dynamic> review;
   late List<dynamic> review;
+  late Map<String, dynamic> hospital;
 
   var isReviewExisted = false;
   var isMyReviewExisted = false;
 
   double averageRating = 0.0;
   List<int> reviewRatingArr = [];
+
+  Future<bool> getHospitalInformation(String placeId) async {
+    isLoading = true.obs;
+
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
+
+    final response = await dio.get(
+        'http://jeongwoo-kim-web.myds.me:3000/mapp/curate/info/$placeId',
+        options: Options(headers: {
+          'Content-Type': 'application/json',
+          'accessToken': 'true',
+        },),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.data);
+      print(data);
+
+      if (data['content'] == null) {
+        return false;
+      }
+      hospital = data['content'];
+
+      isLoading.value = false;
+      return true;
+    } else{
+      print('코드: ${response.statusCode}');
+      return false;
+    }
+  }
+
+
 
 
   Future<bool> getHospitalReview(String chatId) async {

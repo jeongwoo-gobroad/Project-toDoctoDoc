@@ -11,7 +11,7 @@ import 'package:to_doc/screens/careplus/curate_feed.dart';
 import 'package:to_doc/screens/careplus/curate_home.dart';
 import 'package:to_doc/screens/careplus/curate_main.dart';
 import 'package:to_doc/screens/graph_test.dart';
-import 'package:to_doc/screens/map_screen.dart';
+import 'package:to_doc/screens/hospital/map_screen.dart';
 import 'package:to_doc/screens/graph_board.dart';
 
 class NavigationMenu extends StatelessWidget {

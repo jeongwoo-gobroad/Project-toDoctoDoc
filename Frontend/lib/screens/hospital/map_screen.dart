@@ -3,10 +3,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+import 'package:to_doc/controllers/hospital/hospital_information_controller.dart';
 import 'package:to_doc/controllers/map_controller.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/controllers/userInfo_controller.dart';
 import 'package:to_doc/navigator/side_menu.dart';
+import 'package:to_doc/screens/hospital/star_rating_editor.dart';
+
+import 'hospital_detail_view.dart';
 
 //import 'package:to_doc/map/marker.dart';
 
@@ -21,6 +25,7 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
   late ScrollController _scrollController;
   final MapController mapController = Get.put(MapController(dio: Dio()));
   UserinfoController userinfoController = Get.find<UserinfoController>();
+  HospitalInformationController hospitalInformationController = HospitalInformationController();
   double _mapHeight = 0.5; //지도 비율율
   bool isradiusNotSelected = true;
   bool showMap = true;
@@ -31,9 +36,9 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
    bool isSortByStars = false;
   bool showPremiumOnly = false;
 
+
   @override
   void initState() {
-    
     mapController.getMapInfo('1');
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
@@ -51,6 +56,37 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
 
     super.initState();
   }
+
+  openHospitalDetailView(BuildContext context, Map<String, dynamic> hospital) {
+    showModalBottomSheet(
+      //shape : ,
+      enableDrag: true,
+      showDragHandle: true,
+      backgroundColor: Colors.white,
+      context: context,
+      isScrollControlled: true,
+      elevation: 0,
+      builder: (context) {//(BuildContext context) => HospitalDetailView(),
+        return DraggableScrollableSheet(
+
+            expand: false,
+            snap: true,
+            snapSizes: [0.2, 1.0],
+            initialChildSize: 0.4,
+            minChildSize: 0.2,
+            maxChildSize: 1.0,
+            builder: (context, scrollController) {
+              return SingleChildScrollView(
+                  controller: scrollController,
+                  child: SizedBox(height: 2000, child: HospitalDetailView(hospital: hospital))
+              );
+            }
+        );
+      },
+    );
+  }
+
+
 
   void _scrollListener() {
     //스크롤 위치에 따라 지도높이조절
@@ -207,7 +243,6 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
                     ),
                   ),
 
-                  
                   _buildRadiusSelector(),
                 ]),
               ),
@@ -217,8 +252,7 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
                 (context, index) {
                   final hospital = mapController.psychiatryList[index];
                   final isPremium = hospital['isPremiumPsychiatry'];
-
-                  return Card(
+                  /*return  Card(
                     margin:
                         EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                     elevation: isPremium ? 8.0 : 2.0, //프리미엄 항목 그림자 강조조
@@ -230,99 +264,201 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
                               color: Colors.amber, width: 2.0) //프리미엄만 테두리처리리
                           : BorderSide.none,
                     ),
-                    child: ExpansionTile(
-                      onExpansionChanged: (isExpanded) {
-                        if(isExpanded){
-                        kakaoMapController.setCenter(LatLng(
-                            double.parse(hospital['y']),
-                            double.parse(hospital['x'])));
-                        }
-                      },
-                      leading: isPremium
-                          ? Icon(Icons.local_hospital,
-                              color: Colors.amber, size: 30)
-                          : Icon(Icons.local_hospital,
-                              color: Colors.blueAccent),
-                      title: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              hospital['place_name'],
-                              style: TextStyle(
-                                fontWeight: isPremium
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                                fontSize: 18.0,
-                              ),
-                            ),
+                    child: */
+                  return Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                    decoration: (isPremium) ? BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(color: Colors.amber, width: 2)
+                    ) : null,
+                      child: TextButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5),),
                           ),
-                          if (isPremium)
-                            Container(
-                              margin: EdgeInsets.only(left: 8.0),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 8.0, vertical: 4.0),
-                              decoration: BoxDecoration(
-                                color: Colors.amber,
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                              child: Text(
-                                '광고',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12.0,
+                          onPressed: () async {
+                            // TODO 웹 용 주석 처리 ; 앱에선 주석 해제 요망
+
+                            /*
+                            kakaoMapController.setCenter(LatLng(
+                              double.parse(hospital['y']),
+                              double.parse(hospital['x'])));
+                            */
+
+                            if (hospital['pid'] != null) {
+                              if (await hospitalInformationController.getHospitalInformation(hospital['pid'])) {
+                                openHospitalDetailView(context,
+                                    hospitalInformationController.hospital);
+                              }
+                            }
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 3, vertical: 5),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        hospital['place_name'],
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18.0,
+                                          color: (isPremium)? Colors.amber : Colors.black,
+                                        ),
+                                      ),
+                                    ),
+
+                                    Text('${hospital['distance']} m',
+                                      style: TextStyle(color: Colors.grey[800], fontWeight: FontWeight.bold,),
+                                    ),
+                                    SizedBox(width: 5,),
+                                    if (isPremium) Icon(Icons.verified, color: Colors.amber,),
+                                  ],
+                                ),
+                                SizedBox(height: 5,),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    if (hospital['phone'] != null) ...[
+                                      InkWell(
+                                        onTap: () {
+
+                                        },
+                                        child: SizedBox(
+                                          width: 200,
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.phone_android, color: Colors.black,),
+                                              Text(' ${hospital['phone']}', style: TextStyle(color: Colors.blue),)
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                    if (hospital['address_name'] != null) ... [
+                                      SizedBox(
+                                        //width: 250,
+                                        child: Row(
+                                          children: [
+                                            //Icon(Icons.fmd_good_outlined),
+                                            Text(' ${hospital['address_name']} ',
+                                              style: TextStyle(color: Colors.black),),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                                SizedBox(height: 5,),
+                                if (hospital['pid'] == null) Text('상세정보가 없습니다', style: TextStyle(color: Colors.grey),)
+                                else ... [
+                                  (hospital['stars'] == null)
+                                    ? Text('별점이 없습니다')
+                                    : StarRating(
+                                        rating: hospital['stars'],
+                                        starSize: 20,
+                                        isControllable: false,
+                                        onRatingChanged: (rating) => {},
+                                    ),
+                                ],
+                              ],
+                            ),
+                          /*onExpansionChanged: (isExpanded) {
+                            if(isExpanded){
+                            kakaoMapController.setCenter(LatLng(
+                                double.parse(hospital['y']),
+                                double.parse(hospital['x'])));
+                            }
+                          },
+                          leading: isPremium
+                              ? Icon(Icons.local_hospital,
+                                  color: Colors.amber, size: 30)
+                              : Icon(Icons.local_hospital,
+                                  color: Colors.blueAccent),
+                          title: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  hospital['place_name'],
+                                  style: TextStyle(
+                                    fontWeight: isPremium
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                    fontSize: 18.0,
+                                  ),
                                 ),
                               ),
-                            ),
-                        ],
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(hospital['address_name'] ?? '주소 없음'),
-                          if (isPremium)
-                            Row(
-                              children: List.generate(
-                                5,
-                                (index) => Icon(
-                                  index < (hospital['star'] ?? 0)
-                                      ? Icons.star_border
-                                      : Icons.star,
-                                  color: Colors.amber,
-                                  size: 20,
+                              if (isPremium)
+                                Container(
+                                  margin: EdgeInsets.only(left: 8.0),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 8.0, vertical: 4.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.amber,
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  child: Text(
+                                    '광고',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12.0,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          if (isPremium)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4.0),
-                              child: Text(
-                                '이 병원은 광고 서비스에 등록되어 있습니다.',
-                                style: TextStyle(
-                                    color: Colors.grey[600], fontSize: 12.0),
-                              ),
-                            ),
-                        ],
-                      ),
-                      trailing: Text(
-                        '${hospital['distance']} m',
-                        style: TextStyle(
-                          color: Colors.grey[800],
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                            '전화번호: ${hospital['phone']}',
+                            ],
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(hospital['address_name'] ?? '주소 없음'),
+                              if (isPremium)
+                                Row(
+                                  children: List.generate(
+                                    5,
+                                    (index) => Icon(
+                                      index < (hospital['star'] ?? 0)
+                                          ? Icons.star_border
+                                          : Icons.star,
+                                      color: Colors.amber,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ),
+                              if (isPremium)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4.0),
+                                  child: Text(
+                                    '이 병원은 광고 서비스에 등록되어 있습니다.',
+                                    style: TextStyle(
+                                        color: Colors.grey[600], fontSize: 12.0),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          trailing: Text(
+                            '${hospital['distance']} m',
                             style: TextStyle(
-                              fontSize: 16.0,
+                              color: Colors.grey[800],
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ),
-                      ],
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Text(
+                                '전화번호: ${hospital['phone']}',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),*/
+                      ),
                     ),
                   );
                 },
