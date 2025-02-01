@@ -61,4 +61,9 @@ class ChatSocketService {
   void onUserReceived(Function callback) {
     socket.on('chatReceived', (data) =>callback(data));
   }
+
+  void onDisconnect() {
+    print("ONDISCONNECT");
+    socket.disconnect();
+  }
 }

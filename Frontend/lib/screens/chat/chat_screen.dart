@@ -66,13 +66,17 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     }
 
     setState(() {
-
+      Future.delayed(Duration(milliseconds: 100), () {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      });
     });
 
 
     // TODO 예전 채팅 폰에 저장된 거 불러 오기
-
-
 
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -81,10 +85,14 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         print('user chat received');
         print('data1');
         print(data);
+
+        var tempTime = data['createdAt'];
+        DateTime time = DateTime.fromMillisecondsSinceEpoch(tempTime);
+
         if (this.mounted) {
           setState(() {
-            _messageList.add(ChatObject(content: data['message'], role: 'doctor', createdAt: DateTime.now()));
-            chatDb.saveChat(widget.chatId, widget.doctorId, data['message'], DateTime.now(), 'doctor');
+            _messageList.add(ChatObject(content: data['message'], role: 'doctor', createdAt: time.toLocal()));
+            chatDb.saveChat(widget.chatId, widget.doctorId, data['message'], time, 'doctor');
 
             Future.delayed(Duration(milliseconds: 100), () {
               _scrollController.animateTo(
@@ -144,60 +152,65 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         //centerTitle: true,
         shape: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
       ),
-      body: Column(
-        children: [
+      body: PopScope(
+        onPopInvokedWithResult: (didPop, result) {
+          socketService.onDisconnect();
+        },
+        child: Column(
+          children: [
 
-          // 약속 알람 //
-          Obx(() {
-            if (chatAppointmentController.isLoading.value) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            return upperAppointmentInform(appointmentController: chatAppointmentController);
-          }),
+            // 약속 알람 //
+            Obx(() {
+              if (chatAppointmentController.isLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              return upperAppointmentInform(appointmentController: chatAppointmentController);
+            }),
 
-          // 채팅 리스트 //
-          Obx(() {
-            if (isLoading.value) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            return makeChatList(messageList: _messageList, scrollController: _scrollController, updateUnread: updateUnread,);
-          }),
+            // 채팅 리스트 //
+            Obx(() {
+              if (isLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              return makeChatList(messageList: _messageList, scrollController: _scrollController, updateUnread: updateUnread,);
+            }),
 
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
 
-            child: TextField(
-              maxLines: null,
-              controller: messageController,
-              onSubmitted: (value) {
-                if (value.isNotEmpty) {
-                  sendText(value);
-                }
-              },
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Color.fromARGB(255, 244, 242, 248),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(40),
-                    borderSide: BorderSide(width: 0, style: BorderStyle.none)
-                ),
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                hintText: '메시지를 입력하세요',
-                suffixIcon: IconButton(
-                    onPressed: () {
-                      if (messageController.text.isNotEmpty) {
-                        sendText(messageController.text);
-                      }
-                    },
-                    icon: Icon(Icons.arrow_circle_right_outlined, size: 45)
+              child: TextField(
+                maxLines: null,
+                controller: messageController,
+                onSubmitted: (value) {
+                  if (value.isNotEmpty) {
+                    sendText(value);
+                  }
+                },
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Color.fromARGB(255, 244, 242, 248),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(40),
+                      borderSide: BorderSide(width: 0, style: BorderStyle.none)
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  hintText: '메시지를 입력하세요',
+                  suffixIcon: IconButton(
+                      onPressed: () {
+                        if (messageController.text.isNotEmpty) {
+                          sendText(messageController.text);
+                        }
+                      },
+                      icon: Icon(Icons.arrow_circle_right_outlined, size: 45)
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

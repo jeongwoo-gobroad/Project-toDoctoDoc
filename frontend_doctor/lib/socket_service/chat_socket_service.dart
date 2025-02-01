@@ -49,5 +49,8 @@ class ChatSocketService {
     print('메시지 전송: $message');
     socket?.emit('SendChat', message);
   }
-
+  void onDisconnect() {
+    print("ONDISCONNECT");
+    socket.disconnect();
+  }
 }

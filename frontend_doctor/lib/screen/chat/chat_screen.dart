@@ -128,7 +128,15 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       }
     }
 
-    setState(() {});
+    setState(() {
+      Future.delayed(Duration(milliseconds: 100), () {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      });
+    });
 
 
     WidgetsBinding.instance.addObserver(this);
@@ -138,10 +146,13 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         print('data1');
         print(data);
 
+        var tempTime = data['createdAt'];
+        DateTime time = DateTime.fromMillisecondsSinceEpoch(tempTime);
+
         if (this.mounted) {
           setState(() {
-            _messageList.add(ChatObject(content: data['message'], role: 'user', createdAt: DateTime.now()));
-            chatDb.saveChat(widget.chatId, widget.userId, data['message'], DateTime.now().toUtc(), 'user');
+            _messageList.add(ChatObject(content: data['message'], role: 'user', createdAt: time.toLocal()));
+            chatDb.saveChat(widget.chatId, widget.userId, data['message'], time, 'user');
 
             Future.delayed(Duration(milliseconds: 100), () {
               _scrollController.animateTo(
@@ -205,74 +216,79 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
           //centerTitle: true,
           shape: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
         ),
-        body: Column(
-          children: [
-            Obx(() {
-              if (chatAppointmentController.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              return UpperAppointmentInformation(appointmentController: chatAppointmentController);
-            }),
+        body: PopScope(
+          onPopInvokedWithResult: (didPop, result) {
+            socketService.onDisconnect();
+          },
+          child: Column(
+            children: [
+              Obx(() {
+                if (chatAppointmentController.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                return UpperAppointmentInformation(appointmentController: chatAppointmentController);
+              }),
 
 
-            Obx(() {
-              if (isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              return makeChatList(scrollController: _scrollController, messageList: _messageList, updateUnread: updateUnread,);
-            }),
+              Obx(() {
+                if (isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                return makeChatList(scrollController: _scrollController, messageList: _messageList, updateUnread: updateUnread,);
+              }),
 
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
 
-              child: TextField(
-                maxLines: null,
-                controller: messageController,
+                child: TextField(
+                  maxLines: null,
+                  controller: messageController,
 
-                onSubmitted: (value) {
-                  if (value.isNotEmpty) {
-                    sendText(value);
-                  }
-                },
+                  onSubmitted: (value) {
+                    if (value.isNotEmpty) {
+                      sendText(value);
+                    }
+                  },
 
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 244, 242, 248),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(40),
-                      borderSide: BorderSide(width: 0, style: BorderStyle.none)
-                  ),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
-                  hintText: '메시지를 입력하세요',
-                  prefixIcon: IconButton(
-                      onPressed: () {
-                        if (chatAppointmentController.isAppointmentExisted && chatAppointmentController.appointmentTime.isBefore(DateTime.now())) {
-                          if (!chatAppointmentController.isAppointmentDone) {
-                            appointmentMustBeDoneAlert(context);
-                            return;
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Color.fromARGB(255, 244, 242, 248),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(40),
+                        borderSide: BorderSide(width: 0, style: BorderStyle.none)
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    hintText: '메시지를 입력하세요',
+                    prefixIcon: IconButton(
+                        onPressed: () {
+                          if (chatAppointmentController.isAppointmentExisted && chatAppointmentController.appointmentTime.isBefore(DateTime.now())) {
+                            if (!chatAppointmentController.isAppointmentDone) {
+                              appointmentMustBeDoneAlert(context);
+                              return;
+                            }
                           }
-                        }
-                        setAppointmentDay();
-                        setState(() {});
-                      },
-                      icon: Icon(Icons.edit_calendar_outlined),
-                  ),
+                          setAppointmentDay();
+                          setState(() {});
+                        },
+                        icon: Icon(Icons.edit_calendar_outlined),
+                    ),
 
-                  suffixIcon: IconButton(
-                      onPressed: () {
-                        if (messageController.text.isNotEmpty) {
-                          sendText(messageController.text);
-                        }
-                      },
-                      icon: Icon(Icons.arrow_circle_right_outlined, size: 45)
+                    suffixIcon: IconButton(
+                        onPressed: () {
+                          if (messageController.text.isNotEmpty) {
+                            sendText(messageController.text);
+                          }
+                        },
+                        icon: Icon(Icons.arrow_circle_right_outlined, size: 45)
+                    ),
                   ),
                 ),
               ),
-            ),
-        ],),
+          ],),
+        ),
       ),
     );
   }
