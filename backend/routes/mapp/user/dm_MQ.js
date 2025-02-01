@@ -78,3 +78,5 @@ const chatting_user = async (socket, next) => {
         return;
     }
 };
+
+module.exports = chatting_user;
