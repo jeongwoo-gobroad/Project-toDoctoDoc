@@ -24,16 +24,16 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
   Widget chartRow(BuildContext context, String label, double pct) {
     return Row(
       children: [
-        Text(label),
-        SizedBox(width: 8),
+        //Text(label),
+        //SizedBox(width: ),
         //Icon(Icons.star, size: 8,),
         Padding(
-          padding: EdgeInsetsDirectional.fromSTEB(8, 0, 8, 0),
+          padding: EdgeInsetsDirectional.fromSTEB(8, 5, 8, 0),
           child:
           Stack(
               children: [
                 Container(
-                  width: 220,
+                  width: MediaQuery.of(context).size.width / 2,
                   height: 8,
                   decoration: BoxDecoration(
                       color: Colors.grey,
@@ -42,7 +42,7 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
                   child: Text(''),
                 ),
                 Container(
-                  width: 220 * (pct),
+                  width: (MediaQuery.of(context).size.width / 2)* pct,
                   height: 8,
                   decoration: BoxDecoration(
                       color: Colors.yellow,
@@ -220,13 +220,13 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
               Column(
                 //mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Text(widget.hospital['stars'].toString(),
+                  Text(widget.hospital['stars'].toDouble().toStringAsFixed(1),
                     //${{hospitalInformationController.averageRating}}',
                     style: TextStyle(fontWeight: FontWeight.bold,
                         fontSize: 50,
                         height: 1),),
                   StarRating(
-                    rating: widget.hospital['stars'],
+                    rating: widget.hospital['stars'].toDouble(),
                     starSize: 20,
                     isControllable: false,
                     onRatingChanged: (rating) => {},

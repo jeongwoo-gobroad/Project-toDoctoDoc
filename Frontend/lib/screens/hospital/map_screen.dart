@@ -22,20 +22,22 @@ class MapAndListScreen extends StatefulWidget {
 class _MapAndListScreenState extends State<MapAndListScreen> {
   //List<dynamic> hospitalList = [];
   bool isLoading = true;
+
   late ScrollController _scrollController;
   final MapController mapController = Get.put(MapController(dio: Dio()));
   UserinfoController userinfoController = Get.find<UserinfoController>();
   HospitalInformationController hospitalInformationController = HospitalInformationController();
+  late KakaoMapController kakaoMapController; //카카오 맵 컨트롤러러
+
   double _mapHeight = 0.5; //지도 비율율
   bool isradiusNotSelected = true;
   bool showMap = true;
   bool isDropdownOpen = false;
-  late KakaoMapController kakaoMapController; //카카오 맵 컨트롤러러
+
   List<CustomOverlay> customOverlays = [];
   //Set<Marker> markers = {}; //마커들 set
-   bool isSortByStars = false;
+  bool isSortByStars = false;
   bool showPremiumOnly = false;
-
 
   @override
   void initState() {
@@ -327,7 +329,7 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
 
                                         },
                                         child: SizedBox(
-                                          width: 200,
+                                          width: 130,
                                           child: Row(
                                             children: [
                                               Icon(Icons.phone_android, color: Colors.black,),
@@ -338,16 +340,8 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
                                       ),
                                     ],
                                     if (hospital['address_name'] != null) ... [
-                                      SizedBox(
-                                        //width: 250,
-                                        child: Row(
-                                          children: [
-                                            //Icon(Icons.fmd_good_outlined),
-                                            Text(' ${hospital['address_name']} ',
-                                              style: TextStyle(color: Colors.black),),
-                                          ],
-                                        ),
-                                      ),
+                                      Text(' ${hospital['address_name']} ',
+                                        style: TextStyle(color: Colors.black), overflow: TextOverflow.ellipsis,),
                                     ],
                                   ],
                                 ),
@@ -357,7 +351,7 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
                                   (hospital['stars'] == null)
                                     ? Text('별점이 없습니다')
                                     : StarRating(
-                                        rating: hospital['stars'],
+                                        rating: (hospital['stars'].toDouble()),
                                         starSize: 20,
                                         isControllable: false,
                                         onRatingChanged: (rating) => {},
