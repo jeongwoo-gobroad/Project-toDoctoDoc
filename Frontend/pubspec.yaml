@@ -113,7 +113,8 @@ flutter:
    - asset/images/image6.jpg
    - asset/images/image7.jpg
    - asset/images/emoji/
-  
+   - asset/db/chat_database.db
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

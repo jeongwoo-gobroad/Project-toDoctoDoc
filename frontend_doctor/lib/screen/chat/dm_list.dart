@@ -16,19 +16,15 @@ class DMList extends StatefulWidget {
 
 class _DMListState extends State<DMList> {
   final ChatController controller = Get.put(ChatController(dio: Dio()));
-  final ChatDatabase database = ChatDatabase();
 
   void goToChatScreen(chat) async {
-    print('----------------------------OPEN DB-----------------------------');
-    database.openDb();
-
     //linkTest();
     Get.to(()=> ChatScreen(
       chatId: chat.chatId,
       unreadChat: chat.unreadChat,
       userName: '',//chat.userName,
       userId: chat.userId,
-      chatDb: database,))?.whenComplete(() {
+      ))?.whenComplete(() {
         setState(() {
           controller.getChatList();
         });

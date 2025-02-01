@@ -24,20 +24,23 @@ _onDbCreate(Database db, int version) async {
 initDatabase() async {
   if (kIsWeb) {
     databaseFactory = databaseFactoryFfiWeb;
-  }else {
-    databaseFactory = databaseFactoryFfi;
-    sqfliteFfiInit();
   }
 
   var dbPath = await getDatabasesPath();
-  var joinPath = path.join(dbPath, 'chat_database');
+  var joinPath = path.join(dbPath, 'chat_database.db');
+
+  print('PATH ------------------ ');
+  print(dbPath);
+  print(joinPath);
 
   var exists = await databaseExists(joinPath);
 
   if (!exists) {
-    ByteData data = await rootBundle.load('assets/db.sqlite3');
+    try {
+      await Directory(path.dirname(joinPath)).create(recursive: true);
+    } catch (_) {}
+    ByteData data = await rootBundle.load(path.join("asset/db", "chat_database.db"));
     List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-    await Directory(joinPath).create(recursive: true);
     await File(joinPath).writeAsBytes(bytes, flush: true);
   }
 
@@ -54,7 +57,7 @@ class ChatDatabase {
 
   openDb() async {
     var dbPath = await getDatabasesPath();
-    db = await openDatabase(path.join(dbPath, 'chat_database'));
+    db = await openDatabase(path.join(dbPath, 'chat_database.db'));
   }
 
   saveChat(String chatId, String userId, String message, DateTime time, String role) async {

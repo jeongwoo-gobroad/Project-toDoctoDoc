@@ -20,14 +20,13 @@ class ChatScreen extends StatefulWidget {
     required this.chatId,
     required this.userId,
     required this.userName,
-    required this.unreadChat,
-    required this.chatDb});
+    required this.unreadChat
+  });
 
   final String chatId;
   final String userId;
   final String userName;
   final int unreadChat;
-  final ChatDatabase chatDb;
 
 
   @override
@@ -39,6 +38,8 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   late ChatAppointmentController chatAppointmentController = ChatAppointmentController(userId: widget.userId, chatId: widget.chatId);
   final AppointmentController appointmentController = AppointmentController();
   late ChatSocketService socketService;
+  final ChatDatabase chatDb = ChatDatabase();
+
 
   RxBool isLoading = true.obs;
 
@@ -115,7 +116,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     socketService = ChatSocketService(token!, widget.chatId);
 
 
-    var chatData = await widget.chatDb.loadChat(widget.chatId);
+    var chatData = await chatDb.loadChat(widget.chatId);
 
     if (chatData != null) {
       print('NOT NULL');
@@ -130,9 +131,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     setState(() {});
 
 
-
-
-
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       socketService.onDoctorReceived((data) {
@@ -143,7 +141,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         if (this.mounted) {
           setState(() {
             _messageList.add(ChatObject(content: data['message'], role: 'user', createdAt: DateTime.now()));
-            widget.chatDb.saveChat(widget.chatId, widget.userId, data['message'], DateTime.now().toUtc(), 'user');
+            chatDb.saveChat(widget.chatId, widget.userId, data['message'], DateTime.now().toUtc(), 'user');
 
             Future.delayed(Duration(milliseconds: 100), () {
               _scrollController.animateTo(
@@ -186,7 +184,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
             createdAt: DateTime.now()));
 
         DateTime now = DateTime.now().toUtc();
-        widget.chatDb.saveChat(widget.chatId, widget.userId, value, now, 'doctor');
+        chatDb.saveChat(widget.chatId, widget.userId, value, now, 'doctor');
 
         print(_messageList);
       });
