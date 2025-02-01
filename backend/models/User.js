@@ -50,6 +50,10 @@ const UserSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Curate',
     }],
+    deepCurates: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'DeepCurate',
+    }],
     chats: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Chat',

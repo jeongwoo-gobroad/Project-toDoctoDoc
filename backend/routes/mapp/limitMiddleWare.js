@@ -97,12 +97,6 @@ const ifDailyChatNotExceededThenProceed = async (req, res, next) => {
 const ifDailyCurateNotExceededThenProceed = async (req, res, next) => {
     const user = await getTokenInformation(req, res);
 
-    if (!user.isPremium) {
-        res.status(700).json(returnResponse(true, "not_premium_account", "프리미엄 계정이 아닙니다."));
-
-        return;
-    }
-
     try {
         const db = await User.findById(user.userid);
     
@@ -127,4 +121,42 @@ const ifDailyCurateNotExceededThenProceed = async (req, res, next) => {
     }
 };
 
-module.exports = {ifDailyRequestNotExceededThenProceed, ifDailyChatNotExceededThenProceed, ifDailyCurateNotExceededThenProceed};
+const ifDailyDeepCurateNotExceededThenProceed = async (req, res, next) => {
+    const user = await getTokenInformation(req, res);
+
+    if (!user.isPremium) {
+        res.status(700).json(returnResponse(true, "not_premium_account", "프리미엄 계정이 아닙니다."));
+
+        return;
+    }
+
+    try {
+        const db = await User.findById(user.userid);
+    
+        const limits = new Date(db.recentDeepCurateDate);
+        const current = new Date();
+    
+        if (limits.toDateString() !== current.toDateString()) {
+            db.recentDeepCurateDate = current;
+            await db.save();
+            next();
+        } else {
+            res.status(450).json(returnResponse(true, "cannotPublishDeepCurateMoreThanOnceInADay", "지정된 등록 횟수 초과"));
+    
+            return;
+        }
+    } catch (error) {
+        console.error(error, "errorAtIfDailyCurateNotExceededThenProceed");
+
+        res.status(401).json(returnResponse(true, "errorAtIfDailyCurateNotExceededThenProceed", "-"));
+
+        return;
+    }
+};
+
+module.exports = {
+    ifDailyRequestNotExceededThenProceed, 
+    ifDailyChatNotExceededThenProceed, 
+    ifDailyCurateNotExceededThenProceed,
+    ifDailyDeepCurateNotExceededThenProceed,
+};

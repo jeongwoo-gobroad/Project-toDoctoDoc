@@ -6,6 +6,9 @@ const CurateSchema = new mongoose.Schema({
         required: true,
         ref: 'User',
     },
+    deepCurate: {
+        type: String,
+    },
     posts: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post'

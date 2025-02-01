@@ -8,9 +8,11 @@ const { checkIfLoggedIn, checkIfNotLoggedIn, ifPremiumThenProceed } = require(".
 const router = express.Router();
 
 const User = mongoose.model("User", UserSchema);
-const { ifDailyCurateNotExceededThenProceed } = require("../limitMiddleWare");
+const { ifDailyCurateNotExceededThenProceed, ifDailyDeepCurateNotExceededThenProceed } = require("../limitMiddleWare");
 const Curate = require("../../../models/Curate");
 const Comment = require("../../../models/Comment");
+const openai = require("openai");
+const DeepCurate = require("../../../models/DeepCurate");
 
 router.get(["/list"],
     checkIfLoggedIn,
@@ -132,22 +134,55 @@ router.post(["/curate"],
             curate.user = user.userid;
 
             data.posts.sort((a, b) => {
+                // console.log("This happens first");
                 return b.editedAt - a.editedAt;
             });
             data.ai_chats.sort((a, b) => {
+                // console.log("This happens second");
                 return b.chatEditedAt - a.chatEditedAt;
             });
 
-            if (data.posts.length >= 5) {
-                curate.posts = data.posts.slice(0, 5);
+            // console.log("This happens third");
+            if (data.posts.length >= 40) {
+                curate.posts = data.posts.slice(0, 40);
             } else {
                 curate.posts = data.posts;
             }
-            if (data.ai_chats.length >= 5) {
-                curate.ai_chats = data.ai_chats.slice(0, 5);
+            // console.log("This happens fourth");
+            if (data.ai_chats.length >= 20) {
+                curate.ai_chats = data.ai_chats.slice(0, 20);
             } else {    
                 curate.ai_chats = data.ai_chats;
             }
+
+            let messages = [];
+            messages.push({
+                "role": "developer",
+                "content": "너는 전문 심리 상담사고, 내가 제시한, 환자가 품고 있는 걱정 및 대화 내용을 기반으로 이 환자가 어떠한 것 때문에 마음이 아픈지 주치의에게 설명해줘"
+            });
+            for (const post of curate.posts) {
+                messages.push({
+                    "role": "user",
+                    "content": post.title
+                });
+            }
+            for (const ai_chat of curate.ai_chats) {
+                messages.concat(ai_chat.response);
+            }
+
+            const target = new openai({
+                apiKey: process.env.OPENAI_KEY
+            });
+
+            const completion = await target.chat.completions.create({
+                "model": "gpt-4o",
+                "store": false,
+                "messages": messages
+            });
+
+            const message = completion.choices[0].message.content;
+
+            curate.deepCurate = message;
 
             await curate.save();
             await User.findByIdAndUpdate(user.userid, {
