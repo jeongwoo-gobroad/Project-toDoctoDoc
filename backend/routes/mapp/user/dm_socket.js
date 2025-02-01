@@ -17,6 +17,8 @@ const chatting_user = async (socket, next) => {
 
         const userid = token_userid.userid;
 
+        
+
         try {
             const state = User.findById(userid);
     

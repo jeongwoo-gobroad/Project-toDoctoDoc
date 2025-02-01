@@ -8,6 +8,7 @@ const { Queue } = require("bullmq");
 const UserSchema = require("../../../../models/User");
 const mongoose = require("mongoose");
 const Doctor = require("../../../../models/Doctor");
+const Appointment = require("../../../../models/Appointment");
 const User = mongoose.model('User', UserSchema);
 const router = express.Router();
 
@@ -177,6 +178,35 @@ router.post(["/ban"],
             res.status(403).json(returnResponse(true, "errorAtUserChatBan", "-"));
 
             console.error(error, "errorAtUserChatBan");
+
+            return;
+        }
+    }
+);
+
+router.get(["/appointmentStatus/:cid"],
+    checkIfLoggedIn,
+    async (req, res, next) => {
+        try {
+            const chat = await Chat.findById(req.params.cid).populate({
+                path: 'appointment',
+                select: 'isAppointmentApproved'
+            });
+            const appointment = await Appointment.findById(chat.appointment);
+
+            if (!chat.appointment) {
+                res.status(401).json(returnResponse(true, "noAppointment", "-"));
+
+                return;
+            }
+
+            res.status(200).json(returnResponse(false, "appointmentStatus", chat.appointment.isAppointmentApproved));
+
+            return;
+        } catch (error) {
+            res.status(403).json(returnResponse(true, "errorAtDoctorAppointmentStatus", "-"));
+
+            console.error(error, "errorAtDoctorAppointmentStatus");
 
             return;
         }

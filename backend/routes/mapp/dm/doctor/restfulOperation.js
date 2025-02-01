@@ -1,5 +1,5 @@
 const express = require("express");
-const { checkIfLoggedIn } = require("../../checkingMiddleWare");
+const { checkIfLoggedIn, isDoctorThenProceed } = require("../../checkingMiddleWare");
 const { getTokenInformation } = require("../../../auth/jwt");
 const Chat = require("../../../../models/Chat");
 const returnResponse = require("../../standardResponseJSON");
@@ -8,11 +8,13 @@ const { Queue } = require("bullmq");
 const UserSchema = require("../../../../models/User");
 const mongoose = require("mongoose");
 const Doctor = require("../../../../models/Doctor");
+const Appointment = require("../../../../models/Appointment");
 const User = mongoose.model('User', UserSchema);
 const router = express.Router();
 
 router.get(["/list"], 
     checkIfLoggedIn,
+    isDoctorThenProceed,
     async (req, res, next) => {
         const user = await getTokenInformation(req, res);
 
@@ -83,6 +85,7 @@ router.get(["/list"],
 
 router.delete(["/delete/:cid"],
     checkIfLoggedIn,
+    isDoctorThenProceed,
     async (req, res, next) => {
         const user = await getTokenInformation(req, res);
 
@@ -116,6 +119,7 @@ router.delete(["/delete/:cid"],
 
 router.post(["/ban"], 
     checkIfLoggedIn,
+    isDoctorThenProceed,
     async (req, res, next) => {
         const {chatId} = req.body;
 
@@ -137,6 +141,32 @@ router.post(["/ban"],
             res.status(403).json(returnResponse(true, "errorAtDoctorChatBan", "-"));
 
             console.error(error, "errorAtDoctorChatBan");
+
+            return;
+        }
+    }
+);
+
+router.get(["/appointmentStatus/:appid"],
+    checkIfLoggedIn,
+    isDoctorThenProceed,
+    async (req, res, next) => {
+        try {
+            const appointment = await Appointment.findById(req.params.appid);
+
+            if (!appointment) {
+                res.status(401).json(returnResponse(true, "noSuchAppointment", "-"));
+
+                return;
+            }
+
+            res.status(200).json(returnResponse(false, "appointmentStatus", appointment.isAppointmentApproved));
+
+            return;
+        } catch (error) {
+            res.status(403).json(returnResponse(true, "errorAtDoctorAppointmentStatus", "-"));
+
+            console.error(error, "errorAtDoctorAppointmentStatus");
 
             return;
         }
