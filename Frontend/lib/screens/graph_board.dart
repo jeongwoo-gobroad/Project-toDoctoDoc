@@ -41,6 +41,11 @@ class _GraphBoardState extends State<GraphBoard>
   final double collisionSpringStrength = 300.0;
   final TagGraphController graphController =
       Get.put(TagGraphController(dio: Dio()));
+
+  final double stabilityThreshold = 10.0; //낮을수록 버블이 더 stable해야함
+  final int requiredStableFrames = 60; //더 길게 stable 해야함
+  int stableFrameCount = 0;
+  bool isSystemStable = false;
   double screenWidth = 0;
   double screenHeight = 0;
   final double bottomNavHeight = 80;
@@ -59,12 +64,6 @@ class _GraphBoardState extends State<GraphBoard>
     graphController.getGraph().then((_) {
       _createTagBallsFromServerData();
       _controller.forward();
-    });
-
-    Timer(Duration(seconds: 5), () {
-      setState(() {
-        showTrashCan = true;
-      });
     });
   }
 
@@ -113,52 +112,76 @@ class _GraphBoardState extends State<GraphBoard>
   }
 
   void _updatePhysics() {
-  final dt = 1 / 60;
-  screenWidth = MediaQuery.of(context).size.width;
-  screenHeight = MediaQuery.of(context).size.height;
-  _handleBubbleCollisions(dt);
-  
-  for (int i = bubbles.length - 1; i >= 0; i--) {
-    final bubble = bubbles[i];
-    
-    if (bubble.dragTarget != null) {
-      final toTarget = bubble.dragTarget! - bubble.position;
-      bubble.velocity += toTarget * springStrength * dt;
-      bubble.velocity *= 0.9;
-    } else {
-      bubble.velocity += Offset(0, gravity) * dt;
-    }
+    final dt = 1 / 60;
+    screenWidth = MediaQuery.of(context).size.width;
+    screenHeight = MediaQuery.of(context).size.height;
+    _handleBubbleCollisions(dt);
 
-    bubble.position += bubble.velocity * dt;
+    for (int i = bubbles.length - 1; i >= 0; i--) {
+      final bubble = bubbles[i];
 
-    final groundY = screenHeight - bottomNavHeight - bubble.radius;
-    if (bubble.position.dy > groundY) {
-      bubble.position = Offset(bubble.position.dx, groundY);
-      bubble.velocity =
-          Offset(bubble.velocity.dx, -bubble.velocity.dy * restitution);
-    }
+      if (bubble.dragTarget != null) {
+        final toTarget = bubble.dragTarget! - bubble.position;
+        bubble.velocity += toTarget * springStrength * dt;
+        bubble.velocity *= 0.9;
+      } else {
+        bubble.velocity += Offset(0, gravity) * dt;
+      }
 
-    if (bubble.position.dx - bubble.radius < 0) {
-      bubble.position = Offset(bubble.radius, bubble.position.dy);
-      bubble.velocity =
-          Offset(-bubble.velocity.dx * restitution, bubble.velocity.dy);
-    } else if (bubble.position.dx + bubble.radius > screenWidth) {
-      bubble.position =
-          Offset(screenWidth - bubble.radius, bubble.position.dy);
-      bubble.velocity =
-          Offset(-bubble.velocity.dx * restitution, bubble.velocity.dy);
-    }
+      bubble.position += bubble.velocity * dt;
 
-  
-    if (showTrashCan && bubble.position.dy < trashCanHeight) {
-      setState(() {
-        bubbles.removeAt(i);
-      });
+      final groundY = screenHeight - bottomNavHeight - bubble.radius;
+      if (bubble.position.dy > groundY) {
+        bubble.position = Offset(bubble.position.dx, groundY);
+        bubble.velocity =
+            Offset(bubble.velocity.dx, -bubble.velocity.dy * restitution);
+      }
+
+      if (bubble.position.dx - bubble.radius < 0) {
+        bubble.position = Offset(bubble.radius, bubble.position.dy);
+        bubble.velocity =
+            Offset(-bubble.velocity.dx * restitution, bubble.velocity.dy);
+      } else if (bubble.position.dx + bubble.radius > screenWidth) {
+        bubble.position =
+            Offset(screenWidth - bubble.radius, bubble.position.dy);
+        bubble.velocity =
+            Offset(-bubble.velocity.dx * restitution, bubble.velocity.dy);
+      }
+
+      if (showTrashCan && bubble.position.dy < trashCanHeight) {
+        setState(() {
+          bubbles.removeAt(i);
+        });
+      }
+      if (!isSystemStable) {
+        if (_checkSystemStability()) {
+          stableFrameCount++;
+          if (stableFrameCount >= requiredStableFrames) {
+            setState(() {
+              isSystemStable = true;
+              showTrashCan = true;
+            });
+          }
+        } else {
+          stableFrameCount = 0;
+        }
+      }
+
+      setState(() {});
     }
   }
-  
-  setState(() {});
-}
+
+  bool _checkSystemStability() {
+    if (bubbles.isEmpty) return false;
+
+    double totalVelocity = 0;
+    for (final bubble in bubbles) {
+      totalVelocity += bubble.velocity.distance;
+    }
+
+    double averageVelocity = totalVelocity / bubbles.length;
+    return averageVelocity < stabilityThreshold;
+  }
 
   void _handleBubbleCollisions(double dt) {
     for (int i = 0; i < bubbles.length; i++) {
