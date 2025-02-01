@@ -1,7 +1,5 @@
-import 'dart:convert';
-
 // chat_response.dart
-class ChatResponse {
+/*class ChatResponse {
   final bool? error;
   final dynamic result;
   final List<ChatContent> content;
@@ -26,54 +24,34 @@ class ChatResponse {
           .toList() ?? [],
     );
   }
-}
+}*/
 
 // chat_content.dart
 class ChatContent {
-  final String id;
-  final String? user;
-  final Doctor doctor;
+  final String chatId;
+  final String doctorName;
+  final String doctorId;
   final DateTime date;
-  final List<ChatMessage> chatList;
-  final int? v;
+  final int unreadChat;
+  final String recentChat;
 
   ChatContent({
-    required this.id,
-    this.user,
-    required this.doctor,
+    required this.chatId,
+    required this.unreadChat,
+    required this.doctorId,
+    required this.doctorName,
     required this.date,
-    required this.chatList,
-    this.v,
+    required this.recentChat
   });
 
   factory ChatContent.fromMap(Map<String, dynamic> map) {
     return ChatContent(
-      id: map['_id'].toString(),
-      user: map['user']?.toString(),
-      doctor: Doctor.fromMap(map['doctor'] as Map<String, dynamic>),
+      chatId: map['cid'].toString(),
+      doctorName: map['doctorName'],
+      doctorId: map['doctorId'],
       date: DateTime.parse(map['date'] as String),
-      chatList: (map['chatList'] as List?)
-          ?.map((item) => ChatMessage.fromMap(item as Map<String, dynamic>))
-          .toList() ?? [],
-      v: map['__v'],
-    );
-  }
-}
-
-// doctor.dart
-class Doctor {
-  final String? id;
-  final String? name;
-
-  Doctor({
-    this.id,
-    this.name,
-  });
-
-  factory Doctor.fromMap(Map<String, dynamic> map) {
-    return Doctor(
-      id: map['_id']?.toString(),
-      name: map['name']?.toString(),
+      unreadChat: (map['unreadChat'] == -1) ? 0 : map['unreadChat'],
+      recentChat: map['recentChat'],
     );
   }
 }

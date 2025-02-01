@@ -8,9 +8,8 @@ import 'package:to_doc_for_doc/controllers/auth/auth_interceptor.dart';
 import '../socket_service/chat_socket_service.dart';
 
 class ChatAppointmentController extends GetxController {
-  ChatAppointmentController({required this.userId, required this.chatId, required this.socketService});
+  ChatAppointmentController({required this.userId, required this.chatId});
 
-  final ChatSocketService socketService;
   var isLoading = true.obs;
 
   DateTime initialDay = DateTime.now();
@@ -113,8 +112,6 @@ class ChatAppointmentController extends GetxController {
         appointmentId = data['content']['_id'];
         print(appointmentId);
 
-        socketService.sendAppointmentRefresh(chatId);
-
         appointmentTime = selectedDay;
         initialDay  = DateTime(selectedDay.year,selectedDay.month,selectedDay.day);
         initialTime = TimeOfDay(hour: selectedDay.hour, minute: selectedDay.minute);
@@ -168,8 +165,6 @@ class ChatAppointmentController extends GetxController {
         isAppointmentExisted = false;
         isAppointmentApproved = false;
 
-        socketService.sendAppointmentRefresh(chatId);
-
         isLoading.value = false;
         return true;
 
@@ -218,7 +213,6 @@ class ChatAppointmentController extends GetxController {
         isAppointmentApproved = false;
         isAppointmentDone = false;
 
-        socketService.sendAppointmentRefresh(chatId);
         isLoading.value = false;
         return true;
 

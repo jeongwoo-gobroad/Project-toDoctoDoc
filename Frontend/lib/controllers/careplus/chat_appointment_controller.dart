@@ -7,9 +7,7 @@ import 'package:to_doc/auth/auth_dio.dart';
 import '../../socket_service/chat_socket_service.dart';
 
 class ChatAppointmentController extends GetxController{
-  final ChatSocketService socketService;
-
-  ChatAppointmentController(this.socketService, this.chatId);
+  ChatAppointmentController(this.chatId);
 
   late String appointmentId = 'load';
   final String chatId;
@@ -104,7 +102,6 @@ class ChatAppointmentController extends GetxController{
       print(data);
 
       isAppointmentApproved = true;
-      socketService.sendAppointmentApproval(chatId);
       isLoading.value = false;
       return true;
     }

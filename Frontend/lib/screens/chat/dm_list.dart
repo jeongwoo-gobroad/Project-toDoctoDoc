@@ -1,51 +1,32 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc/controllers/careplus/chat_controller.dart';
 import 'package:to_doc/screens/chat/chat_screen.dart';
 
-import '../../auth/auth_secure.dart';
-import '../../socket_service/chat_socket_service.dart';
 
 class DMList extends StatefulWidget {
-  
   @override
   State<DMList> createState() => _DMListState();
 }
 
 class _DMListState extends State<DMList> {
   final ChatController controller = Get.put(ChatController(dio: Dio()));
-  late ChatSocketService socketService;
 
-  void startsocket() async {
-    final SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
 
-    final token = await storage.readAccessToken();
 
-    if (token == null) {
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return;
-    }
+  void goToChatScreen(chat) async {
+    print(chat.chatId);
+    //linkTest();
+    Get.to(()=> ChatScreen(doctorId: chat.doctorId, chatId: chat.chatId, unreadMsg: chat.unreadChat, doctorName: chat.doctorName,))?.whenComplete(() {
+      setState(() {
+        controller.getChatList();
+      });
+    });
 
-    socketService = await ChatSocketService(token);
   }
 
-  @override
-  void initState() {
-    super.initState();
-    startsocket();
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    socketService.socket.dispose();
-    socketService.socket.disconnect();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,23 +58,12 @@ class _DMListState extends State<DMList> {
               itemCount: controller.chatList.length,
               itemBuilder: (context, index) {
                 final chat = controller.chatList[index];
-                final lastMessage = chat.chatList.isNotEmpty
-                    ? chat.chatList.last.message
-                    : '메시지가 없습니다.';
                 final formattedDate = DateFormat('MM/dd HH:mm')
                     .format(chat.date.toLocal());
 
                 return InkWell(
                   onTap: () {
-                    print(chat.id);
-                    //linkTest();
-                    socketService.joinChat(chat.id);
-                    Get.to(()=> ChatScreen(socketService: socketService, chatId: chat.id, unreadMsg: 0, doctorName: chat.doctor.name ?? '',))?.whenComplete(() {
-                      setState(() {
-                        controller.getChatList();
-                      });
-                    });
-                  
+                    goToChatScreen(chat);
                   },
                   child: Container(
                     padding: const EdgeInsets.all(16),
@@ -117,7 +87,7 @@ class _DMListState extends State<DMList> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    chat.doctor.name ?? '의사 이름 없음',
+                                    chat.doctorName,
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -134,7 +104,7 @@ class _DMListState extends State<DMList> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                lastMessage ?? "",
+                                chat.recentChat,
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey.shade600,
@@ -156,27 +126,4 @@ class _DMListState extends State<DMList> {
       ),
     );
   }
-
-/*
-  void linkTest() async {
-    Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
-
-    final response = await dio.get(
-        'http://jeongwoo-kim-web.myds.me:3000/dm',
-        options:
-        Options(headers: {
-          'Content-Type':'application/json',
-          'accessToken': 'true',
-        },
-        )
-    );
-
-    print(response.statusCode);
-    print(response);
-  }
-*/
-
-
-
 }

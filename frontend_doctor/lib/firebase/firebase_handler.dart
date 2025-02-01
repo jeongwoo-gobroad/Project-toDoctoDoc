@@ -9,7 +9,7 @@ import 'firebase_options.dart';
 import 'package:flutter/foundation.dart';
 
 
-Future<void> firebaseStarter() async {
+Future<void> initFirebase() async {
   final SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
 
   try {

@@ -20,13 +20,12 @@ class ChatController extends GetxController{
 
   Future<void> getChatList() async {
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/dm/list',
+      'http://jeongwoo-kim-web.myds.me:3000/mapp/dm/doctor/list',
       options:
       Options(headers: {
         'Content-Type':'application/json',
         'accessToken': 'true',
-      },
-      ),
+      },),
     );
 
     print(response);
@@ -34,9 +33,10 @@ class ChatController extends GetxController{
     if(response.statusCode == 200){
       final data = json.decode(response.data);
       print(data);
-      final chatResponse = ChatResponse.fromMap(data);
-      chatList.assignAll(chatResponse.content);
 
+      var temp = (data['content'] as List?)?.map((item) => ChatContent.fromMap(item as Map<String, dynamic>)).toList() ?? [];
+      print(temp);
+      chatList.assignAll(temp);
     }
     else{
       print('코드: ${response.statusCode}');

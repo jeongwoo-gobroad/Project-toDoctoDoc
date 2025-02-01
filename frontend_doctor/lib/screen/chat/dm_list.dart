@@ -1,15 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:to_doc_for_doc/controllers/auth/auth_secure.dart';
+import 'package:to_doc_for_doc/Database/chat_database.dart';
 
 import '../../controllers/chat_controller.dart';
-import '../auth/login_screen.dart';
 import 'chat_screen.dart';
-import '../../socket_service/chat_socket_service.dart';
 
 
 class DMList extends StatefulWidget {
@@ -20,30 +16,24 @@ class DMList extends StatefulWidget {
 
 class _DMListState extends State<DMList> {
   final ChatController controller = Get.put(ChatController(dio: Dio()));
-  late ChatSocketService socketService;
-  SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
+  final ChatDatabase database = ChatDatabase();
 
-  void startsocket() async {
-    var token = await storage.readAccessToken();
-    if (token == null) {
-      Get.offAll(LoginPage());
-      return;
-    }
-    socketService = await ChatSocketService(token);
-  }
+  void goToChatScreen(chat) async {
+    print('----------------------------OPEN DB-----------------------------');
+    database.openDb();
 
-  @override
-  void initState() {
-    super.initState();
-    startsocket();
-  }
+    //linkTest();
+    Get.to(()=> ChatScreen(
+      chatId: chat.chatId,
+      unreadChat: chat.unreadChat,
+      userName: '',//chat.userName,
+      userId: chat.userId,
+      chatDb: database,))?.whenComplete(() {
+        setState(() {
+          controller.getChatList();
+        });
+      });
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    socketService.socket?.dispose();
-    socketService.socket?.disconnect();
-    super.dispose();
   }
 
   @override
@@ -76,23 +66,11 @@ class _DMListState extends State<DMList> {
               itemCount: controller.chatList.length,
               itemBuilder: (context, index) {
                 final chat = controller.chatList[index];
-                final lastMessage = chat.chatList.isNotEmpty
-                    ? chat.chatList.last.message
-                    : '메시지가 없습니다.';
-                final formattedDate = DateFormat('MM/dd HH:mm')
-                    .format(chat.date.toLocal());
+                final formattedDate = DateFormat('MM/dd HH:mm').format(chat.date.toLocal());
 
                 return InkWell(
                   onTap: () {
-                    print(chat.id);
-                    socketService.joinChat(chat.id);
-                    Get.to(()=> ChatScreen(
-                        socketService: socketService,
-                        chatId: chat.id,
-                        unreadMsg: chat.unread,
-                        userName: chat.user.name ?? 'null',
-                        userId: chat.user.id ?? 'null'));
-
+                    goToChatScreen(chat);
                   },
                   child: Container(
                     padding: const EdgeInsets.all(16),
@@ -116,7 +94,7 @@ class _DMListState extends State<DMList> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    chat.user.name ?? '유저 이름 없음',
+                                    chat.userId ?? '유저 이름 없음',
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -133,7 +111,7 @@ class _DMListState extends State<DMList> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                lastMessage ?? "",
+                                chat.recentChat,
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey.shade600,
