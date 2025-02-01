@@ -65,9 +65,11 @@ class AiChatController extends GetxController{
   RxInt chats = 0.obs;
   RxInt userTotal = 0.obs;
   RxString userDate = "".obs;
+  RxBool isLoadingLimit = false.obs;
 
   Future<void> chatLimit() async {
     dio.interceptors.add(CustomInterceptor());
+    isLoadingLimit.value = true;
 
     final prefs = await SharedPreferences.getInstance();
 
@@ -108,6 +110,8 @@ class AiChatController extends GetxController{
       userDate.value = data['content']['userDate'];
 
       print('chats: ${chats}, userTotal: ${userTotal}, userDate: ${userDate}');
+      isLoadingLimit.value = false;
     }
+    isLoadingLimit.value = false;
   }
 }

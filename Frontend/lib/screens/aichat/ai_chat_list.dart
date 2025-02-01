@@ -59,6 +59,7 @@ class _AiChatListState extends State<AiChatList> {
     }
     return formattedDate;
   }
+
 //   void _showQueryLimitDialog(BuildContext context) {
 //   showDialog(
 //     context: context,
@@ -87,7 +88,8 @@ class _AiChatListState extends State<AiChatList> {
             //     _showQueryLimitDialog(context);
             //   });
             // }
-            if (aiChatListController.isLoading.value) {
+            if (aiChatListController.isLoading.value ||
+                aiChatController.isLoadingLimit.value) {
               return Center(child: CircularProgressIndicator());
             }
             if (aiChatListController.isEmpty.value) {
@@ -192,6 +194,13 @@ class _AiChatListState extends State<AiChatList> {
               shape: BeveledRectangleBorder(),
             ),
             onPressed: () {
+              if (aiChatController.isLimited.value) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _showQueryLimitDialog(context);
+                });
+                return;
+              }
+
               Get.to(() => AiChatSub(
                     isNewChat: true,
                     chatId: '',
@@ -224,5 +233,23 @@ class _AiChatListState extends State<AiChatList> {
     aiChatListController.isLoading.value = true;
     await aiChatDeleteController.deleteOldChat(chatId);
     await aiChatListController.getChatList();
+  }
+
+  void _showQueryLimitDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('채팅 사용 제한'),
+          content: Text('오늘 사용 가능한 채팅 횟수를 모두 사용했습니다.'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('확인'),
+              onPressed: () => Get.back(),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

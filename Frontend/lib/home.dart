@@ -200,7 +200,11 @@ class _HomeState extends State<Home> {
                   padding: EdgeInsets.all(16),
                   child: Column(
                     children: [
-                      if (isKeyboardVisible) _buildQueryUsageDisplay(),
+                      if (isKeyboardVisible) 
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: _buildQueryUsageDisplay(),
+                        ),
                       Container(
                         decoration: BoxDecoration(
                           color: _green,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:to_doc/controllers/aichat/aichat_controller.dart';
 import '../../controllers/aichat/aichat_load_controller.dart';
 import 'chat_bubble_listview.dart';
 import 'package:to_doc/chat_object.dart';
@@ -19,6 +20,7 @@ class AiChatOldView extends StatefulWidget {
 
 class _AiChatOldViewState extends State<AiChatOldView> {
   AichatLoadController  aichatLoadController = Get.put(AichatLoadController(dio: Dio()));
+  AiChatController aiChatController = Get.put(AiChatController(dio: Dio()));
   get scrollController => null;
   String chatid = '';
   var _messageList;
@@ -58,7 +60,7 @@ class _AiChatOldViewState extends State<AiChatOldView> {
       ),
 
       body: Obx(() {
-        if(aichatLoadController.isLoading.value){
+        if(aichatLoadController.isLoading.value || aiChatController.isLoadingLimit.value){
           return Center(child: CircularProgressIndicator());
         }
         return
@@ -78,6 +80,12 @@ class _AiChatOldViewState extends State<AiChatOldView> {
                       )
                   ),
                   onPressed: (){
+                    if (aiChatController.isLimited.value) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _showQueryLimitDialog(context);
+                });
+                return;
+              }
                     print('edit');
                     print(chatid);
                     Get.off(()=> AiChatSub(isNewChat: false, chatId: chatid, messageList: _messageList,));
@@ -91,6 +99,23 @@ class _AiChatOldViewState extends State<AiChatOldView> {
             ),
           );
         }),
+    );
+  }
+  void _showQueryLimitDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('채팅 사용 제한'),
+          content: Text('오늘 사용 가능한 채팅 횟수를 모두 사용했습니다.'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('확인'),
+              onPressed: () => Get.back(),
+            ),
+          ],
+        );
+      },
     );
   }
 }
