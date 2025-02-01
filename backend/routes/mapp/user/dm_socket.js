@@ -7,6 +7,7 @@ const User = mongoose.model('User', UserSchema);
 const jwt = require("jsonwebtoken");
 const { setCacheForThreeDaysAsync, getCache } = require("../../../middleware/redisCaching");
 const sendDMPushNotification = require("../push/dmPush");
+const { Queue, Worker } = require("bullmq");
 
 const chatting_user = async (socket, next) => {
     const token = socket.handshake.query.token;
@@ -114,6 +115,34 @@ const chatting_user = async (socket, next) => {
                         // console.log("user:: solo");
                     } else {
                         socket.to(struct.roomNo).emit("recvChat_doctor", {role: "user", message: struct.message, createdAt: now});
+                        
+                        const messageQueue = new Queue(struct.roomNo, {
+                            connection: {
+                                host: process.env.RS_HOST,
+                                port: process.env.RS_PORT,
+                                username: process.env.RS_USERNAME,
+                                password: process.env.RS_NONESCAPE_PASSWORD,
+                            },
+                            defaultJobOptions: {
+                                removeOnComplete: true,
+                                removeOnFail: true,
+                            }
+                        });
+
+                        await messageQueue.add('userEmit', {role: "user", message: struct.message, createdAt: now});
+                        await messageQueue.add('userEmit', {role: "user", message: struct.message, createdAt: now});
+
+                        const worker = new Worker(struct.roomNo, 
+                            async (job) => {console.log(job.data)}, {
+                            connection: {
+                                host: process.env.RS_HOST,
+                                port: process.env.RS_PORT,
+                                username: process.env.RS_USERNAME,
+                                password: process.env.RS_NONESCAPE_PASSWORD,
+                            },
+                        });
+
+                        
                         // console.log("user:: both");
                     }
         

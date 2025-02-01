@@ -14,5 +14,6 @@ router.use('/careplus', require("./mapp/user/dm"));
 router.use('/limits', require("./mapp/user/checkLimits"));
 router.use('/', require("./auth/token_refresh"));
 router.use('/review', require("./mapp/user/review"));
+router.use('/dm', require("./mapp/dm/route"));
 
 module.exports = router;

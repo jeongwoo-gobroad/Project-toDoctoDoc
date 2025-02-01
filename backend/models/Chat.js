@@ -39,6 +39,10 @@ const ChatSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Appointment',
     },
+    isBanned: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 module.exports = mongoose.model("Chat", ChatSchema);

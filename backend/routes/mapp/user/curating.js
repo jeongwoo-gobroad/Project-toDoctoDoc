@@ -15,6 +15,7 @@ const Chat = require("../../../models/Chat");
 const AIChat = require("../../../models/AIChat");
 const returnListOfPsychiatry = require("../../../middleware/getListOfPsychiatry");
 const topExposureForPremiumPsy = require("../../../middleware/sortByPremiumPsy");
+const Psychiatry = require("../../../models/Psychiatry");
 
 router.get(["/around"],
     checkIfLoggedIn,
@@ -44,6 +45,31 @@ router.get(["/around"],
         } catch (error) {
             console.error(error);
             res.status(405).json(returnResponse(true, "errorAt/around", "-"));
+
+            return;
+        }
+    }
+);
+
+router.get(["/info/:pid"],
+    checkIfLoggedIn,
+    async (req, res, next) => {
+        try {
+            const psy = await Psychiatry.findById(req.params.pid);
+
+            if (!psy) {
+                res.status(401).json(returnResponse(true, "noSuchPsy", "-"));
+
+                return;
+            }
+
+            res.status(200).json(returnResponse(false, "psyInfo", psy));
+
+            return;
+        } catch (error) {
+            res.status(403).json(returnResponse(true, "errorAtPIDInfo", "-"));
+
+            console.error(error, "errorAtInfoPID");
 
             return;
         }
