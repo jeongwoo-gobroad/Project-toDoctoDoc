@@ -78,6 +78,10 @@ const DoctorSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    myProfileImage: {
+        type: String,
+        default: "",
+    },
 });
 
 module.exports = mongoose.model("Doctor", DoctorSchema);
