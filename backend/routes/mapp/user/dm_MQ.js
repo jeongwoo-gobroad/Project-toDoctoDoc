@@ -41,12 +41,30 @@ const chatting_user = async (socket, next) => {
             }
         });
 
+        const doctorMessageQueue = new Queue(roomNo + "_DOCTOR", {
+            connection: {
+                host: process.env.RS_HOST,
+                port: process.env.RS_PORT,
+                username: process.env.RS_USERNAME,
+                password: process.env.RS_NONESCAPE_PASSWORD,
+            },
+            defaultJobOptions: {
+                removeOnComplete: true,
+                removeOnFail: true,
+            }
+        });
+
         const worker = new Worker(roomNo + "_DOCTOR",
             async (job) => {
-                console.log("User socket chat received");
+                // console.log("User socket chat received");
                 socket.emit("chatReceived", job.data);
-                await job.remove();
-                await messageQueue.trimEvents(0);
+                try {
+                    await doctorMessageQueue.trimEvents(0);
+                } catch (error) {
+                    console.error(error, "errorAtUserSocketChatReceived");
+                }
+
+                return null;
             }, {
                 connection: {
                     host: process.env.RS_HOST,
@@ -63,23 +81,32 @@ const chatting_user = async (socket, next) => {
             const now = Date.now();
             const chatObject = {role: "user", message: data, createdAt: now};
 
-            console.log("User socket chat sent");
+            // console.log("User socket chat sent");
 
-            messageQueue.add('userEmit', chatObject);
-            setCacheForNDaysAsync("ROOM:" + roomNo, chatObject, 7);
-            // chat.chatList.push(chatObject);
-            chat.date = now;
-            await chat.save();
+            try {
+                await messageQueue.add('userEmit', chatObject);
+                setCacheForNDaysAsync("ROOM:" + roomNo, chatObject, 7);
+                // chat.chatList.push(chatObject);
+                chat.date = now;
+                await chat.save();
+            } catch (error) {
+                console.error(error, "errorAtUserSendChat");
+            }
 
             sendDMPushNotification(chat.doctor.deviceIds, {title: chat.user.usernick + ": 읽지 않은 DM", body: chatObject});
 
             return;
         });
 
-        socket.on("disconnect", (reason) => {
+        socket.on("disconnect", async (reason) => {
             console.log("User socket disconnected");
-            messageQueue.close();
-            worker.close();
+            try {
+                await messageQueue.close();
+                await doctorMessageQueue.close();
+                await worker.close();
+            } catch (error) {
+                console.error(error, "errorAtUserSocketDisconnect");
+            }
 
             return;
         });
