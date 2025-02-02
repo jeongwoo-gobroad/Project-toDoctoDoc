@@ -5,9 +5,11 @@ import 'package:to_doc/controllers/careplus/appointment_controller.dart';
 import 'package:to_doc/screens/careplus/appointment_listview.dart';
 import 'package:to_doc/screens/appointment/appointment_detail_screen.dart';
 
+import '../../controllers/careplus/chat_controller.dart';
 import '../../controllers/careplus/curate_list_controller.dart';
 import 'package:get/get.dart';
 
+import '../chat/chat_screen.dart';
 import '../chat/dm_list.dart';
 import 'curate_feed.dart';
 import 'curate_list.dart';
@@ -23,6 +25,17 @@ class _CurateMainState extends State<CurateMain> {
   bool isLoading = true;
   final CurateListController curateListController = Get.put(CurateListController(dio:Dio()));
   final AppointmentController appointmentController = Get.put(AppointmentController());
+  final ChatController chatController = Get.put(ChatController(dio: Dio()));
+
+  void goToChatScreen(chat) async {
+    print(chat.chatId);
+    //linkTest();
+    Get.to(()=> ChatScreen(doctorId: chat.doctorId, chatId: chat.chatId, unreadMsg: chat.unreadChat, doctorName: chat.doctorName,))?.whenComplete(() {
+      setState(() {
+        chatController.getChatList();
+      });
+    });
+  }
 
   String formatDate(String date){
     DateTime dateTime = DateTime.parse(date).toLocal();
@@ -31,21 +44,19 @@ class _CurateMainState extends State<CurateMain> {
   }
 
   asyncBefore() async {
-    await curateListController.getList();
-    await appointmentController.getAppointmentList();
-    appointmentController.isLoading.value = false;
-    setState(() {});
+    //await
   }
 
+  @override
   void initState() {
-    asyncBefore();
     super.initState();
+    appointmentController.getAppointmentList();
+    chatController.getChatList();
+    curateListController.getList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
@@ -54,7 +65,6 @@ class _CurateMainState extends State<CurateMain> {
           child: Text('큐레이팅',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
         ),
-        //shape: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
         backgroundColor: Colors.grey.shade100,
       ),
       body: SingleChildScrollView(
@@ -65,79 +75,94 @@ class _CurateMainState extends State<CurateMain> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 10,),
-              if (appointmentController.approvedAppointment != -1 && appointmentController.isAfterTodayAppointmentExist.value) ... [
-              Container(
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Colors.white,),
-                width: MediaQuery.of(context).size.width - 20,
-                child: Obx (() {
-                  if (appointmentController.isLoading.value) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
 
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          onTaptoGo();
-                        },
-                        child: Container(
-                          padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-                          width: 300,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              if (appointmentController.isAfterTodayAppointmentExist
-                                  .value) ... [
-                                Row(
-                                  children: [
-                                    Icon(Icons.calendar_month),
-                                    Text('가까운 약속이 있어요', style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20),),
-                                  ],
-                                ),
-                                SizedBox(height: 5),
-                                Text('${appointmentController
-                                    .appointmentList[appointmentController.approvedAppointment]['doctor']['name']}, '
-                                    '${DateFormat.yMMMEd('ko_KR').add_jm().format(appointmentController.appointmentList[appointmentController.approvedAppointment]['appointmentTime'])}'),
+              Obx (() {
+                if (appointmentController.isLoading.value) {
+                  return Center(child: CircularProgressIndicator(),);
+                }
+                if (appointmentController.approvedAppointment != -1 &&
+                    appointmentController.isAfterTodayAppointmentExist.value) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white,
+                    ),
+                    width: MediaQuery.of(context).size.width - 20,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            onTaptoGo();
+                          },
+                          child: Container(
+                            padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+                            width: 300,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                if (appointmentController
+                                    .isAfterTodayAppointmentExist
+                                    .value) ... [
+                                  Row(
+                                    children: [
+                                      Icon(Icons.calendar_month),
+                                      Text('가까운 약속이 있어요', style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20),),
+                                    ],
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text('${appointmentController
+                                      .appointmentList[appointmentController
+                                      .approvedAppointment]['doctor']['name']}, '
+                                      '${DateFormat.yMMMEd('ko_KR')
+                                      .add_jm()
+                                      .format(appointmentController
+                                      .appointmentList[appointmentController
+                                      .approvedAppointment]['appointmentTime'])}'),
+                                ],
                               ],
-                            ],
+                            ),
                           ),
                         ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          if (appointmentController.isLoading.value) {
-                            print('test2');
-                            return;
-                          }
-
-                          print('test');
-                          Get.to(()=>AppointmentListview(appointmentController: appointmentController));
-                        },
-                        child: Container(
-                          padding: EdgeInsets.fromLTRB(0, 50, 20, 0),
-                          width: MediaQuery.of(context).size.width - 320,
-                          decoration: BoxDecoration(
-                            border: Border(left: BorderSide(color: Colors.grey))
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text('더보기', style: TextStyle(
-                                  color: Colors.grey, fontSize: 10),),
-                              Icon(Icons.arrow_forward_ios, color: Colors.grey.shade100,
-                                size: 10,),
-                            ],
+                        InkWell(
+                          onTap: () {
+                            if (appointmentController.isLoading.value) {
+                              return;
+                            }
+                            Get.to(() => AppointmentListview(appointmentController: appointmentController));
+                          },
+                          child: Container(
+                            padding: EdgeInsets.fromLTRB(0, 50, 20, 0),
+                            width: MediaQuery
+                                .of(context)
+                                .size
+                                .width - 320,
+                            decoration: BoxDecoration(
+                                border: Border(
+                                    left: BorderSide(color: Colors.grey))
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text('더보기', style: TextStyle(
+                                    color: Colors.grey, fontSize: 10),),
+                                Icon(Icons.arrow_forward_ios,
+                                  color: Colors.grey.shade100,
+                                  size: 10,),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ]
+                      ]
+                    ),
                   );
-                }),
-              ),
-              ],
+                }
+                else {
+                  return SizedBox();
+                }
+              }),
               SizedBox(height: 10,),
         
               Container(
@@ -191,29 +216,28 @@ class _CurateMainState extends State<CurateMain> {
                               },
                             );
                           },
-
                         ),
                       );
                     }),
                     DecoratedBox(
                       decoration: BoxDecoration(
-                          border: Border( top: BorderSide(color: Colors.grey.withAlpha(50)),)
+                        border: Border( top: BorderSide(color: Colors.grey.withAlpha(50)),)
                       ),
                       child: SizedBox(
                         width: double.infinity,
                         child: TextButton(
-                            onPressed: () {
-                              Get.to(()=> CurateFeed());
-                            },
-                            style: TextButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(0)),
-                              ),
-                              //minimumSize: Size.zero,
-                              padding: EdgeInsets.zero,
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          onPressed: () {
+                            Get.to(()=> CurateFeed());
+                          },
+                          style: TextButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(0)),
                             ),
-                            child: Text('전체보기', style: TextStyle(color: Colors.black),)),
+                            padding: EdgeInsets.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: Text('전체보기', style: TextStyle(color: Colors.black),)
+                        ),
                       ),
                     )
                   ],
@@ -233,39 +257,46 @@ class _CurateMainState extends State<CurateMain> {
                           margin: EdgeInsets.fromLTRB(20, 15, 0, 0),
                           child: Text('최근 DM 목록', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),)
                       ),
-                      Container(
-                        margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                        height: 180,
-                        child: ListView.builder(
-                          itemBuilder: (context, index) {
-                            //final curateList = curateListController.CurateList[index];
-                            //final commentCount = curateList['comments']?.length ?? 0;
-                            return ListTile(
-                              title: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      'ㅇㅇㅇ',
-                                      style: TextStyle(
-                                        //fontWeight: FontWeight.bold,
-                                        fontSize: 15.0,
+                      Obx(() {
+                        if (chatController.isLoading.value) {
+                          return Center(child: CircularProgressIndicator(),);
+                        }
+
+                        return Container(
+                          margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                          height: 180,
+                          child: ListView.builder(
+                            itemBuilder: (context, index) {
+                              final chat = chatController.chatList[index];
+                              //final formattedDate = DateFormat('MM/dd HH:mm').format(chat.date.toLocal());
+                              // final commentCount = curateList['comments']?.length ?? 0;
+
+                              return ListTile(
+                                title: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        chat.doctorName,
+                                        style: TextStyle(
+                                          //fontWeight: FontWeight.bold,
+                                          fontSize: 15.0,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Text('1'),
-                                ],
-                              ),
-                              subtitle: Text('TEST'),
-                              onTap: (){
-                                //curateListController.getPost(curateList['_id']);
-                                //Get.to(()=> CurationScreen(currentId: curateList['_id']));
-                              },
-        
-                            );
-                          },
-                          itemCount: curateListController.CurateList.length,
-                        ),
-                      ),
+                                    Text(chat.unreadChat.toString()),
+                                  ],
+                                ),
+                                subtitle: Text(
+                                  '${(chat.recentChat['role'] == 'doctor') ? chat.doctorName : '나'}: ${chat.recentChat['message']}',),
+                                onTap: () {
+                                  goToChatScreen(chat);
+                                },
+                              );
+                            },
+                            itemCount: (chatController.chatList.length > 3) ? 3 : chatController.chatList.length,
+                          ),
+                        );
+                      }),
         
                       DecoratedBox(
                         decoration: BoxDecoration(
@@ -283,7 +314,6 @@ class _CurateMainState extends State<CurateMain> {
                             },
                             style: TextButton.styleFrom(
                               shape: RoundedRectangleBorder(
-        
                                 borderRadius: BorderRadius.all(Radius.circular(0)),
                               ),
                               //minimumSize: Size.zero,

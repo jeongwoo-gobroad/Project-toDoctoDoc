@@ -27,13 +27,15 @@
 }*/
 
 // chat_content.dart
+import 'dart:convert';
+
 class ChatContent {
   final String chatId;
   final String doctorName;
   final String doctorId;
   final DateTime date;
   final int unreadChat;
-  final String recentChat;
+  final recentChat;
 
   ChatContent({
     required this.chatId,
@@ -51,7 +53,7 @@ class ChatContent {
       doctorId: map['doctorId'],
       date: DateTime.parse(map['date'] as String),
       unreadChat: (map['unreadChat'] == -1) ? 0 : map['unreadChat'],
-      recentChat: map['recentChat'],
+      recentChat: json.decode(map['recentChat']),
     );
   }
 }

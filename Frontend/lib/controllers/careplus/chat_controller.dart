@@ -7,6 +7,7 @@ import 'chat_data_model.dart';
 
 class ChatController extends GetxController{
   final chatList = <ChatContent>[].obs;
+  var isLoading = true.obs;
   final Dio dio;
 
   ChatController({required this.dio});
@@ -47,6 +48,7 @@ class ChatController extends GetxController{
 
 
   Future<void> getChatList() async {
+    isLoading.value = true;
 
     final response = await dio.get(
       'http://jeongwoo-kim-web.myds.me:3000/mapp/dm/user/list',
@@ -77,5 +79,7 @@ class ChatController extends GetxController{
     else{
       print('코드: ${response.statusCode}');
     }
+
+    isLoading.value = false;
   }
 }

@@ -1,17 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
-import 'package:to_doc/controllers/hospital/hospital_information_controller.dart';
 import 'package:to_doc/screens/hospital/hospital_rating_screen.dart';
 import 'package:to_doc/screens/hospital/star_rating_editor.dart';
-
 
 class HospitalDetailView extends StatefulWidget {
   const HospitalDetailView({super.key, required this.hospital});
   final Map<String, dynamic> hospital;
-  
   
   @override
   State<HospitalDetailView> createState() => _HospitalDetailViewState();

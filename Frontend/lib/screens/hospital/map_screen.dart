@@ -70,25 +70,22 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
       elevation: 0,
       builder: (context) {//(BuildContext context) => HospitalDetailView(),
         return DraggableScrollableSheet(
-
-            expand: false,
-            snap: true,
-            snapSizes: [0.2, 1.0],
-            initialChildSize: 0.4,
-            minChildSize: 0.2,
-            maxChildSize: 1.0,
-            builder: (context, scrollController) {
-              return SingleChildScrollView(
-                  controller: scrollController,
-                  child: SizedBox(height: 2000, child: HospitalDetailView(hospital: hospital))
-              );
-            }
+          expand: false,
+          snap: true,
+          snapSizes: [0.2, 1.0],
+          initialChildSize: 0.4,
+          minChildSize: 0.2,
+          maxChildSize: 1.0,
+          builder: (context, scrollController) {
+            return SingleChildScrollView(
+                controller: scrollController,
+                child: SizedBox(height: 2000, child: HospitalDetailView(hospital: hospital))
+            );
+          }
         );
       },
     );
   }
-
-
 
   void _scrollListener() {
     //스크롤 위치에 따라 지도높이조절
@@ -144,6 +141,7 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
       }
     });
   }
+
   void _togglePremiumOnly() { //프리미엄만 보여주기기
     setState(() {
       showPremiumOnly = !showPremiumOnly;
@@ -155,6 +153,7 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -254,19 +253,7 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
                 (context, index) {
                   final hospital = mapController.psychiatryList[index];
                   final isPremium = hospital['isPremiumPsychiatry'];
-                  /*return  Card(
-                    margin:
-                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                    elevation: isPremium ? 8.0 : 2.0, //프리미엄 항목 그림자 강조조
-                    color: isPremium ? Colors.yellow[100] : Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                      side: isPremium
-                          ? BorderSide(
-                              color: Colors.amber, width: 2.0) //프리미엄만 테두리처리리
-                          : BorderSide.none,
-                    ),
-                    child: */
+
                   return Container(
                     margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
                     decoration: (isPremium) ? BoxDecoration(
@@ -294,6 +281,7 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
                               }
                             }
                           },
+
                           child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: 3, vertical: 5),
                             child: Column(
