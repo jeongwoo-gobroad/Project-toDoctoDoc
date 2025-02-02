@@ -72,6 +72,46 @@ router.get(["/get/:appid"],
     }
 );
 
+router.get(["/getWithChatId/:cid"],
+    checkIfLoggedIn,
+    isDoctorThenProceed,
+    async (req, res, next) => {
+        const user = await getTokenInformation(req, res);
+
+        try {
+            const chat = await Chat.findById(req.params.cid).populate({
+                path: 'appointment',
+                populate: {
+                    path: 'user',
+                    select: 'usernick',
+                }
+            });
+
+            if (chat.doctor != user.userid) {
+                res.status(401).json(returnResponse(true, "notYourChat", "-"));
+
+                return;
+            }
+
+            if (!chat.appointment) {
+                res.status(201).json(returnResponse(true, "noAppointment", "-"));
+
+                return;
+            }
+
+            res.status(200).json(returnResponse(false, "appointmentGet", chat.appointment));
+
+            return;
+        } catch (error) {
+            console.error(error, "error at /appointment/getWithChatId GET");
+
+            res.status(403).json(returnResponse(true, "errorAtAppointmentgetWithChatId", "-"));
+
+            return;
+        }
+    }
+);
+
 router.post(["/set"],
     checkIfLoggedIn,
     isDoctorThenProceed,

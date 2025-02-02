@@ -23,7 +23,7 @@ router.get(["/list"],
                 path: 'chats',
                 populate: {
                     path: 'user',
-                    select: 'name'
+                    select: 'usernick'
                 }
             });
             const chats = usr.chats;
