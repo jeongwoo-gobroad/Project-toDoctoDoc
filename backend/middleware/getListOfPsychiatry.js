@@ -16,7 +16,7 @@ const returnListOfPsychiatry = (x, y, radius, page) => {
 
         let cached;
 
-        if ((cached = await caching.getCache(kakaoMapOptions.uri))) {
+        if ((cached = await caching.getCache("DOCS:" + kakaoMapOptions.uri))) {
             console.log("returned cached documents");
 
             resolve(JSON.parse(cached));
@@ -24,7 +24,7 @@ const returnListOfPsychiatry = (x, y, radius, page) => {
 
         request.get(kakaoMapOptions, (err, result, body) => {
             if (!err) {
-                caching.setCache(kakaoMapOptions.uri, body.documents);
+                caching.setCache("DOCS:" + kakaoMapOptions.uri, body.documents);
                 resolve(body.documents);
             } else {
                 reject(err);

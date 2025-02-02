@@ -87,15 +87,15 @@ router.post(["/login"],
                     await Doctor.findByIdAndUpdate(doctor._id, {
                         refreshToken: refreshToken,
                     });
-                    setCacheForNDaysAsync("Device: " + doctor._id, pushToken, 270);
+                    setCacheForNDaysAsync("DEVICE:" + doctor._id, pushToken, 270);
                 } else {
                     if (doctor.deviceIds.includes(deviceId)) {
-                        const prevToken = await getCache("Device: " + deviceId);
+                        const prevToken = await getCache("DEVICE:" + deviceId);
                         await Doctor.findByIdAndUpdate(doctor._id, {
                             refreshToken: refreshToken,
                         });
                         if (prevToken != pushToken) { // 만약 토큰이 갱신되었다면
-                            setCacheForNDaysAsync("Device: " + deviceId, pushToken, 270);
+                            setCacheForNDaysAsync("DEVICE:" + deviceId, pushToken, 270);
                         }
                     } else {
                         console.log(deviceId, "->", pushToken); // 하지메떼노 등록
@@ -103,7 +103,7 @@ router.post(["/login"],
                             refreshToken: refreshToken,
                             $push: {deviceIds: deviceId}
                         });
-                        setCacheForNDaysAsync("Device: " + deviceId, pushToken, 270);
+                        setCacheForNDaysAsync("DEVICE:" + deviceId, pushToken, 270);
                     }
                 }
 

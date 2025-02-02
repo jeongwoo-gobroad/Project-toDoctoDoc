@@ -30,6 +30,7 @@ const ChatSchema = new mongoose.Schema({
     },
     chatList: [{
         type: BubbleSchema
+        // Deprecated? or to be used for saving chats temporarily?
     }],
     date: {
         type: Date,

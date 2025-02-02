@@ -36,7 +36,10 @@ const sendCuratePushNotification = async (deviceIds, info) => {
         // console.log(info);
         deviceIds.forEach(async (deviceId) => {
             try {
-                await fcm.messaging().send(getMessageContext(JSON.parse((await getCache("Device: " + deviceId))), info));
+                let cache = null;
+                if ((cache = await getCache("DEVICE:" + deviceId))) {
+                    await fcm.messaging().send(getMessageContext(JSON.parse(cache), info));
+                }
             } catch (error) {
                 console.error(error, "errorAtsendCuratePushNotification");
             }

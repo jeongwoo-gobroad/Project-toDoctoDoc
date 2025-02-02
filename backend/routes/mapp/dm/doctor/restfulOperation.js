@@ -43,7 +43,7 @@ router.get(["/list"],
                     prevChat.recentChat = "차단된 대화입니다.";
                     prevChat.unreadChat = -1;
                 } else {
-                    if ((cache = await getCache("ROOM_" + chat._id))) {
+                    if ((cache = await getCache("ROOM:" + chat._id))) {
                         prevChat.recentChat = cache;
     
                         const messageQueue = new Queue(chat._id + "_USER", {
