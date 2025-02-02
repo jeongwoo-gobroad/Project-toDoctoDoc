@@ -95,12 +95,12 @@ class AiChatController extends GetxController{
       print(serverDate);
       print(today);
       userTotal.value = data['content']['userTotal'];
-      // if (!_isSameDay(serverDate, today)) {
-      //   userTotal.value = 0;
-      // } else {
-      //   print('같은 날짜');
-      //   userTotal.value = data['content']['userTotal'];
-      // }
+      if (!_isSameDay(serverDate, today)) {
+        userTotal.value = 0;
+      } else {
+        print('같은 날짜');
+        userTotal.value = data['content']['userTotal'];
+      }
       if(_isLimited()){
         isLimited.value = true;
       }

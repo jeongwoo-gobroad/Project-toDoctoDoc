@@ -51,6 +51,8 @@ class _GraphBoardState extends State<GraphBoard>
   final double bottomNavHeight = 80;
   bool showTrashCan = false;
   final double trashCanHeight = 50.0;
+  bool isTrashHighlighted = false;
+
 
   @override
   void initState() {
@@ -231,23 +233,31 @@ class _GraphBoardState extends State<GraphBoard>
   }
 
   void _handlePanUpdate(Offset globalPos) {
+    bool overTrash = false;
     for (final bubble in bubbles) {
       if (bubble.dragOffset != null) {
+        final newTarget = globalPos - bubble.dragOffset!;
         setState(() {
-          bubble.dragTarget = globalPos - bubble.dragOffset!;
+          bubble.dragTarget = newTarget;
+          overTrash = (newTarget.dy - bubble.radius) < trashCanHeight;
         });
         break;
       }
     }
+    setState(() {
+      isTrashHighlighted = overTrash;
+    });
   }
 
   void _handlePanEnd() {
+    bool removed = false;
     for (int i = 0; i < bubbles.length; i++) {
       final bubble = bubbles[i];
       if (bubble.dragOffset != null) {
-        if (showTrashCan && bubble.position.dy < trashCanHeight) {
+        if (isTrashHighlighted) {
           setState(() {
             bubbles.removeAt(i);
+            removed = true;
           });
         } else {
           setState(() {
@@ -258,6 +268,9 @@ class _GraphBoardState extends State<GraphBoard>
         break;
       }
     }
+    setState(() {
+      isTrashHighlighted = false;
+    });
   }
 
   void _searchTagDetails(String tag, int count) {
@@ -304,7 +317,9 @@ class _GraphBoardState extends State<GraphBoard>
                     child: Container(
                       height: trashCanHeight,
                       decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.3),
+                        color: isTrashHighlighted
+                            ? Colors.red
+                            : Colors.red.withOpacity(0.3),
                         borderRadius: BorderRadius.vertical(
                           bottom: Radius.circular(20),
                         ),
