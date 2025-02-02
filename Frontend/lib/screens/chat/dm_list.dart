@@ -25,6 +25,12 @@ class _DMListState extends State<DMList> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    controller.getChatList();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

@@ -10,6 +10,8 @@ class ChatController extends GetxController{
   final chatList = <ChatContent>[].obs;
   final Dio dio;
 
+  var isLoading = true.obs;
+
   ChatController({required this.dio});
 
   @override
@@ -19,6 +21,9 @@ class ChatController extends GetxController{
   }
 
   Future<void> getChatList() async {
+    isLoading.value = true;
+
+
     final response = await dio.get(
       'http://jeongwoo-kim-web.myds.me:3000/mapp/dm/doctor/list',
       options:
@@ -41,5 +46,6 @@ class ChatController extends GetxController{
     else{
       print('코드: ${response.statusCode}');
     }
+    isLoading.value = false;
   }
 }

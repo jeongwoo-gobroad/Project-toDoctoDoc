@@ -7,15 +7,14 @@ import 'package:to_doc/auth/auth_dio.dart';
 import '../../socket_service/chat_socket_service.dart';
 
 class ChatAppointmentController extends GetxController{
-  ChatAppointmentController(this.chatId);
+  ChatAppointmentController();
 
   late String appointmentId = 'load';
-  final String chatId;
 
   //late DateTime appointmentTime;
   var isLoading = true.obs;
 
-  late Map<String,dynamic> hospital;
+  //late Map<String,dynamic> hospital;
   late Map<String,dynamic> appointment;
 
   bool isAppointmentExisted  = false;
@@ -23,7 +22,7 @@ class ChatAppointmentController extends GetxController{
   bool isAppointmentApproved = false;
 
   Future<bool> getAppointmentInformation(String chatId) async {
-    isLoading = true.obs;
+    //isLoading.value = true;
 
     Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
@@ -38,14 +37,13 @@ class ChatAppointmentController extends GetxController{
 
     if (response.statusCode == 200) {
       final data = json.decode(response.data);
-      print(data);
+      //print(data);
 
       if (data['content']['appointment'] == null) {
         isAppointmentExisted = false;
         isLoading.value = false;
         return true;
       }
-
 
       appointment = data['content']['appointment'];
       appointment['appointmentTime'] = DateTime.parse(appointment['appointmentTime']).toLocal();
@@ -57,19 +55,17 @@ class ChatAppointmentController extends GetxController{
       }
 
       isAppointmentApproved = data['content']['appointment']['isAppointmentApproved'];
-      print(1);
-      if (data['content']['psy'] != null) {
-        hospital = data['content']['psy'];
-      }
-      else {
-        hospital = {
-          'a' : 'a',};
-      }
-      print(2);
+
+/*      if (data['content']['psy'] != null) {
+        //hospital = data['content']['psy'];
+      }*/
+/*      else {
+        hospital = {'a' : 'a',};
+      }*/
 
       appointmentId=  data['content']['appointment']['_id'];
       print('APPOINTMENT ID-------------- $appointmentId');
-      print('HOSPITAL-------------------- $hospital');
+      //print('HOSPITAL-------------------- $hospital');
 
       isAppointmentExisted = true;
       isLoading.value = false;
@@ -81,7 +77,6 @@ class ChatAppointmentController extends GetxController{
   }
 
   Future<bool> sendAppointmentApproval() async {
-    isLoading.value = true;
 
     Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
@@ -100,9 +95,8 @@ class ChatAppointmentController extends GetxController{
     if (response.statusCode == 200) {
       final data = json.decode(response.data);
       print(data);
-
-      isAppointmentApproved = true;
-      isLoading.value = false;
+      isLoading.value = true;
+      //isAppointmentApproved = true;
       return true;
     }
     else{

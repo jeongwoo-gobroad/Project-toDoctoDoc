@@ -33,15 +33,19 @@ initDatabase() async {
   print(dbPath);
   print(joinPath);
 
-  var exists = await databaseExists(joinPath);
+  if (!kIsWeb) {
+    var exists = await databaseExists(joinPath);
 
-  if (!exists) {
-    try {
-      await Directory(path.dirname(joinPath)).create(recursive: true);
-    } catch (_) {}
-    ByteData data = await rootBundle.load(path.join("asset/db", "chat_database.db"));
-    List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-    await File(joinPath).writeAsBytes(bytes, flush: true);
+    if (!exists) {
+      try {
+        await Directory(path.dirname(joinPath)).create(recursive: true);
+      } catch (_) {}
+      ByteData data = await rootBundle.load(
+          path.join("asset/db", "chat_database.db"));
+      List<int> bytes = data.buffer.asUint8List(
+          data.offsetInBytes, data.lengthInBytes);
+      await File(joinPath).writeAsBytes(bytes, flush: true);
+    }
   }
 
 

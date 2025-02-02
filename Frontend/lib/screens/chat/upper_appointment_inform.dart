@@ -25,19 +25,19 @@ class upperAppointmentInform extends StatelessWidget {
           ),
           actions: [
             TextButton(
+              child: Text('취소', style: TextStyle(color: Colors.grey),),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
               onPressed: () {
                 appointmentController.sendAppointmentApproval();
                 Navigator.of(context).pop();
               },
               style: ButtonStyle(
                   backgroundColor: WidgetStatePropertyAll(Colors.green)),
-              child: Text('승낙', style: TextStyle(color: Colors.black),),
-            ),
-            TextButton(
-              child: Text('취소', style: TextStyle(color: Colors.grey),),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              child: Text('승낙', style: TextStyle(color: Colors.white),),
             ),
           ],
         );
@@ -75,12 +75,15 @@ class upperAppointmentInform extends StatelessWidget {
                   ),
                   //Text('${appointmentController.appointmentId} : 약속 ID', style: TextStyle(fontSize: 10),),
                   if (!appointmentController.isAppointmentApproved) ...[
-                    TextButton(
-                      onPressed: () {
-                        sendAppointmentApprovalAlert(context);
-                      },
-                      style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.blue)),
-                      child: Text('승낙'),
+                    Align(
+                      alignment: Alignment.center,
+                      child: TextButton(
+                        onPressed: () {
+                          sendAppointmentApprovalAlert(context);
+                        },
+                        style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.green),),
+                        child: Text('승낙', style: TextStyle(color: Colors.white),),
+                      ),
                     ),
                   ],
                 ],

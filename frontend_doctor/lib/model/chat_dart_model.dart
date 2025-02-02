@@ -27,19 +27,21 @@
 }*/
 
 // chat_content.dart
+import 'dart:convert';
+
 class ChatContent {
   final String chatId;
-  //final String userName;
+  final String userName;
   final String userId;
   final DateTime date;
   final int unreadChat;
-  final String recentChat;
+  final recentChat;
 
   ChatContent({
     required this.chatId,
     required this.unreadChat,
     required this.userId,
-    //required this.userName,
+    required this.userName,
     required this.date,
     required this.recentChat
   });
@@ -47,11 +49,11 @@ class ChatContent {
   factory ChatContent.fromMap(Map<String, dynamic> map) {
     return ChatContent(
       chatId: map['cid'].toString(),
-      //userName: map['doctorName'],
+      userName: map['userName'],
       userId: map['userId'],
       date: DateTime.parse(map['date'] as String),
       unreadChat: (map['unreadChat'] == -1) ? 0 : map['unreadChat'],
-      recentChat: map['recentChat'],
+      recentChat: json.decode(map['recentChat']),
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -25,11 +27,12 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
-  late ChatAppointmentController chatAppointmentController;
+  late ChatAppointmentController chatAppointmentController = ChatAppointmentController();
   final ScrollController _scrollController = ScrollController();
   late ChatSocketService socketService;
   final ChatDatabase chatDb = ChatDatabase();
 
+  late Timer _timer;
 
   RxBool isLoading = true.obs;
 
@@ -38,6 +41,15 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
   List<ChatObject> _messageList = [];
 
+  animateToBottom() {
+    Future.delayed(Duration(milliseconds: 100), () {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    });
+  }
 
   void asyncBefore() async {
     SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
@@ -66,13 +78,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     }
 
     setState(() {
-      Future.delayed(Duration(milliseconds: 100), () {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      });
+      animateToBottom();
     });
 
 
@@ -94,13 +100,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
             _messageList.add(ChatObject(content: data['message'], role: 'doctor', createdAt: time.toLocal()));
             chatDb.saveChat(widget.chatId, widget.doctorId, data['message'], time, 'doctor');
 
-            Future.delayed(Duration(milliseconds: 100), () {
-              _scrollController.animateTo(
-                _scrollController.position.maxScrollExtent,
-                duration: Duration(milliseconds: 300),
-                curve: Curves.easeOut,
-              );
-            });
+            animateToBottom();
           });
         }
       });
@@ -108,14 +108,26 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
   }
 
+  void getAppointment(Timer timer) {
+    //print('TEST');
+    chatAppointmentController.getAppointmentInformation(widget.chatId);
+    setState(() {
+
+    });
+  }
+
   @override
   void initState() {
     asyncBefore();
 
     super.initState();
-    chatAppointmentController = ChatAppointmentController(widget.chatId);
-    updateUnread = widget.unreadMsg;
 
+    _timer = Timer.periodic(
+      const Duration(seconds:1),
+      getAppointment,
+    );
+
+    updateUnread = widget.unreadMsg;
     isLoading.value = false;
   }
 
@@ -133,17 +145,8 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
        });
 
        DateTime now = DateTime.now().toUtc();
-
        chatDb.saveChat(widget.chatId, widget.doctorId, value, now, 'user');
-
-
-       Future.delayed(Duration(milliseconds: 100), () {
-         _scrollController.animateTo(
-           _scrollController.position.maxScrollExtent,
-           duration: Duration(milliseconds: 300),
-           curve: Curves.easeOut,
-         );
-       });
+       animateToBottom();
      }
 
     return Scaffold(
@@ -154,6 +157,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       ),
       body: PopScope(
         onPopInvokedWithResult: (didPop, result) {
+          _timer.cancel();
           socketService.onDisconnect();
         },
         child: Column(

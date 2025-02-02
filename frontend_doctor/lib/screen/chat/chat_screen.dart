@@ -1,13 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:to_doc_for_doc/controllers/appointment_controller.dart';
 import 'package:to_doc_for_doc/controllers/chat_appointment_controller.dart';
 import 'package:to_doc_for_doc/screen/auth/login_screen.dart';
 import 'package:to_doc_for_doc/screen/chat/dm_chat_list_maker.dart';
 import 'package:to_doc_for_doc/screen/chat/upper_appointment_information.dart';
-import 'package:path/path.dart' as path;
 
 import '../../Database/chat_database.dart';
 import '../../controllers/auth/auth_secure.dart';
@@ -40,6 +40,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   late ChatSocketService socketService;
   final ChatDatabase chatDb = ChatDatabase();
 
+  late Timer _timer;
 
   RxBool isLoading = true.obs;
 
@@ -49,6 +50,15 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   List<ChatObject> _messageList = [];
 
   alterParent() { setState(() {}); }
+
+  void getAppointment(Timer timer) {
+    //print('TEST');
+    chatAppointmentController.getAppointmentInformation(widget.chatId);
+    setState(() {});
+  }
+
+
+
 
   Future<void> appointmentMustBeDoneAlert(BuildContext context) async {
     return showDialog<void>(
@@ -101,7 +111,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
   void asyncBefore() async {
     isLoading.value = true;
-
     SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
     String? token = await storage.readAccessToken();
 
@@ -112,9 +121,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
     print(token);
     print(widget.chatId);
-
     socketService = ChatSocketService(token!, widget.chatId);
-
 
     var chatData = await chatDb.loadChat(widget.chatId);
 
@@ -137,7 +144,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         );
       });
     });
-
 
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -173,12 +179,13 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     asyncBefore();
 
     updateUnread = widget.unreadChat;
+    _timer = Timer.periodic(
+      const Duration(seconds:1),
+      getAppointment,
+    );
 
     super.initState();
-
-    setState(() {
-      isLoading.value = false;
-    });
+    isLoading.value = false;
   }
 
   @override
@@ -209,86 +216,85 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       });
     }
 
-    return PopScope(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(widget.userName, style: TextStyle(fontWeight: FontWeight.bold),),
-          //centerTitle: true,
-          shape: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
-        ),
-        body: PopScope(
-          onPopInvokedWithResult: (didPop, result) {
-            socketService.onDisconnect();
-          },
-          child: Column(
-            children: [
-              Obx(() {
-                if (chatAppointmentController.isLoading.value) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                return UpperAppointmentInformation(appointmentController: chatAppointmentController);
-              }),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.userName, style: TextStyle(fontWeight: FontWeight.bold),),
+        //centerTitle: true,
+        shape: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
+      ),
+      body: PopScope(
+        onPopInvokedWithResult: (didPop, result) {
+          _timer.cancel();
+          socketService.onDisconnect();
+        },
+        child: Column(
+          children: [
+            Obx(() {
+              if (chatAppointmentController.isLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              return UpperAppointmentInformation(appointmentController: chatAppointmentController);
+            }),
 
 
-              Obx(() {
-                if (isLoading.value) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                return makeChatList(scrollController: _scrollController, messageList: _messageList, updateUnread: updateUnread,);
-              }),
+            Obx(() {
+              if (isLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              return makeChatList(scrollController: _scrollController, messageList: _messageList, updateUnread: updateUnread,);
+            }),
 
-              Padding(
-                padding: const EdgeInsets.all(8.0),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
 
-                child: TextField(
-                  maxLines: null,
-                  controller: messageController,
+              child: TextField(
+                maxLines: null,
+                controller: messageController,
 
-                  onSubmitted: (value) {
-                    if (value.isNotEmpty) {
-                      sendText(value);
-                    }
-                  },
+                onSubmitted: (value) {
+                  if (value.isNotEmpty) {
+                    sendText(value);
+                  }
+                },
 
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Color.fromARGB(255, 244, 242, 248),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(40),
-                        borderSide: BorderSide(width: 0, style: BorderStyle.none)
-                    ),
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 10,
-                    ),
-                    hintText: '메시지를 입력하세요',
-                    prefixIcon: IconButton(
-                        onPressed: () {
-                          if (chatAppointmentController.isAppointmentExisted && chatAppointmentController.appointmentTime.isBefore(DateTime.now())) {
-                            if (!chatAppointmentController.isAppointmentDone) {
-                              appointmentMustBeDoneAlert(context);
-                              return;
-                            }
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Color.fromARGB(255, 244, 242, 248),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(40),
+                      borderSide: BorderSide(width: 0, style: BorderStyle.none)
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  hintText: '메시지를 입력하세요',
+                  prefixIcon: IconButton(
+                      onPressed: () {
+                        if (chatAppointmentController.isAppointmentExisted && chatAppointmentController.appointmentTime.isBefore(DateTime.now())) {
+                          if (!chatAppointmentController.isAppointmentDone) {
+                            appointmentMustBeDoneAlert(context);
+                            return;
                           }
-                          setAppointmentDay();
-                          setState(() {});
-                        },
-                        icon: Icon(Icons.edit_calendar_outlined),
-                    ),
+                        }
+                        setAppointmentDay();
+                        setState(() {});
+                      },
+                      icon: Icon(Icons.edit_calendar_outlined),
+                  ),
 
-                    suffixIcon: IconButton(
-                        onPressed: () {
-                          if (messageController.text.isNotEmpty) {
-                            sendText(messageController.text);
-                          }
-                        },
-                        icon: Icon(Icons.arrow_circle_right_outlined, size: 45)
-                    ),
+                  suffixIcon: IconButton(
+                      onPressed: () {
+                        if (messageController.text.isNotEmpty) {
+                          sendText(messageController.text);
+                        }
+                      },
+                      icon: Icon(Icons.arrow_circle_right_outlined, size: 45)
                   ),
                 ),
               ),
-          ],),
-        ),
+            ),
+        ],),
       ),
     );
   }
