@@ -50,6 +50,7 @@ class _GraphBoardState extends State<GraphBoard>
   double screenHeight = 0;
   final double bottomNavHeight = 80;
   bool showTrashCan = false;
+  bool isDragging = false;
   final double trashCanHeight = 50.0;
   bool isTrashHighlighted = false;
 
@@ -161,7 +162,7 @@ class _GraphBoardState extends State<GraphBoard>
           if (stableFrameCount >= requiredStableFrames) {
             setState(() {
               isSystemStable = true;
-              showTrashCan = true;
+              //showTrashCan = true;
             });
           }
         } else {
@@ -226,6 +227,7 @@ class _GraphBoardState extends State<GraphBoard>
         setState(() {
           bubble.dragOffset = globalPos - bubble.position;
           bubble.dragTarget = bubble.position;
+          isDragging = true;
         });
         break;
       }
@@ -269,6 +271,7 @@ class _GraphBoardState extends State<GraphBoard>
       }
     }
     setState(() {
+      isDragging = false;
       isTrashHighlighted = false;
     });
   }
@@ -309,30 +312,65 @@ class _GraphBoardState extends State<GraphBoard>
             onPanEnd: (d) => _handlePanEnd(),
             child: Stack(
               children: [
-                if (showTrashCan)
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      height: trashCanHeight,
-                      decoration: BoxDecoration(
-                        color: isTrashHighlighted
-                            ? Colors.red
-                            : Colors.red.withOpacity(0.3),
-                        borderRadius: BorderRadius.vertical(
-                          bottom: Radius.circular(20),
+                if (isSystemStable && !isDragging)
+                      Positioned(
+                        top: MediaQuery.of(context).size.height * 0.1,
+                        left: 20,
+                        right: 20,
+                        child: Container(
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.7),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            '터치해서 게시물을 보거나,\n버블을 걱정과 함께 날려보내세요.',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
-                      child: Center(
-                        child: Icon(
-                          Icons.delete,
-                          color: Colors.white,
-                          size: 40,
+
+                    // 휴지통 UI
+                    AnimatedPositioned(
+                      duration: Duration(milliseconds: 200),
+                      top: isDragging ? 0 : -trashCanHeight,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        height: trashCanHeight,
+                        decoration: BoxDecoration(
+                          color: isTrashHighlighted
+                              ? Colors.red
+                              : Colors.red.withOpacity(0.3),
+                          borderRadius: BorderRadius.vertical(
+                            bottom: Radius.circular(20),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.delete,
+                              color: Colors.white,
+                              size: 30,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              '삭제',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ),
                 ...bubbles.map((bubble) {
                   return Positioned(
                     left: bubble.position.dx - bubble.radius,
