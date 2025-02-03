@@ -1,6 +1,7 @@
 const Multer = require('multer');
 const stream = require('streamifier');
 const { Storage } = require("@google-cloud/storage");
+const path = require('path');
 
 const storage = new Storage({
     /* keyFile이 아닌 keyFilename으로 지정해야 정상 동작 */
@@ -12,7 +13,8 @@ const storage = new Storage({
 const bucket = storage.bucket('todoctodoc_profile_image');
 
 const upload = (req) => {
-    const chunk = bucket.file(req.myFileName);
+    const myFileName = 'doctorProfileImage/' + Date.now() + "_" + req.userid + path.extname(req.file.originalname);
+    const chunk = bucket.file(myFileName);
     const chunkStream = chunk.createWriteStream();
 
     // console.log(chunkStream); /* chunk, chunkStream 모두 관찰 해 봤는데, 업로드 URL을 뱉어내지는 않았다. */

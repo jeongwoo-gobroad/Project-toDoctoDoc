@@ -15,14 +15,12 @@ router.post(['/upload'],
     manager.multer.single('file'),
     async (req, res, next) => {
         const user = await getTokenInformation(req, res);
-        const baseURI = "https://storage.googleapis.com/todoctodoc_profile_image/";
+        const baseURI = process.env.GCP_DOCTOR_URI;
 
         try {
-            req.myFileName = 'doctorProfileImage/' + Date.now() + "_" + user.userid + path.extname(req.file.originalname);
+            req.userid = user.userid;
 
             await manager.upload(req);
-
-            // console.log("img uploaded: ", baseURI + req.myFileName);
 
             await Doctor.findByIdAndUpdate(user.userid, {
                 myProfileImage: baseURI + req.myFileName

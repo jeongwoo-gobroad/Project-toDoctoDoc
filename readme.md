@@ -97,3 +97,4 @@ Please refer to /uxDesign
     * Currently implementing Push notification system... <- Partially implemented. Yay!
     * Implemented Appointment system.
     * Implemented View counting system with GraphBoard layout.
+    * Currently implementing Doctor profile image & Psychiatry profile image system...

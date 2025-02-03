@@ -28,10 +28,14 @@ const deletePreviousImage = async (req, res, next) => {
         }
 
         next();
+
+        return;
     } catch (error) {
         console.error(error, "errorAtDeletePreviousImage");
 
         res.status(405).json(returnResponse(true, "errorAtDeletePreviousImage", "-"));
+
+        next();
 
         return;
     }

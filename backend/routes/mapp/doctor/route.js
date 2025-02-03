@@ -9,5 +9,6 @@ router.use('/review', require("./files/review"));
 router.use('/premium', require("./files/premiumify"));
 router.use('/appointment', require("./files/appointment"));
 router.use('/profile', require("./files/profileManagement"));
+router.use('/psyProfile', require('./files/psyManagement'));
 
 module.exports = router; 

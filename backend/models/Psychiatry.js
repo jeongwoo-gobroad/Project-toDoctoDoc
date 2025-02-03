@@ -38,6 +38,13 @@ const Psychiatry_Schema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Review'
     }],
+    psyProfileImage: [{
+        type: String,
+    }],
+    doctors: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Doctor',
+    }],
 });
 
 module.exports = mongoose.model("Psychiatry", Psychiatry_Schema);
