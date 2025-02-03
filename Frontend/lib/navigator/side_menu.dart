@@ -47,7 +47,6 @@ class SideMenu extends StatelessWidget {
             title: Text('홈'),
             onTap: (){Get.to(()=> NavigationMenu(startScreen : 0));},
             trailing: Icon(Icons.navigate_next),
-
           ),
           ListTile(
             leading: Icon(Icons.person),

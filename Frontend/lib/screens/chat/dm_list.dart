@@ -27,7 +27,10 @@ class _DMListState extends State<DMList> {
   @override
   void initState() {
     super.initState();
-    controller.getChatList();
+
+    if (!controller.isLoading.value) {
+      controller.getChatList();
+    }
   }
 
   @override

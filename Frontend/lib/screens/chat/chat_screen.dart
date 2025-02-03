@@ -32,8 +32,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   late ChatSocketService socketService;
   final ChatDatabase chatDb = ChatDatabase();
 
-  late Timer _timer;
-
   RxBool isLoading = true.obs;
 
   late int updateUnread;
@@ -108,25 +106,13 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
   }
 
-  void getAppointment(Timer timer) {
-    //print('TEST');
-    chatAppointmentController.getAppointmentInformation(widget.chatId);
-    setState(() {
 
-    });
-  }
 
   @override
   void initState() {
     asyncBefore();
-
     super.initState();
-
-    _timer = Timer.periodic(
-      const Duration(seconds:1),
-      getAppointment,
-    );
-
+    chatAppointmentController.getAppointmentInformation(widget.chatId);
     updateUnread = widget.unreadMsg;
     isLoading.value = false;
   }
@@ -157,7 +143,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       ),
       body: PopScope(
         onPopInvokedWithResult: (didPop, result) {
-          _timer.cancel();
           socketService.onDisconnect();
         },
         child: Column(
@@ -168,7 +153,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
               if (chatAppointmentController.isLoading.value) {
                 return const Center(child: CircularProgressIndicator());
               }
-              return upperAppointmentInform(appointmentController: chatAppointmentController);
+              return UpperAppointmentInform(appointmentController: chatAppointmentController, chatId: widget.chatId);
             }),
 
             // 채팅 리스트 //

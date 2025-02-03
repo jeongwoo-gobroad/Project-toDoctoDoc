@@ -155,10 +155,10 @@ class CurateListController extends GetxController {
       print('로그인이 필요합니다.');
       return;
     }*/
-    if (userinfoController.isPremium.value == false) {
+/*    if (userinfoController.isPremium.value == false) {
       Get.snackbar('Error', '프리미엄 계정이 아닙니다.');
       return;
-    }
+    }*/
 
     final response = await dio.post(
       'http://jeongwoo-kim-web.myds.me:3000/mapp/careplus/curate',

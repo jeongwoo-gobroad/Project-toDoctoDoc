@@ -21,11 +21,11 @@ class ChatAppointmentController extends GetxController {
   final String userId;
 
   var temptime;
-  late DateTime appointmentTime = DateTime(0);
+  late  Rx<DateTime> appointmentTime = DateTime(0).obs;
 
-  bool isAppointmentExisted = false;
-  bool isAppointmentDone = false;
-  bool isAppointmentApproved = false;
+   RxBool isAppointmentExisted = false.obs;
+   RxBool isAppointmentDone = false.obs;
+   RxBool isAppointmentApproved = false.obs;
 
   Future<bool> getAppointmentInformation(String chatId) async {
     //isLoading.value = true;
@@ -50,30 +50,30 @@ class ChatAppointmentController extends GetxController {
         print(data);
 
         if (data['content'] == null) {
-          isAppointmentExisted = false;
+          isAppointmentExisted.value = false;
           isLoading.value = false;
           return true;
         }
 
-        isAppointmentExisted = true;
+        isAppointmentExisted.value = true;
 
         appointmentId = data['content']['_id'];
-        appointmentTime = DateTime.parse(data['content']['appointmentTime']).toLocal();
-        isAppointmentApproved = data['content']['isAppointmentApproved'];
-        isAppointmentDone = data['content']['hasAppointmentDone'];
+        appointmentTime.value = DateTime.parse(data['content']['appointmentTime']).toLocal();
+        isAppointmentApproved.value = data['content']['isAppointmentApproved'];
+        isAppointmentDone.value = data['content']['hasAppointmentDone'];
 
         print(isAppointmentApproved);
         print(isAppointmentDone);
 
         print('APPOINTMENT ID-------------- $appointmentId');
         print('USER ID--------------------- $userId');
-        print('APPOINTMENT TIME------------ $appointmentTime');
+        print('APPOINTMENT TIME------------ ${appointmentTime.value}');
 
         //initialDay  = DateTime(appointmentTime.year,appointmentTime.month,appointmentTime.day);
         //initialTime = TimeOfDay(hour: appointmentTime.hour, minute: appointmentTime.minute);
       }
       else if (response.statusCode == 201) {
-        isAppointmentExisted = false;
+        isAppointmentExisted.value = false;
         isLoading.value = false;
         return true;
       }
@@ -221,8 +221,8 @@ class ChatAppointmentController extends GetxController {
 
         isLoading.value = true;
         //appointmentTime = selectedDay;
-        initialDay  = DateTime(appointmentTime.year,appointmentTime.month,appointmentTime.day);
-        initialTime = TimeOfDay(hour: appointmentTime.hour, minute: appointmentTime.minute);
+        initialDay  = DateTime(appointmentTime.value.year,appointmentTime.value.month,appointmentTime.value.day);
+        initialTime = TimeOfDay(hour: appointmentTime.value.hour, minute: appointmentTime.value.minute);
 
         //isAppointmentApproved = false;
         //isAppointmentDone = false;

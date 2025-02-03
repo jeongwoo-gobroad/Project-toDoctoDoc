@@ -28,7 +28,6 @@ class ChatScreen extends StatefulWidget {
   final String userName;
   final int unreadChat;
 
-
   @override
   State<ChatScreen> createState() => _ChatScreen();
 }
@@ -40,8 +39,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   late ChatSocketService socketService;
   final ChatDatabase chatDb = ChatDatabase();
 
-  late Timer _timer;
-
   RxBool isLoading = true.obs;
 
   late int updateUnread;
@@ -50,13 +47,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   List<ChatObject> _messageList = [];
 
   alterParent() { setState(() {}); }
-
-  void getAppointment(Timer timer) {
-    //print('TEST');
-    chatAppointmentController.getAppointmentInformation(widget.chatId);
-    setState(() {});
-  }
-
 
 
 
@@ -94,7 +84,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
                 if (await appointmentController.sendAppointmentIsDone(chatAppointmentController.appointmentId)) {
                   Navigator.of(context).pop();
-                  chatAppointmentController.isAppointmentDone = true;
+                  chatAppointmentController.isAppointmentDone.value = true;
                   setState(() {});
                 }
                 else {
@@ -177,13 +167,8 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     asyncBefore();
-
     updateUnread = widget.unreadChat;
-    _timer = Timer.periodic(
-      const Duration(seconds:1),
-      getAppointment,
-    );
-
+    chatAppointmentController.getAppointmentInformation(widget.chatId);
     super.initState();
     isLoading.value = false;
   }
@@ -224,7 +209,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       ),
       body: PopScope(
         onPopInvokedWithResult: (didPop, result) {
-          _timer.cancel();
           socketService.onDisconnect();
         },
         child: Column(
@@ -233,7 +217,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
               if (chatAppointmentController.isLoading.value) {
                 return const Center(child: CircularProgressIndicator());
               }
-              return UpperAppointmentInformation(appointmentController: chatAppointmentController);
+              return UpperAppointmentInformation(appointmentController: chatAppointmentController, chatId: widget.chatId,);
             }),
 
 
@@ -271,8 +255,8 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                   hintText: '메시지를 입력하세요',
                   prefixIcon: IconButton(
                       onPressed: () {
-                        if (chatAppointmentController.isAppointmentExisted && chatAppointmentController.appointmentTime.isBefore(DateTime.now())) {
-                          if (!chatAppointmentController.isAppointmentDone) {
+                        if (chatAppointmentController.isAppointmentExisted.value && chatAppointmentController.appointmentTime.value.isBefore(DateTime.now())) {
+                          if (!chatAppointmentController.isAppointmentDone.value) {
                             appointmentMustBeDoneAlert(context);
                             return;
                           }

@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:to_doc_for_doc/Database/chat_database.dart';
 
 import '../../controllers/chat_controller.dart';
 import 'chat_screen.dart';
