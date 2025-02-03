@@ -37,7 +37,7 @@ class _GraphBoardState extends State<GraphBoard>
   final List<Bubble> bubbles = [];
   final double gravity = 180.0;
   final double restitution = 0.3;
-  final double springStrength = 10.0;
+  final double springStrength = 30.0;
   final double collisionSpringStrength = 300.0;
   final TagGraphController graphController =
       Get.put(TagGraphController(dio: Dio()));
@@ -151,11 +151,11 @@ class _GraphBoardState extends State<GraphBoard>
             Offset(-bubble.velocity.dx * restitution, bubble.velocity.dy);
       }
 
-      if (showTrashCan && bubble.position.dy < trashCanHeight) {
-        setState(() {
-          bubbles.removeAt(i);
-        });
-      }
+      // if (showTrashCan && bubble.position.dy < trashCanHeight) {
+      //   setState(() {
+      //     bubbles.removeAt(i);
+      //   });
+      // }
       if (!isSystemStable) {
         if (_checkSystemStability()) {
           stableFrameCount++;
@@ -235,46 +235,50 @@ class _GraphBoardState extends State<GraphBoard>
   }
 
   void _handlePanUpdate(Offset globalPos) {
-    bool overTrash = false;
-    for (final bubble in bubbles) {
-      if (bubble.dragOffset != null) {
-        final newTarget = globalPos - bubble.dragOffset!;
-        setState(() {
-          bubble.dragTarget = newTarget;
-          overTrash = (newTarget.dy - bubble.radius) < trashCanHeight;
-        });
-        break;
-      }
+  bool overTrash = false;
+  for (final bubble in bubbles) {
+    if (bubble.dragOffset != null) {
+      final newTarget = globalPos - bubble.dragOffset!;
+      final currentTopEdge = bubble.position.dy - bubble.radius;
+      overTrash = currentTopEdge < trashCanHeight;
+      setState(() {
+        bubble.dragTarget = newTarget;
+      });
+      break;
     }
-    setState(() {
-      isTrashHighlighted = overTrash;
-    });
   }
+  setState(() {
+    isTrashHighlighted = overTrash;
+  });
+}
 
   void _handlePanEnd() {
-    bool removed = false;
-    for (int i = 0; i < bubbles.length; i++) {
-      final bubble = bubbles[i];
-      if (bubble.dragOffset != null) {
-        if (isTrashHighlighted) {
-          setState(() {
-            bubbles.removeAt(i);
-            removed = true;
-          });
-        } else {
-          setState(() {
-            bubble.dragOffset = null;
-            bubble.dragTarget = null;
-          });
-        }
-        break;
+  bool removed = false;
+  for (int i = 0; i < bubbles.length; i++) {
+    final bubble = bubbles[i];
+    if (bubble.dragOffset != null) {
+      final topEdge = bubble.position.dy - bubble.radius;
+      final isOverTrash = topEdge < trashCanHeight;
+
+      if (isOverTrash) {
+        setState(() {
+          bubbles.removeAt(i);
+          removed = true;
+        });
+      } else {
+        setState(() {
+          bubble.dragOffset = null;
+          bubble.dragTarget = null;
+        });
       }
+      break;
     }
-    setState(() {
-      isDragging = false;
-      isTrashHighlighted = false;
-    });
   }
+  setState(() {
+    isDragging = false;
+    isTrashHighlighted = false;
+  });
+}
 
   void _searchTagDetails(String tag, int count) {
     showDialog(
