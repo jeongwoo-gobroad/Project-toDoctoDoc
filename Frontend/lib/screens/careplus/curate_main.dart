@@ -43,9 +43,6 @@ class _CurateMainState extends State<CurateMain> {
     return formattedDate;
   }
 
-  asyncBefore() async {
-    //await
-  }
 
   @override
   void initState() {
@@ -306,9 +303,13 @@ class _CurateMainState extends State<CurateMain> {
                           width: double.infinity,
                           child: TextButton(
                             onPressed: () {
+                              if (chatController.isLoading.value) {
+                                return;
+                              }
+
                               Get.to(()=> DMList())?.whenComplete(() {
                                 setState(() {
-                                  asyncBefore();
+                                  chatController.getChatList();
                                 });
                               });
                             },
@@ -407,11 +408,12 @@ class _CurateMainState extends State<CurateMain> {
     await appointmentController.getAppointmentInformation(appointmentController.appointmentList[appointmentController.nearAppointment]['_id']);
 
 
-
     Get.to(() => AppointmentDetailScreen(
         doctorName: appointmentController.appointmentList[appointmentController.nearAppointment]['doctor']['name'],
         appointment: appointmentController.appointment,
-        hospital: appointmentController.hospital))?.whenComplete(() {asyncBefore();});
+        hospital: appointmentController.hospital))?.whenComplete(() {
+          appointmentController.getAppointmentList();
+    });
   }
 
 }
