@@ -61,7 +61,7 @@ router.get(["/list"],
     
                         prevChat.unreadChat = await messageQueue.count();
     
-                        messageQueue.close();
+                        await messageQueue.close();
                     } else {
                         prevChat.recentChat = "최근 채팅이 없거나 오래되었습니다.";
                         prevChat.unreadChat = -1;
