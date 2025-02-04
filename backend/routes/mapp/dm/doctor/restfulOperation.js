@@ -9,6 +9,7 @@ const UserSchema = require("../../../../models/User");
 const mongoose = require("mongoose");
 const Doctor = require("../../../../models/Doctor");
 const Appointment = require("../../../../models/Appointment");
+const { messageCount } = require("../../../../middleware/redisMessageQueueing");
 const User = mongoose.model('User', UserSchema);
 const router = express.Router();
 
@@ -46,22 +47,24 @@ router.get(["/list"],
                     if ((cache = await getCache("ROOM:" + chat._id))) {
                         prevChat.recentChat = cache;
     
-                        const messageQueue = new Queue(chat._id + "_USER", {
-                            connection: {
-                                host: process.env.RS_HOST,
-                                port: process.env.RS_PORT,
-                                username: process.env.RS_USERNAME,
-                                password: process.env.RS_NONESCAPE_PASSWORD,
-                            },
-                            defaultJobOptions: {
-                                removeOnComplete: true,
-                                removeOnFail: true,
-                            }
-                        });
+                        // const messageQueue = new Queue(chat._id + "_USER", {
+                        //     connection: {
+                        //         host: process.env.RS_HOST,
+                        //         port: process.env.RS_PORT,
+                        //         username: process.env.RS_USERNAME,
+                        //         password: process.env.RS_NONESCAPE_PASSWORD,
+                        //     },
+                        //     defaultJobOptions: {
+                        //         removeOnComplete: true,
+                        //         removeOnFail: true,
+                        //     }
+                        // });
     
-                        prevChat.unreadChat = await messageQueue.count();
+                        // prevChat.unreadChat = await messageQueue.count();
     
-                        await messageQueue.close();
+                        // await messageQueue.close();
+
+                        prevChat.unreadChat = await messageCount(chat._id);
                     } else {
                         prevChat.recentChat = "최근 채팅이 없거나 오래되었습니다.";
                         prevChat.unreadChat = -1;

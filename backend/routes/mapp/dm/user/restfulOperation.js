@@ -9,6 +9,7 @@ const UserSchema = require("../../../../models/User");
 const mongoose = require("mongoose");
 const Doctor = require("../../../../models/Doctor");
 const Appointment = require("../../../../models/Appointment");
+const { messageCount } = require("../../../../middleware/redisMessageQueueing");
 const User = mongoose.model('User', UserSchema);
 const router = express.Router();
 
@@ -79,30 +80,32 @@ router.get(["/list"],
                 prevChat.isBanned = chat.isBannedByUser || chat.isBannedByDoctor;
 
                 if (prevChat.isBanned) {
-                    prevChat.recentChat = "차단된 대화입니다.";
+                    prevChat.recentChat = {role: "system", message: "차단된 대화입니다.", createdAt: chat.date};
                     prevChat.unreadChat = -1;
                 } else {
                     if ((cache = await getCache("ROOM:" + chat._id))) {
                         prevChat.recentChat = cache;
     
-                        const messageQueue = new Queue(chat._id + "_DOCTOR", {
-                            connection: {
-                                host: process.env.RS_HOST,
-                                port: process.env.RS_PORT,
-                                username: process.env.RS_USERNAME,
-                                password: process.env.RS_NONESCAPE_PASSWORD,
-                            },
-                            defaultJobOptions: {
-                                removeOnComplete: true,
-                                removeOnFail: true,
-                            }
-                        });
+                        // const messageQueue = new Queue(chat._id + "_DOCTOR", {
+                        //     connection: {
+                        //         host: process.env.RS_HOST,
+                        //         port: process.env.RS_PORT,
+                        //         username: process.env.RS_USERNAME,
+                        //         password: process.env.RS_NONESCAPE_PASSWORD,
+                        //     },
+                        //     defaultJobOptions: {
+                        //         removeOnComplete: true,
+                        //         removeOnFail: true,
+                        //     }
+                        // });
     
-                        prevChat.unreadChat = await messageQueue.count();
+                        // prevChat.unreadChat = await messageQueue.count();
+
+                        prevChat.unreadChat = await messageCount(chat._id);
     
-                        await messageQueue.close();
+                        // await messageQueue.close();
                     } else {
-                        prevChat.recentChat = "최근 채팅이 없거나 오래되었습니다.";
+                        prevChat.recentChat = {role: "system", message: "최근 채팅이 없거나 오래되었습니다.", createdAt: chat.date};
                         prevChat.unreadChat = -1;
                     }
                     previews.push(prevChat);
