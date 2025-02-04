@@ -235,21 +235,21 @@ router.delete(["/posts"],
     })
 );
 
-router.get(["/premiumify"], 
+router.get(["/psyList"], 
     loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isAdminThenProceed,
     async (req, res, next) => {
         try {
-            const prem = await Premium_Psychiatry.find();
+            const prem = await Psychiatry.find();
 
             const accountInfo = {
                 usernick: req.session.user.usernick,
             };
             const pageInfo = {
-                title: "Welcome to Mentally::Admin Menu::Premiumify Psy."
+                title: "Welcome to Mentally::Admin Menu::Psy List."
             };
     
-            res.render("admin/admin_premiumify_psy", {prem, accountInfo, pageInfo, layout: mainLayout_Admin});
+            res.render("admin/admin_psy_list", {prem, accountInfo, pageInfo, layout: mainLayout_Admin});
 
             return;
         } catch (error) {
@@ -262,11 +262,11 @@ router.get(["/premiumify"],
     }
 );
 
-router.post(["/premiumify"], 
+router.post(["/psyList"], 
     loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isAdminThenProceed,
     async (req, res, next) => {
-        const { name, place_id, postcode, address, detailAddress, extraAddress, phone } = req.body;
+        const { name, place_id, postcode, address, detailAddress, extraAddress, phone} = req.body;
         const { long, lat } = await returnLongLatOfAddress(address);
 
         try {
@@ -281,10 +281,10 @@ router.post(["/premiumify"],
                     longitude: long,
                     latitude: lat,
                 },
-                phone: phone
+                phone: phone,
             })
 
-            res.redirect("/admin/premiumify");
+            res.redirect("/admin/psyList");
         } catch (error) {
             console.error(error);
 
@@ -295,14 +295,14 @@ router.post(["/premiumify"],
     }
 );
 
-router.delete(["/premiumify/:id"], 
+router.delete(["/psyList/:id"], 
     loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isAdminThenProceed,
     async (req, res, next) => {
         try {
             await Psychiatry.findByIdAndDelete(req.params.id);
 
-            res.redirect("/admin/premiumify");
+            res.redirect("/admin/psyList");
         } catch (error) {
             console.error(error);
 
@@ -313,7 +313,7 @@ router.delete(["/premiumify/:id"],
     }
 );
 
-router.patch(["/premiumify/:id"], 
+router.patch(["/psyList/:id"], 
     loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isAdminThenProceed,
     async (req, res, next) => {
@@ -332,10 +332,11 @@ router.patch(["/premiumify/:id"],
                     longitude: long,
                     latitude: lat,
                 },
-                phone: phone
+                phone: phone,
+                updatedAt: Date.now(),
             })
 
-            res.redirect("/admin/premiumify");
+            res.redirect("/admin/psyList");
         } catch (error) {
             console.error(error);
 

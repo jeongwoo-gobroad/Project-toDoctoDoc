@@ -13,13 +13,18 @@ const topExposureForPremiumPsy = async (list) => {
                 list[i].isPremiumPsychiatry = true;
                 list[i].stars = psy.stars;
                 list[i].pid = psy._id;
+                list[i].hasInfo = true;
                 /* swap */
                 const temp = list[index];
                 list[index] = list[i];
                 list[i] = temp;
                 index++;
+            } else if (psy && !psy.isPremiumPsy) {
+                list[i].isPremiumPsychiatry = false;
+                list[i].hasInfo = true;
             } else {
                 list[i].isPremiumPsychiatry = false;
+                list[i].hasInfo = false;
             }
         }
     

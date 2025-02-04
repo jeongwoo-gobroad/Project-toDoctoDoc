@@ -83,6 +83,7 @@ app.use("/posts", require("./routes/post"));
 app.use("/geo", require("./routes/geo"));
 app.use("/doctor", require("./routes/doctorAccount"));
 app.use("/admin", require("./routes/adminAccount")); 
+app.use("/admin", require("./routes/admin_premiumify_psy"));
 app.use("/chatbot", require("./routes/chatbot"));
 app.use("/helpNeeded", require("./routes/helpNeeded"));
 app.use("/helpNeeded_doc", require("./routes/helpNeeded_Doc"));
