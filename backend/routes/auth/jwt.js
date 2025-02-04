@@ -61,6 +61,8 @@ const getTokenInformation = async (req, res) => {
                     isAdmin: user.isAdmin,
                 };
 
+                req.userid = user._id;
+
                 token = generateToken(payload);
                 refreshToken = generateRefreshToken();
 
@@ -75,6 +77,8 @@ const getTokenInformation = async (req, res) => {
                     isAdmin: false,
                 };
 
+                req.userid = doctor._id;
+
                 token = generateToken(payload);
                 refreshToken = generateRefreshToken();
 
@@ -88,6 +92,8 @@ const getTokenInformation = async (req, res) => {
                     isDoctor: false,
                     isAdmin: true,
                 };
+
+                req.userid = admin._id;
 
                 token = generateToken(payload);
                 refreshToken = generateRefreshToken();
@@ -111,6 +117,8 @@ const getTokenInformation = async (req, res) => {
                 isAdmin: decoded.isAdmin,
             };
     
+            req.userid = decoded.userid;
+
             return payload;
         }
     } catch (error) {

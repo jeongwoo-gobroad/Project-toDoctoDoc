@@ -1,0 +1,38 @@
+<div class="container">
+    <div class="content">
+        <% doctors.forEach((doctor) => { %>
+            <form action="/admin/registerDoctorToPsy?_method=PUT" method="post">
+                <div class="form-group">
+                    <%= doctor.id %>
+                </div>
+                <div class="form-group">
+                    <%= doctor.name %>
+                </div>
+                <div class="form-group">
+                    <%= doctor.personalID %>
+                </div>
+                <div class="form-group">
+                    <%= doctor.doctorID %>
+                </div>
+                <div class="form-group">
+                    <%= doctor.email %>
+                </div>
+                <div class="form-group">
+                    <%= doctor.address %>
+                </div>
+                <div class="form-group">
+                    <%= doctor.isVerified %>
+                </div>
+                <div class="form-group">
+                    <label>Psychiatry ID:</label>
+                    <%= doctor.myPsyID %>
+                </div>
+                <input type="hidden" id="doctorId" name="doctorId" value="<%= doctor._id %>"></hidden>
+                <label for="psyId">Psychiatry ID(_id):</label>
+                <input type="text" id="psyId" name="psyId"><br>
+                <button type="submit" class="green-button">승인</button>
+            </form>
+            <hr>
+        <% }) %>
+    </div>
+</div>

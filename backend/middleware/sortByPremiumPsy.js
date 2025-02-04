@@ -21,6 +21,8 @@ const topExposureForPremiumPsy = async (list) => {
                 index++;
             } else if (psy && !psy.isPremiumPsy) {
                 list[i].isPremiumPsychiatry = false;
+                list[i].stars = psy.stars;
+                list[i].pid = psy._id;
                 list[i].hasInfo = true;
             } else {
                 list[i].isPremiumPsychiatry = false;
@@ -31,7 +33,7 @@ const topExposureForPremiumPsy = async (list) => {
         return list;
     }
 
-    console.log("Error at topExposureForPremiumPsy: ", list);
+    console.error("Error at topExposureForPremiumPsy: ", list);
 
     return null;
 };

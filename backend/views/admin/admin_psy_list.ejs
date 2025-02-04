@@ -2,9 +2,10 @@
     <% if (prem.length > 0) { %>
         <% prem.forEach((psy) => { %>
             <h3>이름: <%= psy.name %></h3>
-            <h4>프리미엄 가입일: <%= psy.createdAt %></h4>
-            <h4>프리미엄 업데이트일: <%= psy.updatedAt %></h4>
+            <h4>가입일: <%= psy.createdAt %></h4>
+            <h4>정보 업데이트일: <%= psy.updatedAt %></h4>
             <h4>장소 ID: <%= psy.place_id %></h4>
+            <h4>병원 pid: <%= psy._id %></h4>
             <h4>주소: <%= psy.address.address + " " + psy.address.detailAddress + " " + psy.address.extraAddress %></h4>
             <h4>연락처: <%= psy.phone %></h4>
             <form action="/admin/psyList/<%= psy._id %>?_method=PATCH" method="post">
@@ -98,12 +99,6 @@
         <div class="form-group" class="new-label">
             <label for="place_id">장소 ID:</label>
             <input type="text" id="place_id" name="place_id" class="signup-form" required>
-        </div>
-        <div class="form-group" class="new-label">
-            <input type="radio" id="premium_yes" name="option" value="true">
-            <label for="premium_yes">프리미엄 병원</label></br>
-            <input type="radio" id="premium_no" name="option" value="false" checked>
-            <label for="premium_no">프리미엄 병원</label></br>
         </div>
         <div class="form-group" class="new-label">
             <label for="address">Address:</label>

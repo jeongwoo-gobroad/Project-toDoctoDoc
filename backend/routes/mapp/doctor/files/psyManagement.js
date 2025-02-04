@@ -6,6 +6,70 @@ const router = express.Router();
 const manager = require("./multer/psyProfileImageUploader");
 const Psychiatry = require("../../../../models/Psychiatry");
 const psyManagement = require("./psyManagement/functions");
+const Doctor = require("../../../../models/Doctor");
+
+router.get(['/myPsyInfo'],
+    checkIfLoggedIn,
+    isDoctorThenProceed,
+    async (req, res, next) => {
+        try {
+            const doctor = await Doctor.findById(req.userid);
+            const psy = await Psychiatry.findById(doctor.myPsyID);
+
+            if (!psy) {
+                res.status(401).json(returnResponse(true, "noSuchPsyOrNoPsyRegistered", "-"));
+
+                return;
+            }
+
+            res.status(200).json(returnResponse(false, "yourPsyInfo", psy));
+
+            return;
+        } catch (error) {
+            res.status(403).json(returnResponse(true, "errorAtMyPsyInfo", "-"));
+
+            console.error(error, "errorAtMyPsyInfo");
+
+            return;
+        }
+    }
+);
+
+router.patch(['/myPsyInfo'],
+    checkIfLoggedIn,
+    isDoctorThenProceed,
+    async (req, res, next) => {
+        const {name, address, phone} = req.body;
+
+        try {
+            const doctor = await Doctor.findById(req.userid);
+            const psy = await Psychiatry.findById(doctor.myPsyID);
+
+            if (!psy) {
+                res.status(401).json(returnResponse(true, "noSuchPsyOrNoPsyRegistered", "-"));
+
+                return;
+            }
+
+            psy.name = name;
+            psy.address = address;
+            psy.phone = phone;
+            psy.updatedAt = Date.now();
+
+            await psy.save();
+
+            res.status(200).json(returnResponse(false, "psyInfoEdited", "-"));
+
+            return;
+        } catch (error) {
+            res.status(403).json(returnResponse(true, "errorAtMyPsyInfo", "-"));
+
+            console.error(error, "errorAtMyPsyInfo");
+
+            return;
+        }
+    }
+);
 
 router.post(['/upload/:psyId'],
     checkIfLoggedIn,

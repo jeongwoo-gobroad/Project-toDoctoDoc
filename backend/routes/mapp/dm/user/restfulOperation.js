@@ -4,7 +4,6 @@ const { getTokenInformation } = require("../../../auth/jwt");
 const Chat = require("../../../../models/Chat");
 const returnResponse = require("../../standardResponseJSON");
 const { getCache } = require("../../../../middleware/redisCaching");
-const { Queue } = require("bullmq");
 const UserSchema = require("../../../../models/User");
 const mongoose = require("mongoose");
 const Doctor = require("../../../../models/Doctor");
@@ -56,10 +55,8 @@ router.post(["/curateScreen"],
 router.get(["/list"], 
     checkIfLoggedIn,
     async (req, res, next) => {
-        const user = await getTokenInformation(req, res);
-
         try {
-            const usr = await User.findById(user.userid, '-chatList').populate({
+            const usr = await User.findById(req.userid, '-chatList').populate({
                 path: 'chats',
                 populate: {
                     path: 'doctor',
@@ -84,7 +81,7 @@ router.get(["/list"],
                     prevChat.unreadChat = -1;
                 } else {
                     if ((cache = await getCache("ROOM:" + chat._id))) {
-                        prevChat.recentChat = cache;
+                        prevChat.recentChat = JSON.parse(cache);
     
                         // const messageQueue = new Queue(chat._id + "_DOCTOR", {
                         //     connection: {

@@ -28,17 +28,53 @@ router.get(["/registerDoctorToPsy"],
             usernick: req.session.user.usernick,
         };
         const pageInfo = {
-            title: "Welcome to Mentally::Admin Menu::Premiumify Psy"
+            title: "Welcome to Mentally::Admin Menu::Register Doctor to Psy"
         };
          
         try {
-            const psys = await Psychiatry.find();
+            const doctors = await Doctor.find();
 
-            res.render("admin/admin_premiumify_psy", {psys, accountInfo, pageInfo, layout: mainLayout_Admin});
+            res.render("admin/admin_register_doctor_to_psy", {doctors, accountInfo, pageInfo, layout: mainLayout_Admin});
 
             return;
         } catch (error) {
             console.log(error);
+
+            res.redirect("/admin");
+
+            return;
+        }
+    }
+);
+
+router.put(["/registerDoctorToPsy"],
+    loginMiddleWare.ifLoggedInThenProceed,
+    loginMiddleWare.isAdminThenProceed,
+    async (req, res, next) => {
+        const {doctorId, psyId} = req.body;
+
+        try {
+            await Doctor.findByIdAndUpdate(doctorId, {
+                myPsyID: psyId
+            });
+
+            const psy = await Psychiatry.findById(psyId);
+
+            if (psy) {
+                psy.doctors.push(doctorId);
+
+                await psy.save();
+
+                res.redirect("/admin/registerDoctorToPsy");
+
+                return;
+            }
+
+            res.send("No Such psychiatry");
+
+            return;
+        } catch (error) {
+            console.error(error);
 
             res.redirect("/admin");
 
