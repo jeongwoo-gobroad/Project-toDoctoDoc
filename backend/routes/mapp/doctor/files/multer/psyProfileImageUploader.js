@@ -34,7 +34,7 @@ const upload = (req, res, next) => {
             })
             .pipe(chunkStream)
             .on('finish', (response) => {
-                console.log("img:", myFileName, "uploaded");
+                // console.log("img:", myFileName, "uploaded");
             });
         
         req.myFiles.push(myFileName);

@@ -69,6 +69,9 @@ const UserSchema = new mongoose.Schema({
     deviceIds: [{
         type: String,
     }],
+    bannedTags: [{
+        type: String,
+    }],
     refreshToken: {
         type: String,
     },
