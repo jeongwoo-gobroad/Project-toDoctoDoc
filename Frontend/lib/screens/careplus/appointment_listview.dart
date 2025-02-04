@@ -140,7 +140,7 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
                         controller: scrollController,
                         itemCount: widget.appointmentController.appointmentList.length - widget.appointmentController.nearAppointment,
                         itemBuilder: (context, index) {
-                          final appointment = widget.appointmentController.appointmentList[index];
+                          final appointment = widget.appointmentController.appointmentList[index + widget.appointmentController.nearAppointment];
 
 
                           if (!widget.appointmentController.appointmentList[index + widget.appointmentController.nearAppointment]['isAppointmentApproved']) {

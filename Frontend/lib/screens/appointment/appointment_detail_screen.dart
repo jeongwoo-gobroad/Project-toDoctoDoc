@@ -17,6 +17,8 @@ class AppointmentDetailScreen extends StatefulWidget {
 
 class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
   late KakaoMapController kakaoMapController; //카카오 맵 컨트롤러러
+  Set<Marker> markers = {};
+
 
   double _mapHeight = 0.5; //지도 비율율
   bool isradiusNotSelected = true;
@@ -96,29 +98,20 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
               child: KakaoMap(
                 onMapCreated: (controller) async {
                   kakaoMapController = controller;
+                  markers.add(Marker(
+                    markerId: 'myLocationMarker',
+                    latLng: LatLng(widget.hospital['address']['latitude'], widget.hospital['address']['longitude']),
+                    width: 50,
+                    height: 45,
+                  ));
+                  setState(() {
+
+                  });
                 },
-                markers: [Marker(
-                  markerId: 'myLocationMarker',
-                  latLng: LatLng(widget.hospital['address']['latitude'], widget.hospital['address']['longitude']),
-                  width: 50,
-                  height: 45,
-                )],
+                markers: markers.toList(),
                 center: LatLng(widget.hospital['address']['latitude'], widget.hospital['address']['longitude']),
               ),
             ),
-
-
-/*
-            //TODO 여기 지도 넣어야 함
-            Container(
-              width: double.infinity,
-              height: 350,
-              decoration: BoxDecoration(color: Colors.black),
-              child: Text('${hospital['address']['longitude'].toString()}\n${hospital['address']['latitude'].toString()}',
-              style: TextStyle(color: Colors.white),),
-            ),
-*/
-
 
 
             if (widget.appointment['hasAppointmentDone'] && !widget.appointment['hasFeedbackDone']) ... [

@@ -269,13 +269,13 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
                           onPressed: () async {
                             // TODO 웹 용 주석 처리 ; 앱에선 주석 해제 요망
 
-                            /*
+
                             kakaoMapController.setCenter(LatLng(
                               double.parse(hospital['y']),
                               double.parse(hospital['x'])));
-                            */
 
-                            if (hospital['pid'] != null) {
+                            print('test');
+                            if (hasInfo) {
                               if (await hospitalInformationController.getHospitalInformation(hospital['pid'])) {
                                 openHospitalDetailView(context,
                                     hospitalInformationController.hospital);
