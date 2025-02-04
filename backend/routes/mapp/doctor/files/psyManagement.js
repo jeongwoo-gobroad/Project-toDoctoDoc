@@ -39,7 +39,7 @@ router.patch(['/myPsyInfo'],
     checkIfLoggedIn,
     isDoctorThenProceed,
     async (req, res, next) => {
-        const {name, address, phone} = req.body;
+        const {name, address, phone, openTime, breakTime} = req.body;
 
         try {
             const doctor = await Doctor.findById(req.userid);
@@ -54,6 +54,8 @@ router.patch(['/myPsyInfo'],
             psy.name = name;
             psy.address = address;
             psy.phone = phone;
+            psy.openTime = openTime;
+            psy.breakTime = breakTime;
             psy.updatedAt = Date.now();
 
             await psy.save();

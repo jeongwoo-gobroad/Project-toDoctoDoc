@@ -45,6 +45,12 @@ const Psychiatry_Schema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Doctor',
     }],
+    openTime: { /* xx:xx ~ xx:xx 에서 xxxxxxxx형식으로 저장한다. */
+        type: Number,
+    },
+    breakTime: { /* xx:xx ~ xx:xx 에서 xxxxxxxx형식으로 저장한다. */
+        type: Number,
+    },
 });
 
 module.exports = mongoose.model("Psychiatry", Psychiatry_Schema);
