@@ -40,7 +40,11 @@ const ChatSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Appointment',
     },
-    isBanned: {
+    isBannedByUser: {
+        type: Boolean,
+        default: false,
+    },
+    isBannedByDoctor: {
         type: Boolean,
         default: false,
     },

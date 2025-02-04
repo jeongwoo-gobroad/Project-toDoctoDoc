@@ -58,7 +58,7 @@ router.get(["/list"],
         const user = await getTokenInformation(req, res);
 
         try {
-            const usr = await User.findById(user.userid).populate({
+            const usr = await User.findById(user.userid, '-chatList').populate({
                 path: 'chats',
                 populate: {
                     path: 'doctor',
@@ -76,9 +76,9 @@ router.get(["/list"],
                 prevChat.doctorName = chat.doctor.name;
                 prevChat.date = chat.date;
                 prevChat.cid = chat._id;
-                prevChat.isBanned = chat.isBanned;
+                prevChat.isBanned = chat.isBannedByUser || chat.isBannedByDoctor;
 
-                if (chat.isBanned) {
+                if (prevChat.isBanned) {
                     prevChat.recentChat = "차단된 대화입니다.";
                     prevChat.unreadChat = -1;
                 } else {
@@ -169,7 +169,7 @@ router.post(["/ban"],
                 return;
             }
 
-            chat.isBanned = true;
+            chat.isBannedByUser = true;
 
             await chat.save();
 
@@ -179,6 +179,76 @@ router.post(["/ban"],
 
             console.error(error, "errorAtUserChatBan");
 
+            return;
+        }
+    }
+);
+
+router.get(["/banList"],
+    checkIfLoggedIn,
+    async (req, res, next) => {
+        const user = await getTokenInformation(req, res);
+
+        try {
+            const usr = await User.findById(user.userid).populate({
+                path: 'chats',
+                select: '-chatList'
+            });
+
+            const chats = [];
+
+            for (const chat of usr.chats) {
+                if (chat.isBannedByDoctor || chat.isBannedByUser) {
+                    chats.push(chat);
+                }
+            }
+
+            res.status(200).json(returnResponse(false, "userBanList", chats));
+
+            return;
+        } catch (error) {
+            res.status(403).json(returnResponse(true, "errorAtUserBanList", "-"));
+
+            console.error(error, "errorAtUserBanList");
+            
+            return;
+        }
+    }
+);
+
+router.delete(["/unBan"],
+    checkIfLoggedIn,
+    async (req, res, next) => {
+        const user = await getTokenInformation(req, res);
+        const {chatId} = req.body;
+
+        try {
+            const chat = await Chat.findById(chatId, '-chatList');
+
+            if (!chat) {
+                res.status(401).json(returnResponse(true, "noSuchChat", "-"));
+                
+                return;
+            }
+
+            if (!chat.isBannedByUser) {
+                res.status(402).json(returnResponse(true, "notBannedChat", "-"));
+                
+                return;
+            }
+
+            chat.isBannedByUser = false;
+
+            await chat.save();
+
+            res.status(200).json(returnResponse(false, "chatUnBanned", "-"));
+
+            return;
+        } catch (error) {
+            res.status(403).json(returnResponse(true, "errorAtUserUnBan", "-"));
+
+            console.error(error, "errorAtUserUnBan");
+            
             return;
         }
     }
