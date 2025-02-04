@@ -20,7 +20,7 @@ class _UpperAppointmentInformState extends State<UpperAppointmentInform> {
 
   void getAppointment(Timer timer) {
     widget.appointmentController.getAppointmentInformation(widget.chatId);
-    setState(() {    });
+    if (this.mounted) setState(() {    });
   }
 
   @override

@@ -93,7 +93,7 @@ class _HomeState extends State<Home> {
     '고민거리를 입력해주세요.',
   ];
 
-  ChatController chatController = Get.put(ChatController(dio: Dio()));
+  ChatController chatController = Get.put(ChatController());
 
   @override
   Widget build(context) {

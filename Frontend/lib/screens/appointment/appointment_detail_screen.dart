@@ -1,16 +1,29 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
+import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:to_doc/screens/careplus/appointment_rating_screen.dart';
 
-
-class AppointmentDetailScreen extends StatelessWidget {
+class AppointmentDetailScreen extends StatefulWidget {
   const AppointmentDetailScreen({super.key, required this.appointment, required this.hospital, required this.doctorName});
 
   final Map<String, dynamic> appointment;
   final Map<String, dynamic> hospital;
   final String doctorName;
+
+  @override
+  State<AppointmentDetailScreen> createState() => _AppointmentDetailScreenState();
+}
+
+class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
+  late KakaoMapController kakaoMapController; //카카오 맵 컨트롤러러
+
+  double _mapHeight = 0.5; //지도 비율율
+  bool isradiusNotSelected = true;
+  bool showMap = true;
+  bool isDropdownOpen = false;
+
+  List<CustomOverlay> customOverlays = [];
 
   Widget placeInform(BuildContext context, Icon thisIcon, String description) {
     return Container(
@@ -37,43 +50,109 @@ class AppointmentDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: InkWell(
-          child: Text('예약 정보(가)',
+          child: Text('예약 정보',
           style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
         ),
+        actions: <Widget>[
+
+          if (DateTime.parse(widget.appointment['appointmentTime']).isBefore(DateTime.now())) ... [
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 10,),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                  color: (widget.appointment['hasAppointmentDone'])? Colors.green : Colors.grey,
+                  //border: Border.all(width: 3)
+                  borderRadius: BorderRadius.circular(5)
+              ),
+              child: Text('완료', style: TextStyle(color: Colors.white),),
+            )
+          ]
+          else ... [
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 10,),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                  color: (widget.appointment['isAppointmentApproved'])? Colors.blue : Colors.grey,
+                  //border: Border.all(width: 3)
+                  borderRadius: BorderRadius.circular(5)
+              ),
+              child: Text('승인', style: TextStyle(color: Colors.white),),
+            )
+          ],
+
+        ]
       ),
+
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          //crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
 
+            Container(
+              height: 350,
+              //child: KakaoMap(),
+
+
+              child: KakaoMap(
+                onMapCreated: (controller) async {
+                  kakaoMapController = controller;
+                },
+                markers: [Marker(
+                  markerId: 'myLocationMarker',
+                  latLng: LatLng(widget.hospital['address']['latitude'], widget.hospital['address']['longitude']),
+                  width: 50,
+                  height: 45,
+                )],
+                center: LatLng(widget.hospital['address']['latitude'], widget.hospital['address']['longitude']),
+              ),
+            ),
+
+
+/*
             //TODO 여기 지도 넣어야 함
             Container(
               width: double.infinity,
-              height: 300,
+              height: 350,
               decoration: BoxDecoration(color: Colors.black),
               child: Text('${hospital['address']['longitude'].toString()}\n${hospital['address']['latitude'].toString()}',
               style: TextStyle(color: Colors.white),),
             ),
+*/
 
 
 
-            if (appointment['hasAppointmentDone'] && !appointment['hasFeedbackDone']) ... [
-              TextButton(
-                  onPressed: () {
-                    showModalBottomSheet(
-                      backgroundColor: Colors.transparent,
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (_) {
-                        return AppointmentRatingScreen(doctorName: doctorName, appointmentId: appointment['_id'] );
-                      },
-                    );
-                  },
-                  child: Text('RATING (UNFINISHED)')
+            if (widget.appointment['hasAppointmentDone'] && !widget.appointment['hasFeedbackDone']) ... [
+              Container(
+                width: double.infinity,
+                //margin: EdgeInsets.symmetric(vertical: 5),
+                child: TextButton(
+                    style: TextButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(0))
+                      ),
+                      backgroundColor: Colors.green,
+                      minimumSize: Size.zero,
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    onPressed: () {
+                      showModalBottomSheet(
+                        backgroundColor: Colors.transparent,
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (_) {
+                          return AppointmentRatingScreen(doctorName: widget.doctorName, appointmentId: widget.appointment['_id'] );
+                        },
+                      );
+                    },
+                    child: Text('이 약속에 대한 간단한 피드백을 적어주세요', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),)
+                ),
               ),
             ],
-            placeInform(context, Icon(Icons.home), hospital['name']),
-            placeInform(context, Icon(Icons.person), doctorName),
+            placeInform(context, Icon(Icons.home), widget.hospital['name']),
+            placeInform(context, Icon(Icons.person), widget.doctorName),
+            placeInform(context, Icon(CupertinoIcons.clock), DateFormat.yMMMEd('ko_KR').add_jm().format(DateTime.parse(widget.appointment['appointmentTime']))
+    ),
 
 
             Container(
@@ -84,16 +163,9 @@ class AppointmentDetailScreen extends StatelessWidget {
 
                   SizedBox(height: 5),
 
-                  //Text(appointment['_id'] ?? ''),
-                  //Text(appointment['user'] ?? ''),
-                  //Text(appointment['doctor']['_id'] ?? ''),
-                  //Text(appointment['doctor']['myPsyID'] ?? ''),
-                  Text(DateFormat.yMMMEd('ko_KR').add_jm().format(DateTime.parse(appointment['appointmentTime']))),
-                  Text(appointment['isAppointmentApproved'].toString()),
-                  Text(appointment['hasAppointmentDone'].toString()),
-                  Text(appointment['hasFeedbackDone'].toString()),
-                  Text(appointment['appointmentCreatedAt'] ?? ''),
-                  Text(appointment['appointmentEditedAt'] ?? ''),
+                  Text(widget.appointment['isAppointmentApproved'].toString()),
+                  Text(widget.appointment['hasAppointmentDone'].toString()),
+                  Text(widget.appointment['hasFeedbackDone'].toString()),
                 ],
               ),
             ),
@@ -108,10 +180,10 @@ class AppointmentDetailScreen extends StatelessWidget {
 
                   SizedBox(height: 5),
 
-                  Text(hospital['name'] ?? ''),
-                  Text("${hospital['address']['address']} ${hospital['address']['detailAddress']} ${hospital['address']['extraAddress']}"),
-                  Text(hospital['phone'] ?? ''),
-                  Text(hospital['address']['postcode'] ?? ''),
+                  Text(widget.hospital['name'] ?? ''),
+                  Text("${widget.hospital['address']['address']} ${widget.hospital['address']['detailAddress']} ${widget.hospital['address']['extraAddress']}"),
+                  Text(widget.hospital['phone'] ?? ''),
+                  Text(widget.hospital['address']['postcode'] ?? ''),
                 ],
               ),
             ),

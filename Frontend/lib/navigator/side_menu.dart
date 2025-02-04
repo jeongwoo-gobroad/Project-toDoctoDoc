@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/controllers/careplus/appointment_controller.dart';
+import 'package:to_doc/controllers/careplus/chat_controller.dart';
 import 'package:to_doc/navigation_menu.dart';
 import 'package:to_doc/screens/careplus/appointment_listview.dart';
 import 'package:to_doc/screens/hospital/visited_hospital_screen.dart';
@@ -65,7 +66,9 @@ class SideMenu extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.chat),
             title: Text('큐레이팅 DM'),
-            onTap: (){Get.to(()=>DMList());},
+            onTap: () async {
+              Get.to(()=>DMList(controller: ChatController()));
+              },
             trailing: Icon(Icons.navigate_next),
           ),
           ListTile(

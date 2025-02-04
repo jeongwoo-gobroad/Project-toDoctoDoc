@@ -7,20 +7,25 @@ import 'package:to_doc/controllers/careplus/chat_controller.dart';
 import 'package:to_doc/screens/chat/chat_screen.dart';
 
 class DMList extends StatefulWidget {
+  DMList({required this.controller});
+
+  final ChatController controller;
+
   @override
   State<DMList> createState() => _DMListState();
 }
 
 class _DMListState extends State<DMList> {
-  final ChatController controller = Get.put(ChatController(dio: Dio()));
 
   void goToChatScreen(chat) async {
     print(chat.chatId);
 
     Get.to(()=> ChatScreen(doctorId: chat.doctorId, chatId: chat.chatId, unreadMsg: chat.unreadChat, doctorName: chat.doctorName,))?.whenComplete(() {
-      setState(() {
-        controller.getChatList();
-      });
+      if (this.mounted) {
+        setState(() {
+          widget.controller.getChatList();
+        });
+      }
     });
   }
 
@@ -28,9 +33,13 @@ class _DMListState extends State<DMList> {
   void initState() {
     super.initState();
 
-    if (!controller.isLoading.value) {
-      controller.getChatList();
-    }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        setState(() {
+          widget.controller.getChatList();
+        });
+
+    });
+
   }
 
   @override
@@ -43,18 +52,18 @@ class _DMListState extends State<DMList> {
         elevation: 0,
       ),
       body: Obx(() {
-        if (controller.isLoading.value) {
+        if (widget.controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (controller.chatList.isEmpty) {
+        if (widget.controller.chatList.isEmpty) {
           return const Center(child: Text('채팅 내역이 없습니다.'));
         }
 
         return ListView.builder(
-          itemCount: controller.chatList.length,
+          itemCount: widget.controller.chatList.length,
           itemBuilder: (context, index) {
-            final chat = controller.chatList[index];
+            final chat = widget.controller.chatList[index];
             final formattedDate = DateFormat('MM/dd HH:mm').format(chat.date.toLocal());
             return InkWell(
               onTap: () {

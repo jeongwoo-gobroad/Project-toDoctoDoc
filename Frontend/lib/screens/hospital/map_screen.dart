@@ -253,6 +253,7 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
                 (context, index) {
                   final hospital = mapController.psychiatryList[index];
                   final isPremium = hospital['isPremiumPsychiatry'];
+                  final hasInfo = hospital['hasInfo'];
 
                   return Container(
                     margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
@@ -334,7 +335,7 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
                                   ],
                                 ),
                                 SizedBox(height: 5,),
-                                if (hospital['pid'] == null) Text('상세정보가 없습니다', style: TextStyle(color: Colors.grey),)
+                                if (hasInfo == false) Text('상세정보가 없습니다', style: TextStyle(color: Colors.grey),)
                                 else ... [
                                   (hospital['stars'] == null)
                                     ? Text('별점이 없습니다')

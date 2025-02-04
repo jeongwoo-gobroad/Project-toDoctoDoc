@@ -25,7 +25,7 @@ class _CurateMainState extends State<CurateMain> {
   bool isLoading = true;
   final CurateListController curateListController = Get.put(CurateListController(dio:Dio()));
   final AppointmentController appointmentController = Get.put(AppointmentController());
-  final ChatController chatController = Get.put(ChatController(dio: Dio()));
+  final ChatController chatController = Get.put(ChatController());
 
   void goToChatScreen(chat) async {
     print(chat.chatId);
@@ -307,7 +307,7 @@ class _CurateMainState extends State<CurateMain> {
                                 return;
                               }
 
-                              Get.to(()=> DMList())?.whenComplete(() {
+                              Get.to(()=> DMList(controller: chatController,))?.whenComplete(() {
                                 setState(() {
                                   chatController.getChatList();
                                 });

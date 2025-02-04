@@ -30,6 +30,10 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
     return false;
   }
 
+  gotoDetainScreen(index) async {
+    await widget.appointmentController.getAppointmentInformation(widget.appointmentController.appointmentList[index]['_id']);
+    Get.to(()=>AppointmentDetailScreen(appointment: widget.appointmentController.appointment, hospital: widget.appointmentController.hospital, doctorName: widget.appointmentController.appointmentList[index]['doctor']['name']));
+  }
 
   @override
   void initState() {
@@ -44,7 +48,11 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      onPopInvoked: (didPop) { if (widget.appointmentController.isLoading.value) {return;} },
+      onPopInvokedWithResult: (didPop, result) {
+        if (widget.appointmentController.isLoading.value) {
+          return;
+        }
+      },
       child: Scaffold(
           appBar: AppBar(
             title: InkWell(
@@ -64,10 +72,23 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
                       controller: scrollController,
                       itemCount: widget.appointmentController.nearAppointment,
                       itemBuilder: (context, index) {
+                        final appointment = widget.appointmentController.appointmentList[index];
+
                         return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             if (checkIfDayChanged(index)) ... [
-                              Text(DateFormat.yMMMEd('ko_KR').format(widget.appointmentController.appointmentList[index]['appointmentTime'])),
+                              Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                                decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(color: Colors.grey.shade300),
+                                      top: BorderSide(color: Colors.grey.shade300),
+                                    )
+                                ),
+                                child: Text(DateFormat.yMMMEd('ko_KR').format(appointment['appointmentTime'])),
+                              ),
                             ],
 
                             InkWell(
@@ -77,18 +98,28 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
                               child: Container(
                                 width: double.infinity,
                                 padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                                decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.black), top: BorderSide(color: Colors.black),)),
-                                child: Column(
+                                //decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey.shade300),)),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('예약 ID ${widget.appointmentController.appointmentList[index]['_id']}'),
-                                    Text('의사 ID ${widget.appointmentController.appointmentList[index]['doctor']['name']}'),
-                                    Text('완료 : ${widget.appointmentController.appointmentList[index]['hasAppointmentDone']}'),
-                                    Text('승인 : ${widget.appointmentController.appointmentList[index]['isAppointmentApproved']}'),
-                                    Text('피드백 : ${widget.appointmentController.appointmentList[index]['hasFeedbackDone']}'),
-                                    Text('내용 : ${widget.appointmentController.appointmentList[index]['feedback']}'),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(DateFormat.jm('ko_KR').format(appointment['appointmentTime']), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                                        SizedBox(width: 5),
+                                        Text('${appointment['doctor']['name']}와의 약속' , style: TextStyle(fontSize: 20),),
+                                      ],
+                                    ),
 
-
-                                    Text(DateFormat.yMMMEd('ko_KR').add_jm().format(widget.appointmentController.appointmentList[index]['appointmentTime'])),
+                                    Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                      decoration: BoxDecoration(
+                                        color: (appointment['hasAppointmentDone'])? Colors.green : Colors.grey,
+                                        borderRadius: BorderRadius.circular(5)
+                                      ),
+                                      child: Text('완료', style: TextStyle(color: Colors.white),),
+                                    )
                                   ],
                                 ),
                               ),
@@ -109,15 +140,28 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
                         controller: scrollController,
                         itemCount: widget.appointmentController.appointmentList.length - widget.appointmentController.nearAppointment,
                         itemBuilder: (context, index) {
+                          final appointment = widget.appointmentController.appointmentList[index];
+
+
                           if (!widget.appointmentController.appointmentList[index + widget.appointmentController.nearAppointment]['isAppointmentApproved']) {
-                            return SizedBox(height: 20, child: Text('미승인 약속입니다.'),);
+                            //return SizedBox(height: 20, child: Text('미승인 약속입니다.'),);
                           }
 
 
                           return Column(
                             children: [
                               if (checkIfDayChanged(index + widget.appointmentController.nearAppointment)) ... [
-                                Text(DateFormat.yMMMEd('ko_KR').format(widget.appointmentController.appointmentList[index + widget.appointmentController.nearAppointment]['appointmentTime'])),
+                                Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                                  decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(color: Colors.grey.shade300),
+                                        top: BorderSide(color: Colors.grey.shade300),
+                                      )
+                                  ),
+                                  child: Text(DateFormat.yMMMEd('ko_KR').format(appointment['appointmentTime'])),
+                                ),
                               ],
 
                               InkWell(
@@ -127,12 +171,28 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
                                 child: Container(
                                   width: double.infinity,
                                   padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                                  decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.black), top: BorderSide(color: Colors.black),)),
-                                  child: Column(
+                                  //decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey.shade300),)),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text('예약 ID ${widget.appointmentController.appointmentList[index + widget.appointmentController.nearAppointment]['_id']}'),
-                                      Text('의사 ID ${widget.appointmentController.appointmentList[index + widget.appointmentController.nearAppointment]['doctor']['name']}'),
-                                      Text(DateFormat.yMMMEd('ko_KR').add_jm().format(widget.appointmentController.appointmentList[index + widget.appointmentController.nearAppointment]['appointmentTime'])),
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(DateFormat.jm('ko_KR').format(appointment['appointmentTime']), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                                          SizedBox(width: 5),
+                                          Text('${appointment['doctor']['name']}와의 약속' , style: TextStyle(fontSize: 20),),
+                                        ],
+                                      ),
+
+                                      Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                        decoration: BoxDecoration(
+                                            color: (appointment['isAppointmentApproved'])? Colors.blue : Colors.grey,
+                                            borderRadius: BorderRadius.circular(5)
+                                        ),
+                                        child: Text('승인', style: TextStyle(color: Colors.white),),
+                                      )
                                     ],
                                   ),
                                 ),
@@ -150,8 +210,5 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
     );
   }
 
-  gotoDetainScreen(index) async {
-    await widget.appointmentController.getAppointmentInformation(widget.appointmentController.appointmentList[index]['_id']);
-    Get.to(()=>AppointmentDetailScreen(appointment: widget.appointmentController.appointment, hospital: widget.appointmentController.hospital, doctorName: widget.appointmentController.appointmentList[index]['doctor']['name']));
-  }
+
 }

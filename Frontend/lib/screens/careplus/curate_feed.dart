@@ -1,9 +1,6 @@
-import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:to_doc/controllers/careplus/curate_list_controller.dart';
-import 'package:to_doc/controllers/map_controller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'dart:math';
@@ -22,19 +19,24 @@ class _CurateFeedState extends State<CurateFeed> {
   double _mapHeight = 0.5;
   bool isradiusNotSelected = true;
   bool showMap = true;
-  int randomIndex = 0;
+  int randomIndex = Random().nextInt(7);
   bool isAscending = false;
 
   @override
   void initState() {
+    // 버그가 있어서 초기화 할때 생성 (숫자를 하드 코딩 했는데 이건 수정 바람)
+    // final random = Random();
+    // randomIndex = random.nextInt(images.length);
+
     super.initState();
-    curateListController.getList();
-    final random = Random();
-    randomIndex = random.nextInt(images.length);
-    //isAscending = false;
-    //_sortList(false);
-    _scrollController = ScrollController();
-    _scrollController.addListener(_scrollListener);
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      curateListController.getList();
+      //isAscending = false;
+      //_sortList(false);
+      _scrollController = ScrollController();
+      _scrollController.addListener(_scrollListener);
+    });
   }
 
   String formatDate(String date){
@@ -87,7 +89,7 @@ class _CurateFeedState extends State<CurateFeed> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
+    //final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       body: Obx(

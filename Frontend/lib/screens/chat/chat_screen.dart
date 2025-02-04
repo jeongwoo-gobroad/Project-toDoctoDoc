@@ -75,9 +75,11 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       }
     }
 
-    setState(() {
-      animateToBottom();
-    });
+    if (this.mounted) {
+      setState(() {
+        animateToBottom();
+      });
+    }
 
 
     // TODO 예전 채팅 폰에 저장된 거 불러 오기

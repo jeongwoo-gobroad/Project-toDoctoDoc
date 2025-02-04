@@ -8,17 +8,16 @@ import 'chat_data_model.dart';
 class ChatController extends GetxController{
   final chatList = <ChatContent>[].obs;
   var isLoading = true.obs;
-  final Dio dio;
-
-  ChatController({required this.dio});
 
   @override
   void onInit() {
     super.onInit();
-    dio.interceptors.add(CustomInterceptor());
   }
 
   Future<void> requestChat(String userID, String doctorID) async {
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
+
     print('유저아이디');
     print(userID);
 
@@ -48,6 +47,9 @@ class ChatController extends GetxController{
 
 
   Future<void> getChatList() async {
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
+
     isLoading.value = true;
 
     final response = await dio.get(
@@ -63,17 +65,29 @@ class ChatController extends GetxController{
     if(response.statusCode == 200){
       final data = json.decode(response.data);
 
+
+      print(response.data);
       print('chatlist');
       print(data);
 
-      var temp = (data['content'] as List?)?.map((item) => ChatContent.fromMap(item as Map<String, dynamic>)).toList() ?? [];
 
-      print(temp);
+      int i = 0;
+      chatList.value = [];
+      for (var chat in data['content']) {
+        Map<String, dynamic> temp = {
+          'role' : chat['recentChat']['role'].toString(),
+          'message' : chat['recentChat']['message'].toString(),
+        };
 
-      //final chatResponse = ChatResponse.fromMap(data);
-      chatList.assignAll(temp);
+        chatList.add(ChatContent.fromMap(chat, temp));
+      }
+      print(chatList);
 
-     // print(chatResponse.content);
+      isLoading.value = false;
+
+      return;
+
+      // print(chatResponse.content);
       
     }
     else{

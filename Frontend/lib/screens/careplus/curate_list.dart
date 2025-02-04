@@ -26,7 +26,7 @@ class _CurationScreenState extends State<CurationScreen> with SingleTickerProvid
   final CurateListController curateListController = Get.put(CurateListController(dio:Dio()));
   final ViewController viewController = Get.find<ViewController>();
   final AiChatListController aiChatListController = Get.put(AiChatListController(dio: Dio()));
-  final ChatController chatController = Get.put(ChatController(dio: Dio()));
+  final ChatController chatController = Get.put(ChatController());
   final UserinfoController userinfoController = Get.find<UserinfoController>();
 
   String formatDate(String date) {
@@ -293,7 +293,7 @@ class _CurationScreenState extends State<CurationScreen> with SingleTickerProvid
 
   void reQuestChat(String userId, String doctorId) async {
     await chatController.requestChat(userId, doctorId);
-    Get.to(()=> DMList());
+    Get.to(()=> DMList(controller: chatController,));
   }
 
   @override

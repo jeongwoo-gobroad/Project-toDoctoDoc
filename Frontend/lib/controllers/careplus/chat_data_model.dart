@@ -35,7 +35,7 @@ class ChatContent {
   final String doctorId;
   final DateTime date;
   final int unreadChat;
-  final recentChat;
+  final Map<String, dynamic> recentChat;
 
   ChatContent({
     required this.chatId,
@@ -46,14 +46,14 @@ class ChatContent {
     required this.recentChat
   });
 
-  factory ChatContent.fromMap(Map<String, dynamic> map) {
+  factory ChatContent.fromMap(map, temp) {
     return ChatContent(
       chatId: map['cid'].toString(),
       doctorName: map['doctorName'],
       doctorId: map['doctorId'],
       date: DateTime.parse(map['date'] as String),
       unreadChat: (map['unreadChat'] == -1) ? 0 : map['unreadChat'],
-      recentChat: json.decode(map['recentChat']),
+      recentChat: temp,
     );
   }
 }

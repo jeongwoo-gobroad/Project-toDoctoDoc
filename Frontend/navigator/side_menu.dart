@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:to_doc/controllers/careplus/chat_controller.dart';
 import 'package:to_doc/home.dart';
-import 'package:to_doc/navigation_menu.dart';
 import 'package:to_doc/screens/chat/dm_list.dart';
 import 'package:to_doc/screens/myPost.dart';
 import 'package:to_doc/screens/user_edit.dart';
@@ -53,7 +53,7 @@ class SideMenu extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.chat_outlined),
             title: Text('DM 리스트'),
-            onTap: (){Get.to(()=>DMList());},
+            onTap: (){Get.to(()=>DMList(controller: ChatController(),));},
             trailing: Icon(Icons.navigate_next),
           ),
           ListTile(

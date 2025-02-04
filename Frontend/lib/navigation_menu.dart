@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:to_doc/screens/aboutpage.dart';
 import 'package:to_doc/screens/aichat/ai_chat_main.dart';
 import 'package:to_doc/controllers/userInfo_controller.dart';
 import 'package:to_doc/home.dart';
 import 'package:to_doc/navigator/side_menu.dart';
-import 'package:to_doc/screens/careplus/curate.dart';
-import 'package:to_doc/screens/careplus/curate_feed.dart';
-import 'package:to_doc/screens/careplus/curate_home.dart';
 import 'package:to_doc/screens/careplus/curate_main.dart';
-import 'package:to_doc/screens/graph_test.dart';
 import 'package:to_doc/screens/hospital/map_screen.dart';
 import 'package:to_doc/screens/graph_board.dart';
 
