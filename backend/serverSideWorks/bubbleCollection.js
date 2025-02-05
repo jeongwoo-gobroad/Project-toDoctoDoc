@@ -2,11 +2,10 @@ const { setHashValue, setCache } = require("../middleware/redisCaching");
 const Post = require("../models/Post")
 const removeSpacesAndHashes = require("../middleware/usefulFunctions").removeSpacesAndHashes;
 
-const tagCountBubbleMap = new Map();
-
 const bubbleCollection = async () => {
     try {
         const allItems = await Post.find();
+        const tagCountBubbleMap = new Map();
         let maxTagCountVal = 0;
         let maxViewCountVal = 0;
         
@@ -40,10 +39,6 @@ const bubbleCollection = async () => {
         });
 
         tagCountBubbleMap.forEach((value, key, map) => {
-            tagCountBubbleMap.set(key, {
-                tagCount: value.tagCount / maxTagCountVal,
-                viewCount: value.viewCount / maxViewCountVal
-            });
             setHashValue("GRAPHBOARD:", key, {
                 tagCount: value.tagCount / maxTagCountVal,
                 viewCount: value.viewCount / maxViewCountVal
@@ -52,6 +47,8 @@ const bubbleCollection = async () => {
 
         setCache("GRAPHBOARD_MAX_VIEWCOUNT:", maxViewCountVal);
         setCache("GRAPHBOARD_MAX_TAGCOUNT:", maxTagCountVal);
+
+        console.log("GraphBoard Initiailized");
     } catch (error) {
         console.error(error, "errorAtBubbleCollection");
 
@@ -59,4 +56,4 @@ const bubbleCollection = async () => {
     }
 };
 
-module.exports = {tagCountBubbleMap, bubbleCollection};
+module.exports = {bubbleCollection};

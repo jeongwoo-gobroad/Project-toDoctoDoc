@@ -25,6 +25,10 @@ const deletePreviousImage = async (req, res, next) => {
             const fileName = doctor.myProfileImage.split('/')[5];
 
             await storage.bucket('todoctodoc_profile_image').file('doctorProfileImage/' + fileName).delete();
+
+            doctor.myProfileImage = "";
+
+            await doctor.save();
         }
 
         next();
@@ -34,8 +38,6 @@ const deletePreviousImage = async (req, res, next) => {
         console.error(error, "errorAtDeletePreviousImage");
 
         res.status(405).json(returnResponse(true, "errorAtDeletePreviousImage", "-"));
-
-        next();
 
         return;
     }

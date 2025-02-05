@@ -1,5 +1,7 @@
 // Tag information model
 import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 class TagInfo {
   final double tagCount;
   final double viewCount;
@@ -31,10 +33,12 @@ class Content {
 
   factory Content.fromJson(Map<String, dynamic> json) {
     var bubbleData = json['_bubbleList'];
-    if (bubbleData is String) {
-      bubbleData = jsonDecode(bubbleData);
-    }
-    
+    // if (bubbleData is String) {
+    //   bubbleData = jsonDecode(bubbleData);
+    // }
+
+
+
     final Map<String, TagInfo> bubbleList = {};
     
     if (bubbleData is Map<String, dynamic>) {

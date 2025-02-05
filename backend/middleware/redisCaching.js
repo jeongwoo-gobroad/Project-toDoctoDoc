@@ -25,9 +25,13 @@ const getHashAll = async (key) => {
     try {
         const value = await redis.redisClient.hGetAll(key.toString());
 
-        // console.log("GETHashAll", value['ff']);
+        const map = new Map(Object.entries(value));
 
-        return value;
+        for (const [key, val] of map) {
+            map.set(key, JSON.parse(val));
+        }
+
+        return map;
     } catch (error) {
         console.error(error);
         return null;

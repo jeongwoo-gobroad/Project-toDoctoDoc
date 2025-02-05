@@ -118,7 +118,7 @@ router.get(["/view/:id"],
             const post = await Post.findById(req.params.id).populate("user");
 
             let isOwner = false;
-            let viewed = JSON.parse(await getCache("User: " + user.userid));
+            let viewed = await getCache("User: " + user.userid);
 
             if (post.user._id == user.userid) {
                 isOwner = true;

@@ -39,7 +39,7 @@ router.get(["/graphBoard"],
 
         try {
             const usr = await User.findById(user.userid);
-            const temp = new Map(Object.entries(await getHashAll("GRAPHBOARD:")));
+            const temp = await getHashAll("GRAPHBOARD:");
 
             for (const tag of usr.bannedTags) {
                 if (temp.has(tag)) {

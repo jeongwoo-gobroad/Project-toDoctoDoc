@@ -14,15 +14,12 @@ router.post(['/upload'],
     deletePreviousImage,
     manager.multer.single('file'),
     async (req, res, next) => {
-        const user = await getTokenInformation(req, res);
         const baseURI = process.env.GCP_DOCTOR_URI;
 
         try {
-            req.userid = user.userid;
-
             await manager.upload(req);
 
-            await Doctor.findByIdAndUpdate(user.userid, {
+            await Doctor.findByIdAndUpdate(req.userid, {
                 myProfileImage: baseURI + req.myFileName
             });
 

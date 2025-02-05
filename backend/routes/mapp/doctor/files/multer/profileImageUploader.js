@@ -17,6 +17,8 @@ const upload = (req) => {
     const chunk = bucket.file(myFileName);
     const chunkStream = chunk.createWriteStream();
 
+    req.myFileName = myFileName;
+
     // console.log(chunkStream); /* chunk, chunkStream 모두 관찰 해 봤는데, 업로드 URL을 뱉어내지는 않았다. */
 
     return new Promise((resolve, reject) => { // 콜백 함수 내에서 반환을 해야 하기 때문에 Promise를 반환하도록 설계한다.
