@@ -36,7 +36,7 @@ const tagCountRefreshWorksViaRedis = async (newTags) => {
     }
     setCache("GRAPHBOARD_MAX_TAGCOUNT:", maxTagCount);
 
-    console.log(prev, "tagCountRefreshWorksViaRedis");
+    // console.log(prev, "tagCountRefreshWorksViaRedis");
 
     return;
 };
@@ -71,7 +71,7 @@ const viewCountRefreshWorksViaRedis = async (currentTags) => {
     }
     setCache("GRAPHBOARD_MAX_VIEWCOUNT:", maxViewCount);
 
-    console.log(prev, "viewCountRefreshWorksViaRedis");
+    // console.log(prev, "viewCountRefreshWorksViaRedis");
 
     return;
 };

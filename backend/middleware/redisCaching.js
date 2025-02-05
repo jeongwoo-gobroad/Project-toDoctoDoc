@@ -1,6 +1,27 @@
 require("dotenv").config;
 const redis = require("../config/redis");
 
+const setSetForNDays = async (key, item, days) => {
+    try {
+        await redis.redisClient.sAdd(key.toString(), JSON.stringify(item));
+        await redis.redisClient.expire(key.toString(), process.env.ONE_DAY_TO_SECONDS * parseInt(days));
+
+        return;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+};
+
+const doesSetContains = async (key, item) => {
+    try {
+        return (await redis.redisClient.sIsMember(key.toString(), JSON.stringify(item)));
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+};
+
 const getHashValue = async (key, field) => {
     try {
         const value = await redis.redisClient.hGet(key.toString(), field.toString());
@@ -88,4 +109,8 @@ const delCache = (key) => {
     }
 };
 
-module.exports = {getHashAll, getHashValue, setHashValue, getCache, setCache, setCacheForThreeDaysAsync, setCacheForNDaysAsync, delCache};
+module.exports = {
+    getHashAll, getHashValue, setHashValue, getCache, setCache,
+    setCacheForThreeDaysAsync, setCacheForNDaysAsync, delCache,
+    setSetForNDays, doesSetContains
+};

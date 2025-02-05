@@ -13,7 +13,7 @@ const mongoose = require("mongoose");
 const returnLongLatOfAddress = require("../../../middleware/getcoordinate");
 const bcrypt = require("bcrypt");
 const userEmitter = require("../../../events/eventDrivenLists");
-const { getCache, setCacheForNDaysAsync } = require("../../../middleware/redisCaching");
+const { getCache, setCacheForNDaysAsync, doesSetContains, setSetForNDays } = require("../../../middleware/redisCaching");
 const { tagCountRefreshWorksViaRedis, viewCountRefreshWorksViaRedis } = require("../../../serverSideWorks/redisBubbleCollection");
 
 const User = mongoose.model("User", UserSchema);
@@ -118,23 +118,33 @@ router.get(["/view/:id"],
             const post = await Post.findById(req.params.id).populate("user");
 
             let isOwner = false;
-            let viewed = await getCache("User: " + user.userid);
+            // let viewed = await getCache("User: " + user.userid);
 
             if (post.user._id == user.userid) {
                 isOwner = true;
             }
 
              /* logic for view counting */
-            if (!(viewed) || !viewed.includes(post._id.toString())) {
-                if (!viewed) {
-                    viewed = [];
-                }
-                viewed.push(post._id);
-                setCacheForNDaysAsync("User: " + user.userid, viewed, 1);
+            // if (!(viewed) || !viewed.includes(post._id.toString())) {
+            //     if (!viewed) {
+            //         viewed = [];
+            //     }
+            //     viewed.push(post._id);
+            //     setCacheForNDaysAsync("User: " + user.userid, viewed, 1);
+            //     viewCountRefreshWorksViaRedis(post.tag);
+            //     // console.log("View++ for postid", post._id, "view:", post.views + 1);
+            //     post.views++;
+            //     await post.save();
+            // }
+            if (!(await doesSetContains("VIEW:" + req.userid, post._id))) {
                 viewCountRefreshWorksViaRedis(post.tag);
-                // console.log("View++ for postid", post._id, "view:", post.views + 1);
+
                 post.views++;
                 await post.save();
+
+                setSetForNDays("VIEW:" + req.userid, post._id, 1);
+
+                // console.log("Set cache");
             }
 
             const pageContent = {
