@@ -1,6 +1,39 @@
 require("dotenv").config;
 const redis = require("../config/redis");
 
+const getHashValue = async (key, field) => {
+    try {
+        const value = await redis.redisClient.hGet(key.toString(), field.toString());
+
+        return JSON.parse(value);
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+};
+
+const setHashValue = async (key, field, value) => {
+    try {
+        await redis.redisClient.hSet(key.toString(), field.toString(), JSON.stringify(value));
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+};
+
+const getHashAll = async (key) => {
+    try {
+        const value = await redis.redisClient.hGetAll(key.toString());
+
+        // console.log("GETHashAll", value['ff']);
+
+        return value;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+};
+
 const getCache = async (key) => {
     try {
         const cachedData = await redis.redisClient.get(key.toString());
@@ -51,4 +84,4 @@ const delCache = (key) => {
     }
 };
 
-module.exports = {getCache, setCache, setCacheForThreeDaysAsync, setCacheForNDaysAsync, delCache};
+module.exports = {getHashAll, getHashValue, setHashValue, getCache, setCache, setCacheForThreeDaysAsync, setCacheForNDaysAsync, delCache};

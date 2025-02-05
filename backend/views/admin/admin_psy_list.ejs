@@ -8,6 +8,8 @@
             <h4>병원 pid: <%= psy._id %></h4>
             <h4>주소: <%= psy.address.address + " " + psy.address.detailAddress + " " + psy.address.extraAddress %></h4>
             <h4>연락처: <%= psy.phone %></h4>
+            <h4>영업시간: <%= psy.openTime %></h4>
+            <h4>휴게시간: <%= psy.breakTime %></h4>
             <form action="/admin/psyList/<%= psy._id %>?_method=PATCH" method="post">
                 <div class="form-group">
                     <label for="name" class="new-label">병원명:</label>

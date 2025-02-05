@@ -14,6 +14,7 @@ const returnLongLatOfAddress = require("../../../middleware/getcoordinate");
 const bcrypt = require("bcrypt");
 const userEmitter = require("../../../events/eventDrivenLists");
 const { getCache, setCacheForNDaysAsync } = require("../../../middleware/redisCaching");
+const { tagCountRefreshWorksViaRedis, viewCountRefreshWorksViaRedis } = require("../../../serverSideWorks/redisBubbleCollection");
 
 const User = mongoose.model("User", UserSchema);
 
@@ -92,7 +93,8 @@ router.post(["/upload"],
                 {new: true}
             );
 
-            userEmitter.emit('postUpdated', "-");
+            // userEmitter.emit('postUpdated', "-");
+            tagCountRefreshWorksViaRedis(newTags);
 
             res.status(200).json(returnResponse(false, "ai_answer", newPost));
 
@@ -129,6 +131,7 @@ router.get(["/view/:id"],
                 }
                 viewed.push(post._id);
                 setCacheForNDaysAsync("User: " + user.userid, viewed, 1);
+                viewCountRefreshWorksViaRedis(post.tag);
                 // console.log("View++ for postid", post._id, "view:", post.views + 1);
                 post.views++;
                 await post.save();

@@ -1,3 +1,4 @@
+const { setHashValue, setCache } = require("../middleware/redisCaching");
 const Post = require("../models/Post")
 const removeSpacesAndHashes = require("../middleware/usefulFunctions").removeSpacesAndHashes;
 
@@ -43,7 +44,14 @@ const bubbleCollection = async () => {
                 tagCount: value.tagCount / maxTagCountVal,
                 viewCount: value.viewCount / maxViewCountVal
             });
+            setHashValue("GRAPHBOARD:", key, {
+                tagCount: value.tagCount / maxTagCountVal,
+                viewCount: value.viewCount / maxViewCountVal
+            });
         });
+
+        setCache("GRAPHBOARD_MAX_VIEWCOUNT:", maxViewCountVal);
+        setCache("GRAPHBOARD_MAX_TAGCOUNT:", maxTagCountVal);
     } catch (error) {
         console.error(error, "errorAtBubbleCollection");
 

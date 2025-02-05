@@ -11,6 +11,7 @@ const { tagMap, tagGraph } = require("../../../serverSideWorks/tagCollection");
 const Post = require("../../../models/Post");
 const mongoose = require("mongoose");
 const { tagCountBubbleMap } = require("../../../serverSideWorks/bubbleCollection");
+const { getHashAll } = require("../../../middleware/redisCaching");
 
 const User = mongoose.model("User", UserSchema);
 
@@ -38,7 +39,7 @@ router.get(["/graphBoard"],
 
         try {
             const usr = await User.findById(user.userid);
-            const temp = tagCountBubbleMap;
+            const temp = await getHashAll("GRAPHBOARD:");
 
             for (const tag of usr.bannedTags) {
                 if (temp.has(tag)) {
@@ -46,7 +47,9 @@ router.get(["/graphBoard"],
                 }
             }
 
-            const _bubbleList = JSON.stringify(Object.fromEntries(temp));
+            const _bubbleList = JSON.stringify(temp);
+
+            console.log(_bubbleList);
 
             res.status(200).json(returnResponse(false, "graphBoardData", {_bubbleList: _bubbleList}));
 
