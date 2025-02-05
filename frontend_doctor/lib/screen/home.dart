@@ -87,14 +87,6 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Get.to(() => DMList())?.whenComplete(() {
-            asyncBefore();
-          });
-        },
-        child: const Icon(Icons.chat_bubble_outline_rounded),
-      ),
       appBar: AppBar(
         backgroundColor: Colors.grey.shade100,
         centerTitle: true,
