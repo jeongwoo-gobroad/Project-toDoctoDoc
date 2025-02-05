@@ -5,7 +5,7 @@ const getCache = async (key) => {
     try {
         const cachedData = await redis.redisClient.get(key.toString());
 
-        return cachedData;
+        return JSON.parse(cachedData);
     } catch (error) {
         console.error(error);
         return null;

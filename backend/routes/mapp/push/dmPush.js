@@ -38,7 +38,7 @@ const sendDMPushNotification = async (deviceIds, info) => {
             try {
                 let cache = null;
                 if ((cache = await getCache("DEVICE:" + deviceId))) {
-                    await fcm.messaging().send(getMessageContext(JSON.parse(cache), info));
+                    await fcm.messaging().send(getMessageContext(cache, info));
                 }
             } catch (error) {
                 console.error(error, "errorAtsendDMPushNotification");

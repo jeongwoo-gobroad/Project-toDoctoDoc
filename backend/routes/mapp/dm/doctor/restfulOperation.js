@@ -42,7 +42,7 @@ router.get(["/list"],
                     prevChat.unreadChat = -1;
                 } else {
                     if ((cache = await getCache("ROOM:" + chat._id))) {
-                        prevChat.recentChat = JSON.parse(cache);
+                        prevChat.recentChat = cache;
     
                         // const messageQueue = new Queue(chat._id + "_USER", {
                         //     connection: {

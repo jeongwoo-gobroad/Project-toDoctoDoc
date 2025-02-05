@@ -12,7 +12,6 @@ const { ifDailyCurateNotExceededThenProceed, ifDailyDeepCurateNotExceededThenPro
 const Curate = require("../../../models/Curate");
 const Comment = require("../../../models/Comment");
 const openai = require("openai");
-const DeepCurate = require("../../../models/DeepCurate");
 
 router.get(["/list"],
     checkIfLoggedIn,
