@@ -5,7 +5,7 @@ const tagCountRefreshWorksViaRedis = async (newTags) => {
     const tagLine = removeSpacesAndHashes(newTags);
     const tags = tagLine.split(",");
 
-    const prev = new Map(await getHashAll("GRAPHBOARD:"));
+    const prev = new Map(Object.entries(await getHashAll("GRAPHBOARD:")));
     const maxTagCount = await getCache("GRAPHBOARD_MAX_TAGCOUNT:");
 
     for (let [tag, obj] of prev) {
@@ -40,7 +40,7 @@ const viewCountRefreshWorksViaRedis = async (currentTags) => {
     const tagLine = removeSpacesAndHashes(currentTags);
     const tags = tagLine.split(",");
 
-    const prev = new Map(await getHashAll("GRAPHBOARD:"));
+    const prev = new Map(Object.entries(await getHashAll("GRAPHBOARD:")));
     const maxViewCount = await getCache("GRAPHBOARD_MAX_VIEWCOUNT:");
 
     for (let [tag, obj] of prev) {

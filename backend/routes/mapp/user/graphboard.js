@@ -39,7 +39,7 @@ router.get(["/graphBoard"],
 
         try {
             const usr = await User.findById(user.userid);
-            const temp = await getHashAll("GRAPHBOARD:");
+            const temp = new Map(Object.entries(await getHashAll("GRAPHBOARD:")));
 
             for (const tag of usr.bannedTags) {
                 if (temp.has(tag)) {
@@ -47,9 +47,7 @@ router.get(["/graphBoard"],
                 }
             }
 
-            const _bubbleList = JSON.stringify(temp);
-
-            console.log(_bubbleList);
+            const _bubbleList = Object.fromEntries(temp);
 
             res.status(200).json(returnResponse(false, "graphBoardData", {_bubbleList: _bubbleList}));
 
