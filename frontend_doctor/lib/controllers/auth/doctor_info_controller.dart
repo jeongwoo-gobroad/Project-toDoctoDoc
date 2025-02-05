@@ -1,48 +1,36 @@
-
 import 'package:dio/dio.dart';
-import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
+import 'package:get/get.dart' as getter;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:to_doc_for_doc/controllers/auth/auth_interceptor.dart';
 
-class DoctorInfoController extends GetxController {
-  RxString id = "".obs;
-  RxString name = "".obs;
-  RxString email = "".obs;
-  RxString postcode = "".obs;
-  RxString detailAddress = "".obs;
-  RxString extraAddress = "".obs;
-  RxString address = "".obs;
-  RxString personalID = "".obs;
-  RxString phone = "".obs;
-  final RxBool isLoading = false.obs;
-  RxBool isPremium = false.obs;
-  RxDouble longitude = 0.0.obs;
-  RxDouble latitude = 0.0.obs;
+class DoctorInfoController extends getter.GetxController {
+  getter.RxString id = "".obs;
+  getter.RxString name = "".obs;
+  getter.RxString email = "".obs;
+  getter.RxString postcode = "".obs;
+  getter.RxString detailAddress = "".obs;
+  getter.RxString extraAddress = "".obs;
+  getter.RxString address = "".obs;
+  getter.RxString personalID = "".obs;
+  getter.RxString phone = "".obs;
+  getter.RxString profileImage = "".obs;
 
-  final Dio dio;
 
-  DoctorInfoController({required this.dio});
+  final getter.RxBool isLoading = false.obs;
+  getter.RxBool isPremium = false.obs;
+  getter.RxDouble longitude = 0.0.obs;
+  getter.RxDouble latitude = 0.0.obs;
 
-  @override
-  void onInit() {
-    super.onInit();
-    dio.interceptors.add(CustomInterceptor());
-  }
+
   
   //RxString address = "".obs;
   
   Future<void> getInfo() async {
-/*    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
 
-    if (token == null) {
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return;
-    }*/
+    print('GETINFO----------------------------------------');
 
     final response = await dio.get(
       'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/doctorInfo',
@@ -69,6 +57,10 @@ class DoctorInfoController extends GetxController {
       latitude.value = data['content']['address']['latitude'];
       longitude.value = data['content']['address']['longitude'];
 
+      print(data['content']['myProfileImage']);
+      profileImage.value = data['content']['myProfileImage'];
+
+
       // print(address.value);
       // print(extraAddress.value);
       // print(email.value);
@@ -91,15 +83,8 @@ class DoctorInfoController extends GetxController {
 
   Future<bool> editInfo(String usernick, String email, String postcode, String address, String detailAddress, String extraAddress
   , String password, String password2) async {
-/*    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
-    isLoading.value = true;
-
-    if (token == null) {
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return false;
-    }*/
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
 
     Map<String, dynamic> body = {
         'usernick': usernick,
@@ -134,4 +119,43 @@ class DoctorInfoController extends GetxController {
     
     return false;
   }
+
+  Future<bool> uploadProfileImage(dynamic imageLink) async {
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
+
+    print('upload---------------------------------------');
+    print(imageLink);
+
+    var formData = FormData.fromMap({'file': await MultipartFile.fromFile(imageLink)});
+
+    print(formData);
+
+    try {
+      dio.options.maxRedirects.isFinite;
+
+      final response = await dio.post(
+          'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/profile/upload',
+          options: Options(headers: {
+            'Content-Type': 'multipart/form-data',
+            'accessToken': 'true',
+          },),
+          data: formData
+      );
+
+      if (response.statusCode == 200) {
+        print('성공적으로 업로드했습니다');
+
+        return true;
+      }
+      else {
+        print('ERR');
+      }
+      return response.data;
+    } catch (e) {
+      print(e);
+    }
+    return false;
+  }
+
 }

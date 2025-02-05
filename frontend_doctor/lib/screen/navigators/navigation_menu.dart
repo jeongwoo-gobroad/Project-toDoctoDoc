@@ -4,6 +4,7 @@ import 'package:to_doc_for_doc/screen/curate/curate_screen.dart';
 import 'package:to_doc_for_doc/screen/home.dart';
 import 'package:to_doc_for_doc/screen/test_screen.dart';
 
+import '../chat/dm_list.dart';
 import '../profile_screen.dart';
 
 
@@ -42,6 +43,6 @@ class NavigationMenu extends StatelessWidget {
 class NavigationController extends GetxController{
   final Rx<int> selectedIndex = 0.obs; //home 상태관리
 
-  final screens = [Home(), TestScreen(), CurateScreen() , DoctorProfileView()]; 
+  final screens = [Home(), DMList(), CurateScreen() , DoctorProfileView()];
 
 }

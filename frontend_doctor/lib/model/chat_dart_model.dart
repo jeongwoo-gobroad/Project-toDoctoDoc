@@ -53,7 +53,7 @@ class ChatContent {
       userId: map['userId'],
       date: DateTime.parse(map['date'] as String),
       unreadChat: (map['unreadChat'] == -1) ? 0 : map['unreadChat'],
-      recentChat: json.decode(map['recentChat']),
+      recentChat: map['recentChat'],
     );
   }
 }

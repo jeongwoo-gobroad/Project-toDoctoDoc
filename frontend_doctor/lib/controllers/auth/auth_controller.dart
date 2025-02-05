@@ -18,7 +18,7 @@ class AuthController extends GetxController {
 
   AuthController({required this.dio});
 
-  DoctorInfoController doctorInfoController = Get.put(DoctorInfoController(dio: Dio()));
+  DoctorInfoController doctorInfoController = Get.put(DoctorInfoController());
 
   Future<bool> register(String id, String password, String password2, String name, String phone, String personalID, String doctorID, String postcode
    ,String address, String detailAddress, String extraAddress, String email) async{

@@ -168,7 +168,7 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
               placeInform(Icon(Icons.fmd_good_outlined, size: 30),
                   '${widget.hospital['address']['address']} ${widget.hospital['address']['detailAddress']} ${widget.hospital['address']['extraAddress']}, ${widget.hospital['address']['postcode']}'),
               placeInform(
-                  Icon(CupertinoIcons.time, size: 30), '시간(가)'),
+                  Icon(CupertinoIcons.time, size: 30), '영업시간 : ${widget.hospital['openTime'][0]} ~ ${DateTime.parse(widget.hospital['breakTime'])}'),
               placeInform(
                   Icon(CupertinoIcons.phone, size: 30), widget.hospital['phone']),
             ],

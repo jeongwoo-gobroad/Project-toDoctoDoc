@@ -42,8 +42,8 @@ class _HomeState extends State<Home> {
       return Center(child: CircularProgressIndicator(),);
     }
     return SizedBox(
-      height: MediaQuery.of(context).size.height - 244,
-      width: MediaQuery.of(context).size.width / 3 * 2 - 50,
+      height: MediaQuery.of(context).size.height - 300,
+      width: MediaQuery.of(context).size.width - 50,
       child: Column(
         children: [
           Expanded(
@@ -73,7 +73,7 @@ class _HomeState extends State<Home> {
   }
 
   asyncBefore() async {
-    await curateController.getCurateInfo('5');
+    //await curateController.getCurateInfo('5');
     await appointmentController.getAppointmentList();
     setState(() {});
   }
@@ -117,7 +117,7 @@ class _HomeState extends State<Home> {
                   child: Column(
                     children: [
                       Container(
-                        width: MediaQuery.of(context).size.width / 3 * 2 - 70,
+                        width: MediaQuery.of(context).size.width - 70,
                         padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
                         decoration: BoxDecoration(
                           border: BorderDirectional(bottom: BorderSide(color: Colors.grey.shade300)),
@@ -161,8 +161,8 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
-            SizedBox(width: 16),
-            Expanded(
+           // SizedBox(width: 16),
+           /* Expanded(
               flex: 1,
               child: Column(
                 children: [
@@ -259,7 +259,7 @@ class _HomeState extends State<Home> {
                   ),
                 ],
               ),
-            ),
+            ),*/
           ],
         ),
       ),

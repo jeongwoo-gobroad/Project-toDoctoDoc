@@ -8,6 +8,8 @@ import 'chat_screen.dart';
 
 
 class DMList extends StatefulWidget {
+  const DMList({super.key});
+
   @override
   State<DMList> createState() => _DMListState();
 }
