@@ -30,6 +30,10 @@ const AppointmentSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    appointmentLength: {
+        type: Number,
+        default: 10
+    },
     appointmentCreatedAt: { 
         type: Date,
         default: Date.now,

@@ -42,6 +42,34 @@ router.get(["/list"],
     }
 );
 
+router.get(["/simpleList"],
+    checkIfLoggedIn,
+    isDoctorThenProceed,
+    async (req, res, next) => {
+        try {
+            const information = await Doctor.findById(req.userid).populate({
+                path: 'appointments',
+                select: 'appointmentTime appointmentLength',
+                populate: {
+                    path: 'user',
+                    select: 'usernick'
+                }
+            });
+            const appointment = information.appointments;
+
+            res.status(200).json(returnResponse(false, "appointmentSimpleListForDoctor", appointment));
+
+            return;
+        } catch (error) {
+            console.error(error, "error at /appointment/simpleList GET");
+
+            res.status(403).json(returnResponse(true, "errorAtAppointmentSimpleListing", "-"));
+
+            return;
+        }
+    }
+);
+
 router.get(["/get/:appid"], 
     checkIfLoggedIn,
     isDoctorThenProceed,
@@ -117,7 +145,7 @@ router.post(["/set"],
     isDoctorThenProceed,
     async (req, res, next) => {
         const doctor = await getTokenInformation(req, res);
-        const {cid, uid, time} = req.body; // time 객체는 GMT 기준으로 1995-12-17T03:24:00 의 형태로 나타내야 함.
+        const {cid, uid, time, length} = req.body; // time 객체는 GMT 기준으로 1995-12-17T03:24:00 의 형태로 나타내야 함.
 
         // console.log("Appointment set: ", cid, uid, time);
 
@@ -126,6 +154,7 @@ router.post(["/set"],
                 user: uid,
                 doctor: doctor.userid,
                 appointmentTime: new Date(time),
+                appointmentLength: length,
                 chatId: cid,
                 psyId: (await Doctor.findById(doctor.userid)).myPsyID
             });
@@ -159,7 +188,7 @@ router.patch(["/set"],
     checkIfLoggedIn,
     isDoctorThenProceed,
     async (req, res, next) => {
-        const {appid, time} = req.body; // time 객체는 GMT 기준으로 1995-12-17T03:24:00 의 형태로 나타내야 함.
+        const {appid, time, length} = req.body; // time 객체는 GMT 기준으로 1995-12-17T03:24:00 의 형태로 나타내야 함.
 
         // console.log("Appointment fix: ", appid, time);
 
@@ -167,7 +196,8 @@ router.patch(["/set"],
             const appointment = await Appointment.findByIdAndUpdate(appid, {
                 appointmentTime: time,
                 appointmentEditedAt: Date.now(),
-                isAppointmentApproved: false
+                isAppointmentApproved: false,
+                appointmentLength: length,
             });
 
             res.status(200).json(returnResponse(false, "editedAppointment", "-"));

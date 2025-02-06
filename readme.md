@@ -5,8 +5,8 @@
 ---
 ###### Participants
 > - Jeongwoo Kim (Project Leader, Backend Developer, Web Frontend Developer, AI Prompt Developer, KNU CSE)
-> - Hyunjong Yoon (Web Frontend Developer, AI Prompt Developer, KNU SME)
-> - Junhyeong Jeon (Backend Developer, App Frontend Developer, KNU CSE)
+> - Hyunjong Yoon (Flutter Frontend Developer, AI Prompt Developer, KNU SME)
+> - Junhyeong Jeon (Flutter Frontend Developer, KNU CSE)
 
 ---
 ### What is this project about?
