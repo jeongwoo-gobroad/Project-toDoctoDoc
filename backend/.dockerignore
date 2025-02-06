@@ -1,4 +1,5 @@
 ./node-modules
+./vscode
 ./.env
 ./_secrets
 ./npm-debug.log
