@@ -1,11 +1,7 @@
+const googleCloudStorage = require("../../../../../googleCloud/storage");
 const Psychiatry = require("../../../../../models/Psychiatry");
-const { Storage } = require("@google-cloud/storage");
 
-const storage = new Storage({
-    /* keyFile이 아닌 keyFilename으로 지정해야 정상 동작 */
-    keyFilename: './todoctodoc-googlecloud-storagekey.json', 
-    projectId: 'todoctodoc-c8702'
-});
+const storage = googleCloudStorage;
 
 const doesOwnPsy = async (psyId, doctorId) => {
     try {

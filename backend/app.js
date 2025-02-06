@@ -1,4 +1,4 @@
-require("dotenv").config("./.env");
+require("dotenv").config({path: "./_secrets/dotenv/.env"});
 const express = require("express");
 const session = require("express-session");
 const expressLayouts = require("express-ejs-layouts");
@@ -16,6 +16,14 @@ const connectFCM = require("./routes/mapp/push/fcm");
 const userEmitter = require("./events/eventDrivenLists");
 const reviewRefreshWorks = require("./serverSideWorks/reviewAverage");
 const { bubbleCollection } = require("./serverSideWorks/bubbleCollection");
+
+/* for initial server static IP address getting */
+const request = require('request');
+
+request.get({uri:'https://curlmyip.org/'}, (err, res, body) => {
+    console.log("Server Working on IP:", body);
+});
+/* -------------------------------------------- */
 
 const app = express();
 const server = http.createServer(app);

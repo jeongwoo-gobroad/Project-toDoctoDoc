@@ -1,5 +1,5 @@
 const fcm = require("firebase-admin");
-const serviceAccount = require("../../../_secrets/todoctodoc-firebase-adminsdk.json");
+const serviceAccount = require("../../../_secrets/firebase/todoctodoc-firebase-adminsdk.json");
 
 const connectFCM = async() => {
     try {

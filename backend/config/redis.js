@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config({path: "../secrets/dotenv"});
 const redis = require("redis");
 
 const redisClient = redis.createClient({

@@ -1,14 +1,10 @@
 const Multer = require('multer');
 const stream = require('streamifier');
-const { Storage } = require("@google-cloud/storage");
 const path = require('path');
 const returnResponse = require('../../../standardResponseJSON');
+const googleCloudStorage = require('../../../../../googleCloud/storage');
 
-const storage = new Storage({
-    /* keyFile이 아닌 keyFilename으로 지정해야 정상 동작 */
-    keyFilename: './_secrets/todoctodoc-googlecloud-storagekey.json', 
-    projectId: 'todoctodoc-c8702'
-});
+const storage = googleCloudStorage;
 
 /* bucket 이름을 지정하면 된다. */
 const bucket = storage.bucket('todoctodoc_profile_image');
