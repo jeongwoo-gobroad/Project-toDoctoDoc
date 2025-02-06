@@ -5,7 +5,7 @@ const returnResponse = require("../../../standardResponseJSON");
 
 const storage = new Storage({
     /* keyFile이 아닌 keyFilename으로 지정해야 정상 동작 */
-    keyFilename: './todoctodoc-googlecloud-storagekey.json', 
+    keyFilename: './_secrets/todoctodoc-googlecloud-storagekey.json', 
     projectId: 'todoctodoc-c8702'
 });
 

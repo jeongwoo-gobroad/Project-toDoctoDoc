@@ -1,0 +1,31 @@
+services:
+  app:
+    build: .
+    container_name: Project_toDoctoDoc
+    image: practicalproblemsolvers/project-todoctodoc:v1
+    ports:
+      - "3000:3000"
+    restart: "always"
+    volumes:
+      - ./_secrets:/app/_secrets
+    environment:
+      - MONGODB_URI=${MONGODB_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - PORT=${PORT}
+      - SESS_SECRET=${SESS_SECRET}
+      - OPENAI_KEY=${OPENAI_KEY}
+      - KAKAO_KEY=${KAKAO_KEY}
+      - KAKAO_REST_KEY=${KAKAO_REST_KEY}
+      - RS_HOST=${RS_HOST}
+      - RS_PORT=${RS_PORT}
+      - RS_USERNAME=${RS_USERNAME}
+      - RS_PASSWORD=${RS_PASSWORD}
+      - RS_NONESCAPE_PASSWORD=${RS_NONESCAPE_PASSWORD}
+      - LONG_ONE_KM=${LONG_ONE_KM}
+      - LAT_ONE_KM=${LAT_ONE_KM}
+      - ONE_WEEK_TO_SECONDS=${ONE_WEEK_TO_SECONDS}
+      - THREE_DAYS_TO_SECONDS=${THREE_DAYS_TO_SECONDS}
+      - THREE_DAYS_TO_MILLISECONDS=${THREE_DAYS_TO_MILLISECONDS}
+      - TZ=${TZ}
+      - ONE_DAY_TO_SECONDS=${ONE_DAY_TO_SECONDS}
+      - GCP_DOCTOR_URI=${GCP_DOCTOR_URI}

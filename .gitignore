@@ -5,6 +5,7 @@
 /backend/private.key
 /backend/todoctodoc-firebase-adminsdk.json
 /backend/todoctodoc-googlecloud-storagekey.json
+/backend/_secrets/
 /auxliary/
 /upload-keystore.jks
 /frontend/android/app/key.jks
