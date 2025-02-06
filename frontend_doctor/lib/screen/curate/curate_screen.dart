@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc_for_doc/controllers/curate/curate_controller.dart';
@@ -14,7 +13,7 @@ class _CurateScreenState extends State<CurateScreen> {
   late ScrollController _scrollController;
   double _mapHeight = 0.5;
   bool showMap = true;
-  CurateController curateController = Get.put(CurateController(dio: Dio()));
+  CurateController curateController = Get.put(CurateController());
 
   String formatDate(String date) {
     try {

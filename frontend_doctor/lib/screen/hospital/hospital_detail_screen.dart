@@ -1,29 +1,23 @@
 import 'dart:io';
-
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-
 import '../../controllers/hospital/hospital_information_controller.dart';
 
 
 class HospitalDetailScreen extends StatefulWidget {
-
   const HospitalDetailScreen({super.key,});
 
   @override
   _HospitalDetailScreenState createState() => _HospitalDetailScreenState();
 }
 
-
 class _HospitalDetailScreenState extends State<HospitalDetailScreen> {
   HospitalInformationController hospitalInformationController = Get.put(HospitalInformationController());
 
   int selectedIndex = -1;
-
-
   var _tapPosition;
 
   XFile? _pickedFile;

@@ -21,7 +21,7 @@ class HospitalReviewController extends GetxController{
     dio.interceptors.add(CustomInterceptor());
 
     final response = await dio.post(
-        'http://jeongwoo-kim-web.myds.me:3000/mapp/review/write',
+        '${Apis.baseUrl}mapp/review/write',
         options: Options(headers: {
           'Content-Type': 'application/json',
           'accessToken': 'true',
@@ -51,7 +51,7 @@ class HospitalReviewController extends GetxController{
     dio.interceptors.add(CustomInterceptor());
 
     final response = await dio.post(
-        'http://jeongwoo-kim-web.myds.me:3000/mapp/review/edit/$reviewId',
+        '${Apis.baseUrl}mapp/review/edit/$reviewId',
         options: Options(headers: {
           'Content-Type': 'application/json',
           'accessToken': 'true',
@@ -80,7 +80,7 @@ class HospitalReviewController extends GetxController{
     dio.interceptors.add(CustomInterceptor());
 
     final response = await dio.get(
-        'http://jeongwoo-kim-web.myds.me:3000/mapp/review/myReviews',
+        '${Apis.baseUrl}mapp/review/myReviews',
         options: Options(headers: {
           'Content-Type': 'application/json',
           'accessToken': 'true',

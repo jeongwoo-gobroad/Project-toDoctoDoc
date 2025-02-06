@@ -18,7 +18,7 @@ class HospitalVisitedController extends GetxController{
     dio.interceptors.add(CustomInterceptor());
 
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/review/visited',
+      '${Apis.baseUrl}mapp/review/visited',
       options: Options(headers: {
         'Content-Type': 'application/json',
         'accessToken': 'true',

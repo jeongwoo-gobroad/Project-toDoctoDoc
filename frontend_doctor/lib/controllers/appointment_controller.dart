@@ -24,7 +24,7 @@ class AppointmentController extends GetxController {
     dio.interceptors.add(CustomInterceptor());
 
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/appointment/list',
+      '${Apis.baseUrl}mapp/doctor/appointment/list',
       options: Options(headers: {
         'Content-Type': 'application/json',
         'accessToken': 'true',
@@ -86,7 +86,7 @@ class AppointmentController extends GetxController {
     dio.interceptors.add(CustomInterceptor());
 
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/appointment/simpleList',
+      '${Apis.baseUrl}mapp/doctor/appointment/simpleList',
       options: Options(headers: {
         'Content-Type': 'application/json',
         'accessToken': 'true',
@@ -145,7 +145,7 @@ class AppointmentController extends GetxController {
     dio.interceptors.add(CustomInterceptor());
 
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/appointment/get/$appointmentId',
+      '${Apis.baseUrl}mapp/doctor/appointment/get/$appointmentId',
       options: Options(headers: {
         'Content-Type': 'application/json',
         'accessToken': 'true',
@@ -178,7 +178,7 @@ class AppointmentController extends GetxController {
     dio.interceptors.add(CustomInterceptor());
 
     final response = await dio.post(
-        'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/appointment/done',
+        '${Apis.baseUrl}mapp/doctor/appointment/done',
         options: Options(headers: {
           'Content-Type': 'application/json',
           'accessToken': 'true',
@@ -188,7 +188,6 @@ class AppointmentController extends GetxController {
         })
     );
 
-
     if (response.statusCode == 200) {
       return true;
     }
@@ -197,6 +196,4 @@ class AppointmentController extends GetxController {
       return false;
     }
   }
-
-
 }

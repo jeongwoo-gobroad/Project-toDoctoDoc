@@ -8,9 +8,6 @@ import '../../controllers/auth/auth_secure.dart';
 import '../navigators/navigation_menu.dart';
 
 
-
-  
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 

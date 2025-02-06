@@ -4,15 +4,9 @@ import 'dart:convert';
 import '../../auth/auth_dio.dart';
 import 'chat_data_model.dart';
 
-
 class ChatController extends GetxController{
   final chatList = <ChatContent>[].obs;
   var isLoading = true.obs;
-
-  @override
-  void onInit() {
-    super.onInit();
-  }
 
   Future<void> requestChat(String userID, String doctorID) async {
     Dio dio = Dio();
@@ -25,7 +19,7 @@ class ChatController extends GetxController{
     print(doctorID);
 
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/careplus/dm?uid=$userID&did=$doctorID',
+      '${Apis.baseUrl}mapp/careplus/dm?uid=$userID&did=$doctorID',
       options:
         Options(headers: {
           'Content-Type':'application/json',
@@ -53,7 +47,7 @@ class ChatController extends GetxController{
     isLoading.value = true;
 
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/dm/user/list',
+      '${Apis.baseUrl}mapp/dm/user/list',
       options:
         Options(headers: {
           'Content-Type':'application/json',
@@ -65,35 +59,26 @@ class ChatController extends GetxController{
     if(response.statusCode == 200){
       final data = json.decode(response.data);
 
-
       print(response.data);
       print('chatlist');
       print(data);
 
-
-      int i = 0;
       chatList.value = [];
       for (var chat in data['content']) {
         Map<String, dynamic> temp = {
           'role' : chat['recentChat']['role'].toString(),
           'message' : chat['recentChat']['message'].toString(),
         };
-
         chatList.add(ChatContent.fromMap(chat, temp));
       }
       print(chatList);
 
       isLoading.value = false;
-
       return;
-
-      // print(chatResponse.content);
-      
     }
     else{
       print('코드: ${response.statusCode}');
     }
-
     isLoading.value = false;
   }
 }

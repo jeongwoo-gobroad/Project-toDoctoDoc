@@ -141,13 +141,9 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
                         itemCount: widget.appointmentController.appointmentList.length - widget.appointmentController.nearAppointment,
                         itemBuilder: (context, index) {
                           final appointment = widget.appointmentController.appointmentList[index + widget.appointmentController.nearAppointment];
-
-
                           if (!widget.appointmentController.appointmentList[index + widget.appointmentController.nearAppointment]['isAppointmentApproved']) {
                             //return SizedBox(height: 20, child: Text('미승인 약속입니다.'),);
                           }
-
-
                           return Column(
                             children: [
                               if (checkIfDayChanged(index + widget.appointmentController.nearAppointment)) ... [
@@ -163,7 +159,6 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
                                   child: Text(DateFormat.yMMMEd('ko_KR').format(appointment['appointmentTime'])),
                                 ),
                               ],
-
                               InkWell(
                                 onTap: () {
                                   gotoDetainScreen(index + widget.appointmentController.nearAppointment);
@@ -199,7 +194,6 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
                               ),
                             ],
                           );
-
                         }),
                   ),
                 ],
@@ -209,6 +203,4 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
       ),
     );
   }
-
-
 }

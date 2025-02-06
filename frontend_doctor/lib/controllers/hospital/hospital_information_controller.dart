@@ -34,7 +34,7 @@ class HospitalInformationController extends getter.GetxController {
 
     try {
       final response = await dio.get(
-        'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/psyProfile/myPsyInfo',
+        '${Apis.baseUrl}mapp/doctor/psyProfile/myPsyInfo',
         options: Options(headers: {
           'Content-Type':'application/json',
           'accessToken':'true',
@@ -81,7 +81,7 @@ class HospitalInformationController extends getter.GetxController {
 
     try {
       final response = await dio.patch(
-        'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/psyProfile/myPsyInfo',
+        '${Apis.baseUrl}mapp/doctor/psyProfile/myPsyInfo',
         options: Options(headers: {
           'Content-Type':'application/json',
           'accessToken':'true',
@@ -120,23 +120,19 @@ class HospitalInformationController extends getter.GetxController {
 
     var formData = FormData.fromMap({'files': await MultipartFile.fromFile(imageLink)});
 
-    print(formData);
-
     try {
       dio.options.maxRedirects.isFinite;
 
       final response = await dio.post(
-          'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/psyProfile/upload/$pid',
+          '${Apis.baseUrl}mapp/doctor/psyProfile/upload/$pid',
           options: Options(headers: {
             'Content-Type': 'multipart/form-data',
             'accessToken': 'true',
           },),
           data: formData
       );
-
       if (response.statusCode == 200) {
         print('성공적으로 업로드했습니다');
-
         return true;
       }
       else {
@@ -156,10 +152,9 @@ class HospitalInformationController extends getter.GetxController {
     print('delete--------------------------------------');
     print(imageName);
 
-
     try {
       final response = await dio.delete(
-          'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/psyProfile/delete/$imageName',
+          '${Apis.baseUrl}mapp/doctor/psyProfile/delete/$imageName',
           options: Options(headers: {
             'Content-Type':'application/json',
             'accessToken': 'true',
@@ -171,7 +166,6 @@ class HospitalInformationController extends getter.GetxController {
 
       if (response.statusCode == 200) {
         print('성공적으로 삭제했습니다');
-
         return true;
       }
       else {
@@ -183,5 +177,4 @@ class HospitalInformationController extends getter.GetxController {
     }
     return false;
   }
-
 }

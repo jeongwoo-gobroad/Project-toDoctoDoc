@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -23,9 +22,9 @@ class CurationScreen extends StatefulWidget {
 class _CurationScreenState extends State<CurationScreen> with SingleTickerProviderStateMixin {
   bool isPostExpanded = false;
   bool isAiExpanded = false;
-  final CurateListController curateListController = Get.put(CurateListController(dio:Dio()));
+  final CurateListController curateListController = Get.put(CurateListController());
   final ViewController viewController = Get.find<ViewController>();
-  final AiChatListController aiChatListController = Get.put(AiChatListController(dio: Dio()));
+  final AiChatListController aiChatListController = Get.put(AiChatListController());
   final ChatController chatController = Get.put(ChatController());
   final UserinfoController userinfoController = Get.find<UserinfoController>();
 

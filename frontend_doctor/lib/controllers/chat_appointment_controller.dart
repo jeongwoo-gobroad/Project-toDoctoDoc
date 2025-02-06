@@ -36,7 +36,7 @@ class ChatAppointmentController extends GetxController {
 
     //try {
       final response = await dio.get(
-        'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/appointment/getWithChatId/$chatId',
+        '${Apis.baseUrl}mapp/doctor/appointment/getWithChatId/$chatId',
         options: Options(headers: {
           'Content-Type': 'application/json',
           'accessToken': 'true',
@@ -100,7 +100,7 @@ class ChatAppointmentController extends GetxController {
 
     try {
       final response = await dio.post(
-        'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/appointment/set',
+        '${Apis.baseUrl}mapp/doctor/appointment/set',
         options: Options(headers: {
           'Content-Type':'application/json',
           'accessToken':'true',
@@ -155,7 +155,7 @@ class ChatAppointmentController extends GetxController {
 
     try {
       final response = await dio.delete(
-        'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/appointment/set',
+        '${Apis.baseUrl}mapp/doctor/appointment/set',
         options: Options(headers: {
           'Content-Type':'application/json',
           'accessToken':'true',
@@ -206,7 +206,7 @@ class ChatAppointmentController extends GetxController {
 
     try {
       final response = await dio.patch(
-        'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/appointment/set',
+        '${Apis.baseUrl}mapp/doctor/appointment/set',
         options: Options(headers: {
           'Content-Type':'application/json',
           'accessToken':'true',

@@ -21,20 +21,13 @@ class UserinfoController extends GetxController {
   //RxString address = "".obs;
  /*error: false, result: info, content: {_id: 67763d058b0c374bed083641, id: test1234, usernick: jun, email: j123@21, address: {postcode: 41196, address: 대구 동구 경대로 2, detailAddress: 1, extraAddress:  (신암동), longitude: 128.612188721856, latitude: 35.8819379527752, _id: 67763d058b0c374bed083642}, limits: {dailyRequestDate: 2025-01-02T07:15:17.044Z, dailyRequestCount: 4, dailyChatDate: 2025-01-03T06:27:50.340Z, dailyChatCount: 1, _id: 67763d058b0c374bed083643}, isPremium: true}} */
 
-  final Dio dio;
-
-  UserinfoController({required this.dio});
-
-  @override
-  void onInit() {
-    // TODO: implement onInit
-    super.onInit();
-    dio.interceptors.add(CustomInterceptor());
-  }
 
   Future<void> getInfo() async {
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
+
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/userinfo',
+      '${Apis.baseUrl}mapp/userinfo',
       options:
         Options(headers: {
           'Content-Type':'application/json',
@@ -83,17 +76,10 @@ class UserinfoController extends GetxController {
 
   Future<bool> editInfo(String usernick, String email, String postcode, String address, String detailAddress, String extraAddress
   , String password, String password2) async {
-    //final prefs = await SharedPreferences.getInstance();
-    //final token = prefs.getString('jwt_token');
     isLoading.value = true;
 
-    /*
-    if (token == null) {
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return false;
-    }
-     */
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
 
     Map<String, dynamic> body = {
         'usernick': usernick,
@@ -106,31 +92,21 @@ class UserinfoController extends GetxController {
     print(usernick+ " " + email+ " " + postcode+ " " + address+ " " + detailAddress+ " " + extraAddress+ " " + password + " " + password2 );
 
     if (password.isNotEmpty) {
-        body['password'] = password;
-        body['password2'] = password2;
+      body['password'] = password;
+      body['password2'] = password2;
     }
 
     final response = await dio.patch(
-        'http://jeongwoo-kim-web.myds.me:3000/mapp/editUserInfo',
-        options:
-          Options(headers: {
-            'Content-Type':'application/json',
-            'accessToken': 'true',
-          },
-        ),
-        data: json.encode(body)
+      '${Apis.baseUrl}mapp/editUserInfo',
+      options:
+        Options(headers: {
+          'Content-Type':'application/json',
+          'accessToken': 'true',
+        },
+      ),
+      data: json.encode(body)
     );
 
-    /*
-    final response = await http.patch(
-      Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/editUserInfo'),
-      headers: {
-        'Content-Type': 'application/json',
-        'authorization': 'Bearer $token',
-      },
-      body: json.encode(body)
-    );
-     */
 
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.data}');

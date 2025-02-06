@@ -15,7 +15,7 @@ class CurateFeed extends StatefulWidget {
 class _CurateFeedState extends State<CurateFeed> {
   bool isLoading = true;
   late ScrollController _scrollController;
-  final CurateListController curateListController = Get.put(CurateListController(dio:Dio()));
+  final CurateListController curateListController = Get.put(CurateListController());
   double _mapHeight = 0.5;
   bool isradiusNotSelected = true;
   bool showMap = true;
@@ -89,8 +89,6 @@ class _CurateFeedState extends State<CurateFeed> {
 
   @override
   Widget build(BuildContext context) {
-    //final screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       body: Obx(
         () => CustomScrollView(

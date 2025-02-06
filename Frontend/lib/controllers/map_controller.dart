@@ -15,18 +15,14 @@ class MapController extends GetxController{
   String currentRadius = '1';
   final RxSet<Marker> markers = <Marker>{}.obs;
 
-  final Dio dio;
-
-  MapController({required this.dio});
-
-
   Future<bool> getMapInfo(String radius, {int page = 1}) async{
+    Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
 
     try {
       isLoading.value = true;
       final response = await dio.get(
-        'http://jeongwoo-kim-web.myds.me:3000/mapp/curate/around?radius=$radius',
+        '${Apis.baseUrl}mapp/curate/around?radius=$radius',
         options: Options(
           headers: {
             'Content-Type':'application/json',

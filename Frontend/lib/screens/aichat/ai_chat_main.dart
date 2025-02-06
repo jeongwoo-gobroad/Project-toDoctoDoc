@@ -18,7 +18,7 @@ class AichatMain extends StatefulWidget {
 }
 class _AichatMain extends State<AichatMain> {
   UserinfoController userinfoController = Get.find<UserinfoController>();
-  AiChatController aiChatController = Get.put(AiChatController(dio: Dio()));
+  AiChatController aiChatController = Get.put(AiChatController());
   @override
   void initState() {
     // TODO: implement initState

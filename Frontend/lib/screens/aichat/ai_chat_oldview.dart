@@ -19,8 +19,8 @@ class AiChatOldView extends StatefulWidget {
 }
 
 class _AiChatOldViewState extends State<AiChatOldView> {
-  AichatLoadController  aichatLoadController = Get.put(AichatLoadController(dio: Dio()));
-  AiChatController aiChatController = Get.put(AiChatController(dio: Dio()));
+  AichatLoadController  aichatLoadController = Get.put(AichatLoadController());
+  AiChatController aiChatController = Get.put(AiChatController());
   get scrollController => null;
   String chatid = '';
   var _messageList;

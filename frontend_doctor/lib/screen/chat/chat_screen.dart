@@ -173,6 +173,21 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     isLoading.value = false;
   }
 
+  setAppointmentDay() {
+    showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      context: context,
+      isScrollControlled: true,
+      builder: (_) {
+        return AppointmentBottomSheet(
+          userName: widget.userName,
+          chatAppointmentController: chatAppointmentController,
+          alterParent : alterParent,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final messageController = TextEditingController();
@@ -268,33 +283,18 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                   ),
 
                   suffixIcon: IconButton(
-                      onPressed: () {
-                        if (messageController.text.isNotEmpty) {
-                          sendText(messageController.text);
-                        }
-                      },
-                      icon: Icon(Icons.arrow_circle_right_outlined, size: 45)
+                    onPressed: () {
+                      if (messageController.text.isNotEmpty) {
+                        sendText(messageController.text);
+                      }
+                    },
+                    icon: Icon(Icons.arrow_circle_right_outlined, size: 45)
                   ),
                 ),
               ),
             ),
         ],),
       ),
-    );
-  }
-
-  setAppointmentDay() {
-    showModalBottomSheet(
-      backgroundColor: Colors.transparent,
-      context: context,
-      isScrollControlled: true,
-      builder: (_) {
-        return AppointmentBottomSheet(
-          userName: widget.userName,
-          chatAppointmentController: chatAppointmentController,
-          alterParent : alterParent,
-        );
-      },
     );
   }
 }

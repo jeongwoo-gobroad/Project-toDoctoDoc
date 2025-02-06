@@ -10,11 +10,7 @@ class ChatAppointmentController extends GetxController{
   ChatAppointmentController();
 
   late String appointmentId = 'load';
-
-  //late DateTime appointmentTime;
   var isLoading = true.obs;
-
-  //late Map<String,dynamic> hospital;
   late Map<String,dynamic> appointment;
 
   bool isAppointmentExisted  = false;
@@ -23,12 +19,11 @@ class ChatAppointmentController extends GetxController{
 
   Future<bool> getAppointmentInformation(String chatId) async {
     //isLoading.value = true;
-
     Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
 
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/careplus/appointment/get/$chatId',
+      '${Apis.baseUrl}mapp/careplus/appointment/get/$chatId',
       options: Options(headers: {
         'Content-Type': 'application/json',
         'accessToken': 'true',
@@ -37,7 +32,6 @@ class ChatAppointmentController extends GetxController{
 
     if (response.statusCode == 200) {
       final data = json.decode(response.data);
-      //print(data);
 
       if (data['content']['appointment'] == null) {
         isAppointmentExisted = false;
@@ -56,13 +50,6 @@ class ChatAppointmentController extends GetxController{
 
       isAppointmentApproved = data['content']['appointment']['isAppointmentApproved'];
 
-/*      if (data['content']['psy'] != null) {
-        //hospital = data['content']['psy'];
-      }*/
-/*      else {
-        hospital = {'a' : 'a',};
-      }*/
-
       appointmentId=  data['content']['appointment']['_id'];
       print('APPOINTMENT ID-------------- $appointmentId');
       //print('HOSPITAL-------------------- $hospital');
@@ -77,12 +64,11 @@ class ChatAppointmentController extends GetxController{
   }
 
   Future<bool> sendAppointmentApproval() async {
-
     Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
 
     final response = await dio.post(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/careplus/appointment/approve',
+      '${Apis.baseUrl}mapp/careplus/appointment/approve',
       options: Options(headers: {
         'Content-Type': 'application/json',
         'accessToken': 'true',

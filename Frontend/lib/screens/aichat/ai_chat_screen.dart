@@ -29,8 +29,8 @@ class AiChatSub extends StatefulWidget {
 }
 
 class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
-  AiChatController aiChatController = Get.put(AiChatController(dio: Dio()));
-  AiChatSaveController aiChatSaveController = Get.put(AiChatSaveController(dio: Dio()));
+  AiChatController aiChatController = Get.put(AiChatController());
+  AiChatSaveController aiChatSaveController = Get.put(AiChatSaveController());
   TextEditingController textEditingController = Get.put(TextEditingController());
   final scrollController = ScrollController();
 
@@ -165,32 +165,6 @@ class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
                         ),
                       ),
                     ),
-                
-                    /*Stack(
-                      children: [
-                        ConstrainedBox( constraints: BoxConstraints(maxHeight: 150,),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12),
-                            child: SizedBox(
-                              width: MediaQuery.of(context).size.width - 90,
-                              child: TextField(
-                                maxLines: null,
-                                controller: textEditingController,
-                                //onSubmitted: _handleSubmitted,
-                                decoration: InputDecoration(labelText: 'chat'),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          right: 0,
-                          child: IconButton(
-                            onPressed: () => _handleSubmitted(textEditingController.text),
-                            icon: Icon(Icons.send_rounded)
-                          )
-                        )
-                      ]
-                    ),*/
                   ]
                 ),
               )
@@ -210,8 +184,7 @@ class _AiChatSub extends State<AiChatSub> with WidgetsBindingObserver {
           TextButton(
             child: Text('확인'),
             onPressed: () =>
-              Navigator.of(context).popUntil((route) => route.isFirst)
-            ,
+              Navigator.of(context).popUntil((route) => route.isFirst),
           ),
         ],
       );

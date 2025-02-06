@@ -8,7 +8,6 @@ class AppointmentDetailScreen extends StatefulWidget {
   final AppointmentController appointmentController;
   final Map<String, dynamic> appointment;
 
-
   @override
   State<AppointmentDetailScreen> createState() => _AppointmentDetailScreenState();
 }
@@ -74,7 +73,6 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
           children: [
             Container(
               child: Column(
-                //crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text('정보', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
 
@@ -104,7 +102,6 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
             if (widget.appointment['hasFeedbackDone']) ... [
               Container(
                 child: Column(
-                  //crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text('피드백 정보', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
 

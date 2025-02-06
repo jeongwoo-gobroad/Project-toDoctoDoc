@@ -1,10 +1,8 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/controllers/query_controller.dart';
 import 'package:to_doc/controllers/upload_controller.dart';
 import 'package:to_doc/navigation_menu.dart';
-import 'package:to_doc/screens/myPost.dart';
 import 'package:to_doc/screens/myPost.dart';
 
 class ResultEdit extends StatefulWidget {
@@ -15,10 +13,10 @@ class ResultEdit extends StatefulWidget {
 }
 
 class _ResultEditState extends State<ResultEdit> {
-  QueryController queryController = Get.put(QueryController(dio: Dio()));
+  QueryController queryController = Get.put(QueryController());
   final FocusNode focusNode = FocusNode();
   bool isExpanded = false;
-  UploadController uploadController = Get.put(UploadController(dio:Dio()));
+  UploadController uploadController = Get.put(UploadController());
 
   bool isContentExpanded = false;
 

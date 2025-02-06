@@ -1,11 +1,9 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../controllers/chat_controller.dart';
 import 'chat_screen.dart';
-
 
 class DMList extends StatefulWidget {
   const DMList({super.key});
@@ -15,7 +13,7 @@ class DMList extends StatefulWidget {
 }
 
 class _DMListState extends State<DMList> {
-  final ChatController controller = Get.put(ChatController(dio: Dio()));
+  final ChatController controller = Get.put(ChatController());
 
   void goToChatScreen(chat) async {
     //linkTest();
@@ -24,7 +22,7 @@ class _DMListState extends State<DMList> {
       unreadChat: chat.unreadChat,
       userName: '',//chat.userName,
       userId: chat.userId,
-      ))?.whenComplete(() {
+    ))?.whenComplete(() {
         setState(() {
           controller.getChatList();
         });

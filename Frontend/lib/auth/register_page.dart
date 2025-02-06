@@ -39,7 +39,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   final TextEditingController extraController = TextEditingController();
 
-  RegisterController registerController = Get.put(RegisterController(dio: Dio()));
+  RegisterController registerController = Get.put(RegisterController());
 
   _submit() async{
 

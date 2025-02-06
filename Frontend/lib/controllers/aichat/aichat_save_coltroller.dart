@@ -6,18 +6,15 @@ import '../../auth/auth_dio.dart';
 
 class AiChatSaveController extends GetxController{
   var isLoading = false.obs;
-  final Dio dio;
-
-  AiChatSaveController({required this.dio});
 
   Future<void> saveChat(String chatId) async {
+    Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
     print(chatId);
 
-
     try {
       final response = await dio.post(
-        'http://jeongwoo-kim-web.myds.me:3000/mapp/aichat/save',
+        '${Apis.baseUrl}mapp/aichat/save',
         options: Options(
           headers: {
             'Content-Type': 'application/json',

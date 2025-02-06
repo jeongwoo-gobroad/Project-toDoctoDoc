@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -14,8 +13,6 @@ import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'auth/auth_secure.dart';
 import 'firebase/firebase_handler.dart';
 
-
-
 void main() async{
   await initializeDateFormatting();
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,8 +27,8 @@ void main() async{
       appKey: 'd5f01b0b56b0599393d5cae23ae8d69f' ?? '',
       baseUrl: '');
 
-  Get.put(UserinfoController(dio:Dio()), permanent: true);
-  Get.put(ViewController(dio:Dio()), permanent: true);
+  Get.put(UserinfoController(), permanent: true);
+  Get.put(ViewController(), permanent: true);
   runApp(GetMaterialApp(
     scrollBehavior: const MaterialScrollBehavior().copyWith(
         dragDevices: {
@@ -72,7 +69,6 @@ clearSecureStorageOnReinstall() async {
     prefs.setBool(key, true);
     return;
   }
-
   var chk = prefs.getBool(key) as bool;
   if (chk) {
     storage.deleteEveryToken();

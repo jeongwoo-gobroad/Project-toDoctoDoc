@@ -11,65 +11,45 @@ import '../auth/auth_dio.dart';
 import '../auth/auth_secure.dart';
 
 class RegisterController extends GetxController{
-  final Dio dio;
 
-  RegisterController({required this.dio});
+  Future<Map<String, dynamic>> register(
+       String id,
+       String password,
+       String password2,
+       String nickname,
+       String postcode,
+       String address,
+       String detailAddress,
+       String extraAddress,
+       String email
+       ) async{
 
-  @override
-  void onInit() {
-    super.onInit();
-    dio.interceptors.add(CustomInterceptor());
-  }
+      Dio dio = Dio();
 
-   Future<Map<String, dynamic>> register(String id, String password, String password2, String nickname, String postcode
-   ,String address, String detailAddress, String extraAddress, String email) async{
+      String? _token;
 
-    String? _token;
-    final url = Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/register');
+      try{
+        final response = await dio.post(
+          '${Apis.baseUrl}mapp/register',
+          options:
+            Options(headers: {
+              'Content-Type': 'application/json',
+            },
+          ),
+          data: json.encode({
+            'id' : id,
+            'password' : password,
+            'password2' : password2,
+            'nickname' : nickname,
+            'postcode': postcode,
+            'address': address,
+            'detailAddress' : detailAddress,
+            'extraAddress' : extraAddress,
+            'email' : email,
+          }),
+        );
 
 
-    try{
-      final response = await dio.post(
-        'http://jeongwoo-kim-web.myds.me:3000/mapp/register',
-        options:
-          Options(headers: {
-            'Content-Type': 'application/json',
-          },
-        ),
-        data: json.encode({
-          'id' : id,
-          'password' : password,
-          'password2' : password2,
-          'nickname' : nickname,
-          'postcode': postcode,
-          'address': address,
-          'detailAddress' : detailAddress,
-          'extraAddress' : extraAddress,
-          'email' : email,
-        }),
-      );
-
-      /*
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          
-        },
-        body: json.encode({
-          'id' : id,
-          'password' : password,
-          'password2' : password2,
-          'nickname' : nickname,
-          'postcode': postcode,
-          'address': address,
-          'detailAddress' : detailAddress,
-          'extraAddress' : extraAddress,
-          'email' : email,
-        }),
-      );
-       */
-      
       
       print('register debug: $id $email $password $password2 $postcode $address $extraAddress $nickname');
       print('register response code ${response.statusCode}');
@@ -86,10 +66,6 @@ class RegisterController extends GetxController{
 
         final SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
         storage.saveAccessToken(_token!);
-
-
-        //final prefs = await SharedPreferences.getInstance();
-        //await prefs.setString('jwt_token', _token!);
 
         return{
           'success': true,
@@ -111,9 +87,11 @@ class RegisterController extends GetxController{
 
 
   Future<bool> dupidIDCheck(String userid) async {
+    Dio dio = Dio();
+
     try {
       final response = await dio.post(
-        'http://jeongwoo-kim-web.myds.me:3000/mapp/dupidcheck',
+        '${Apis.baseUrl}mapp/dupidcheck',
         options:
           Options(headers: {
               'Content-Type': 'application/json',
@@ -124,18 +102,6 @@ class RegisterController extends GetxController{
         }),
       );
 
-      /*
-      final response = await http.post(
-        Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/dupidcheck'),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'userid': userid,
-        }),
-      );
-       */
-     
       final data = json.decode(response.data);
       print('id responsecode: ${response.statusCode}');
 
@@ -168,9 +134,11 @@ class RegisterController extends GetxController{
   }
 
   Future<bool> dupidEmailCheck(String email) async {
+    Dio dio = Dio();
+
     try {
       final response = await dio.post(
-        'http://jeongwoo-kim-web.myds.me:3000/mapp/dupemailcheck',
+        '${Apis.baseUrl}mapp/dupemailcheck',
         options:
           Options(headers: {
             'Content-Type': 'application/json',
@@ -180,17 +148,7 @@ class RegisterController extends GetxController{
           'email': email,
         }),
       );
-      /*
-      final response = await http.post(
-        Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/dupemailcheck'),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'email': email,
-        }),
-      );
-       */
+
 
       print('email responsecode: ${response.statusCode}');
       final data = json.decode(response.data);

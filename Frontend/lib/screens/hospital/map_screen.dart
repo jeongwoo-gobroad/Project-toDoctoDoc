@@ -24,7 +24,7 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
   bool isLoading = true;
 
   late ScrollController _scrollController;
-  final MapController mapController = Get.put(MapController(dio: Dio()));
+  final MapController mapController = Get.put(MapController());
   UserinfoController userinfoController = Get.find<UserinfoController>();
   HospitalInformationController hospitalInformationController = HospitalInformationController();
   late KakaoMapController kakaoMapController; //카카오 맵 컨트롤러러

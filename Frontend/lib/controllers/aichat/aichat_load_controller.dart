@@ -1,21 +1,16 @@
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:to_doc/chat_object.dart';
 
 import 'package:dio/dio.dart';
-
 import '../../auth/auth_dio.dart';
 
 class AichatLoadController extends GetxController {
   var isLoading = false.obs;
   final List<ChatObject> messageList = [];
-  final Dio dio;
-
-  AichatLoadController({required this.dio});
 
   Future<bool> loadChat(String chatId) async {
+    Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
 
     isLoading.value = true;
@@ -24,7 +19,7 @@ class AichatLoadController extends GetxController {
     print(chatId);
 
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/aichat/get/$chatId',
+      '${Apis.baseUrl}mapp/aichat/get/$chatId',
       options: Options(
         headers: {
           'Content-Type':'application/json',

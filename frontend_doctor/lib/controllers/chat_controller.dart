@@ -8,24 +8,18 @@ import '../model/chat_dart_model.dart';
 
 class ChatController extends GetxController{
   final chatList = <ChatContent>[].obs;
-  final Dio dio;
-
   var isLoading = true.obs;
 
-  ChatController({required this.dio});
-
-  @override
-  void onInit() {
-    super.onInit();
-    dio.interceptors.add(CustomInterceptor());
-  }
 
   Future<void> getChatList() async {
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
+
     isLoading.value = true;
 
 
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/dm/doctor/list',
+      '${Apis.baseUrl}mapp/dm/doctor/list',
       options:
       Options(headers: {
         'Content-Type':'application/json',

@@ -7,29 +7,20 @@ import 'package:to_doc_for_doc/controllers/curate/curate_detail_model.dart';
 import 'content_model.dart';
 
 class CurateController extends GetxController {
-
-  final Dio dio;
-  CurateController({required this.dio});
-
-  @override
-  void onInit() {
-    super.onInit();
-    dio.interceptors.add(CustomInterceptor());
-  }
-
   Rx<CurateDetail?> curateDetail = Rx<CurateDetail?>(null);
-  var isLoading = true.obs;
+  var isLoading      = true.obs;
   var forHomeLoading = true.obs;
-  RxBool isPremium = false.obs;
+  RxBool isPremium   = false.obs;
+
   var CurateList = <Map<String, dynamic>>[].obs;
-  var chatList = <Map<String, dynamic>>[].obs;
-  var comments = <Map<String, dynamic>>[].obs;
-  //var posts  
-  var posts = <Map<String, dynamic>>[].obs;
+  var chatList   = <Map<String, dynamic>>[].obs;
+  var comments   = <Map<String, dynamic>>[].obs;
+  var posts      = <Map<String, dynamic>>[].obs;
+
   RxString filterStatus = RxString('all');
-  
-  var curateItems = <ContentItem>[].obs;
   RxString sortOrder = RxString('desc');
+
+  var curateItems = <ContentItem>[].obs;
 
   List<ContentItem> get sortedAndFilteredItems {
     final tempList = [...filteredItems];
@@ -55,9 +46,12 @@ class CurateController extends GetxController {
   Future<bool> getCurateInfo(String radius) async{
     forHomeLoading.value = true;
 
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
+
     try {
       final response = await dio.get(
-        'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/curate?radius=$radius',
+        '${Apis.baseUrl}mapp/doctor/curate?radius=$radius',
         options: Options(headers: {
           'Content-Type':'application/json',
           'accessToken':'true',
@@ -91,11 +85,12 @@ class CurateController extends GetxController {
   }
 
   Future<void> addComment(String id, String comment) async {
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
 
-    // try {
     //isLoading.value = true;
     final response = await dio.post(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/curate/comment/$id',
+      '${Apis.baseUrl}mapp/doctor/curate/comment/$id',
       options: Options(headers: {
         'Content-Type':'application/json',
         'accessToken':'true',
@@ -116,11 +111,12 @@ class CurateController extends GetxController {
     }
   }
   Future<void> commentModify(String comment_id, String detail_id, String updatedComment) async {
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
 
-    // try {
     //isLoading.value = true;
     final response = await dio.patch(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/curate/commentModify/$comment_id',
+      '${Apis.baseUrl}mapp/doctor/curate/commentModify/$comment_id',
       options: Options(headers: {
         'Content-Type':'application/json',
         'accessToken':'true',
@@ -133,7 +129,6 @@ class CurateController extends GetxController {
     if (response.statusCode == 200) {
       Get.snackbar('Success', '댓글이 수정되었습니다.');
       await getCurateDetails(detail_id);
-      
       refresh();
     }
     else if(response.statusCode == 401) {
@@ -144,10 +139,13 @@ class CurateController extends GetxController {
     }
   }
   Future<void> commentDelete(String comment_id, String detail_id) async {
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
+
     // try {
     //isLoading.value = true;
     final response = await dio.delete(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/curate/commentModify/$comment_id',
+      '${Apis.baseUrl}mapp/doctor/curate/commentModify/$comment_id',
       options: Options(headers: {
         'Content-Type':'application/json',
         'accessToken':'true',
@@ -172,11 +170,14 @@ class CurateController extends GetxController {
   }
 
   Future<void> getCurateDetails(String id) async {
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
+
     // try {
     //isLoading.value = true;
     isLoading(true);
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/curate/details/$id',
+      '${Apis.baseUrl}mapp/doctor/curate/details/$id',
       options: Options(headers: {
         'Content-Type':'application/json',
         'accessToken':'true',

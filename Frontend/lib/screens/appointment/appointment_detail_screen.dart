@@ -19,8 +19,6 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
   late KakaoMapController kakaoMapController; //카카오 맵 컨트롤러러
   Set<Marker> markers = {};
 
-
-  double _mapHeight = 0.5; //지도 비율율
   bool isradiusNotSelected = true;
   bool showMap = true;
   bool isDropdownOpen = false;
@@ -34,11 +32,9 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           SizedBox(
-            //width: MediaQuery.of(context).size.width * 1 / 20,
             child: thisIcon,
           ),
           Container(
-            //color: Colors.blue,
             width: MediaQuery.of(context).size.width * 3 / 4,
             child: Text(description),
           ),
@@ -87,14 +83,9 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
 
       body: SingleChildScrollView(
         child: Column(
-          //crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-
             Container(
               height: 350,
-              //child: KakaoMap(),
-
-
               child: KakaoMap(
                 onMapCreated: (controller) async {
                   kakaoMapController = controller;
@@ -112,7 +103,6 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
                 center: LatLng(widget.hospital['address']['latitude'], widget.hospital['address']['longitude']),
               ),
             ),
-
 
             if (widget.appointment['hasAppointmentDone'] && !widget.appointment['hasFeedbackDone']) ... [
               Container(
@@ -144,10 +134,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
             ],
             placeInform(context, Icon(Icons.home), widget.hospital['name']),
             placeInform(context, Icon(Icons.person), widget.doctorName),
-            placeInform(context, Icon(CupertinoIcons.clock), DateFormat.yMMMEd('ko_KR').add_jm().format(DateTime.parse(widget.appointment['appointmentTime']))
-    ),
-
-
+            placeInform(context, Icon(CupertinoIcons.clock), DateFormat.yMMMEd('ko_KR').add_jm().format(DateTime.parse(widget.appointment['appointmentTime']))),
             Container(
               child: Column(
                 //crossAxisAlignment: CrossAxisAlignment.center,
@@ -165,9 +152,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
             SizedBox(height: 5),
 
             Container(
-
               child: Column(
-                //crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text('예약 정보', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
 
@@ -181,12 +166,8 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
               ),
             ),
           ],
-
-
         ),
       ),
-
-
     );
   }
 }

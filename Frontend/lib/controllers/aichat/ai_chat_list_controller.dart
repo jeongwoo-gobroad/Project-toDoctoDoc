@@ -5,22 +5,21 @@ import 'dart:convert';
 import '../../auth/auth_dio.dart';
 
 
-
 class AiChatListController extends GetxController {
   var chatList = <Map<String, dynamic>>[].obs;
   var isLoading = false.obs;
   var isEmpty = true.obs;
-  final Dio dio;
 
-  AiChatListController({required this.dio,});
+  AiChatListController();
 
   Future<void> getChatList() async{
+    Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
 
     isLoading.value = true;
 
     final response = await dio.get(
-        'http://jeongwoo-kim-web.myds.me:3000/mapp/aichat/list',
+      '${Apis.baseUrl}mapp/aichat/list',
         options: Options(
           headers: {
             'Content-Type':'application/json',

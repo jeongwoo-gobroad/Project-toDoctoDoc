@@ -27,7 +27,7 @@ class HospitalInformationController extends GetxController{
     dio.interceptors.add(CustomInterceptor());
 
     final response = await dio.get(
-        'http://jeongwoo-kim-web.myds.me:3000/mapp/curate/info/$placeId',
+        '${Apis.baseUrl}mapp/curate/info/$placeId',
         options: Options(headers: {
           'Content-Type': 'application/json',
           'accessToken': 'true',
@@ -61,7 +61,7 @@ class HospitalInformationController extends GetxController{
     dio.interceptors.add(CustomInterceptor());
 
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/review/listing/$placeId',
+      '${Apis.baseUrl}mapp/review/listing/$placeId',
       options: Options(headers: {
         'Content-Type': 'application/json',
         'accessToken': 'true',

@@ -1,14 +1,13 @@
 import 'dart:convert';
 import 'package:get/get.dart';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:provider/provider.dart';
-import 'package:flutter/material.dart';
-
 import 'auth_secure.dart';
 import '../../screen/auth/login_screen.dart';
 
+class Apis {
+  static const baseUrl = 'https://project-todoctodoc-10934714252.asia-northeast3.run.app/';
+}
 
 class CustomInterceptor extends Interceptor {
   SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());

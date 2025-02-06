@@ -7,7 +7,7 @@ import 'package:to_doc/screens/result_edit.dart';
 class Airesult extends StatelessWidget {
 
   Airesult({super.key});
-  final QueryController queryController = Get.put(QueryController(dio: Dio()));
+  final QueryController queryController = Get.put(QueryController());
 
  @override
   Widget build(BuildContext context) {

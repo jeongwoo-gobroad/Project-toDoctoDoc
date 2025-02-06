@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/screens/aboutpage.dart';
@@ -10,9 +9,6 @@ import 'package:to_doc/screens/airesult.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
 
-import 'package:to_doc/screens/hospital/hospital_detail_view.dart';
-import 'package:to_doc/screens/hospital/hospital_rating_screen.dart';
-
 class Home extends StatefulWidget {
   @override
   State<Home> createState() => _HomeState();
@@ -23,11 +19,9 @@ class _HomeState extends State<Home> {
   final TextEditingController queryController = TextEditingController();
   final UserinfoController userController = Get.find<UserinfoController>();
  //추후 수정
-
   Color _green = Color.fromARGB(255, 225, 234, 205);
 
-
-  final QueryController query = Get.put(QueryController(dio: Dio()));
+  final QueryController query = Get.put(QueryController());
   String? id;
   String? usernick;
   String? email;
@@ -94,6 +88,22 @@ class _HomeState extends State<Home> {
   ];
 
   ChatController chatController = Get.put(ChatController());
+
+  Widget _buildQueryUsageDisplay() {
+    return Obx(() => Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Text(
+        '일일 제한 횟수: 현재 - ${query.userTotal.value} / 총 - ${query.query.value}',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 16,
+          color: query.userTotal.value >= query.query.value
+              ? Colors.red
+              : Colors.black,
+        ),
+      ),
+    ));
+  }
 
   @override
   Widget build(context) {
@@ -182,13 +192,9 @@ class _HomeState extends State<Home> {
                                   child: Text("\”", style: TextStyle(fontSize: 100, color:_green)),
                                   padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                                 ),
-                                
                               ],
                             ),
                           ),
-
-                          //TextButton(onPressed: () {Get.to(() => HospitalDetailView());}, child: Text('TESTBUTTON')),
-                          //TextButton(onPressed: () {Get.to(() => HospitalRatingScreen());}, child: Text('TESTBUTTON')),
                         ],
                       ),
                     ),
@@ -237,28 +243,10 @@ class _HomeState extends State<Home> {
                     ],
                   ),
                 ),
-
-
             ],
           ),
         );
-    
-    
   }
-  Widget _buildQueryUsageDisplay() {
-    return Obx(() => Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Text(
-        '일일 제한 횟수: 현재 - ${query.userTotal.value} / 총 - ${query.query.value}',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 16,
-          color: query.userTotal.value >= query.query.value 
-            ? Colors.red 
-            : Colors.black,
-        ),
-      ),
-    ));
-  }
+
 }
 

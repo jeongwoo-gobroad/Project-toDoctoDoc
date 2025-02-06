@@ -7,48 +7,30 @@ import '../auth/auth_dio.dart';
 
 
 class AboutpageProvider extends GetxController{
-
   var aboutData = RxString("");
   var isLoading = false.obs;
 
-  final Dio dio;
-
-  AboutpageProvider({required this.dio});
-
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
     fetchAboutPage();
-    //dio.interceptors.add(CustomInterceptor());
   }
 
   Future<void> fetchAboutPage() async {
+    Dio dio = Dio();
+
     isLoading.value = true;
 
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/about',
+      '${Apis.baseUrl}mapp/about',
       options: Options(headers: {
         'Content-Type': 'application/json',
         //token?
       },),
     );
 
-
-
-    /*
-    final response = await http.get(
-      Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/about'),
-      headers: {
-        'Content-Type': 'application/json',
-        //token?
-      },
-    );
-     */
-
     if(response.statusCode==200){
       final data = response.data;
-      //final data = json.decode(response.data);
       print(data);
       aboutData.value = data['content']['string'];
       print(aboutData);

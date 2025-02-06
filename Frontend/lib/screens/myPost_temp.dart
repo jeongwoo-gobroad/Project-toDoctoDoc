@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/controllers/myPost_controller.dart';
@@ -18,8 +17,8 @@ class MypostTemp extends StatefulWidget {
 }
 
 class _MypostTempState extends State<MypostTemp> {
-  final ViewController viewController = Get.put(ViewController(dio:Dio()));
-  final MypostController controller = Get.put(MypostController(dio: Dio()));
+  final ViewController viewController = Get.put(ViewController());
+  final MypostController controller = Get.put(MypostController());
   
   // _enterFeed() async{
   //   await viewController.getFeed(){
@@ -65,8 +64,6 @@ class _MypostTempState extends State<MypostTemp> {
           );
         }
         return NotificationListener<ScrollNotification>( //스크롤구현
-          
-          
             child: RefreshIndicator(
               onRefresh: _onRefresh,
               child: ListView.builder(
@@ -75,10 +72,8 @@ class _MypostTempState extends State<MypostTemp> {
                   final post = controller.posts[index];
                   return ListTile(
                     onTap: () async{
-              
                       await viewController.getFeed(controller.posts[index]['_id']);
                       Get.to(()=> Pageview());
-              
                     },
                     title: Text(post['title'] ?? '제목없음'), //post['title']
                     subtitle: Text('태그: ${post['tag']}' ?? ''),

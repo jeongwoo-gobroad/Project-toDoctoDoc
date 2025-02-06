@@ -7,7 +7,7 @@ import 'package:to_doc_for_doc/controllers/curate/curate_controller.dart';
 class TestScreen extends StatelessWidget {
   TestScreen({super.key});
 
-  CurateController curateController = Get.put(CurateController(dio: Dio()));
+  CurateController curateController = Get.put(CurateController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(

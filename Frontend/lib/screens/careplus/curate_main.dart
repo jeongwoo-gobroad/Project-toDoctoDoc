@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc/controllers/careplus/appointment_controller.dart';
@@ -23,7 +22,7 @@ class CurateMain extends StatefulWidget {
 
 class _CurateMainState extends State<CurateMain> {
   bool isLoading = true;
-  final CurateListController curateListController = Get.put(CurateListController(dio:Dio()));
+  final CurateListController curateListController = Get.put(CurateListController());
   final AppointmentController appointmentController = Get.put(AppointmentController());
   final ChatController chatController = Get.put(ChatController());
 
@@ -42,7 +41,6 @@ class _CurateMainState extends State<CurateMain> {
     String formattedDate = DateFormat('yyyy년 M월 d일 HH시 mm분').format(dateTime);
     return formattedDate;
   }
-
 
   @override
   void initState() {

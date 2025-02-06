@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:flutter/material.dart';
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
@@ -7,22 +6,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../auth/auth_dio.dart';
 
 class AiChatController extends GetxController{
-  final Dio dio;
-
   var chatId = '';
   var firstChat = '';
 
   var isLoading = false.obs;
 
-  AiChatController({required this.dio});
-
   Future<void> getNewChat() async{
+    Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
     isLoading.value = true;
 
-
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/aichat/new',
+      '${Apis.baseUrl}mapp/aichat/new',
       options : Options(
         headers: {
           'Content-Type':'application/json',
@@ -45,8 +40,6 @@ class AiChatController extends GetxController{
     isLoading.value = false;
   }
 
-
-
   bool _isSameDay(DateTime date1, DateTime date2) {
     return date1.year == date2.year &&
         date1.month == date2.month &&
@@ -68,13 +61,13 @@ class AiChatController extends GetxController{
   RxBool isLoadingLimit = false.obs;
 
   Future<void> chatLimit() async {
+    Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
+
     isLoadingLimit.value = true;
 
-    final prefs = await SharedPreferences.getInstance();
-
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/limits/chats',
+      '${Apis.baseUrl}mapp/limits/chats',
       options: Options(
         headers: {
           'Content-Type': 'application/json',

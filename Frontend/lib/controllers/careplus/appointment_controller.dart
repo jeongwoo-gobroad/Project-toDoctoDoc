@@ -23,7 +23,7 @@ class AppointmentController extends GetxController {
     dio.interceptors.add(CustomInterceptor());
 
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/careplus/appointment/list',
+      '${Apis.baseUrl}mapp/careplus/appointment/list',
       options: Options(headers: {
         'Content-Type': 'application/json',
         'accessToken': 'true',
@@ -91,7 +91,7 @@ class AppointmentController extends GetxController {
     dio.interceptors.add(CustomInterceptor());
 
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/careplus/appointment/getWithAppid/$appointmentId',
+      '${Apis.baseUrl}mapp/careplus/appointment/getWithAppid/$appointmentId',
       options: Options(headers: {
         'Content-Type': 'application/json',
         'accessToken': 'true',
@@ -126,7 +126,7 @@ class AppointmentController extends GetxController {
     dio.interceptors.add(CustomInterceptor());
 
     final response = await dio.post(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/careplus/appointment/review',
+      '${Apis.baseUrl}mapp/careplus/appointment/review',
       options: Options(headers: {
         'Content-Type': 'application/json',
         'accessToken': 'true',

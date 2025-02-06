@@ -22,8 +22,6 @@ class DoctorInfoController extends getter.GetxController {
   getter.RxDouble longitude = 0.0.obs;
   getter.RxDouble latitude = 0.0.obs;
 
-
-  
   //RxString address = "".obs;
   
   Future<void> getInfo() async {
@@ -33,7 +31,7 @@ class DoctorInfoController extends getter.GetxController {
     print('GETINFO----------------------------------------');
 
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/doctorInfo',
+      '${Apis.baseUrl}mapp/doctor/doctorInfo',
       options: Options(headers: {
         'Content-Type':'application/json',
         'accessToken':'true',
@@ -102,7 +100,7 @@ class DoctorInfoController extends getter.GetxController {
     }
 
     final response = await dio.patch(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/editUserInfo',
+      '${Apis.baseUrl}mapp/editUserInfo',
       options: Options(headers: {
         'Content-Type':'application/json',
         'accessToken':'true',
@@ -110,13 +108,13 @@ class DoctorInfoController extends getter.GetxController {
       data: json.encode(body)
     );
 
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.data}');
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.data}');
+
     if (response.statusCode == 200) {
       await getInfo();  // 새로운정보 가져오기
       return true;
-    } 
-    
+    }
     return false;
   }
 
@@ -135,7 +133,7 @@ class DoctorInfoController extends getter.GetxController {
       dio.options.maxRedirects.isFinite;
 
       final response = await dio.post(
-          'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/profile/upload',
+          '${Apis.baseUrl}mapp/doctor/profile/upload',
           options: Options(headers: {
             'Content-Type': 'multipart/form-data',
             'accessToken': 'true',
@@ -145,7 +143,6 @@ class DoctorInfoController extends getter.GetxController {
 
       if (response.statusCode == 200) {
         print('성공적으로 업로드했습니다');
-
         return true;
       }
       else {

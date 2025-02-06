@@ -14,7 +14,7 @@ class TagGraphController extends GetxController{
   final Dio dio;
   RxBool isLoading = false.obs;
   //var psychiatryList = <Map<String, dynamic>>[].obs;
-  
+
   var _tagList = <String, int>{}.obs;      
   var _tagGraph = <List<String>>[].obs;
   var tagPositions = <String, Offset>{}.obs;
@@ -29,7 +29,7 @@ class TagGraphController extends GetxController{
     dio.interceptors.add(CustomInterceptor());
 
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/graphBoard',
+      '${Apis.baseUrl}mapp/graphBoard',
       options: Options(
         headers: {
           'Content-Type':'application/json',

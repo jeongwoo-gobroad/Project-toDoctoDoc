@@ -7,7 +7,7 @@ import 'package:to_doc/provider/aboutpage_provider.dart';
 class Aboutpage extends StatelessWidget {
 
   Aboutpage({super.key});
-  final AboutpageProvider aboutprov = Get.put(AboutpageProvider(dio: Dio()));
+  final AboutpageProvider aboutProvider = Get.put(AboutpageProvider());
 
   @override
   Widget build(BuildContext context) {
@@ -18,13 +18,13 @@ class Aboutpage extends StatelessWidget {
 
       ),
       body: Obx((){
-        if(aboutprov.isLoading.value == true){
+        if(aboutProvider.isLoading.value == true){
           return Center(child: CircularProgressIndicator());
         }
         return Padding(
           padding: EdgeInsets.all(16),
           child: SingleChildScrollView(
-            child : Text(aboutprov.aboutData.value),
+            child : Text(aboutProvider.aboutData.value),
           ),
         );
 

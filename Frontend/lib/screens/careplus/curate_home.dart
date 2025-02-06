@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/controllers/careplus/curate_list_controller.dart';
@@ -9,13 +8,10 @@ import 'package:to_doc/screens/careplus/curate_feed.dart';
 @deprecated
 class CurationHomeScreen extends StatelessWidget {
 
-
-  CurateListController curateListController = Get.put(CurateListController(dio:Dio()));
+  CurateListController curateListController = Get.put(CurateListController());
   UserinfoController userinfoController = Get.find<UserinfoController>();
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       drawer: Obx(() => SideMenu(
           userinfoController.usernick.value,
@@ -29,8 +25,6 @@ class CurationHomeScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(),
               onPressed: (){Get.to(CurateFeed());},
               child: Text('목록'),
-              
-            
             ),
             SizedBox(height: 15),
             ElevatedButton(
@@ -59,7 +53,6 @@ class CurationHomeScreen extends StatelessWidget {
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).pop(); //팝업닫기
-                            
                           },
                           child: const Text(
                             "취소",

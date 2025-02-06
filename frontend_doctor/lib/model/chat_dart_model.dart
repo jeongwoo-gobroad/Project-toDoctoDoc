@@ -1,34 +1,3 @@
-// chat_response.dart
-/*class ChatResponse {
-  final bool? error;
-  final dynamic result;
-  final List<ChatContent> content;
-
-  ChatResponse({
-    this.error,
-    this.result,
-    required this.content,
-  });
-
-  factory ChatResponse.fromJson(String jsonString) {
-    final decodedJson = json.decode(jsonString);
-    return ChatResponse.fromMap(decodedJson);
-  }
-
-  factory ChatResponse.fromMap(Map<String, dynamic> map) {
-    return ChatResponse(
-      error: map['error'],
-      result: map['result'],
-      content: (map['content'] as List?)
-          ?.map((item) => ChatContent.fromMap(item as Map<String, dynamic>))
-          .toList() ?? [],
-    );
-  }
-}*/
-
-// chat_content.dart
-import 'dart:convert';
-
 class ChatContent {
   final String chatId;
   final String userName;

@@ -203,29 +203,25 @@ class _AppointmentRatingScreenState extends State<AppointmentRatingScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           TextButton(
-                              style: TextButton.styleFrom(
-                                  shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(Radius.zero))),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text('취소')
+                            style: TextButton.styleFrom(
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(Radius.zero))),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('취소')
                           ),
                           TextButton(
-                              style: TextButton.styleFrom(
-                                  shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(Radius.zero))),
-                              onPressed: () {
-                                setAppointmentAlert(context);
-                              },
-                              child: Text('결정'),
+                            style: TextButton.styleFrom(
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(Radius.zero))),
+                            onPressed: () {
+                              setAppointmentAlert(context);
+                            },
+                            child: Text('결정'),
                           ),
-
                         ],
                       ),
-
-
-
                     ],
                   ),
                 ),
@@ -234,6 +230,4 @@ class _AppointmentRatingScreenState extends State<AppointmentRatingScreen> {
         }
     );
   }
-
-
 }

@@ -26,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _autoLogin = true;
 
   //테스트용
-  RegisterController registerController = Get.put(RegisterController(dio: Dio()));
+  RegisterController registerController = Get.put(RegisterController());
 
   _submit(bool autologin) async{
     print('login test');

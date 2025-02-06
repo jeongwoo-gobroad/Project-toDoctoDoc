@@ -1,20 +1,19 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:to_doc_for_doc/controllers/curate/curate_controller.dart';
 import 'package:intl/intl.dart';
+
 class CurateDetailScreen extends StatefulWidget {
   @override
   State<CurateDetailScreen> createState() => _CurateDetailScreenState();
 }
 
 class _CurateDetailScreenState extends State<CurateDetailScreen> {
-  final controller = Get.put(CurateController(dio: Dio()));
+  final controller = Get.put(CurateController());
 
   //final String curateId;
   final TextEditingController commentController = TextEditingController();
-
   final TextEditingController editController = TextEditingController();
 
    @override

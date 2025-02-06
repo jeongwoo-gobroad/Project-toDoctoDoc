@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc_for_doc/controllers/appointment_controller.dart';
@@ -15,17 +14,14 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  CurateController curateController = Get.put(CurateController(dio: Dio()));
+  CurateController curateController = Get.put(CurateController());
   AppointmentController appointmentController = AppointmentController();
   ScrollController scrollController = ScrollController();
 
   String formatDate(String date) {
     try {
       DateTime dateTime = DateTime.parse(date).toUtc().add(Duration(hours: 9));
-
       return DateFormat.yMd('ko_KR').add_Hm().format(dateTime);
-
-      return DateFormat('yyyy년 M월 d일 HH시 mm분').format(dateTime);
     } catch (e) {
       return '날짜 정보 없음';
     }

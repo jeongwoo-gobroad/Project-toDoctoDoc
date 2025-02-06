@@ -1,50 +1,31 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:intl/intl.dart';
 import 'package:to_doc/controllers/userInfo_controller.dart';
 
 import '../../auth/auth_dio.dart';
 
 class CurateListController extends GetxController {
-  final Dio dio;
-
-  CurateListController({required this.dio});
-
   var isLoading = true.obs;
 
   RxBool isPremium = false.obs;
   var CurateList = <Map<String, dynamic>>[].obs;
-  var chatList = <Map<String, dynamic>>[].obs;
-  var comments = <Map<String, dynamic>>[].obs;
-  //var posts
-  var posts = <Map<String, dynamic>>[].obs;
-  UserinfoController userinfoController = Get.put(UserinfoController(dio: Dio()));
+  var chatList   = <Map<String, dynamic>>[].obs;
+  var comments   = <Map<String, dynamic>>[].obs;
+  var posts      = <Map<String, dynamic>>[].obs;
+
+  UserinfoController userinfoController = Get.put(UserinfoController());
 
   String deepCurate = 'null';
 
-  // if(userinfoController.isPremium == 'true'){
-  //   isPremium.value = true;
-  //   print('premium account');
-  // }
-  // else{
-  //   print('non-premium account');
-  // }
-
-  @override
-  void onInit() {
-    super.onInit();
-    dio.interceptors.add(CustomInterceptor());
-  }
-
   Future<void> getList() async {
     isLoading.value = true;
+
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
+
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/careplus/list',
+      '${Apis.baseUrl}mapp/careplus/list',
       options: Options(
         headers: {
           'Content-Type': 'application/json',
@@ -61,9 +42,6 @@ class CurateListController extends GetxController {
       print('------------ids');
 
       print(ids); // _id 값 리스트 출력
-      /*{error: false, result: careplus/list, content: [{_id: 677d595269eb1515eb40c500, comments: [], date: 2025-01-07T13:06:56.389Z}, {_id: 677d5b4169eb1515eb40c5a5, comments: [], date: 2025-01-07T13:06:56.389Z}, {_id: 677d5fa169eb1515eb40c6bb, comments: [], date: 2025-01-07T13:06:56.389Z}]}
-[677d595269eb1515eb40c500, 677d5b4169eb1515eb40c5a5, 677d5fa169eb1515eb40c6bb]
-[{_id: 677d595269eb1515eb40c500, comments: [], date: 2025-01-07T13:06:56.389Z}, {_id: 677d5b4169eb1515eb40c5a5, comments: [], date: 2025-01-07T13:06:56.389Z}, {_id: 677d5fa169eb1515eb40c6bb, comments: [], date: 2025-01-07T13:06:56.389Z}] */
 
       if (data['content'] is List) {
         List<dynamic> contentList = data['content'];
@@ -92,10 +70,14 @@ class CurateListController extends GetxController {
   }
 
   Future<void> getPost(String id) async {
-    // try {
     isLoading.value = true;
+
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
+
+    // try {
     final response = await dio.get(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/careplus/post/$id',
+      '${Apis.baseUrl}mapp/careplus/post/$id',
       options: Options(
         headers: {
           'Content-Type': 'application/json',
@@ -110,10 +92,8 @@ class CurateListController extends GetxController {
       //final posts = data['content']['posts'] as List;
       if (data['content'] == null) {
         isLoading.value = false;
-
         return;
       }
-
 
       deepCurate = 'AI 요약이 없습니다';
       if (data['content']['posts'] is List) {
@@ -147,21 +127,11 @@ class CurateListController extends GetxController {
   }
 
   Future<void> requestCurate() async {
-/*    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
-
-    if (token == null) {
-      Get.snackbar('Login', '로그인이 필요합니다.');
-      print('로그인이 필요합니다.');
-      return;
-    }*/
-/*    if (userinfoController.isPremium.value == false) {
-      Get.snackbar('Error', '프리미엄 계정이 아닙니다.');
-      return;
-    }*/
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
 
     final response = await dio.post(
-      'http://jeongwoo-kim-web.myds.me:3000/mapp/careplus/curate',
+      '${Apis.baseUrl}mapp/careplus/curate',
       options: Options(
         headers: {
           'Content-Type': 'application/json',
@@ -169,15 +139,7 @@ class CurateListController extends GetxController {
         },
       ),
     );
-/*
-    final response = await http.post(
-      Uri.parse('http://jeongwoo-kim-web.myds.me:3000/mapp/careplus/curate'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
-*/
+
 
     print('request curate 진입');
     print('curate response body: ${response.data}');

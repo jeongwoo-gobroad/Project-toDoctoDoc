@@ -30,10 +30,10 @@ class AiChatList extends StatefulWidget {
 
 class _AiChatListState extends State<AiChatList> {
   AiChatListController aiChatListController =
-      Get.put(AiChatListController(dio: Dio()));
+      Get.put(AiChatListController());
   AiChatDeleteController aiChatDeleteController =
-      Get.put(AiChatDeleteController(dio: Dio()));
-  AiChatController aiChatController = Get.put(AiChatController(dio: Dio()));
+      Get.put(AiChatDeleteController());
+  AiChatController aiChatController = Get.put(AiChatController());
 
   void asyncLoad() async {
     await aiChatListController.getChatList();
