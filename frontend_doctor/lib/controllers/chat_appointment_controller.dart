@@ -86,7 +86,7 @@ class ChatAppointmentController extends GetxController {
     return true;
   }
 
-  Future<bool> makeAppointment(DateTime selectedDay) async{
+  Future<bool> makeAppointment(DateTime selectedDay, int diffTime) async{
     //isLoading = true.obs;
 
     Dio dio = Dio();
@@ -109,6 +109,7 @@ class ChatAppointmentController extends GetxController {
           'cid' : chatId,
           'uid' : userId,
           'time': dayToUTC.toIso8601String(),
+          'length' : diffTime,
         }),
       );
 
@@ -192,7 +193,7 @@ class ChatAppointmentController extends GetxController {
     }
   }
 
-  Future<bool> editAppointment(DateTime selectedDay) async{
+  Future<bool> editAppointment(DateTime selectedDay, int diffTime) async{
     Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
 
@@ -213,6 +214,7 @@ class ChatAppointmentController extends GetxController {
         data : json.encode({
           'appid' : appointmentId,
           'time': dayToUTC.toIso8601String(),
+          'length' : diffTime,
         }),
       );
 

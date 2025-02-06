@@ -22,6 +22,7 @@ class AppointmentBottomSheet extends StatefulWidget {
 class _appointmentBottomSheet extends State<AppointmentBottomSheet> with WidgetsBindingObserver {
   DateTime selectedDay = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
+  TimeOfDay selectedEndTime = TimeOfDay.now();
 
   @override
   void initState() {
@@ -69,11 +70,15 @@ class _appointmentBottomSheet extends State<AppointmentBottomSheet> with Widgets
             TextButton(
               onPressed: () {
                 final finalTime = addDayTime(selectedDay, selectedTime);
+
+                int nowInMinutes = selectedTime.hour * 60 + selectedTime.minute;
+                int testDateInMinutes = selectedEndTime.hour * 60 + selectedEndTime.minute;
+
                 if ((!widget.chatAppointmentController.isAppointmentExisted.value) || widget.chatAppointmentController.isAppointmentDone.value) {
-                  widget.chatAppointmentController.makeAppointment(finalTime);
+                  widget.chatAppointmentController.makeAppointment(finalTime, testDateInMinutes - nowInMinutes);
                 }
                 else {
-                  widget.chatAppointmentController.editAppointment(finalTime);
+                  widget.chatAppointmentController.editAppointment(finalTime, testDateInMinutes - nowInMinutes);
                 }
 
                 widget.alterParent();
@@ -228,7 +233,7 @@ class _appointmentBottomSheet extends State<AppointmentBottomSheet> with Widgets
                         },
                         child: Row(
                           children: [
-                            Text('시간 선택', style: TextStyle(fontSize: 15),),
+                            Text('시작 시각 선택', style: TextStyle(fontSize: 15),),
                             SizedBox(width: 10,),
                             Icon(CupertinoIcons.right_chevron),
                             SizedBox(width: 20,),
@@ -237,7 +242,32 @@ class _appointmentBottomSheet extends State<AppointmentBottomSheet> with Widgets
                         ),
                       ),
 
-                      SizedBox(height:100),
+                      TextButton(
+                        onPressed: () async {
+                          final selectedTimeSub = await showTimePicker(
+                            context: context,
+                            initialTime: widget.chatAppointmentController.initialTime,
+                          );
+                          if (selectedTimeSub != null) {
+                            if (this.mounted) {
+                              setState(() {
+                                selectedEndTime = selectedTimeSub;
+                              });
+                            }
+                          }
+                        },
+                        child: Row(
+                          children: [
+                            Text('완료 시각 선택', style: TextStyle(fontSize: 15),),
+                            SizedBox(width: 10,),
+                            Icon(CupertinoIcons.right_chevron),
+                            SizedBox(width: 20,),
+                            Text('${selectedEndTime.hour.toString()} : ${selectedEndTime.minute.toString()}', style: TextStyle(fontSize: 15),),
+                          ],
+                        ),
+                      ),
+
+                      SizedBox(height:50),
 
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -263,6 +293,7 @@ class _appointmentBottomSheet extends State<AppointmentBottomSheet> with Widgets
 
                           TextButton(
                               onPressed: () {
+                                print('미완성');
                                 setAppointmentAlert(context);
                                 //Navigator.of(context).pop();
                               },

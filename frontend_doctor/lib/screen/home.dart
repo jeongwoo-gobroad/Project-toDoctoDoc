@@ -4,9 +4,7 @@ import 'package:get/get.dart';
 import 'package:to_doc_for_doc/controllers/appointment_controller.dart';
 import 'package:to_doc_for_doc/controllers/curate/curate_controller.dart';
 import 'package:to_doc_for_doc/screen/appointment/appointment_listview.dart';
-import 'package:to_doc_for_doc/screen/curate/curate_detail_screen.dart';
 import 'appointment/appointment_detail_screen.dart';
-import 'chat/dm_list.dart';
 import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
@@ -41,40 +39,32 @@ class _HomeState extends State<Home> {
     if (appointmentController.isLoading.value) {
       return Center(child: CircularProgressIndicator(),);
     }
-    return SizedBox(
-      height: MediaQuery.of(context).size.height - 300,
-      width: MediaQuery.of(context).size.width - 50,
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              controller: scrollController,
-              itemCount: appointmentController.appointmentList.length - appointmentController.nearAppointment,
-              itemBuilder: (context, index) {
-                return Container(
-                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  decoration: BoxDecoration(border: BorderDirectional(bottom: BorderSide(color: Colors.grey.shade100))),
-                  height: 55,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('${appointmentController.appointmentList[index + appointmentController.nearAppointment]['user']['usernick']}와의 약속', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
-                      Text(DateFormat.yMMMEd('ko_KR').add_jm().format(appointmentController.appointmentList[index + appointmentController.nearAppointment]['appointmentTime']),
-                        style: TextStyle(color: (appointmentController.appointmentList[index + appointmentController.nearAppointment]['appointmentTime'].day == DateTime.now().day)? Colors.red : null),),
-                    ],
-                  ),
-                );
-              },
-            )
-          )
-        ],
-      ),
+    return Expanded(
+      child: ListView.builder(
+        controller: scrollController,
+        itemCount: appointmentController.appointmentList.length - appointmentController.nearAppointment,
+        itemBuilder: (context, index) {
+          return Container(
+            padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+            decoration: BoxDecoration(border: BorderDirectional(bottom: BorderSide(color: Colors.grey.shade100))),
+            height: 55,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('${appointmentController.appointmentList[index + appointmentController.nearAppointment]['user']['usernick']}와의 약속', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
+                Text(DateFormat.yMMMEd('ko_KR').add_jm().format(appointmentController.appointmentList[index + appointmentController.nearAppointment]['appointmentTime']),
+                  style: TextStyle(color: (appointmentController.appointmentList[index + appointmentController.nearAppointment]['appointmentTime'].day == DateTime.now().day)? Colors.red : null),),
+              ],
+            ),
+          );
+        },
+      )
     );
   }
 
   asyncBefore() async {
     //await curateController.getCurateInfo('5');
-    await appointmentController.getAppointmentList();
+    await appointmentController.getSimpleInformation();
     setState(() {});
   }
 
@@ -153,105 +143,6 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
-           // SizedBox(width: 16),
-           /* Expanded(
-              flex: 1,
-              child: Column(
-                children: [
-                  //내 병원정보 부분분
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                        //border: Border.all(color: Colors.grey[300]!),
-                      ),
-                      child: Center(
-                        child: Text(
-                          '내 병원정보',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 16),
-
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                        //border: Border.all(color: Colors.grey[300]!),
-                      ),
-                      child: Center(
-                        child: Text(
-                          '나의 처방전',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 16),
-
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                        //border: Border.all(color: Colors.grey[300]!),
-                      ),
-                      child: SizedBox(
-                        height: 200,
-                        child: Obx(() => curateController.forHomeLoading.value ? Center(child: CircularProgressIndicator(),)
-                       : ListView.builder(
-                              itemCount: curateController
-                                  .sortedAndFilteredItems.length,
-                              itemBuilder: (context, index) {
-                                final item = curateController
-                                    .sortedAndFilteredItems[index];
-                                return InkWell(
-                                  onTap: () async {
-                                    await curateController
-                                        .getCurateDetails(item.id);
-                                    Get.to(() => CurateDetailScreen());
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 8),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          '${item.users.map((user) => user.userNick).join(", ")}님의 큐레이팅 요청',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        Text(
-                                          formatDate(item.date),
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey[600],
-                                          ),
-                                        ),
-                                        Divider(),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            )),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),*/
           ],
         ),
       ),

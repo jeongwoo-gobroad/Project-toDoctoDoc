@@ -79,6 +79,62 @@ class AppointmentController extends GetxController {
     }
   }
 
+  Future<bool> getSimpleInformation() async {
+    isLoading.value = true;
+
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
+
+    final response = await dio.get(
+      'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/appointment/simpleList',
+      options: Options(headers: {
+        'Content-Type': 'application/json',
+        'accessToken': 'true',
+      },),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.data);
+      appointmentList = data['content'];
+
+      print('APPOINTMENT LIST -------------');
+      print(appointmentList);
+
+      if (data['content'].isEmpty) {
+        isAfterTodayAppointmentExist.value = false;
+        isLoading.value = false;
+        return false;
+      }
+
+      appointmentList.sort((a, b) => a['appointmentTime'].compareTo(b['appointmentTime']));
+
+      nearAppointment = 0;
+      for (var appointment in appointmentList) {
+        appointment['appointmentTime'] = DateTime.parse(appointment['appointmentTime']).toLocal();
+
+        if (appointment['appointmentTime'].isBefore(DateTime.now())) {
+          nearAppointment++;
+        }
+      }
+
+      print(nearAppointment);
+
+      if (appointmentList.length == nearAppointment) {
+        isAfterTodayAppointmentExist.value = false;
+      }
+      else {
+        isAfterTodayAppointmentExist.value = true;
+      }
+
+
+      isLoading.value = false;
+      return true;
+    }
+    else{
+      print('코드: ${response.statusCode}');
+      return false;
+    }
+  }
 
   Future<bool> getAppointmentInformation(String appointmentId) async {
     print('APPOINTMENT ID ------ $appointmentId');

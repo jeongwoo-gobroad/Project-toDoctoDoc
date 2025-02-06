@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' as getter;
 import '../auth/auth_interceptor.dart';
 
-class HospitalInformationController extends GetxController {
+class HospitalInformationController extends getter.GetxController {
   var isLoading = true.obs;
 
   var name = '';
@@ -20,8 +20,8 @@ class HospitalInformationController extends GetxController {
   var phone = '';
   var stars;
   var psyProfileImage = [];
-  var breakTime = -1;
-  var openTime = -1;
+  var breakTime = '';
+  var openTime = '';
 
 
   Future<bool> getInfo() async{
@@ -54,8 +54,8 @@ class HospitalInformationController extends GetxController {
         phone = data['content']['phone'];
         stars = data['content']['stars'];
         psyProfileImage = data['content']['psyProfileImage'];
-        //breakTime = data['breakTime'];
-        //openTime = data['openTime'];
+        breakTime = data['breakTime'] ?? 'XX:XX/XX:XX';
+        openTime = data['openTime'] ?? 'XX:XX/XX:XX';
 
 
         isLoading.value = false;
@@ -111,5 +111,77 @@ class HospitalInformationController extends GetxController {
     }
   }
 
+  Future<bool> uploadImage(dynamic imageLink) async {
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
+
+    print('upload---------------------------------------');
+    print(imageLink);
+
+    var formData = FormData.fromMap({'files': await MultipartFile.fromFile(imageLink)});
+
+    print(formData);
+
+    try {
+      dio.options.maxRedirects.isFinite;
+
+      final response = await dio.post(
+          'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/psyProfile/upload/$pid',
+          options: Options(headers: {
+            'Content-Type': 'multipart/form-data',
+            'accessToken': 'true',
+          },),
+          data: formData
+      );
+
+      if (response.statusCode == 200) {
+        print('성공적으로 업로드했습니다');
+
+        return true;
+      }
+      else {
+        print('ERR');
+      }
+      return response.data;
+    } catch (e) {
+      print(e);
+    }
+    return false;
+  }
+
+  Future<bool> deleteImage(String imageName) async {
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
+
+    print('delete--------------------------------------');
+    print(imageName);
+
+
+    try {
+      final response = await dio.delete(
+          'http://jeongwoo-kim-web.myds.me:3000/mapp/doctor/psyProfile/delete/$imageName',
+          options: Options(headers: {
+            'Content-Type':'application/json',
+            'accessToken': 'true',
+          },),
+          data: json.encode({
+            'psyId' : pid,
+          }),
+      );
+
+      if (response.statusCode == 200) {
+        print('성공적으로 삭제했습니다');
+
+        return true;
+      }
+      else {
+        print('ERR');
+      }
+      return response.data;
+    } catch (e) {
+      print(e);
+    }
+    return false;
+  }
 
 }
