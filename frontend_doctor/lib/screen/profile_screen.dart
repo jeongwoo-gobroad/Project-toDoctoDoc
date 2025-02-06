@@ -43,6 +43,21 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+
+            TextButton(
+              onPressed: () {
+                Get.to(()=>ProfileSetScreen())?.whenComplete(() {
+                  reloadScreen();
+                });
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text('프로필 수정'),
+                  Icon(Icons.edit, size: 20,),
+                ],
+              ),
+            ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
@@ -72,23 +87,9 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Text(
-                            '의사 ${doctorInfoController.name}',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-                          ),
-
-                          TextButton(
-                            onPressed: () {
-                              Get.to(()=>ProfileSetScreen())?.whenComplete(() {
-                                reloadScreen();
-                              });
-                            },
-                            child: Icon(Icons.edit, size: 20,),
-                          ),
-
-                        ],
+                      Text(
+                        '의사 ${doctorInfoController.name}',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
                       ),
                       const SizedBox(height: 8),
                       Text('이메일: ${doctorInfoController.email}'),
@@ -99,55 +100,50 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
                 ],
               ),
             ),
+
             const SizedBox(height: 16),
+
+            TextButton(
+              onPressed: () {
+                Get.to(()=>HospitalDetailScreen())?.whenComplete(() {
+                  reloadScreen();
+                });
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text('병원 정보'),
+                  Icon(Icons.edit, size: 20,),
+                ],
+              ),
+            ),
+
             Container(
+              width: double.infinity,
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: Colors.grey.shade100,
               ),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.grey[300],
-                    child: const Icon(Icons.local_hospital, size: 40, color: Colors.grey),
-                  ),
-                  const SizedBox(width: 16),
-                  Obx(() {
-                    if (hospitalInformationController.isLoading.value) {
-                      return Center(child: CircularProgressIndicator(),);
-                    }
-                    return Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                hospitalInformationController.name,
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  Get.to(()=>HospitalDetailScreen())?.whenComplete(() {
-                                    reloadScreen();
-                                  });
-                                },
-                                child: Icon(Icons.edit, size: 20,),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Text('주소: (${hospitalInformationController.address['address']}) ${hospitalInformationController.address['detailAddress']}'),
-                          Text('상세주소: ${hospitalInformationController.address['extraAddress']}, ${hospitalInformationController.address['postcode']}'),
-                          Text('전화번호: ${hospitalInformationController.phone}'),
-                        ],
-                      ),
-                    );
-                  }),
-                ],
-              ),
+              child: Obx(() {
+                if (hospitalInformationController.isLoading.value) {
+                  return Center(child: CircularProgressIndicator(),);
+                }
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      hospitalInformationController.name,
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                    ),
+                    const SizedBox(height: 8),
+                    Text('주소: (${hospitalInformationController.address['address']}) ${hospitalInformationController.address['detailAddress']}'),
+                    Text('상세주소: ${hospitalInformationController.address['extraAddress']}, ${hospitalInformationController.address['postcode']}'),
+                    Text('전화번호: ${hospitalInformationController.phone}'),
+                  ],
+                );
+              }),
+
             ),
             const SizedBox(height: 24),
             //프리미엄 버튼
