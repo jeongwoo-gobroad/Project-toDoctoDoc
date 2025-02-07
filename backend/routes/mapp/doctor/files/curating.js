@@ -124,6 +124,7 @@ router.post(["/comment/:id"],
 
                 curate.comments.push(newComment._id);
                 curate.isNotRead = true;
+                curate.date = Date.now();
 
                 await Doctor.findByIdAndUpdate(user.userid, {
                     $push: {commentsWritten: newComment._id}

@@ -15,5 +15,7 @@ router.use('/limits', require("./mapp/user/checkLimits"));
 router.use('/', require("./auth/token_refresh"));
 router.use('/review', require("./mapp/user/review"));
 router.use('/dm', require("./mapp/dm/route"));
+router.use('/v2/user/', require('./mapp/user/route'));
+router.use('/v2/doctor', require("./mapp/doctor/files/v2/route"));
 
 module.exports = router;
