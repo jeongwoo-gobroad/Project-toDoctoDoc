@@ -4,7 +4,6 @@ const router = express.Router();
 const mainLayout = "../views/layouts/main";
 const mainLayout_LoggedIn = "../views/layouts/main_LoggedIn";
 const mainLayout_Admin = "../views/layouts/main_Admin_LoggedIn";
-const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 const UserSchema = require("../models/User");
 const AddressSchema = require("../models/Address");

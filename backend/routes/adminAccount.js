@@ -4,7 +4,6 @@ const router = express.Router();
 const mainLayout = "../views/layouts/main";
 const mainLayout_LoggedIn = "../views/layouts/main_LoggedIn";
 const mainLayout_Admin = "../views/layouts/main_Admin_LoggedIn";
-const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 const UserSchema = require("../models/User");
 const AddressSchema = require("../models/Address");
@@ -23,7 +22,7 @@ const Psychiatry = require("../models/Psychiatry");
 router.get(["/"], 
     loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isAdminThenProceed,
-    asyncHandler(async (req, res) => {
+    async (req, res) => {
         const accountInfo = {
             usernick: req.session.user.usernick,
         };
@@ -32,13 +31,13 @@ router.get(["/"],
         };
 
         res.render("admin/admin_home", {accountInfo, pageInfo, layout: mainLayout_Admin});
-    })
+    }
 );
 
 router.get(["/doctorVerification"], 
     loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isAdminThenProceed,
-    asyncHandler(async (req, res) => {
+    async (req, res) => {
         const doctorInfo = await Doctor.find();
 
         const accountInfo = {
@@ -49,13 +48,13 @@ router.get(["/doctorVerification"],
         };
 
         res.render("admin/admin_doctor_verify", {doctorInfo, accountInfo, pageInfo, layout: mainLayout_Admin});
-    })
+    }
 );
 
 router.patch(["/doctorVerification"], 
     loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isAdminThenProceed,
-    asyncHandler(async (req, res) => {
+    async (req, res) => {
         const {doctorID} = req.body;
 
         try {
@@ -71,23 +70,23 @@ router.patch(["/doctorVerification"],
         }
 
         res.redirect("/admin/doctorVerification");
-    })
+    }
 );
 
 router.get(["/login"], 
     //loginMiddleWare.isAdminThenProceed,
-    asyncHandler(async (req, res) => {
+    async (req, res) => {
         const pageInfo = {
             title: "Welcome to Mentally::Admin Login"
         };
 
         res.render("admin/admin_login", {pageInfo, layout: mainLayout});
-    })
+    }
 );
 
 router.post(["/login"], 
     loginMiddleWare.ifNotLoggedInThenProceed,
-    asyncHandler(async (req, res) => {
+    async (req, res) => {
         const {username, password} = req.body;
         
         try {
@@ -130,34 +129,34 @@ router.post(["/login"],
 
             return;
         }
-    })
+    }
 );
 
 router.get(["/register"], 
     loginMiddleWare.ifNotLoggedInThenProceed,
-    asyncHandler(async (req, res) => {
+    async (req, res) => {
         const pageInfo = {
             title: "Welcome to Mentally::Admin Register"
         };
     
         res.render("admin/admin_register", {pageInfo, layout: mainLayout});
-    })
+    }
 );
 
 router.get(["/register/pending"], 
     loginMiddleWare.ifNotLoggedInThenProceed,
-    asyncHandler(async (req, res) => {
+    async (req, res) => {
         const pageInfo = {
             title: "Welcome to Mentally::Admin Register Pending"
         };
     
         res.render("admin/admin_register_pending", {pageInfo, layout: mainLayout});
-    })
+    }
 );
 
 router.post(["/register"], 
     loginMiddleWare.ifNotLoggedInThenProceed,
-    asyncHandler(async (req, res) => {
+    async (req, res) => {
         const {
             id, password, password2, usernick, email
         } = req.body;
@@ -189,13 +188,13 @@ router.post(["/register"],
 
             return;
         }
-    })
+    }
 );
 
 router.get(["/posts"], 
     loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isAdminThenProceed,
-    asyncHandler(async (req, res) => {
+    async (req, res) => {
         const posts = await Post.find();
 
         const accountInfo = {
@@ -206,13 +205,13 @@ router.get(["/posts"],
         };
 
         res.render("admin/admin_posts_deletion", {posts, accountInfo, pageInfo, layout: mainLayout_Admin});
-    })
+    }
 );
 
 router.delete(["/posts"], 
     loginMiddleWare.ifLoggedInThenProceed,
     loginMiddleWare.isAdminThenProceed,
-    asyncHandler(async (req, res) => {
+    async (req, res) => {
         const {postID} = req.body;
 
         try {
@@ -232,7 +231,7 @@ router.delete(["/posts"],
         }
 
         res.redirect("/admin/posts");
-    })
+    }
 );
 
 router.get(["/psyList"], 

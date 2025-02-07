@@ -5,8 +5,6 @@ const expressLayouts = require("express-ejs-layouts");
 const cookieParser = require("cookie-parser");
 const methodOverride = require("method-override");
 const connectDB = require("./config/db");
-const expressErrorHandler = require('express-error-handler');
-const SocketIO = require("socket.io");
 const http = require("http");
 const { wrap } = require("module");
 const cors = require("cors");
@@ -19,6 +17,7 @@ const { bubbleCollection } = require("./serverSideWorks/bubbleCollection");
 
 /* for initial server static IP address getting */
 const request = require('request');
+const notFoundHandler = require("./routes/errorHandler/notFound");
 
 request.get({uri:'https://curlmyip.org/'}, (err, res, body) => {
     console.log("Server Working on IP:", body);
@@ -30,11 +29,6 @@ const server = http.createServer(app);
 const io = socket(server);
 
 const port = process.env.PORT || 3000;
-const errorHandler = expressErrorHandler({
-    static: {
-        '404': './public/html/404.html'
-    }
-}); 
 
 app.use(session({
     secret: process.env.SESS_SECRET,
@@ -84,24 +78,12 @@ dm_doctor.on('connect', require("./routes/mapp/doctor/files/dm_MQ"));
 app.use(cors());
 
 app.use("/", require("./routes/main"));
-app.use("/", require("./routes/graphBoard"));
-app.use("/", require("./routes/user"));
-app.use("/posts", require("./routes/post"));
-app.use("/geo", require("./routes/geo"));
-app.use("/doctor", require("./routes/doctorAccount"));
 app.use("/admin", require("./routes/adminAccount")); 
 app.use("/admin", require("./routes/admin_premiumify_psy"));
 app.use("/admin", require("./routes/admin_register_doctor_to_psy"));
-app.use("/chatbot", require("./routes/chatbot"));
-app.use("/helpNeeded", require("./routes/helpNeeded"));
-app.use("/helpNeeded_doc", require("./routes/helpNeeded_Doc"));
-app.use("/dm", require("./routes/dm_user"));
-app.use("/dm", require("./routes/dm"));
-app.use("/dm_doc", require("./routes/dm_doctor"));
 app.use('/mapp', require("./routes/mapp"));
 
-app.use(expressErrorHandler.httpError(404));
-app.use(errorHandler);
+app.use(notFoundHandler);
 
 server.listen(port, () => {
     console.log(`Server working on port ${port}`);
