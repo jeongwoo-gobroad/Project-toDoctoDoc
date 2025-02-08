@@ -82,6 +82,11 @@ const DoctorSchema = new mongoose.Schema({
         type: String,
         default: "",
     },
+    schedule: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Schedule',
+        default: false
+    }
 });
 
 module.exports = mongoose.model("Doctor", DoctorSchema);

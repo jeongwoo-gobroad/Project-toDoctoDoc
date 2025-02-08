@@ -82,6 +82,11 @@ const UserSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Psychiatry',
     }],
+    schedule: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Schedule',
+        default: false,
+    }
 });
 
 module.exports = UserSchema;

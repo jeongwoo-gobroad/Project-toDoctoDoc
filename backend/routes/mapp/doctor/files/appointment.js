@@ -145,7 +145,7 @@ router.post(["/set"],
     isDoctorThenProceed,
     async (req, res, next) => {
         const doctor = await getTokenInformation(req, res);
-        const {cid, uid, time, length} = req.body; // time 객체는 GMT 기준으로 1995-12-17T03:24:00 의 형태로 나타내야 함.
+        const {cid, uid, time, endTime} = req.body; // time 객체는 GMT 기준으로 1995-12-17T03:24:00 의 형태로 나타내야 함.
 
         // console.log("Appointment set: ", cid, uid, time);
 
@@ -154,7 +154,7 @@ router.post(["/set"],
                 user: uid,
                 doctor: doctor.userid,
                 appointmentTime: new Date(time),
-                appointmentLength: length,
+                appointmentEndAt: new Date(endTime),
                 chatId: cid,
                 psyId: (await Doctor.findById(doctor.userid)).myPsyID
             });
@@ -188,16 +188,16 @@ router.patch(["/set"],
     checkIfLoggedIn,
     isDoctorThenProceed,
     async (req, res, next) => {
-        const {appid, time, length} = req.body; // time 객체는 GMT 기준으로 1995-12-17T03:24:00 의 형태로 나타내야 함.
+        const {appid, time, endTime} = req.body; // time 객체는 GMT 기준으로 1995-12-17T03:24:00 의 형태로 나타내야 함.
 
         // console.log("Appointment fix: ", appid, time);
 
         try {
             const appointment = await Appointment.findByIdAndUpdate(appid, {
-                appointmentTime: time,
+                appointmentTime: new Date(time),
                 appointmentEditedAt: Date.now(),
                 isAppointmentApproved: false,
-                appointmentLength: length,
+                appointmentEndAt: new Date(endTime),
             });
 
             res.status(200).json(returnResponse(false, "editedAppointment", "-"));

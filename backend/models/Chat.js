@@ -48,6 +48,10 @@ const ChatSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    isPatientScheduleShareAgreed: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 module.exports = mongoose.model("Chat", ChatSchema);

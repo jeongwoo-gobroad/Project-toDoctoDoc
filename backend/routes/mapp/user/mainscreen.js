@@ -146,8 +146,6 @@ router.get(["/view/:id"],
                 setHashValueWithTTL("VIEW:" + req.userid, post._id, 1, 1);
 
                 // console.log("Set cache");
-            } else {
-                console.log("Already viewed");
             }
 
             const pageContent = {

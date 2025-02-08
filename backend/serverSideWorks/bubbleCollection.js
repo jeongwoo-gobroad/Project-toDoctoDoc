@@ -1,4 +1,4 @@
-const { setHashValue, setCache } = require("../middleware/redisCaching");
+const { setHashValue, setCache, setCacheForever } = require("../middleware/redisCaching");
 const Post = require("../models/Post")
 const removeSpacesAndHashes = require("../middleware/usefulFunctions").removeSpacesAndHashes;
 
@@ -45,8 +45,8 @@ const bubbleCollection = async () => {
             });
         });
 
-        setCache("GRAPHBOARD_MAX_VIEWCOUNT:", maxViewCountVal);
-        setCache("GRAPHBOARD_MAX_TAGCOUNT:", maxTagCountVal);
+        setCacheForever("GRAPHBOARD_MAX_VIEWCOUNT:", maxViewCountVal);
+        setCacheForever("GRAPHBOARD_MAX_TAGCOUNT:", maxTagCountVal);
 
         console.log("GraphBoard Initiailized");
     } catch (error) {
