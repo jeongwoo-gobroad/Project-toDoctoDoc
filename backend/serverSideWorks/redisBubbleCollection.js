@@ -1,4 +1,4 @@
-const { getHashAll, getCache, setHashValue, setCache } = require("../middleware/redisCaching");
+const { getHashAll, getCache, setHashValue, setCacheForever } = require("../middleware/redisCaching");
 const { removeSpacesAndHashes } = require("../middleware/usefulFunctions");
 
 const tagCountRefreshWorksViaRedis = async (newTags) => {
@@ -34,7 +34,7 @@ const tagCountRefreshWorksViaRedis = async (newTags) => {
         obj.tagCount /= maxTagCount;
         setHashValue("GRAPHBOARD:", tag, obj);
     }
-    setCache("GRAPHBOARD_MAX_TAGCOUNT:", maxTagCount);
+    setCacheForever("GRAPHBOARD_MAX_TAGCOUNT:", maxTagCount);
 
     // console.log(prev, "tagCountRefreshWorksViaRedis");
 
@@ -69,7 +69,7 @@ const viewCountRefreshWorksViaRedis = async (currentTags) => {
         obj.viewCount /= maxViewCount;
         setHashValue("GRAPHBOARD:", tag, obj);
     }
-    setCache("GRAPHBOARD_MAX_VIEWCOUNT:", maxViewCount);
+    setCacheForever("GRAPHBOARD_MAX_VIEWCOUNT:", maxViewCount);
 
     // console.log(prev, "viewCountRefreshWorksViaRedis");
 

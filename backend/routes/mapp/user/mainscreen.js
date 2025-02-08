@@ -13,7 +13,7 @@ const mongoose = require("mongoose");
 const returnLongLatOfAddress = require("../../../middleware/getcoordinate");
 const bcrypt = require("bcrypt");
 const userEmitter = require("../../../events/eventDrivenLists");
-const { getCache, setCacheForNDaysAsync, doesSetContains, setSetForNDays } = require("../../../middleware/redisCaching");
+const { getCache, setCacheForNDaysAsync, doesSetContains, setSetForNDays, doesHashContains, setHashValueWithTTL } = require("../../../middleware/redisCaching");
 const { tagCountRefreshWorksViaRedis, viewCountRefreshWorksViaRedis } = require("../../../serverSideWorks/redisBubbleCollection");
 
 const User = mongoose.model("User", UserSchema);
@@ -136,15 +136,18 @@ router.get(["/view/:id"],
             //     post.views++;
             //     await post.save();
             // }
-            if (!(await doesSetContains("VIEW:" + req.userid, post._id))) {
+            if (!(await doesHashContains("VIEW:" + req.userid, post._id))) {
                 viewCountRefreshWorksViaRedis(post.tag);
 
                 post.views++;
                 await post.save();
 
-                setSetForNDays("VIEW:" + req.userid, post._id, 1);
+                // setSetForNDays("VIEW:" + req.userid, post._id, 1);
+                setHashValueWithTTL("VIEW:" + req.userid, post._id, 1, 1);
 
                 // console.log("Set cache");
+            } else {
+                console.log("Already viewed");
             }
 
             const pageContent = {

@@ -42,6 +42,27 @@ const setHashValue = async (key, field, value) => {
     }
 };
 
+const setHashValueWithTTL = async (key, field, value, days) => {
+    try {
+        await redis.redisClient.hSet(key.toString(), field.toString(), JSON.stringify(value));
+        await redis.redisClient.hExpire(key.toString(), field.toString(), process.env.ONE_DAY_TO_SECONDS * parseInt(days));
+        await redis.redisClient.expire(key.toString(), process.env.ONE_DAY_TO_SECONDS * parseInt(days));
+    } catch (error) {
+        console.error(error, "errorAtSetHashValueWithTTL");
+
+        return null;
+    }
+};
+
+const doesHashContains = async (key, field) => {
+    try {
+        return (await redis.redisClient.hExists(key.toString(), field.toString()));
+    } catch (error) {
+        console.error(error, "errorAtDoesHashContains");
+        return null;
+    }
+}
+
 const getHashAll = async (key) => {
     try {
         const value = await redis.redisClient.hGetAll(key.toString());
@@ -70,13 +91,23 @@ const getCache = async (key) => {
     }
 };
 
-const setCache = (key, data) => {
+const setCache = async (key, data) => {
     try {
         // THIS DOES NOT WORK AT ALL!
         // redis.redisClient.set(key, JSON.stringify(data), "EX", process.env.ONE_WEEK_TO_SECONDS);
-        redis.redisClient.setEx(key.toString(), process.env.ONE_WEEK_TO_SECONDS, JSON.stringify(data));
+        await redis.redisClient.setEx(key.toString(), process.env.ONE_WEEK_TO_SECONDS, JSON.stringify(data));
     } catch (error) {
         console.error(error);
+        return null;
+    }
+};
+
+const setCacheForever = async (key, data) => {
+    try {
+        await redis.redisClient.set(key.toString(), JSON.stringify(data));
+    } catch (error) {
+        console.error(error, "errorAtSetCacheForever");
+
         return null;
     }
 };
@@ -101,16 +132,16 @@ const setCacheForNDaysAsync = async (key, data, days) => {
     }
 };
 
-const delCache = (key) => {
+const delCache = async (key) => {
     try {
-        redis.redisClient.del(key.toString());
+        await redis.redisClient.del(key.toString());
     } catch (error) {
         return null;
     }
 };
 
 module.exports = {
-    getHashAll, getHashValue, setHashValue, getCache, setCache,
+    getHashAll, getHashValue, setHashValue, getCache, setCache, setCacheForever,
     setCacheForThreeDaysAsync, setCacheForNDaysAsync, delCache,
-    setSetForNDays, doesSetContains
+    setSetForNDays, doesSetContains, setHashValueWithTTL, doesHashContains,
 };

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-require("dotenv").config({path: "../secrets/dotenv"});
+require("dotenv").config({path: "../secrets/dotenv/.env"});
 
 const connectDB = async () => {
     try {
