@@ -29,6 +29,10 @@ class _HomeState extends State<Home> {
   int randIndex2 = 0;
   int randIndex3 = 0;
   bool isLoading = true;
+   final FocusNode _focusNode = FocusNode();
+  
+  bool _isKeyboardVisible = false;
+
   Future<void> _getUserInfo() async{
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -41,6 +45,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     final random = Random();
+    
     randIndex = random.nextInt(welcomeMessages.length);
     randIndex2 = random.nextInt(mindfulnessQuotes.length);
     randIndex3 = random.nextInt(queryQuotes.length);
@@ -49,6 +54,19 @@ class _HomeState extends State<Home> {
     _getUserInfo();
     query.queryLimit();
     //query.chatLimit();
+    
+       _focusNode.addListener(() {
+      setState(() {
+        _isKeyboardVisible = _focusNode.hasFocus;
+      });
+    });
+  
+  }
+    @override
+  void dispose() {
+    _focusNode.dispose();
+    queryController.dispose();
+    super.dispose();
   }
 
   // 환영 문구 리스트
@@ -108,105 +126,113 @@ class _HomeState extends State<Home> {
   @override
   Widget build(context) {
     bool isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
-    return Scaffold(
-      //floating 아이콘 
-/*
-        floatingActionButton: FloatingActionButton(
-          onPressed: (){
-            //chatController.getChatList();
-            //chatController.getChatContent('67800d68d77a92c816209bf6');
-            Get.to(()=>DMList());
-          },
-          child: const Icon(Icons.chat_bubble_outline_rounded),
-        ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-*/
-
-      //appBar
-      drawer: Obx(() => SideMenu(
-          userController.usernick.value,
-          userController.email.value
-        )),
-       appBar: AppBar(
-          centerTitle: true,
-          title: InkWell(
-            onTap: () {
-              Get.to(() => Aboutpage());
+    return GestureDetector(
+      onTap: (){
+        FocusScope.of(context).unfocus();
+        setState(() {
+          _isKeyboardVisible = false;
+        });
+      },
+      child: Scaffold(
+        //floating 아이콘 
+      /*
+          floatingActionButton: FloatingActionButton(
+            onPressed: (){
+              //chatController.getChatList();
+              //chatController.getChatContent('67800d68d77a92c816209bf6');
+              Get.to(()=>DMList());
             },
-            child: Text('토닥toDoc',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+            child: const Icon(Icons.chat_bubble_outline_rounded),
           ),
-        ),
-      body: isLoading ?  Center(child: CircularProgressIndicator())  //아직 갱신안됐으면 로딩창띄움움
-        : 
-          Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Obx(()=>
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                  
-                          SizedBox(height: 50),
-                  
-                          Icon(Icons.circle_outlined, size: 100,),
-                  
-                          SizedBox(height: 50),
-                  
-                          Text(
-                            '${welcomeMessages[randIndex]} ${userController.usernick.value ?? '로그인이 필요합니다.'}님',
-                            textAlign: TextAlign.center,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 35,
-                              fontWeight: FontWeight.bold,
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      */
+      
+        //appBar
+        drawer: Obx(() => SideMenu(
+            userController.usernick.value,
+            userController.email.value
+          )),
+         appBar: AppBar(
+            centerTitle: true,
+            title: InkWell(
+              onTap: () {
+                Get.to(() => Aboutpage());
+              },
+              child: Text('토닥toDoc',
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+            ),
+          ),
+        body: isLoading ?  Center(child: CircularProgressIndicator())  //아직 갱신안됐으면 로딩창띄움움
+          : 
+            Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Obx(()=>
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                    
+                            SizedBox(height: 50),
+                    
+                            Icon(Icons.circle_outlined, size: 100,),
+                    
+                            SizedBox(height: 50),
+                    
+                            Text(
+                              '${welcomeMessages[randIndex]} ${userController.usernick.value ?? '로그인이 필요합니다.'}님',
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 35,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          if (!isKeyboardVisible) _buildQueryUsageDisplay(),
-                          SizedBox(height: 20),
-                  
-                          Container(
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                                  child: Text("\“", style: TextStyle(fontSize: 100, color:_green)),
-                                ),
-                                Container(
-                                  width: MediaQuery.of(context).size.width - 150,
-                                  child: Text(
-                                    '${mindfulnessQuotes[randIndex2]}',
-                                    textAlign: TextAlign.center,
-                                    overflow: TextOverflow.clip,
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
+                            //if (isKeyboardVisible) _buildQueryUsageDisplay(),
+                            SizedBox(height: 20),
+                    
+                            Container(
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                    child: Text("\“", style: TextStyle(fontSize: 100, color:_green)),
+                                  ),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width - 150,
+                                    child: Text(
+                                      '${mindfulnessQuotes[randIndex2]}',
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.clip,
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                Container(
-                                  child: Text("\”", style: TextStyle(fontSize: 100, color:_green)),
-                                  padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                                ),
-                              ],
+                                  Container(
+                                    child: Text("\”", style: TextStyle(fontSize: 100, color:_green)),
+                                    padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-
-              Padding(
+      
+                Padding(
                   padding: EdgeInsets.all(16),
                   child: Column(
                     children: [
-                      if (isKeyboardVisible) 
+      
+                      if (_isKeyboardVisible) 
                         Padding(
                           padding: const EdgeInsets.only(bottom: 8.0),
                           child: _buildQueryUsageDisplay(),
@@ -217,6 +243,7 @@ class _HomeState extends State<Home> {
                           borderRadius: BorderRadius.circular(40),
                         ),
                         child: TextField(
+                          focusNode: _focusNode,
                           controller: queryController,
                           decoration: InputDecoration(
                             border: InputBorder.none,
@@ -243,10 +270,10 @@ class _HomeState extends State<Home> {
                     ],
                   ),
                 ),
-            ],
+              ],
+            ),
           ),
-        );
+    );
   }
 
 }
-

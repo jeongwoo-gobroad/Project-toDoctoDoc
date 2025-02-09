@@ -1,28 +1,28 @@
 class ChatContent {
-  final String chatId;
-  final String userName;
   final String userId;
+  final String userName;
   final DateTime date;
-  final int unreadChat;
-  final recentChat;
+  final String cid;
+  final bool isBanned;
+  final Map<String, dynamic> recentChat;
 
   ChatContent({
-    required this.chatId,
-    required this.unreadChat,
     required this.userId,
     required this.userName,
     required this.date,
-    required this.recentChat
+    required this.cid,
+    required this.isBanned,
+    required this.recentChat,
   });
 
-  factory ChatContent.fromMap(Map<String, dynamic> map) {
+  factory ChatContent.fromMap(map, temp) {
     return ChatContent(
-      chatId: map['cid'].toString(),
-      userName: map['userName'],
-      userId: map['userId'],
+      userId: map['userId'].toString(),
+      userName: map['userName'].toString(),
       date: DateTime.parse(map['date'] as String),
-      unreadChat: (map['unreadChat'] == -1) ? 0 : map['unreadChat'],
-      recentChat: map['recentChat'],
+      cid: map['cid'].toString(),
+      isBanned: map['isBanned'] ?? false,
+      recentChat: temp,
     );
   }
 }

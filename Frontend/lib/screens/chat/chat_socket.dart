@@ -16,12 +16,12 @@ class ChatService {
   //     print('로그인이 필요합니다.');
   //   }
   // 소켓 연결 초기화
-  void connect(String token) {
+  void connect(String token, String roomId) {
     _socket = IO.io(
-      'http://jeongwoo-kim-web.myds.me:3000/dm',
+      'http://jeongwoo-kim-web.myds.me:3000/dm_user',
       IO.OptionBuilder()
           .setTransports(['websocket'])
-          .setQuery({'token': token}) 
+          .setQuery({'token': token, 'roomId': roomId}) 
           .setPath('/msg')
           .enableForceNew() 
           .enableAutoConnect() 

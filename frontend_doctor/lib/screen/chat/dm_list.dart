@@ -14,25 +14,35 @@ class DMList extends StatefulWidget {
 
 class _DMListState extends State<DMList> {
   final ChatController controller = Get.put(ChatController());
-
+  
   void goToChatScreen(chat) async {
     //linkTest();
+    controller.enterChat(chat.cid, chat.recentChat['autoIncrementId']);
     Get.to(()=> ChatScreen(
-      chatId: chat.chatId,
-      unreadChat: chat.unreadChat,
+      chatId: chat.cid,
+      unreadChat: 0,
       userName: '',//chat.userName,
       userId: chat.userId,
     ))?.whenComplete(() {
+      if(this.mounted){
         setState(() {
+          
           controller.getChatList();
+          
         });
-      });
+      }
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    controller.getChatList();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        setState(() {
+          controller.getChatList();
+        });
+
+    });
   }
 
 

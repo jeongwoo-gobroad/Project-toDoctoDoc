@@ -267,7 +267,7 @@ class _CurationScreenState extends State<CurationScreen> with SingleTickerProvid
                 onPressed: () {
                   print('doctor ID : ${comment['doctor']['_id']}');
                   print('user ID : ${userinfoController.id}');
-                  reQuestChat(userinfoController.uid.toString(), comment['doctor']['_id']);
+                  reQuestChat(comment['doctor']['_id']);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.purple[600],
@@ -290,8 +290,8 @@ class _CurationScreenState extends State<CurationScreen> with SingleTickerProvid
     );
   }
 
-  void reQuestChat(String userId, String doctorId) async {
-    await chatController.requestChat(userId, doctorId);
+  void reQuestChat(String doctorId) async {
+    await chatController.requestChat(doctorId);
     Get.to(()=> DMList(controller: chatController,));
   }
 

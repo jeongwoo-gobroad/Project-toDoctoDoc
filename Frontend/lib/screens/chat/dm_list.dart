@@ -18,9 +18,10 @@ class DMList extends StatefulWidget {
 class _DMListState extends State<DMList> {
 
   void goToChatScreen(chat) async {
-    print(chat.chatId);
+    
+    widget.controller.enterChat(chat.cid, chat.recentChat['autoIncrementId']);
 
-    Get.to(()=> ChatScreen(doctorId: chat.doctorId, chatId: chat.chatId, unreadMsg: chat.unreadChat, doctorName: chat.doctorName,))?.whenComplete(() {
+    Get.to(()=> ChatScreen(doctorId: chat.doctorId, chatId: chat.cid, unreadMsg: 2, doctorName: chat.doctorName,))?.whenComplete(() {
       if (this.mounted) {
         setState(() {
           widget.controller.getChatList();
@@ -67,6 +68,7 @@ class _DMListState extends State<DMList> {
             final formattedDate = DateFormat('MM/dd HH:mm').format(chat.date.toLocal());
             return InkWell(
               onTap: () {
+                
                 goToChatScreen(chat);
               },
               child: Container(

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -60,7 +61,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
     print(token);
     socketService = ChatSocketService(token!, widget.chatId);
-
+    //print('chat screen');
     var chatData = await chatDb.loadChat(widget.chatId);
 
     if (chatData != null) {
@@ -90,15 +91,19 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         updateUnread = 0;
         print('user chat received');
         print('data1');
+        Map<String, dynamic> chatData;
+        print('continue');
         print(data);
-
-        var tempTime = data['createdAt'];
+        chatData = json.decode(data);
+        print(chatData['message']);
+        var tempTime = chatData['createdAt'];
+        
         DateTime time = DateTime.fromMillisecondsSinceEpoch(tempTime);
 
         if (this.mounted) {
           setState(() {
-            _messageList.add(ChatObject(content: data['message'], role: 'doctor', createdAt: time.toLocal()));
-            chatDb.saveChat(widget.chatId, widget.doctorId, data['message'], time, 'doctor');
+            _messageList.add(ChatObject(content: chatData['message'], role: 'doctor', createdAt: time.toLocal()));
+            chatDb.saveChat(widget.chatId, widget.doctorId, chatData['message'], time, 'doctor');
 
             animateToBottom();
           });

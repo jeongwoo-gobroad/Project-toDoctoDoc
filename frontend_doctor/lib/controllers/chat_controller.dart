@@ -27,19 +27,55 @@ class ChatController extends GetxController{
       },),
     );
 
-    print(response);
+    
 
     if(response.statusCode == 200){
       final data = json.decode(response.data);
       print(data);
 
-      var temp = (data['content'] as List?)?.map((item) => ChatContent.fromMap(item as Map<String, dynamic>)).toList() ?? [];
-      print(temp);
-      chatList.assignAll(temp);
+      for (var chat in data['content']) {
+        Map<String, dynamic> temp = {
+          'role' : chat['recentChat']['role'].toString(),
+          'message' : chat['recentChat']['message'].toString(),
+          'createdAt' : chat['recentChat']['createdAt'],
+          'autoIncrementId' : chat['recentChat']['autoIncrementId'],
+        };
+        chatList.add(ChatContent.fromMap(chat, temp));
+      }
+      print(chatList);
     }
     else{
       print('코드: ${response.statusCode}');
     }
     isLoading.value = false;
+  }
+  Future<void> enterChat(String cid, int value) async {
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
+    String strvalue = value.toString();
+    
+    final response = await dio.get(
+      '${Apis.dmUrl}mapp/dm/joinChat/$cid?readedUntil=$strvalue',
+      options:
+        Options(headers: {
+          'Content-Type':'application/json',
+          'accessToken': 'true',
+        },
+      ),
+    );
+
+    if(response.statusCode == 200){
+      final data = json.decode(response.data);
+
+      
+      print(data);
+
+      
+      
+    }
+    else{
+      print('코드: ${response.statusCode}');
+    }
+    
   }
 }

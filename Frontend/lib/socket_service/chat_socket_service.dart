@@ -59,7 +59,7 @@ class ChatSocketService {
     socket.emit('SendChat', message);
   }
   void onUserReceived(Function callback) {
-    socket.on('chatReceived', (data) =>callback(data));
+    socket.on('chatReceivedFromServer', (data) =>callback(data));
   }
 
   void onDisconnect() {

@@ -40,7 +40,7 @@ class ChatSocketService {
   }
 
   void onDoctorReceived(Function callback) {
-    socket?.on('chatReceived', (data) =>callback(data));
+    socket?.on('chatReceivedFromServer', (data) =>callback(data));
     print('의사 메시지 수신:');
   }
 

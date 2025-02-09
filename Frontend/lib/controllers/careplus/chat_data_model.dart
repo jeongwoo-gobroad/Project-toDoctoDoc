@@ -1,27 +1,27 @@
 class ChatContent {
-  final String chatId;
-  final String doctorName;
   final String doctorId;
+  final String doctorName;
   final DateTime date;
-  final int unreadChat;
+  final String cid;
+  final bool isBanned;
   final Map<String, dynamic> recentChat;
 
   ChatContent({
-    required this.chatId,
-    required this.unreadChat,
     required this.doctorId,
     required this.doctorName,
     required this.date,
-    required this.recentChat
+    required this.cid,
+    required this.isBanned,
+    required this.recentChat,
   });
 
   factory ChatContent.fromMap(map, temp) {
     return ChatContent(
-      chatId: map['cid'].toString(),
-      doctorName: map['doctorName'],
-      doctorId: map['doctorId'],
+      doctorId: map['doctorId'].toString(),
+      doctorName: map['doctorName'].toString(),
       date: DateTime.parse(map['date'] as String),
-      unreadChat: (map['unreadChat'] == -1) ? 0 : map['unreadChat'],
+      cid: map['cid'].toString(),
+      isBanned: map['isBanned'] ?? false,
       recentChat: temp,
     );
   }

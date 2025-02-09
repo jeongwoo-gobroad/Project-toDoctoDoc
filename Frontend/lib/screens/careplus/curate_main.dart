@@ -278,7 +278,7 @@ class _CurateMainState extends State<CurateMain> {
                                         ),
                                       ),
                                     ),
-                                    Text(chat.unreadChat.toString()),
+                                    //Text(chat.unreadChat.toString()),
                                   ],
                                 ),
                                 subtitle: Text(

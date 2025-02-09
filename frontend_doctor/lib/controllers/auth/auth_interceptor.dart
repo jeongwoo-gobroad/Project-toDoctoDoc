@@ -8,6 +8,7 @@ import '../../screen/auth/login_screen.dart';
 class Apis {
   // static const baseUrl = 'https://project-todoctodoc-10934714252.asia-northeast3.run.app/';
   static const baseUrl = 'http://jeongwoo-kim-web.myds.me:3000/'; // for developer's debug
+  static const dmUrl =  'http://jeongwoo-kim-web.myds.me:5000/';
 }
 
 class CustomInterceptor extends Interceptor {

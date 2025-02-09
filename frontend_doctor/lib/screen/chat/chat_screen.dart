@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -124,7 +125,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         _messageList.add(ChatObject(content: chat['message'], role: chat['role'], createdAt: DateTime.parse(chat['timestamp']).toLocal()));
       }
     }
-
+    if(this.mounted){
     setState(() {
       Future.delayed(Duration(milliseconds: 100), () {
         _scrollController.animateTo(
@@ -134,6 +135,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         );
       });
     });
+    }
 
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -141,14 +143,15 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         print('user chat received');
         print('data1');
         print(data);
-
-        var tempTime = data['createdAt'];
+        Map<String, dynamic> chatData;
+        chatData = json.decode(data);
+        var tempTime = chatData['createdAt'];
         DateTime time = DateTime.fromMillisecondsSinceEpoch(tempTime);
 
         if (this.mounted) {
           setState(() {
-            _messageList.add(ChatObject(content: data['message'], role: 'user', createdAt: time.toLocal()));
-            chatDb.saveChat(widget.chatId, widget.userId, data['message'], time, 'user');
+            _messageList.add(ChatObject(content: chatData['message'], role: 'user', createdAt: time.toLocal()));
+            chatDb.saveChat(widget.chatId, widget.userId, chatData['message'], time, 'user');
 
             Future.delayed(Duration(milliseconds: 100), () {
               _scrollController.animateTo(

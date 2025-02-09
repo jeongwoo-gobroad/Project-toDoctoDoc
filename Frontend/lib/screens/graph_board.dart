@@ -55,8 +55,8 @@ class _GraphBoardState extends State<GraphBoard>
   bool isTrashHighlighted = false;
 
 
-  final double screenExitMargin = 100.0; 
-  final double throwVelocityThreshold = 800.0;
+  final double screenExitMargin = 300.0; 
+  final double throwVelocityThreshold = 400.0;
 
   @override
   void initState() {
@@ -157,7 +157,7 @@ class _GraphBoardState extends State<GraphBoard>
     final bool isOverTop = bubble.position.dy + bubble.radius < -screenExitMargin;
     final bool isThrownHard = bubble.velocity.dy < -throwVelocityThreshold;
     
-    if (isOverTop && isThrownHard) {
+      if (isOverTop && isSystemStable) {
       setState(() {
         bubbles.removeAt(i);
         print('bubble removed');
@@ -185,6 +185,7 @@ class _GraphBoardState extends State<GraphBoard>
 
       setState(() {});
     }
+    
   }
 
   bool _checkSystemStability() {
