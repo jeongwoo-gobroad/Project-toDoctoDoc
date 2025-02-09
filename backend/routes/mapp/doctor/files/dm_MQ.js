@@ -51,7 +51,7 @@ const chatting_doctor = async (socket, next) => {
             sendDMPushNotification(chat.user.deviceIds, {title: chat.doctor.name + ": 읽지 않은 DM", body: chatObject});
 
             return;
-        });
+        }); 
 
         socket.on("disconnect", async (reason) => {
             console.log("Doctor socket disconnected");
