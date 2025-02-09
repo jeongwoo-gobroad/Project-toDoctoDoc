@@ -8,7 +8,8 @@ import '../screens/intro.dart';
 import 'auth_secure.dart';
 
 class Apis {
-  static const baseUrl = 'https://project-todoctodoc-10934714252.asia-northeast3.run.app/';
+  // static const baseUrl = 'https://project-todoctodoc-10934714252.asia-northeast3.run.app/';
+  static const baseUrl = 'http://jeongwoo-kim-web.myds.me:3000/'; // for developer's debug
 }
 
 class CustomInterceptor extends Interceptor {

@@ -8,6 +8,8 @@
 /backend/_secrets/
 /auxliary/
 /upload-keystore.jks
+/backend_chat/_secrets/
+/backend_chat/node_modules/
 /frontend/android/app/key.jks
 /frontend/android/app/key.properties
 /Frontend/android/app/key.jks
