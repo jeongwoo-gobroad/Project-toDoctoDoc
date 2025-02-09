@@ -1,8 +1,9 @@
 const jwt = require("jsonwebtoken");
-const { Worker } = require('worker_threads');
 const Chat = require("../../../models/Chat");
+const request = require('request');
 const sendDMPushNotification = require("../push/dmPush");
 const { setCacheForNDaysAsync } = require("../../../middleware/redisCaching");
+const { redisClient } = require("../../../config/redis");
 
 const chatting_user = async (socket, next) => {
     const token = socket.handshake.query.token;
@@ -28,77 +29,17 @@ const chatting_user = async (socket, next) => {
             return;
         }
 
-        // const messageQueue = new Queue(roomNo + "_USER", {
-        //     connection: {
-        //         host: process.env.RS_HOST,
-        //         port: process.env.RS_PORT,
-        //         username: process.env.RS_USERNAME,
-        //         password: process.env.RS_NONESCAPE_PASSWORD,
-        //     },
-        //     defaultJobOptions: {
-        //         removeOnComplete: true,
-        //         removeOnFail: true,
-        //     }
-        // });
-
-        // const doctorMessageQueue = new Queue(roomNo + "_DOCTOR", {
-        //     connection: {
-        //         host: process.env.RS_HOST,
-        //         port: process.env.RS_PORT,
-        //         username: process.env.RS_USERNAME,
-        //         password: process.env.RS_NONESCAPE_PASSWORD,
-        //     },
-        //     defaultJobOptions: {
-        //         removeOnComplete: true,
-        //         removeOnFail: true,
-        //     }
-        // });
-
-        // const worker = new Worker(roomNo + "_DOCTOR",
-        //     async (job) => {
-        //         // console.log("User socket chat received");
-        //         socket.emit("chatReceived", job.data);
-        //         try {
-        //             await doctorMessageQueue.trimEvents(0);
-        //         } catch (error) {
-        //             console.error(error, "errorAtUserSocketChatReceived");
-        //         }
-
-        //         return null;
-        //     }, {
-        //         connection: {
-        //             host: process.env.RS_HOST,
-        //             port: process.env.RS_PORT,
-        //             username: process.env.RS_USERNAME,
-        //             password: process.env.RS_NONESCAPE_PASSWORD,
-        //         },
-        //         removeOnComplete: {count: 0},
-        //         removeOnFail: {count: 0}
-        //     }
-        // );
-        const receiver = new Worker('./middleware/redisMessageQueueReader');
-        const sender   = new Worker('./middleware/redisMessageQueueWriter');
-
-        receiver.postMessage({key: roomNo, role: 'user'});
-
-        receiver.on('message', (data) => {
-            socket.emit("chatReceived", data);
+        redisClient.subscribe(("CHATROOM_CHANNEL" + roomNo).toString(), (message, channel) => {
+            socket.emit('chatReceivedFromServer', message);
         });
 
         socket.on("SendChat", async (data) => {
             const now = Date.now();
             const chatObject = {role: "user", message: data, createdAt: now};
 
-            // console.log("User socket chat sent");
-
             try {
-                // await messageQueue.add('userEmit', chatObject);
-                sender.postMessage({key: roomNo, message: chatObject});
-                setCacheForNDaysAsync("ROOM:" + roomNo, chatObject, 7);
-                // chat.chatList.push(chatObject);
-                chat.date = now;
-                await chat.save();
-            } catch (error) {
+                await redisClient.lPush(("CHATROOM:QUEUE:" + roomNo).toString(), chatObject);
+            } catch (error) {   
                 console.error(error, "errorAtUserSendChat");
             }
 
@@ -110,11 +51,9 @@ const chatting_user = async (socket, next) => {
         socket.on("disconnect", async (reason) => {
             console.log("User socket disconnected");
             try {
-                // await messageQueue.close();
-                // await doctorMessageQueue.close();
-                // await worker.close();
-                receiver.terminate();
-                sender.terminate();
+                request.get(`http://jeongwoo-kim-web.myds.me:5000/mapp/dm/leaveChat/${roomNo}`, () => {
+                    console.log("Successfully disconnected");
+                });
             } catch (error) {
                 console.error(error, "errorAtUserSocketDisconnect");
             }

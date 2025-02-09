@@ -12,7 +12,10 @@ const BubbleSchema = new mongoose.Schema({
     },
     createdAt: {
         type: Date
-    }
+    },
+    autoIncrementId: {
+        type: Number,
+    },
 });
 
 const ChatSchema = new mongoose.Schema({
@@ -30,7 +33,6 @@ const ChatSchema = new mongoose.Schema({
     },
     chatList: [{
         type: BubbleSchema
-        // Deprecated? or to be used for saving chats temporarily?
     }],
     date: {
         type: Date,
@@ -45,10 +47,6 @@ const ChatSchema = new mongoose.Schema({
         default: false,
     },
     isBannedByDoctor: {
-        type: Boolean,
-        default: false,
-    },
-    isPatientScheduleShareAgreed: {
         type: Boolean,
         default: false,
     },
