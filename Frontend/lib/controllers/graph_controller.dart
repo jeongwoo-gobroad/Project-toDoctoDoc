@@ -64,4 +64,104 @@ class TagGraphController extends GetxController{
   }
   
   Map<String, TagInfo> get tags => Map.from(_tagInfoMap);
+
+
+  Future<void> tagBan(String tag) async{
+    //isLoading.value = true;
+    dio.interceptors.add(CustomInterceptor());
+
+    final response = await dio.post(
+      '${Apis.baseUrl}mapp/tagBan',
+      options: Options(
+        headers: {
+          'Content-Type':'application/json',
+          'accessToken': 'true',
+        },
+      ),
+      data: json.encode({
+        'tag': tag,
+      })
+    );
+      
+      if (response.statusCode == 200) {
+        print('banned tags: ${tag}');
+        
+        //isLoading.value = false;
+        
+        //임시시
+        // final tagInfo = _tagInfoMap['지각'];
+        // if (tagInfo != null) {
+
+        // print('태그 카운트: ${tagInfo.tagCount}');
+        // print('조회수: ${tagInfo.viewCount}');
+      
+      } else{
+          print('Error: ${response.statusCode}');
+          //isLoading.value = false;
+      }
+
+  }
+
+
+  RxList<String> bannedTagsList = <String>[].obs;
+  RxBool getTagLoading = false.obs;
+
+  Future<void> getBannedTags() async{
+    getTagLoading.value = true;
+    dio.interceptors.add(CustomInterceptor());
+
+    final response = await dio.get(
+      '${Apis.baseUrl}mapp/bannedTags',
+      options: Options(
+        headers: {
+          'Content-Type':'application/json',
+          'accessToken': 'true',
+        },
+      ),
+    );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.data);
+        print(data);
+        bannedTagsList.value = List<String>.from(data['content']['list'] as List);
+        print(bannedTagsList);
+        getTagLoading.value = false;
+        
+      
+      } else{
+          print('Error: ${response.statusCode}');
+          getTagLoading.value = false;
+      }
+
+  }
+  Future<void> tagUnBan(String tag) async{
+    //isLoading.value = true;
+    dio.interceptors.add(CustomInterceptor());
+
+    final response = await dio.delete(
+      '${Apis.baseUrl}mapp/tagUnBan',
+      options: Options(
+        headers: {
+          'Content-Type':'application/json',
+          'accessToken': 'true',
+        },
+      ),
+      data: json.encode({
+        'tag': tag,
+      })
+    );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.data);
+        print(data);
+        getBannedTags();
+        //isLoading.value = false;
+        
+      
+      } else{
+          print('Error: ${response.statusCode}');
+          //isLoading.value = false;
+      }
+
+  }
 }

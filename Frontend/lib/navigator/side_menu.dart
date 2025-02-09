@@ -8,6 +8,7 @@ import 'package:to_doc/screens/careplus/appointment_listview.dart';
 import 'package:to_doc/screens/hospital/visited_hospital_screen.dart';
 import 'package:to_doc/screens/myPost.dart';
 import 'package:to_doc/screens/user_edit.dart';
+import 'package:to_doc/settings.dart';
 
 import '../provider/auth_provider.dart';
 import '../screens/chat/dm_list.dart';
@@ -90,7 +91,7 @@ class SideMenu extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.settings),
             title: Text('설정'),
-            onTap: (){},
+            onTap: (){Get.to(()=>SettingsScreen());},
             trailing: Icon(Icons.navigate_next),
           ),
 

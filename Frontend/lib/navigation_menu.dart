@@ -18,7 +18,7 @@ class NavigationMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('test nav');
+    //print('test nav');
 
     final controller = Get.put(NavigationController());
 

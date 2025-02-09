@@ -42,7 +42,7 @@ class _GraphBoardState extends State<GraphBoard>
   final TagGraphController graphController =
       Get.put(TagGraphController(dio: Dio()));
 
-  final double stabilityThreshold = 10.0; //낮을수록 버블이 더 stable해야함
+  final double stabilityThreshold = 20.0; //낮을수록 버블이 더 stable해야함
   final int requiredStableFrames = 60; //더 길게 stable 해야함
   int stableFrameCount = 0;
   bool isSystemStable = false;
@@ -54,6 +54,9 @@ class _GraphBoardState extends State<GraphBoard>
   final double trashCanHeight = 50.0;
   bool isTrashHighlighted = false;
 
+
+  final double screenExitMargin = 100.0; 
+  final double throwVelocityThreshold = 800.0;
 
   @override
   void initState() {
@@ -151,6 +154,16 @@ class _GraphBoardState extends State<GraphBoard>
             Offset(-bubble.velocity.dx * restitution, bubble.velocity.dy);
       }
 
+    final bool isOverTop = bubble.position.dy + bubble.radius < -screenExitMargin;
+    final bool isThrownHard = bubble.velocity.dy < -throwVelocityThreshold;
+    
+    if (isOverTop && isThrownHard) {
+      setState(() {
+        bubbles.removeAt(i);
+        print('bubble removed');
+      });
+      continue;
+    }
       // if (showTrashCan && bubble.position.dy < trashCanHeight) {
       //   setState(() {
       //     bubbles.removeAt(i);
@@ -259,10 +272,11 @@ class _GraphBoardState extends State<GraphBoard>
     if (bubble.dragOffset != null) {
       final topEdge = bubble.position.dy - bubble.radius;
       final isOverTrash = topEdge < trashCanHeight;
-
+      bubble.velocity = bubble.velocity * 1.5;
       if (isOverTrash) {
         setState(() {
           bubbles.removeAt(i);
+          graphController.tagBan(bubble.tag);
           removed = true;
         });
       } else {
@@ -338,7 +352,6 @@ class _GraphBoardState extends State<GraphBoard>
                         ),
                       ),
 
-                    // 휴지통 UI
                     AnimatedPositioned(
                       duration: Duration(milliseconds: 200),
                       top: isDragging ? 0 : -trashCanHeight,
@@ -364,7 +377,7 @@ class _GraphBoardState extends State<GraphBoard>
                             ),
                             SizedBox(width: 8),
                             Text(
-                              '삭제',
+                              '태그 차단',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
