@@ -16,12 +16,17 @@ const reviewRefreshWorks = require("./serverSideWorks/reviewAverage");
 const { bubbleCollection } = require("./serverSideWorks/bubbleCollection");
 
 /* for initial server static IP address getting */
-const request = require('request');
+const axios = require('axios');
 const notFoundHandler = require("./routes/errorHandler/notFound");
+const errorHandler = require("./routes/errorHandler/errorHandler");
 
-request.get({uri:'https://curlmyip.org/'}, (err, res, body) => {
-    console.log("Server Working on IP:", body);
-});
+axios.get('https://myexternalip.com/raw')
+    .then((response) => {
+        console.log(response.data);
+    })
+    .catch((error) => {
+        console.error(error, "errorAtGettingIPAddress");
+    });
 /* -------------------------------------------- */
 
 const app = express();
@@ -37,8 +42,8 @@ app.use(session({
     cookie: {secure: false}
 }));
 
-redis.connectRedis().then(console.log("redis connection success"));
-connectDB().then(console.log("MongoDB connection success"));
+redis.connectRedis();
+connectDB();
 connectFCM();
 bubbleCollection();
 
@@ -84,6 +89,7 @@ app.use("/admin", require("./routes/admin_register_doctor_to_psy"));
 app.use('/mapp', require("./routes/mapp"));
 
 app.use(notFoundHandler);
+app.use(errorHandler);
 
 server.listen(port, () => {
     console.log(`Server working on port ${port}`);

@@ -10,6 +10,7 @@
   "description": "",
   "dependencies": {
     "@google-cloud/storage": "^7.15.0",
+    "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -26,7 +27,6 @@
     "nodemon": "^3.1.9",
     "openai": "^4.77.0",
     "redis": "^4.7.0",
-    "request": "^2.88.2",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "streamifier": "^0.1.1",

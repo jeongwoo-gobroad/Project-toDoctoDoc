@@ -1,14 +1,13 @@
-require("dotenv").config;
 const express = require("express");
 const mongoose = require("mongoose");
 const UserSchema = require("../../../models/User");
 const returnResponse = require("../standardResponseJSON");
 const { getTokenInformation } = require("../../auth/jwt");
-const { checkIfLoggedIn, checkIfNotLoggedIn, ifPremiumThenProceed } = require("../checkingMiddleWare");
+const { checkIfLoggedIn } = require("../checkingMiddleWare");
 const router = express.Router();
 
 const User = mongoose.model("User", UserSchema);
-const { ifDailyCurateNotExceededThenProceed, ifDailyDeepCurateNotExceededThenProceed } = require("../limitMiddleWare");
+const { ifDailyCurateNotExceededThenProceed } = require("../limitMiddleWare");
 const Curate = require("../../../models/Curate");
 const Comment = require("../../../models/Comment");
 const openai = require("openai");
@@ -125,12 +124,10 @@ router.post(["/curate"],
     ifDailyCurateNotExceededThenProceed,
     async (req, res, next) => {
         try {
-            const user = await getTokenInformation(req, res);
-
             const curate = new Curate;
 
-            const data = await User.findById(user.userid).populate('posts ai_chats');
-            curate.user = user.userid;
+            const data = await User.findById(req.userid).populate('posts ai_chats');
+            curate.user = req.userid;
 
             data.posts.sort((a, b) => {
                 // console.log("This happens first");
@@ -184,7 +181,7 @@ router.post(["/curate"],
             curate.deepCurate = message;
 
             await curate.save();
-            await User.findByIdAndUpdate(user.userid, {
+            await User.findByIdAndUpdate(req.userid, {
                 $push: {curates: curate._id}
             });
 

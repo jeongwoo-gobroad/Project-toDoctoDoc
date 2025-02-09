@@ -14,7 +14,7 @@ const User = mongoose.model("User", UserSchema);
 
 router.get(["/dm/list"], 
     checkIfLoggedIn,
-    ifPremiumThenProceed,
+    // ifPremiumThenProceed,
     async (req, res, next) => {
         const user = await getTokenInformation(req, res);
 
@@ -44,7 +44,7 @@ router.get(["/dm/list"],
 
 router.get(["/dm"],
     checkIfLoggedIn,
-    ifPremiumThenProceed,
+    // ifPremiumThenProceed,
     async (req, res, next) => {
         const {uid, did} = req.query;
         const user = await getTokenInformation(req, res);
@@ -90,7 +90,7 @@ router.get(["/dm"],
 
 router.get(["/dm/:id"],
     checkIfLoggedIn,
-    ifPremiumThenProceed,
+    // ifPremiumThenProceed,
     async (req, res, next) => {
         const chatid = req.params.id;
         const user = await getTokenInformation(req, res);
@@ -122,7 +122,7 @@ router.get(["/dm/:id"],
 
 router.delete(["/dm/:id"],
     checkIfLoggedIn,
-    ifPremiumThenProceed,
+    // ifPremiumThenProceed,
     async (req, res, next) => {
         const chatid = req.params.id;
         const user = await getTokenInformation(req, res);

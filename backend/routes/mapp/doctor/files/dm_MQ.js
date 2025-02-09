@@ -4,11 +4,12 @@ const Chat = require("../../../../models/Chat");
 const UserSchema = require("../../../../models/User");
 const Doctor = require("../../../../models/Doctor");
 const User = mongoose.model('User', UserSchema);
-const request = require('request');
+const axios = require('axios');
 const jwt = require("jsonwebtoken");
-const { setCacheForThreeDaysAsync, getCache, setCacheForNDaysAsync } = require("../../../../middleware/redisCaching");
+const { setCacheForThreeDaysAsync, getCache, setCacheForNDaysAsync, setSetForever, removeItemFromSet, doesSetContains } = require("../../../../middleware/redisCaching");
 const sendDMPushNotification = require("../../push/dmPush");
 const {Worker} = require('worker_threads');
+const Redis = require("../../../../config/redisObject");
 
 const chatting_doctor = async (socket, next) => {
     const token = socket.handshake.query.token;
@@ -19,6 +20,8 @@ const chatting_doctor = async (socket, next) => {
     try {
         const token_userid = jwt.verify(token, process.env.JWT_SECRET);
         const userid = token_userid.userid;
+
+        setSetForever("CHAT:MEMBER:" + roomNo, "DOCTOR");
 
         const chat = await Chat.findById(roomNo).populate({
             path: 'user',
@@ -34,7 +37,9 @@ const chatting_doctor = async (socket, next) => {
             return;
         }
 
-        redisClient.subscribe(("CHATROOM_CHANNEL" + roomNo).toString(), (message, channel) => {
+        const receiver = new Redis();
+
+        receiver.redisClient.subscribe(("CHATROOM_CHANNEL:" + roomNo).toString(), (message, channel) => {
             socket.emit('chatReceivedFromServer', message);
         });
 
@@ -43,12 +48,14 @@ const chatting_doctor = async (socket, next) => {
             const chatObject = {role: "doctor", message: data, createdAt: now};
 
             try {
-                await redisClient.lPush(("CHATROOM:QUEUE:" + roomNo).toString(), chatObject);
+                await redisClient.lPush(("CHATROOM:QUEUE:" + roomNo).toString(), JSON.stringify(chatObject));
             } catch (error) {
                 console.error(error, "errorAtDoctorSendChat");
             }
 
-            sendDMPushNotification(chat.user.deviceIds, {title: chat.doctor.name + ": 읽지 않은 DM", body: chatObject});
+            if (!(await doesSetContains("CHAT:MEMBER:" + roomNo, "USER"))) {
+                sendDMPushNotification(chat.user.deviceIds, {title: chat.doctor.name + ": 읽지 않은 DM", body: chatObject});
+            }
 
             return;
         }); 
@@ -56,9 +63,21 @@ const chatting_doctor = async (socket, next) => {
         socket.on("disconnect", async (reason) => {
             console.log("Doctor socket disconnected");
             try {
-                request.get(`http://jeongwoo-kim-web.myds.me:5000/mapp/dm/leaveChat/${roomNo}`, () => {
-                    console.log("Successfully disconnected");
-                });
+                receiver.closeConnnection();
+                await redisClient.unsubscribe(("CHATROOM_CHANNEL:" + roomNo).toString());
+                removeItemFromSet("CHAT:MEMBER:" + roomNo, "DOCTOR");
+
+                const uri = encodeURI(`http://jeongwoo-kim-web.myds.me:5000/mapp/dm/leaveChat/${roomNo}`);
+                const uriOptions = {
+                    method: 'GET',
+                    data: {},
+                    headers: {
+                        authorization: 'Bearer: ' + token
+                    }
+                };
+                await axios.get(uri, uriOptions);
+
+                console.log("successfully disconnected");
             } catch (error) {
                 console.error(error, "errorAtDoctorSocketDisconnect");
             }

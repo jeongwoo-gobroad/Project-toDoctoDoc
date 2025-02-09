@@ -6,15 +6,35 @@ const redisClient = redis.createClient({
 });
 
 const connectRedis = async () => {
-    const conn = await redisClient.connect();
+    try {
+        const conn = await redisClient.connect();
 
-    if (conn) {
-        console.log("Redis connected");
-    } else {
-        console.log("Redis connection error");
+        if (conn) {
+            console.log("Redis connected");
+        }
+
+        return;
+    } catch (error) {
+        console.error(error, "errorAtConnectRedis");
+
+        return;
     }
-    
-    return;
-}
+};
 
-module.exports = {connectRedis, redisClient};
+const disconnectRedis = async () => {
+    try {
+        const conn = await redisClient.disconnect();
+
+        if (conn) {
+            console.log("Redis connected");
+        }
+
+        return;
+    } catch (error) {
+        console.error(error, "errorAtConnectRedis");
+
+        return;
+    }
+};
+
+module.exports = {connectRedis, disconnectRedis, redisClient};

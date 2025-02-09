@@ -24,6 +24,7 @@ const checkIfLoggedIn = async (req, res, next) => {
 
 const checkIfMyChat = async (req, res, next) => {
     const chatId = req.params.cid;
+
     try {
         const chat = await Chat.findById(chatId);
 
@@ -43,6 +44,8 @@ const checkIfMyChat = async (req, res, next) => {
 
         return;
     } catch (error) {
+        console.error(error, "errorAtCheckIfMyChat");
+
         res.status(403).json(returnResponse(true, "errorAtCheckIfMyChat", "-"));
 
         return;

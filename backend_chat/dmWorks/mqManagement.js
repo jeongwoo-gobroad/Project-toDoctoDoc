@@ -10,49 +10,44 @@ const { chatId } = workerData;
 connectRedis();
 connectDB();
 
-const globalSubQueue = [];
+let globalSubQueue = [];
+
+const getSpecificIndex = (array, targetValue) => {
+    return new Promise((resolve, reject) => {
+        try {
+            let index = 0;
+            array.forEach((element) => {
+                // console.log(element.autoIncrementId, targetValue);
+                if (parseInt(element.autoIncrementId) === parseInt(targetValue)) {
+                    resolve(index);
+                }
+                index++;
+            });
+            resolve(index);
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
 
 parentPort.on('message', async (currentCnter) => {
     try {
-        const chatSchema = await Chat.aggregate([
-            {
-                $match: {_id: chatId}
-            },
-            {
-                $project:{
-                    chatList: {
-                        $let: {
-                            vars: {
-                                startIndex: {
-                                    $indexOfArray: [
-                                        "$chatList.autoIncrementId",
-                                        currentCnter
-                                    ]
-                                }
-                            },
-                            in: {
-                                $cond: [
-                                    {$gt: ["$$startIndex", 0]},
-                                    {$slice: ["$chatList", "$$startIndex"]},
-                                    []
-                                ]
-                            }
-                        }
-                    }
-                }
-            }
-        ]);
+        const chatSchema = await Chat.findById(chatId);
 
-        const chats = chatSchema.chatList;
+        const chats = chatSchema.chatList.slice(await getSpecificIndex(chatSchema.chatList, currentCnter) + 1);
+
+        // console.log("Chats: ", chats);
 
         const wholeChatBubble = chats.concat(globalSubQueue);
 
         parentPort.postMessage(wholeChatBubble);
 
-        console.log(wholeChatBubble, "sent to parentPort");
+        // console.log(wholeChatBubble, "sent to parentPort");
 
         return;
     } catch (error) {
+        parentPort.postMessage("");
+
         console.error(error, "errorAtReadNewMessageAfterGivenCnter");
 
         return;
@@ -71,11 +66,11 @@ setInterval(async () => {
                 }
             });
 
-            console.log(globalSubQueue, "inserted to DB");
+            // console.log(globalSubQueue, "inserted to DB");
 
             globalSubQueue = [];
         } catch (error) {
-            console.error("errorAtSetInterval");
+            console.error(error, "errorAtSetInterval");
 
             return;
         }
@@ -85,18 +80,21 @@ setInterval(async () => {
 setInterval(async () => {
     try {
         if (await redisClient.exists(("CHATROOM:QUEUE:" + chatId).toString())) {
-            const messageCount = await redisClient.incr(("CHATROOM:CNTER:" + chatId).toString());
             const message = await redisClient.rPop(("CHATROOM:QUEUE:" + chatId).toString());
+            if (message) {
+                const messageCount = await redisClient.incr(("CHATROOM:CNTER:" + chatId).toString());
+            
 
-            console.log("Message Popped from Queue: ", message);
+                // console.log("Message Popped from Queue: ", message);
 
-            const newMessage = JSON.parse(message);
+                const newMessage = JSON.parse(message);
 
-            newMessage.autoIncrementId = messageCount;
+                newMessage.autoIncrementId = messageCount;
 
-            globalSubQueue.push(newMessage);
-            await redisClient.set(("CHATROOM:RECENT:" + chatId).toString(), newMessage);
-            publishMessageToChatId(chatId, newMessage);
+                globalSubQueue.push(newMessage);
+                await redisClient.set(("CHATROOM:RECENT:" + chatId).toString(), JSON.stringify(newMessage));
+                publishMessageToChatId(chatId, newMessage);
+            }
         }
     } catch (error) {
         console.error(error, "errorAtPopFromSharedMessageQueueAndIncrementCid");

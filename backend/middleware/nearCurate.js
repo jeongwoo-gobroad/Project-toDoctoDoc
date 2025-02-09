@@ -1,7 +1,5 @@
 const Curate = require("../models/Curate");
 
-require("dotenv").config;
-
 const nearbyPatientCurate = async (long, lat, radius) => {
     const longConstant = 1 / 111.19;
     const latConstant = 1 / (6371 * 1 * Math.PI / 180 * Math.cos(parseFloat(lat) * Math.PI / 180));

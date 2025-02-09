@@ -1,4 +1,3 @@
-const { get } = require("request");
 const { getTokenInformation_web } = require("./web_auth/jwt_web");
 const Doctor = require("../models/Doctor");
 const Admin = require("../models/Admin");
@@ -27,7 +26,7 @@ const ifLoggedInThenProceed = async (req, res, next) => {
 };
 
 const ifNotLoggedInThenProceed = async (req, res, next) => {
-    if (! await getTokenInformation_web(req, res)) {
+    if (!(await getTokenInformation_web(req, res))) {
         next();
     } else {
         res.redirect("/");
@@ -37,7 +36,7 @@ const ifNotLoggedInThenProceed = async (req, res, next) => {
 };
 
 const ifNotLoggedInThenRedirectToLoginPage = async (req, res) => {
-    if (! await getTokenInformation_web(req, res)) {
+    if (!(await getTokenInformation_web(req, res))) {
         res.redirect("/login");
 
         return;

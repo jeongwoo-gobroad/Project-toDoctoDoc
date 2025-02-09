@@ -11,7 +11,10 @@ const BubbleSchema = new mongoose.Schema({
     },
     createdAt: {
         type: Date
-    }
+    },
+    autoIncrementId: {
+        type: Number,
+    },
 });
 
 const ChatSchema = new mongoose.Schema({

@@ -1,26 +1,24 @@
-require("dotenv").config();
-const request = require("request");
+const axios = require('axios');
 
-const returnLongLatOfAddress = (address) => {
-    const executor = (resolve, reject) => {
-        const kakaoMapOptions = {
-            uri: encodeURI(`https://dapi.kakao.com/v2/local/search/address?query=${address}`),
-            method: 'GET',
-            json: true,
-            headers: {
-                Authorization: `KakaoAK ${process.env.KAKAO_REST_KEY}`
-            }
-        };
-        request.get(kakaoMapOptions, (err, result, body) => {
-            if (!err) {
-                resolve({long: body.documents[0].address.x, lat: body.documents[0].address.y});
-            } else {
-                reject(err);
-            }
-        });
+const returnLongLatOfAddress = async (address) => {
+    const uri = encodeURI(`https://dapi.kakao.com/v2/local/search/address?query=${address}`);
+
+    const kakaoMapOptions = {
+        method: 'GET',
+        headers: {
+            Authorization: `KakaoAK ${process.env.KAKAO_REST_KEY}`
+        }
     };
 
-    return new Promise(executor);
+    try {
+        const body = await axios.get(uri, kakaoMapOptions);
+
+        return {long: body.data.documents[0].address.x, lat: body.data.documents[0].address.y};
+    } catch (error) {
+        console.error(error, "errorAtReturnLongLatOfAddress");
+
+        return null;
+    }
 };
 
 module.exports = returnLongLatOfAddress;
