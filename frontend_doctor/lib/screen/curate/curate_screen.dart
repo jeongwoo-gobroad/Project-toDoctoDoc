@@ -161,10 +161,6 @@ class _CurateScreenState extends State<CurateScreen> {
                   return InkWell(
                     onTap: () async {
                       // print(item.id);
-                      if (curateController.isLoading.value) {
-                        return;
-                      }
-
                       await curateController.getCurateDetails(item.id);
                       Get.to(() => CurateDetailScreen(userName: item.users.map((user) => user.userNick).join(", ")));
                     },
