@@ -15,13 +15,15 @@ class ChatContent {
     required this.recentChat,
   });
 
-  factory ChatContent.fromMap(map, temp) {
+  factory ChatContent.fromMap(dynamic map, Map<String, dynamic> temp) {
     return ChatContent(
-      doctorId: map['doctorId'].toString() ?? '',
-      doctorName: map['doctorName'].toString() ?? '',
-      date: DateTime.parse(map['date'] as String) ?? DateTime.now(),
-      cid: map['cid'].toString(),
-      isBanned: map['isBanned'] ?? false,
+      doctorId: map != null && map['doctorId'] != null ? map['doctorId'].toString() : '',
+      doctorName: map != null && map['doctorName'] != null ? map['doctorName'].toString() : '',
+      date: map != null && map['date'] != null
+          ? DateTime.parse(map['date'] as String)
+          : DateTime.now(),
+      cid: map != null && map['cid'] != null ? map['cid'].toString() : '',
+      isBanned: map != null && map['isBanned'] != null ? map['isBanned'] : false,
       recentChat: temp,
     );
   }

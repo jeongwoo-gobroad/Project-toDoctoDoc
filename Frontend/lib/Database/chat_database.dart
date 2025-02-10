@@ -54,7 +54,23 @@ initDatabase() async {
     }
   }
 
-  var db = await openDatabase(joinPath, version: 1, onCreate: _onDbCreate);
+  var db = await openDatabase(
+  joinPath,
+  version: 2,
+  onCreate: _onDbCreate,
+  onUpgrade: (db, oldVersion, newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute(
+        '''
+        CREATE TABLE chat_meta (
+          room_id TEXT PRIMARY KEY,
+          last_read_id INTEGER NOT NULL DEFAULT 0
+        )
+        '''
+      );
+    }
+  },
+);
 }
 
 class ChatDatabase {

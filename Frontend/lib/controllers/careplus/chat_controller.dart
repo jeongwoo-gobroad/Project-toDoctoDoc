@@ -138,7 +138,7 @@ class ChatController extends GetxController{
           'autoIncrementId' : chat['autoIncrementId'],
         };
 
-        chatList.add(ChatContent.fromMap(Null, temp));
+        chatList.add(ChatContent.fromMap(null, temp));
       }
       
       
