@@ -1,9 +1,12 @@
 import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:to_doc_for_doc/screen/hospital/star_rating_editor.dart';
 import '../../controllers/hospital/hospital_information_controller.dart';
 
 
@@ -16,12 +19,14 @@ class HospitalDetailScreen extends StatefulWidget {
 
 class _HospitalDetailScreenState extends State<HospitalDetailScreen> {
   HospitalInformationController hospitalInformationController = Get.put(HospitalInformationController());
+  ScrollController rowScrollController = ScrollController();
 
   int selectedIndex = -1;
   var _tapPosition;
 
   XFile? _pickedFile;
   CroppedFile? _croppedFile;
+
 
   Future<void> deleteImageAlert(BuildContext context, String imageName) async {
     return showDialog<void>(
@@ -62,172 +67,106 @@ class _HospitalDetailScreenState extends State<HospitalDetailScreen> {
       },
     );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('병원 정보')),
-      body: Column(
-        //mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              color: Colors.grey.shade100,
-            ),
-            child: Obx(() {
-              if (hospitalInformationController.isLoading.value) {
-                return Center(child: CircularProgressIndicator(),);
-              }
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    hospitalInformationController.name,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-                  ),
-                  const SizedBox(height: 8),
-                  Text('주소: ${hospitalInformationController.address['address']}'),
-                  Text('추가주소: ${hospitalInformationController.address['detailAddress']}'),
-                  Text('상세주소: ${hospitalInformationController.address['extraAddress']}'),
-                  Text('POSTCODE: ${hospitalInformationController.address['postcode']}'),
-                  Text('전화번호: ${hospitalInformationController.phone}'),
-                  Text('오픈시간: ${hospitalInformationController.openTime}'),
-                  Text('휴식시간: ${hospitalInformationController.breakTime}'),
-                ],
-              );
-            }),
-          ),
-
-
-          Expanded(
-            child: GridView.builder(
-              itemCount: hospitalInformationController.psyProfileImage.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 5,
-                mainAxisSpacing: 5,
-              ),
-              itemBuilder: (context, index) {
-                var nowImage = hospitalInformationController.psyProfileImage[index];
-
-                return GestureDetector(
-                  onLongPress: () {
-
-                    //selectedIndex = index;
-
-
-                    final overlay = Overlay.of(context).context.findRenderObject();
-
-
-                    showMenu(
-                      context: context,
-                      position: RelativeRect.fromRect(_tapPosition! & const Size(40, 40), // smaller rect, the touch area
-                          Offset.zero & overlay!.semanticBounds.size // Bigger rect, the entire screen
-                      ),
-                      items: <PopupMenuEntry>[
-                        PopupMenuItem(
-                          onTap: () {
-                            print(nowImage);
-                            Uri uri = Uri.parse(nowImage);
-                            String fileName = uri.pathSegments.last.split("/").last;
-                            print(fileName);
-
-                            deleteImageAlert(context, fileName);
-                          },
-                          child: Row(
-                            children: <Widget>[Icon(Icons.delete), Text("이미지 삭제"),],
-                          ),
-                        ),
-                      ],
-                    );
-
-                    selectedIndex = -1;
-                  },
-
-                  onTapDown: (details) {
-                    _tapPosition = details.globalPosition;
-                  },
-
-                  child: Image.network(
-                    nowImage,
-                    width: 300,
-                    height: 300,
-                    fit: BoxFit.cover,
-                  ),
-                );
-
-              },
+  Future<void> uploadImageAlert(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('선택한 이미지'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('정말 업로드 하시겠습니까?',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                imageWidget()
+              ],
             ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                print ('이미지 업로드');
 
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: TextButton(
-              onPressed: () {
-                findAndCropImage();
-              },
-              child: Row(
-                children: [
-                  Icon(
-                      size: 20, Icons.image
-                  ),
-                  SizedBox(width: 20,),
-                  Text('이미지 로드')
-                ],
-              ),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: TextButton(
-              onPressed: () {
                 uploadImage();
+                Navigator.of(context).pop();
+                setState(() {
+                  //_croppedFile = null;
+                });
               },
-              child: Row(
-                children: [
-                  Icon(
-                      size: 20, Icons.upload
-                  ),
-                  SizedBox(width: 20,),
-                  Text('이미지 업로드')
-                ],
-              ),
+              style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll(Colors.green)),
+              child: Text('업로드', style: TextStyle(color: Colors.white),),
             ),
-          ),
-
-
-
-
-          Container(color: Colors.blue, height: 5),
-          ImageWidget(),
-        ],
-      ),
+            TextButton(
+              child: Text('취소', style: TextStyle(color: Colors.grey),),
+              onPressed: () {
+                _croppedFile = null;
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
+  Widget imageList() {
+    return SizedBox(
+      height: 250,
+      child: ListView.builder(
+        itemCount: hospitalInformationController.psyProfileImage.length,
+        scrollDirection: Axis.horizontal,
+        controller: rowScrollController,
+        /*              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 5,
+                  mainAxisSpacing: 5,
+                ),*/
+        itemBuilder: (context, index) {
+          var nowImage = hospitalInformationController.psyProfileImage[index];
+          return GestureDetector(
+            onLongPress: () {
+              //selectedIndex = index;
+              final overlay = Overlay.of(context).context.findRenderObject();
 
-  void uploadImage() async {
-    if (_croppedFile != null) {
-      dynamic sendData = _croppedFile?.path;
-      if (await hospitalInformationController.uploadImage(sendData)) {
-        await hospitalInformationController.getInfo();
-
-        _croppedFile = null;
-        _pickedFile = null;
-
-        setState(() {});
-      }
-
-
-    }
-
+              showMenu(
+                context: context,
+                position: RelativeRect.fromRect(_tapPosition! & const Size(40, 40), // smaller rect, the touch area
+                    Offset.zero & overlay!.semanticBounds.size // Bigger rect, the entire screen
+                ),
+                items: <PopupMenuEntry>[
+                  PopupMenuItem(
+                    onTap: () {
+                      print(nowImage);
+                      Uri uri = Uri.parse(nowImage);
+                      String fileName = uri.pathSegments.last.split("/").last;
+                      print(fileName);
+                      deleteImageAlert(context, fileName);
+                    },
+                    child: Row(
+                      children: <Widget>[Icon(Icons.delete), Text("이미지 삭제"),],
+                    ),
+                  ),
+                ],
+              );
+              selectedIndex = -1;
+            },
+            onTapDown: (details) {
+              _tapPosition = details.globalPosition;
+            },
+            child: Image.network(
+              nowImage,
+              width: 250,
+              height: 250,
+              fit: BoxFit.cover,
+            ),
+          );
+        },
+      ),
+    );
   }
-
-  Widget ImageWidget() {
+  Widget imageWidget() {
     if (_croppedFile != null) {
       final path = _croppedFile!.path;
       return ConstrainedBox(
@@ -237,86 +176,28 @@ class _HospitalDetailScreenState extends State<HospitalDetailScreen> {
         ),
         child: Image.file(File(path)),
       );
-    } else if (_pickedFile != null) {
-      final path = _pickedFile!.path;
-      return ConstrainedBox(
-        constraints: BoxConstraints(
-          maxWidth: 200,
-          maxHeight: 200,
-        ),
-        child: Image.file(File(path)),
-      );
-    }
-    else {
+    } else {
       return const SizedBox.shrink();
     }
   }
 
-
-  Widget UploaderCardWidget() {
-    return Center(
-      child: Card(
-        elevation: 4.0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.0),
-        ),
-        child: SizedBox(
-          width: 320.0,
-          height: 300.0,
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: DottedBorder(
-                    radius: const Radius.circular(12.0),
-                    borderType: BorderType.RRect,
-                    dashPattern: const [8, 4],
-                    color: Theme.of(context).highlightColor.withOpacity(0.4),
-                    child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.image,
-                            color: Theme.of(context).highlightColor,
-                            size: 80.0,
-                          ),
-                          const SizedBox(height: 24.0),
-                          Text(
-                            'Upload an image to start',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(
-                                color:
-                                Theme.of(context).highlightColor),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  void uploadImage() async {
+    if (_croppedFile != null) {
+      dynamic sendData = _croppedFile?.path;
+      if (await hospitalInformationController.uploadImage(sendData)) {
+        await hospitalInformationController.getInfo();
+        _croppedFile = null;
+        _pickedFile = null;
+        setState(() {});
+      }
+    }
   }
-
-
   Future<void> findAndCropImage() async {
     _pickedFile = await ImagePicker().pickImage(
       source: ImageSource.gallery,
       maxHeight: 1024,
       maxWidth: 1024,
     );
-
 
     if (_pickedFile != null) {
       final croppedFile = await ImageCropper().cropImage(
@@ -332,7 +213,6 @@ class _HospitalDetailScreenState extends State<HospitalDetailScreen> {
               lockAspectRatio: false),
         ],
       );
-
       if (croppedFile != null) {
         setState(() {
           _croppedFile = croppedFile;
@@ -340,5 +220,294 @@ class _HospitalDetailScreenState extends State<HospitalDetailScreen> {
       }
     }
   }
+
+  reviewWidget(String name, double rating, String content, DateTime time, bool isEdited) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+
+        children: [
+          // PROFILE NICKNAME TIME
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(CupertinoIcons.profile_circled, size: 40,),
+                  SizedBox(width: 5,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(name, ),
+                      SizedBox(height: 2),
+                      StarRating(
+                        rating: rating,
+                        starSize: 20,
+                        isControllable: false,
+                        onRatingChanged: (rating) => {},
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  if (isEdited) Text('(수정됨) ', style: TextStyle(color: Colors.grey, fontSize: 10),),
+                  Text(DateFormat.yMd().format(time)),
+                  IconButton(
+                    onPressed: (){},
+                    icon: Icon(Icons.more_vert),
+                  ),
+                ],
+              ),
+            ],
+          ),
+
+          // STAR RATING
+          SizedBox(height: 10),
+
+          // TODO 더보기 기능 추가
+          Text(content),
+
+        ],
+      ),
+    );
+  }
+  Widget reviewSample() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10, 5, 0, 5),
+            child: Text('내 병원 리뷰', style: TextStyle(fontSize: 20),),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Column(
+                //mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(hospitalInformationController.stars.toDouble().toStringAsFixed(1),
+                    //${{hospitalInformationController.averageRating}}',
+                    style: TextStyle(fontWeight: FontWeight.bold,
+                        fontSize: 50,
+                        height: 1),),
+                  StarRating(
+                    rating: hospitalInformationController.stars.toDouble(),
+                    starSize: 20,
+                    isControllable: false,
+                    onRatingChanged: (rating) => {},
+                  ),
+                  //SizedBox(height: 5,),
+                  Text('(length ?? 0 100개)'),
+                ],
+              ),
+              Column(
+                //crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  for (int i = 5; i > 0; i--) ...[
+                    chartRow(context, '$i', 0.2)
+                    //hospitalInformationController.reviewRatingArr[i]/hospitalInformationController.review.length),
+                  ],
+                ],
+              ),
+            ],
+          ),
+
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text('최근 리뷰'),
+          ),
+          reviewWidget('성이름', 3.5, 'ㅁㄴㅇㅇㄻㄴㄴㅁㄹㄴ', DateTime.now(), true),
+
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              border: Border(top: BorderSide(color: Colors.grey.shade200, width: 1)),
+            ),
+            child: TextButton(
+                style: TextButton.styleFrom(
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.zero))),
+                onPressed: () {
+                  /*                        Get.to(()=>HospitalDetailScreen())?.whenComplete(() {
+                            reloadScreen();
+                          });*/
+                },
+                child: Text('더보기', style: TextStyle(color: Colors.black),)
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget chartRow(BuildContext context, String label, double pct) {
+    return Row(
+      children: [
+        //Text(label),
+        //SizedBox(width: ),
+        //Icon(Icons.star, size: 8,),
+        Padding(
+          padding: EdgeInsetsDirectional.fromSTEB(8, 5, 8, 0),
+          child:
+          Stack(
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width / 2,
+                  height: 8,
+                  decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(8)
+                  ),
+                  child: Text(''),
+                ),
+                Container(
+                  width: (MediaQuery.of(context).size.width / 2)* pct,
+                  height: 8,
+                  decoration: BoxDecoration(
+                      color: Colors.yellow,
+                      borderRadius: BorderRadius.circular(8)
+                  ),
+                  child: Text(''),
+                ),
+              ]
+
+          ),
+        ),
+        //Text('${pct * 100}%',),
+      ],
+    );
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(hospitalInformationController.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),),
+        backgroundColor: Colors.white),
+      //backgroundColor: Colors.grey.shade100,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Stack(
+              children: [
+                imageList(),
+
+                Positioned(
+                  bottom: 5,
+                  right: 5,
+                  child: Container(
+                    //padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    width: 130,
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                        backgroundColor: Colors.white.withAlpha(100)
+                      ),
+                      onPressed: () async {
+                        print('UPLOAD -----------------------------------------------------------');
+                        await findAndCropImage();
+                        if (_croppedFile != null) {
+                          print('NOT NULL UPLOAD -----------------------------------------------------------');
+                          uploadImageAlert(context);
+                        }
+                      },
+                      child: Row(
+                        children: [
+                          Icon(
+                            size: 20, Icons.image, color: Colors.black,
+                          ),
+                          SizedBox(width: 20,),
+                          Text('이미지 로드', style: TextStyle(color: Colors.black),)
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Obx(() {
+                if (hospitalInformationController.isLoading.value) {
+                  return Center(child: CircularProgressIndicator(),);
+                }
+                return Stack(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          child: Row(
+                            children: [
+                              Icon(CupertinoIcons.info),
+                              SizedBox(width: 10,),
+                              Text('병원 정보', style: TextStyle(fontSize: 20),),
+                            ],
+                          ),
+                        ),
+
+                        Text('주소: ${hospitalInformationController.address['address']}',
+                          style: TextStyle(fontSize: 15),),
+                        Text('추가주소: ${hospitalInformationController.address['detailAddress']}',
+                          style: TextStyle(fontSize: 15),),
+                        Text('상세주소: ${hospitalInformationController.address['extraAddress']}',
+                          style: TextStyle(fontSize: 15),),
+                        Text('POSTCODE: ${hospitalInformationController.address['postcode']}',
+                          style: TextStyle(fontSize: 15),),
+                        Text('전화번호: ${hospitalInformationController.phone}',
+                          style: TextStyle(fontSize: 15),),
+                        Text('오픈시간: ${hospitalInformationController.openTime}',
+                          style: TextStyle(fontSize: 15),),
+                        Text('휴식시간: ${hospitalInformationController.breakTime}',
+                          style: TextStyle(fontSize: 15),),
+                      ],
+                    ),
+
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: TextButton(
+                        style: TextButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),),
+                        onPressed: () {
+
+                        },
+                        child: Row(
+                          children: [
+                            Text('수정', style: TextStyle(color: Colors.black),),
+                            SizedBox(width: 5,),
+
+                            Icon(
+                              size: 20, Icons.edit, color: Colors.black,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                  ],
+                );
+              }),
+            ),
+            reviewSample(),
+          ],
+        ),
+      ),
+    );
+  }
+
 
 }

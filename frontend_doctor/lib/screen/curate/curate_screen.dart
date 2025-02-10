@@ -161,10 +161,78 @@ class _CurateScreenState extends State<CurateScreen> {
                   return InkWell(
                     onTap: () async {
                       // print(item.id);
+                      if (curateController.isLoading.value) {
+                        return;
+                      }
+
                       await curateController.getCurateDetails(item.id);
-                      Get.to(() => CurateDetailScreen());
+                      Get.to(() => CurateDetailScreen(userName: item.users.map((user) => user.userNick).join(", ")));
                     },
-                    child: Card(
+                    child:
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 15 , vertical: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${item.users.map((user) => user.userNick).join(", ")}님의 큐레이팅 요청',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                              Text(
+                                formatDate(item.date),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+
+                              Row(
+                                children: [
+                                  Icon(
+                                    item.isRead
+                                        ? Icons.mark_email_read
+                                        : Icons.mail,
+                                    size: 16,
+                                    color: item.isRead ? Colors.green : Colors.grey,
+                                  ),
+                                  SizedBox(width: 8),
+
+                                  Text(
+                                    item.isRead ? '읽음' : '안읽음',
+                                    style: TextStyle(
+                                      color:
+                                      item.isRead ? Colors.green : Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Icon(Icons.comment, size: 15,),
+                              SizedBox(width: 5,),
+                              Text(
+                                '${item.comments.length}',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  //fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    /*Card(
                       margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                       elevation: 2,
                       shape: RoundedRectangleBorder(
@@ -255,7 +323,7 @@ class _CurateScreenState extends State<CurateScreen> {
                           ),
                         ],
                       ),
-                    ),
+                    ),*/
                   );
                 },
                 childCount: curateController.sortedAndFilteredItems.length,

@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc/controllers/careplus/curate_list_controller.dart';
@@ -99,3 +100,4 @@ class CurationHomeScreen extends StatelessWidget {
     );
   }
 }
+*/

@@ -28,6 +28,7 @@ class CurateDetail {
   final String date;
   final String createdAt;
   final String user;
+  final String deepCurate;
 
   CurateDetail({
     required this.id,
@@ -37,6 +38,7 @@ class CurateDetail {
     required this.date,
     required this.createdAt,
     required this.user,
+    required this.deepCurate
   });
 
   factory CurateDetail.fromJson(Map<String, dynamic> json) {
@@ -48,6 +50,7 @@ class CurateDetail {
       date: (json['date']),
       createdAt: (json['createdAt']),
       user: json['user'] ?? '',
+      deepCurate: json['deepCurate'] ?? 'AI 요약이 없습니다'
     );
   }
 }

@@ -5,6 +5,10 @@ import 'package:to_doc_for_doc/controllers/curate/curate_controller.dart';
 import 'package:intl/intl.dart';
 
 class CurateDetailScreen extends StatefulWidget {
+  final String userName;
+
+  CurateDetailScreen({required this.userName});
+
   @override
   State<CurateDetailScreen> createState() => _CurateDetailScreenState();
 }
@@ -36,7 +40,7 @@ class _CurateDetailScreenState extends State<CurateDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('큐레이팅 상세'),
+        title: Text('${widget.userName}님의 큐레이팅'),
         elevation: 0,
       ),
       body: Obx(() {
@@ -53,24 +57,22 @@ class _CurateDetailScreenState extends State<CurateDetailScreen> {
           slivers: [
            
             SliverToBoxAdapter(
-              child: Card(
-                margin: EdgeInsets.all(8),
-                child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '요청일: ${formatDate(detail.createdAt)}',
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        '큐레이팅 내용',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '요청일: ${formatDate(detail.createdAt)}',
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                    SizedBox(height: 8),
+                    Text('AI 요약', style: TextStyle(fontSize: 20),),
+                    Text(
+                      controller.curateDetail.value!.deepCurate,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
                 ),
               ),
             ),

@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'dart:math';
 
-import 'package:to_doc/screens/careplus/curate_list.dart';
+import 'package:to_doc/screens/careplus/curate_screen.dart';
 
 class CurateFeed extends StatefulWidget {
   @override

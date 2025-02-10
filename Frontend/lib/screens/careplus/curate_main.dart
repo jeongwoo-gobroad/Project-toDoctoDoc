@@ -11,7 +11,7 @@ import 'package:get/get.dart';
 import '../chat/chat_screen.dart';
 import '../chat/dm_list.dart';
 import 'curate_feed.dart';
-import 'curate_list.dart';
+import 'curate_screen.dart';
 
 class CurateMain extends StatefulWidget {
   const CurateMain({super.key});
