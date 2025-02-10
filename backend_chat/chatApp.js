@@ -57,7 +57,7 @@ router.get(["/mapp/dm/joinChat/:cid"],
     
             const message = await getPreviousChat(worker, readedUntil);
     
-            res.status(200).json(returnResponse(false, "returnedPreviousChat", message));
+            res.status(200).json(returnResponse(false, "returnedPreviousChat", JSON.parse(message)));
     
             return;
         } catch (error) {

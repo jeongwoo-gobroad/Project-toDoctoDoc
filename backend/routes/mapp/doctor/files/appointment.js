@@ -104,8 +104,6 @@ router.get(["/getWithChatId/:cid"],
     checkIfLoggedIn,
     isDoctorThenProceed,
     async (req, res, next) => {
-        const user = await getTokenInformation(req, res);
-
         try {
             const chat = await Chat.findById(req.params.cid).populate({
                 path: 'appointment',
@@ -115,8 +113,8 @@ router.get(["/getWithChatId/:cid"],
                 }
             });
 
-            if (chat.doctor != user.userid) {
-                res.status(401).json(returnResponse(true, "notYourChat", "-"));
+            if (!chat || chat.doctor != req.userid) {
+                res.status(401).json(returnResponse(true, "notYourChatOrNoSuchChat", "-"));
 
                 return;
             }

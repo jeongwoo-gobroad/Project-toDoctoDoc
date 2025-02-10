@@ -12,11 +12,11 @@ const bubbleCollection = async () => {
         
         tagCountBubbleMap.clear();
 
-        allItems.forEach((post) => {
+        for (const post of allItems) {
             const tagLine = removeSpacesAndHashes(post.tag);
             const tags = tagLine.split(",");
 
-            tags.forEach((tag) => {
+            for (const tag of tags) {
                 if (tag.length > 0) {
                     if (tagCountBubbleMap.has(tag)) {
                         const context = tagCountBubbleMap.get(tag);
@@ -36,8 +36,35 @@ const bubbleCollection = async () => {
                         });
                     }
                 }
-            });
-        });
+            }
+        }
+
+        // allItems.forEach((post) => {
+        //     const tagLine = removeSpacesAndHashes(post.tag);
+        //     const tags = tagLine.split(",");
+
+        //     tags.forEach((tag) => {
+        //         if (tag.length > 0) {
+        //             if (tagCountBubbleMap.has(tag)) {
+        //                 const context = tagCountBubbleMap.get(tag);
+        //                 context.tagCount++;
+        //                 context.viewCount += post.views;
+        //                 tagCountBubbleMap.set(tag, context);
+        //                 if (context.tagCount > maxTagCountVal) {
+        //                     maxTagCountVal = context.tagCount;
+        //                 }
+        //                 if (context.viewCount > maxViewCountVal) {
+        //                     maxViewCountVal = context.viewCount;
+        //                 }
+        //             } else {
+        //                 tagCountBubbleMap.set(tag, {
+        //                     tagCount: 1,
+        //                     viewCount: post.views
+        //                 });
+        //             }
+        //         }
+        //     });
+        // });
 
         // tagCountBubbleMap.forEach(async (value, key, map) => {
         //     await setHashValue("GRAPHBOARD:", key, {

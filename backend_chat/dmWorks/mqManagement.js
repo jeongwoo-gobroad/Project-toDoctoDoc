@@ -40,7 +40,7 @@ parentPort.on('message', async (currentCnter) => {
 
         const wholeChatBubble = chats.concat(globalSubQueue);
 
-        parentPort.postMessage(wholeChatBubble);
+        parentPort.postMessage(JSON.stringify(wholeChatBubble));
 
         // console.log(wholeChatBubble, "sent to parentPort");
 

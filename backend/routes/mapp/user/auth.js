@@ -91,7 +91,7 @@ router.post(["/login"], async (req, res, next) => {
             await User.findByIdAndUpdate(user._id, {
                 refreshToken: refreshToken,
             });
-            redis.setCacheForNDaysAsync("DEVICE:" + user._id, pushToken, 270);
+            await redis.setCacheForNDaysAsync("DEVICE:" + user._id, pushToken, 270);
         } else {
             if (user.deviceIds.includes(deviceId)) {
                 // console.log("sameDevice");
