@@ -29,7 +29,7 @@ class _CurateMainState extends State<CurateMain> {
   void goToChatScreen(chat) async {
     print(chat.chatId);
     //linkTest();
-    Get.to(()=> ChatScreen(doctorId: chat.doctorId, chatId: chat.chatId, unreadMsg: chat.unreadChat, doctorName: chat.doctorName,))?.whenComplete(() {
+    Get.to(()=> ChatScreen(doctorId: chat.doctorId, chatId: chat.chatId, unreadMsg: chat.unreadChat, doctorName: chat.doctorName, autoIncrementId: chat.recentChat['autoIncrementId'],))?.whenComplete(() {
       setState(() {
         chatController.getChatList();
       });
@@ -305,11 +305,12 @@ class _CurateMainState extends State<CurateMain> {
                                 return;
                               }
 
-                              Get.to(()=> DMList(controller: chatController,))?.whenComplete(() {
-                                setState(() {
-                                  chatController.getChatList();
-                                });
-                              });
+                              // Get.to(()=> DMList(controller: chatController,))?.whenComplete(() {
+                              //   setState(() {
+                              //     chatController.getChatList();
+                              //   });
+                              // });
+                              Get.to(()=> DMList(controller: chatController));
                             },
                             style: TextButton.styleFrom(
                               shape: RoundedRectangleBorder(

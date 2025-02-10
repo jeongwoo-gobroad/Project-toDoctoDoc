@@ -19,6 +19,14 @@ _onDbCreate(Database db, int version) async {
       )
       '''
   );
+  await db.execute(
+      '''
+      CREATE TABLE chat_meta (
+        room_id TEXT PRIMARY KEY,
+        last_read_id INTEGER NOT NULL DEFAULT 0
+      )
+      '''
+  );
 }
 
 initDatabase() async {
@@ -74,6 +82,23 @@ class ChatDatabase {
     print(chatData);
     return chatData;
   }
+  Future<int> getLastReadId(String roomId) async {
+  var result = await db.query('chat_meta', where: 'room_id = ?', whereArgs: [roomId]);
+  if (result.isNotEmpty) {
+    return result.first['last_read_id'] as int;
+  } else {
+    //존재하지 않으면 초기값 0
+    await db.insert('chat_meta', {'room_id': roomId, 'last_read_id': 0});
+    return 0;
+  }
+
+}
+Future<void> updateLastReadId(String roomId, int newLastReadId) async {
+  var count = await db.update('chat_meta', {'last_read_id': newLastReadId}, where: 'room_id = ?', whereArgs: [roomId]);
+  if (count == 0) {
+    await db.insert('chat_meta', {'room_id': roomId, 'last_read_id': newLastReadId});
+  }
+}
 }
 
 

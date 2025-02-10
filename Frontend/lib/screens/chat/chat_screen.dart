@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:to_doc/Database/chat_database.dart';
 import 'package:to_doc/chat_object.dart';
 import 'package:to_doc/controllers/careplus/chat_appointment_controller.dart';
+import 'package:to_doc/controllers/careplus/chat_controller.dart';
 import 'package:to_doc/screens/chat/dm_chat_list_maker.dart';
 import 'package:to_doc/screens/chat/upper_appointment_inform.dart';
 import 'package:to_doc/socket_service/chat_socket_service.dart';
@@ -16,12 +17,12 @@ import '../../auth/auth_secure.dart';
 import '../intro.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key, required this.chatId, required this.unreadMsg, required this.doctorName, required this.doctorId}) : super(key:key);
+  const ChatScreen({Key? key, required this.chatId, required this.unreadMsg, required this.doctorName, required this.doctorId, required this.autoIncrementId}) : super(key:key);
   final String chatId;
   final int unreadMsg;
   final String doctorName;
   final String doctorId;
-
+  final int autoIncrementId;
 
   @override
   State<ChatScreen> createState() => _ChatScreen();
@@ -32,11 +33,13 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   final ScrollController _scrollController = ScrollController();
   late ChatSocketService socketService;
   final ChatDatabase chatDb = ChatDatabase();
+  final ChatController chatController = Get.put(ChatController());
 
   RxBool isLoading = true.obs;
 
   late int updateUnread;
   late bool isAppointment;
+  late int autoIncrement; 
 
   List<ChatObject> _messageList = [];
 
@@ -104,7 +107,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
           setState(() {
             _messageList.add(ChatObject(content: chatData['message'], role: 'doctor', createdAt: time.toLocal()));
             chatDb.saveChat(widget.chatId, widget.doctorId, chatData['message'], time, 'doctor');
-
+            //chatDb.updateLastReadId(widget.chatId, ++autoIncrement);
             animateToBottom();
           });
         }
@@ -121,6 +124,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     super.initState();
     chatAppointmentController.getAppointmentInformation(widget.chatId);
     updateUnread = widget.unreadMsg;
+    autoIncrement = widget.autoIncrementId;
     isLoading.value = false;
   }
 
@@ -150,6 +154,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       ),
       body: PopScope(
         onPopInvokedWithResult: (didPop, result) {
+          chatController.getChatList();
           socketService.onDisconnect();
         },
         child: Column(

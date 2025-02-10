@@ -17,9 +17,9 @@ class ChatContent {
 
   factory ChatContent.fromMap(map, temp) {
     return ChatContent(
-      doctorId: map['doctorId'].toString(),
-      doctorName: map['doctorName'].toString(),
-      date: DateTime.parse(map['date'] as String),
+      doctorId: map['doctorId'].toString() ?? '',
+      doctorName: map['doctorName'].toString() ?? '',
+      date: DateTime.parse(map['date'] as String) ?? DateTime.now(),
       cid: map['cid'].toString(),
       isBanned: map['isBanned'] ?? false,
       recentChat: temp,

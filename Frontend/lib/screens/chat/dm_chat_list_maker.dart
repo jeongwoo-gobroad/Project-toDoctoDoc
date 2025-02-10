@@ -10,6 +10,24 @@ class makeChatList extends StatelessWidget {
   final ScrollController scrollController;
   final updateUnread;
 
+   Widget _buildUnreadDivider() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Expanded(child: Divider(color: Colors.grey, thickness: 1)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text(
+              '새 메시지',
+              style: TextStyle(color: Colors.grey, fontSize: 12),
+            ),
+          ),
+          Expanded(child: Divider(color: Colors.grey, thickness: 1)),
+        ],
+      ),
+    );
+  }
 
   bool shouldShowTime(int index) {
     if (index == messageList.length - 1) return true;
@@ -47,112 +65,128 @@ class makeChatList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<int> unreadIndices = [];
+    int firstUnreadIndex = -1;
+    print('from dm chat maker : ${messageList}, unread: ${updateUnread}');
+    if (updateUnread != null && updateUnread! > 0) {
+      int remaining = updateUnread!;
+      for (int i = messageList.length - 1; i >= 0; i--) {
+        if (remaining <= 0) break;
+        if (messageList[i].role == 'doctor') {
+          unreadIndices.add(i);
+          print('unreadIndies: ${i}');
+          remaining--;
+        }
+      }
+      if (unreadIndices.isNotEmpty) {
+        unreadIndices.sort();
+        firstUnreadIndex = unreadIndices.first;
+      }
+    }
     return Expanded(
       child: ListView.builder(
-          controller: scrollController,
-          itemCount: messageList.length,
-          itemBuilder: (context, index) {
-            final isUser = messageList[index].role == 'user';
+        controller: scrollController,
+        itemCount: messageList.length,
+        itemBuilder: (context, index) {
+          final isUser = messageList[index].role == 'user';
+          bool showUnreadDivider = index == firstUnreadIndex;
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(
+          return Padding(
+            padding: const EdgeInsets.symmetric(
                 vertical: 4.0,
                 horizontal: 10.0,
               ),
-              child: Column(
-                children: [
-                  if (shouldShowDate(index)) ... [
-                    Container(
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(15),
+            child: Column(
+              children: [
+                if (showUnreadDivider) _buildUnreadDivider(),
+                if (shouldShowDate(index)) ...[
+                  Container(
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Text(
+                      formatDate(messageList[index].createdAt),
+                      style: TextStyle(fontSize: 13),
+                    ),
+                  ),
+                ],
+                Row(
+                  mainAxisAlignment: isUser
+                      ? MainAxisAlignment.end
+                      : MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    if (!isUser) ...[
+                      CircleAvatar(
+                        radius: 15,
+                        backgroundColor: Colors.grey[300],
+                        child: Icon(Icons.person, color: Colors.grey[600]),
                       ),
-                      child: Text(
-                        formatDate(messageList[index].createdAt),
-                        style: TextStyle(fontSize: 13),
+                      SizedBox(width: 8),
+                    ],
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        if (index + updateUnread! == messageList.length - 1 && isUser) ...[
+                          Container(
+                            padding: EdgeInsets.fromLTRB(0, 0, 12, 5),
+                            child: Text(
+                              '여기까지 읽음',
+                              style: TextStyle(fontSize: 10),
+                            ),
+                          ),
+                        ],
+                        if (isUser && shouldShowTime(index))...[
+                          Container(
+                            padding: EdgeInsets.fromLTRB(12, 0, 12, 5),
+                            child: Text(
+                              formatTime(messageList[index].createdAt),
+                              style: TextStyle(fontSize: 10),
+                            ),
+                          ),
+                        ]
+                      ],
+                    ),
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: isUser
+                            ? CrossAxisAlignment.end
+                            : CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: isUser
+                                  ? Color.fromARGB(255, 225, 234, 205)
+                                  : Color.fromARGB(255, 244, 242, 248),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              messageList[index].content,
+                              style: TextStyle(fontSize: 15),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-
-                  Row(
-                    mainAxisAlignment: isUser
-                        ? MainAxisAlignment.end
-                        : MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      //상대방 표시시
-                      if (!isUser) ...[
-                        CircleAvatar(
-                          radius: 15,
-                          backgroundColor: Colors.grey[300],
-                          child: Icon(Icons.person, color: Colors.grey[600]),
+                    if (!isUser && shouldShowTime(index)) ...[
+                      Container(
+                        padding: EdgeInsets.all(12),
+                        child: Text(
+                          formatTime(messageList[index].createdAt),
+                          style: TextStyle(fontSize: 10),
                         ),
-                        SizedBox(width: 8),
-                      ],
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-
-                        children: [
-                          if (index + updateUnread == messageList.length - 1 && isUser) ... [
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0, 0, 12, 5),
-                              child: Text(
-                                '여기까지 읽음',
-                                style: TextStyle(fontSize: 10),
-                              ),
-                            ),
-                          ],
-
-                          if (isUser && shouldShowTime(index))...[
-                            Container(
-                              padding: EdgeInsets.fromLTRB(12, 0, 12, 5),
-                              child: Text(
-                                formatTime(messageList[index].createdAt),
-                                style: TextStyle(fontSize: 10),
-                              ),
-                            ),
-                          ]
-                        ],),
-
-
-                      Flexible(
-                        child: Column(
-                          crossAxisAlignment: isUser
-                              ? CrossAxisAlignment.end
-                              : CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: isUser
-                                    ? Color.fromARGB(255, 225, 234, 205)
-                                    : Color.fromARGB(255, 244, 242, 248),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                messageList[index].content,
-                                style: TextStyle(fontSize: 15),
-                              ),
-                            ),
-                          ],),
                       ),
-
-                      if (!isUser && shouldShowTime(index)) ...[
-                        Container(
-                          padding: EdgeInsets.all(12),
-                          child: Text(
-                            formatTime(messageList[index].createdAt),
-                            style: TextStyle(fontSize: 10),
-                          ),
-                        ),
-                      ],
-                    ],),
-                ],),
-            );
-          },
-
+                    ],
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

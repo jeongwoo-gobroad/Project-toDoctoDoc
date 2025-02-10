@@ -3,11 +3,12 @@ import 'package:get/get.dart';
 import 'dart:convert';
 import '../../auth/auth_dio.dart';
 import 'chat_data_model.dart';
+import 'package:to_doc/Database/chat_database.dart';
 
 class ChatController extends GetxController{
   final chatList = <ChatContent>[].obs;
   var isLoading = true.obs;
-
+  final ChatDatabase chatDatabase = ChatDatabase();
   Future<void> requestChat(String doctorID) async {
     Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
@@ -41,7 +42,7 @@ class ChatController extends GetxController{
     }
   }
 
-
+  int lastReadId = 0;
   Future<void> getChatList() async {
     Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
@@ -75,10 +76,24 @@ class ChatController extends GetxController{
           //DateTime.parse(chat['recentChat']['createdAt'] as String),
           'autoIncrementId' : chat['recentChat']['autoIncrementId'],
         };
+
+
+        int serverAutoIncrementId = chat['recentChat']['autoIncrementId'];
+        print('serverAutoIncremented: ${serverAutoIncrementId}');
+        
+        lastReadId = await chatDatabase.getLastReadId(chat['cid']); //기존 불러오기
+        print('lastreadId : ${lastReadId}');
+        
+        await chatDatabase.updateLastReadId(chat['cid'], serverAutoIncrementId); //저장장
+
+        // unreadCount = 서버 최신 id - 로컬 마지막 읽은 id
+        int unreadCount = serverAutoIncrementId - lastReadId;
+        temp['unreadCount'] = unreadCount;
+        print('안읽은 개수: ${unreadCount}');
+        
         chatList.add(ChatContent.fromMap(chat, temp));
       }
-      print(chatList);
-
+      //_isFetched = true;
       isLoading.value = false;
       return;
     }
@@ -88,6 +103,7 @@ class ChatController extends GetxController{
     isLoading.value = false;
   }
 
+  
   Future<void> enterChat(String cid, int value) async {
     print('enter chat');
     Dio dio = Dio();
@@ -106,10 +122,24 @@ class ChatController extends GetxController{
 
     if(response.statusCode == 200){
       final data = json.decode(response.data);
-
+      
       
       print('from chat controller joinChat: ${data}');
+      //chatList.value = [];
+      // print(data['content']['recentChat']['role'].toString());
+      // print(data['content']['recentChat']['message'].toString());
+      for (var chat in data['content']) {
+        print(chat);
+        Map<String, dynamic> temp = {
+          'role' : chat['role'].toString(),
+          'message' : chat['message'].toString(),
+          'createdAt' : chat['createdAt'],
+          //DateTime.parse(chat['recentChat']['createdAt'] as String),
+          'autoIncrementId' : chat['autoIncrementId'],
+        };
 
+        chatList.add(ChatContent.fromMap(Null, temp));
+      }
       
       
     }

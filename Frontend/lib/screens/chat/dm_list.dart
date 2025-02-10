@@ -18,28 +18,26 @@ class DMList extends StatefulWidget {
 class _DMListState extends State<DMList> {
 
   void goToChatScreen(chat) async {
-    
-    widget.controller.enterChat(chat.cid, chat.recentChat['autoIncrementId']);
+    print('안읽은 개수: ${chat.recentChat['unreadCount']}');
+    print('lastreadid: ${widget.controller.lastReadId}');
+    widget.controller.enterChat(chat.cid, widget.controller.lastReadId);
+    //widget.controller.enterChat(chat.cid, chat.recentChat['autoIncrementId']);
 
-    Get.to(()=> ChatScreen(doctorId: chat.doctorId, chatId: chat.cid, unreadMsg: 2, doctorName: chat.doctorName,))?.whenComplete(() {
-      if (this.mounted) {
-        setState(() {
-          widget.controller.getChatList();
-        });
-      }
-    });
+    Get.to(()=> ChatScreen(doctorId: chat.doctorId, chatId: chat.cid, unreadMsg: chat.recentChat['unreadCount'], doctorName: chat.doctorName,autoIncrementId: chat.recentChat['autoIncrementId'],));
+      
+   
   }
 
   @override
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        setState(() {
-          widget.controller.getChatList();
-        });
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //     setState(() {
+    //       widget.controller.getChatList();
+    //     });
 
-    });
+    // });
 
   }
 
@@ -120,6 +118,24 @@ class _DMListState extends State<DMList> {
                         ],
                       ),
                     ),
+                    if (chat.recentChat['unreadCount'] != null &&
+                        chat.recentChat['unreadCount'] > 0)
+                      Container(
+                        margin: const EdgeInsets.only(left: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          '${chat.recentChat['unreadCount']}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
