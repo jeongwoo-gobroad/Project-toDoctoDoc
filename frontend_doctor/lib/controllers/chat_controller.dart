@@ -33,6 +33,8 @@ class ChatController extends GetxController{
       final data = json.decode(response.data);
       print(data);
 
+      chatList.value = [];
+
       for (var chat in data['content']) {
         Map<String, dynamic> temp = {
           'role' : chat['recentChat']['role'].toString(),
