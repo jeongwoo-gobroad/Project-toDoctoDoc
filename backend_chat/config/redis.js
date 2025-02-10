@@ -16,4 +16,18 @@ const connectRedis = async () => {
     return;
 }
 
-module.exports = {connectRedis, redisClient};
+const disconnectRedis = async () => {
+    try {
+        await redisClient.disconnect();
+
+        console.log("Redis disconnected");
+
+        return;
+    } catch (error) {
+        console.error(error, "errorAtConnectRedis");
+
+        return;
+    }
+};
+
+module.exports = {connectRedis, disconnectRedis, redisClient};

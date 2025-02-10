@@ -32,9 +32,9 @@ const tagCountRefreshWorksViaRedis = async (newTags) => {
 
     for (let [tag, obj] of prev) {
         obj.tagCount /= maxTagCount;
-        setHashValue("GRAPHBOARD:", tag, obj);
+        await setHashValue("GRAPHBOARD:", tag, obj);
     }
-    setCacheForever("GRAPHBOARD_MAX_TAGCOUNT:", maxTagCount);
+    await setCacheForever("GRAPHBOARD_MAX_TAGCOUNT:", maxTagCount);
 
     // console.log(prev, "tagCountRefreshWorksViaRedis");
 
@@ -67,9 +67,9 @@ const viewCountRefreshWorksViaRedis = async (currentTags) => {
 
     for (let [tag, obj] of prev) {
         obj.viewCount /= maxViewCount;
-        setHashValue("GRAPHBOARD:", tag, obj);
+        await setHashValue("GRAPHBOARD:", tag, obj);
     }
-    setCacheForever("GRAPHBOARD_MAX_VIEWCOUNT:", maxViewCount);
+    await setCacheForever("GRAPHBOARD_MAX_VIEWCOUNT:", maxViewCount);
 
     // console.log(prev, "viewCountRefreshWorksViaRedis");
 

@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const Chat = require("../../../models/Chat");
 const axios = require('axios');
 const sendDMPushNotification = require("../push/dmPush");
-const { setCacheForNDaysAsync, removeItemFromSet, doesSetContains, setSetForever } = require("../../../middleware/redisCaching");
+const { removeItemFromSet, doesSetContains, setSetForever, pushMessageToMessageQueue } = require("../../../middleware/redisCaching");
 const { redisClient } = require("../../../config/redis");
 const Redis = require("../../../config/redisObject");
 
@@ -34,7 +34,7 @@ const chatting_user = async (socket, next) => {
 
         const receiver = new Redis();
 
-        receiver.redisClient.subscribe(("CHATROOM_CHANNEL" + roomNo).toString(), (message, channel) => {
+        receiver.redisClient.subscribe(("CHATROOM_CHANNEL:" + roomNo).toString(), (message, channel) => {
             socket.emit('chatReceivedFromServer', message);
         });
 
@@ -43,7 +43,7 @@ const chatting_user = async (socket, next) => {
             const chatObject = {role: "user", message: data, createdAt: now};
 
             try {
-                await redisClient.lPush(("CHATROOM:QUEUE:" + roomNo).toString(), JSON.stringify(chatObject));
+                await pushMessageToMessageQueue("CHATROOM:QUEUE:" + roomNo, chatObject);
             } catch (error) {   
                 console.error(error, "errorAtUserSendChat");
             }
@@ -58,9 +58,10 @@ const chatting_user = async (socket, next) => {
         socket.on("disconnect", async (reason) => {
             console.log("User socket disconnected");
             try {
+                await receiver.redisClient.unsubscribe(("CHATROOM_CHANNEL:" + roomNo).toString());
                 receiver.closeConnnection();
-                await redisClient.unsubscribe(("CHATROOM_CHANNEL" + roomNo).toString());
-                removeItemFromSet("CHAT:MEMBER:" + roomNo, "USER");
+                
+                await removeItemFromSet("CHAT:MEMBER:" + roomNo, "USER");
 
                 const uri = encodeURI(`http://jeongwoo-kim-web.myds.me:5000/mapp/dm/leaveChat/${roomNo}`);
                 const uriOptions = {

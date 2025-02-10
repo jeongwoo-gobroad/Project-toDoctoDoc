@@ -38,15 +38,21 @@ const bubbleCollection = async () => {
             });
         });
 
-        tagCountBubbleMap.forEach((value, key, map) => {
-            setHashValue("GRAPHBOARD:", key, {
+        // tagCountBubbleMap.forEach(async (value, key, map) => {
+        //     await setHashValue("GRAPHBOARD:", key, {
+        //         tagCount: value.tagCount / maxTagCountVal,
+        //         viewCount: value.viewCount / maxViewCountVal
+        //     });
+        // });
+        for (const [key, value] of tagCountBubbleMap) {
+            await setHashValue("GRAPHBOARD:", key, {
                 tagCount: value.tagCount / maxTagCountVal,
                 viewCount: value.viewCount / maxViewCountVal
             });
-        });
+        }
 
-        setCacheForever("GRAPHBOARD_MAX_VIEWCOUNT:", maxViewCountVal);
-        setCacheForever("GRAPHBOARD_MAX_TAGCOUNT:", maxTagCountVal);
+        await setCacheForever("GRAPHBOARD_MAX_VIEWCOUNT:", maxViewCountVal);
+        await setCacheForever("GRAPHBOARD_MAX_TAGCOUNT:", maxTagCountVal);
 
         console.log("GraphBoard Initiailized");
     } catch (error) {

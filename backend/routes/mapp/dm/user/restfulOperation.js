@@ -8,7 +8,6 @@ const UserSchema = require("../../../../models/User");
 const mongoose = require("mongoose");
 const Doctor = require("../../../../models/Doctor");
 const Appointment = require("../../../../models/Appointment");
-const { messageCount } = require("../../../../middleware/redisMessageQueueing");
 const User = mongoose.model('User', UserSchema);
 const router = express.Router();
 

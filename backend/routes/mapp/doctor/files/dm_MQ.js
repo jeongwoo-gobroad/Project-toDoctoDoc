@@ -2,13 +2,10 @@ const { default: mongoose } = require("mongoose");
 const {redisClient} = require("../../../../config/redis");
 const Chat = require("../../../../models/Chat");
 const UserSchema = require("../../../../models/User");
-const Doctor = require("../../../../models/Doctor");
-const User = mongoose.model('User', UserSchema);
 const axios = require('axios');
 const jwt = require("jsonwebtoken");
-const { setCacheForThreeDaysAsync, getCache, setCacheForNDaysAsync, setSetForever, removeItemFromSet, doesSetContains } = require("../../../../middleware/redisCaching");
+const { setSetForever, removeItemFromSet, doesSetContains, pushMessageToMessageQueue } = require("../../../../middleware/redisCaching");
 const sendDMPushNotification = require("../../push/dmPush");
-const {Worker} = require('worker_threads');
 const Redis = require("../../../../config/redisObject");
 
 const chatting_doctor = async (socket, next) => {
@@ -48,7 +45,7 @@ const chatting_doctor = async (socket, next) => {
             const chatObject = {role: "doctor", message: data, createdAt: now};
 
             try {
-                await redisClient.lPush(("CHATROOM:QUEUE:" + roomNo).toString(), JSON.stringify(chatObject));
+                await pushMessageToMessageQueue("CHATROOM:QUEUE:" + roomNo, chatObject);
             } catch (error) {
                 console.error(error, "errorAtDoctorSendChat");
             }
@@ -63,9 +60,10 @@ const chatting_doctor = async (socket, next) => {
         socket.on("disconnect", async (reason) => {
             console.log("Doctor socket disconnected");
             try {
+                await receiver.redisClient.unsubscribe(("CHATROOM_CHANNEL:" + roomNo).toString());
                 receiver.closeConnnection();
-                await redisClient.unsubscribe(("CHATROOM_CHANNEL:" + roomNo).toString());
-                removeItemFromSet("CHAT:MEMBER:" + roomNo, "DOCTOR");
+
+                await removeItemFromSet("CHAT:MEMBER:" + roomNo, "DOCTOR");
 
                 const uri = encodeURI(`http://jeongwoo-kim-web.myds.me:5000/mapp/dm/leaveChat/${roomNo}`);
                 const uriOptions = {

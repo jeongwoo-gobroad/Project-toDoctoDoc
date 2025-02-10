@@ -42,7 +42,6 @@ app.use(session({
     cookie: {secure: false}
 }));
 
-redis.connectRedis();
 connectDB();
 connectFCM();
 bubbleCollection();

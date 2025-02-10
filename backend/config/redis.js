@@ -23,11 +23,9 @@ const connectRedis = async () => {
 
 const disconnectRedis = async () => {
     try {
-        const conn = await redisClient.disconnect();
+        await redisClient.disconnect();
 
-        if (conn) {
-            console.log("Redis connected");
-        }
+        console.log("Redis disconnected");
 
         return;
     } catch (error) {
