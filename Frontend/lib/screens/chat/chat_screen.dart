@@ -23,7 +23,6 @@ class ChatScreen extends StatefulWidget {
   final String doctorName;
   final String doctorId;
   final int autoIncrementId;
-
   @override
   State<ChatScreen> createState() => _ChatScreen();
 }
@@ -52,7 +51,37 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       );
     });
   }
+  void parseAndStoreChats() {
 
+    print('parseAndStore');
+    List<dynamic> chatsJson = chatController.chatContents;
+    
+    print(chatsJson);
+
+     for (var chatData in chatsJson) {
+      DateTime time;
+      // DateTime 객체로 변환
+      //DateTime messageTime = DateTime.parse(chatData['createdAt']);
+      var tempTime = chatData['createdAt'];
+      if(tempTime is String){
+       time = DateTime.parse(chatData['createdAt']).toLocal();
+      }
+      else{
+      time = DateTime.fromMillisecondsSinceEpoch(tempTime);
+      }
+      print('hello $chatData');
+      // messageList에 추가
+      _messageList.add(
+        ChatObject(
+          content: chatData['message'],
+          role: chatData['role'],
+          createdAt: time.toLocal()
+        )
+      );
+      chatDb.saveChat(widget.chatId, widget.doctorId, chatData['message'], time, 'doctor');
+    }
+  
+}
   void asyncBefore() async {
     SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
     String? token = await storage.readAccessToken();
@@ -78,7 +107,8 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
             createdAt: DateTime.parse(chat['timestamp']).toLocal()));
       }
     }
-
+    //enterChat으로 받는 인자들 db에 삽입
+    parseAndStoreChats();
     if (this.mounted) {
       setState(() {
         animateToBottom();

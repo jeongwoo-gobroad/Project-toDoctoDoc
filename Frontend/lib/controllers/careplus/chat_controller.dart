@@ -103,7 +103,8 @@ class ChatController extends GetxController{
     isLoading.value = false;
   }
 
-  
+  final RxList<dynamic> chatContents = <dynamic>[].obs;
+
   Future<void> enterChat(String cid, int value) async {
     print('enter chat');
     Dio dio = Dio();
@@ -125,21 +126,25 @@ class ChatController extends GetxController{
       
       
       print('from chat controller joinChat: ${data}');
-      //chatList.value = [];
-      // print(data['content']['recentChat']['role'].toString());
-      // print(data['content']['recentChat']['message'].toString());
-      for (var chat in data['content']) {
-        print(chat);
-        Map<String, dynamic> temp = {
-          'role' : chat['role'].toString(),
-          'message' : chat['message'].toString(),
-          'createdAt' : chat['createdAt'],
-          //DateTime.parse(chat['recentChat']['createdAt'] as String),
-          'autoIncrementId' : chat['autoIncrementId'],
-        };
+      chatContents.value = data['content'];
+      print(chatContents);
 
-        chatList.add(ChatContent.fromMap(null, temp));
-      }
+
+      // //chatList.value = [];
+      // // print(data['content']['recentChat']['role'].toString());
+      // // print(data['content']['recentChat']['message'].toString());
+      // for (var chat in data['content']) {
+      //   print(chat);
+      //   Map<String, dynamic> temp = {
+      //     'role' : chat['role'].toString(),
+      //     'message' : chat['message'].toString(),
+      //     'createdAt' : chat['createdAt'],
+      //     //DateTime.parse(chat['recentChat']['createdAt'] as String),
+      //     'autoIncrementId' : chat['autoIncrementId'],
+      //   };
+
+      //   chatList.add(ChatContent.fromMap(null, temp));
+      // }
       
       
     }

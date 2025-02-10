@@ -20,10 +20,10 @@ class _DMListState extends State<DMList> {
   void goToChatScreen(chat) async {
     print('안읽은 개수: ${chat.recentChat['unreadCount']}');
     print('lastreadid: ${widget.controller.lastReadId}');
-    widget.controller.enterChat(chat.cid, widget.controller.lastReadId);
+    await widget.controller.enterChat(chat.cid, widget.controller.lastReadId);
     //widget.controller.enterChat(chat.cid, chat.recentChat['autoIncrementId']);
 
-    Get.to(()=> ChatScreen(doctorId: chat.doctorId, chatId: chat.cid, unreadMsg: chat.recentChat['unreadCount'], doctorName: chat.doctorName,autoIncrementId: chat.recentChat['autoIncrementId'],));
+    Get.to(()=> ChatScreen(doctorId: chat.doctorId, chatId: chat.cid, unreadMsg: chat.recentChat['unreadCount'], doctorName: chat.doctorName,autoIncrementId: chat.recentChat['autoIncrementId']));
       
    
   }
