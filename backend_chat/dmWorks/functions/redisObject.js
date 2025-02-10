@@ -5,13 +5,7 @@ class Redis {
         this.redisClient = redis.createClient({
             url: `redis://${process.env.RS_USERNAME}:${process.env.RS_PASSWORD}@${process.env.RS_HOST}:${process.env.RS_PORT}/0`
         });
-        this.redisClient.on('connect', () => {
-            console.log("Redis Object Connected");
-        });
-        this.redisClient.on('error', (error) => {
-            console.error(error, "Redis Object Creation Error");
-        });
-        this.redisClient.connect().then().catch((error) => {
+        this.redisClient.connect().then(() => {console.log("Redis Object Connected");}).catch((error) => {
             console.error(error, "Redis Object Connection Error");
         });
     }

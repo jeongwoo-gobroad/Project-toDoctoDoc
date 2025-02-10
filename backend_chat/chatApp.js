@@ -9,12 +9,15 @@ const returnResponse = require("./dmWorks/functions/standardResponseJSON");
 const { checkIfLoggedIn, checkIfMyChat } = require('./middlewares/checkingMiddleware');
 const Redis = require('./dmWorks/functions/redisObject');
 const connectDB = require('./config/mongo');
+const EventEmitter = require('events');
 
 connectDB();
 
 const app = express();
 const server = http.createServer(app);
 const port = process.env.SERVER_PORT || 5000;
+
+EventEmitter.setMaxListeners(0);
 
 app.use(cors());
 
@@ -156,3 +159,7 @@ setInterval(async () => {
         console.error(error, "errorAtSetInterval");
     }
 }, 100000);
+
+setInterval(async () => {
+    console.log(map);
+}, 5000);

@@ -25,7 +25,7 @@ router.get(["/list"],
             });
             const chats = usr.chats;
             const previews = [];
-            const redis = new Redis();
+            let redis = new Redis();
 
             for (const chat of chats) {
                 const prevChat = {};

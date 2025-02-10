@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const AddressSchema = require("./Address");
+const AccountLimitCount_doctor = require("./AccountLimitCount_doctor");
 
 const DoctorSchema = new mongoose.Schema({
     id: {
@@ -85,8 +86,10 @@ const DoctorSchema = new mongoose.Schema({
     schedule: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Schedule',
-        default: false
-    }
+    },
+    limits: {
+        type: AccountLimitCount_doctor,
+    },
 });
 
 module.exports = mongoose.model("Doctor", DoctorSchema);
