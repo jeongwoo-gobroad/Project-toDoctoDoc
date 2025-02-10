@@ -1,5 +1,5 @@
 const fcm = require("firebase-admin");
-const { getCache } = require("../../../middleware/redisCaching");
+const Redis = require("../../../config/redisObject");
 
 const getMessageContext = (token, info) => {
     const message = {
@@ -33,17 +33,21 @@ const getMessageContext = (token, info) => {
 
 const sendDMPushNotification = async (deviceIds, info) => {
     try {
-        // console.log(info);
-        deviceIds.forEach(async (deviceId) => {
+        let redis = new Redis();
+
+        for (const deviceId of deviceIds) {
             try {
                 let cache = null;
-                if ((cache = await getCache("DEVICE:" + deviceId))) {
+                if ((cache = await redis.getCache("DEVICE:" + deviceId))) {
                     await fcm.messaging().send(getMessageContext(cache, info));
                 }
             } catch (error) {
-                console.error(error, "errorAtsendDMPushNotification");
+                console.error(error, "errorAtsendCuratePushNotification");
             }
-        });
+        }
+
+        redis.closeConnnection();
+        redis = null;
     } catch (error) {
         console.error(error, "errorAtsendDMPushNotification");
     }

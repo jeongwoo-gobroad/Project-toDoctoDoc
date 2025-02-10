@@ -8,7 +8,6 @@ const connectDB = require("./config/db");
 const http = require("http");
 const { wrap } = require("module");
 const cors = require("cors");
-const redis = require("./config/redis");
 const socket = require("./routes/socket/socket").setServer;
 const connectFCM = require("./routes/mapp/push/fcm");
 const userEmitter = require("./events/eventDrivenLists");

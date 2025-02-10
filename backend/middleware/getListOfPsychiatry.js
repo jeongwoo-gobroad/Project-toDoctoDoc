@@ -1,5 +1,5 @@
 const axios = require('axios');
-const caching = require("./redisCaching");
+const Redis = require('../config/redisObject');
 
 /* radius는 m 단위이다. */
 const returnListOfPsychiatry = async (x, y, radius, page) => {
@@ -15,15 +15,22 @@ const returnListOfPsychiatry = async (x, y, radius, page) => {
     let cached;
 
     try {   
-        if ((cached = await caching.getCache("DOCS:" + uri))) {
+        let redis = new Redis();
+        if ((cached = await redis.getCache("DOCS:" + uri))) {
             console.log("returned cached documents");
     
+            redis.closeConnnection();
+            redis = null;
+
             return cached;
         }
     
         const body = await axios.get(uri, kakaoMapOptions);
 
-        await caching.setCache("DOCS:" + uri, body.data.documents);
+        await redis.setCache("DOCS:" + uri, body.data.documents);
+
+        redis.closeConnnection();
+        redis = null;
 
         return body.data.documents;
     } catch (error) {

@@ -11,7 +11,7 @@ const router = express.Router();
 
 const User = mongoose.model("User", UserSchema);
 const Doctor = require("../../../../models/Doctor");
-const { setCacheForNDaysAsync, getCache } = require("../../../../middleware/redisCaching");
+const Redis = require("../../../../config/redisObject");
 
 router.post(["/dupemailcheck"],
     checkIfNotLoggedIn,
@@ -68,6 +68,7 @@ router.post(["/login"],
     checkIfNotLoggedIn, 
     async (req, res, next) => {
         const {userid, password, deviceId, pushToken} = req.body;
+        let redis = new Redis();
 
         try {
             const doctor = await Doctor.findOne({id: userid});
@@ -87,15 +88,15 @@ router.post(["/login"],
                     await Doctor.findByIdAndUpdate(doctor._id, {
                         refreshToken: refreshToken,
                     });
-                    setCacheForNDaysAsync("DEVICE:" + doctor._id, pushToken, 270);
+                    await redis.setCacheForNDaysAsync("DEVICE:" + doctor._id, pushToken, 270);
                 } else {
                     if (doctor.deviceIds.includes(deviceId)) {
-                        const prevToken = await getCache("DEVICE:" + deviceId);
+                        const prevToken = await redis.getCache("DEVICE:" + deviceId);
                         await Doctor.findByIdAndUpdate(doctor._id, {
                             refreshToken: refreshToken,
                         });
                         if (prevToken != pushToken) { // 만약 토큰이 갱신되었다면
-                            setCacheForNDaysAsync("DEVICE:" + deviceId, pushToken, 270);
+                            await redis.setCacheForNDaysAsync("DEVICE:" + deviceId, pushToken, 270);
                         }
                     } else {
                         console.log(deviceId, "->", pushToken); // 하지메떼노 등록
@@ -103,23 +104,23 @@ router.post(["/login"],
                             refreshToken: refreshToken,
                             $push: {deviceIds: deviceId}
                         });
-                        setCacheForNDaysAsync("DEVICE:" + deviceId, pushToken, 270);
+                        await redis.setCacheForNDaysAsync("DEVICE:" + deviceId, pushToken, 270);
                     }
                 }
 
                 res.status(200).json(returnResponse(false, "logged_in", {token: token, refreshToken: refreshToken}));
-
-                return;
             } else if (doctor && !doctor.isVerified) {
                 res.status(601).json(returnResponse(true, "register_pending", "현재 인증 절차 진행 중입니다."));
-
-                return;
             } else {
                 res.status(403).json(returnResponse(true, "no_such_user", "등록된 유저가 없습니다."));
-
-                return;
             }
+
+            redis.closeConnnection();
+            redis = null;
         } catch (error) {
+            redis.closeConnnection();
+            redis = null;
+
             console.error(error, "errorAtPostLogin_Doctor");
 
             res.status(401).json(returnResponse(true, "errorAtPostLogin", "-"));
@@ -132,13 +133,17 @@ router.get(["/logout"],
     async (req, res, next) => {
         try {
             const {pushToken} = req.body;
+            let redis = new Redis();
             const user = await getTokenInformation(req, res);
     
             await Doctor.findByIdAndUpdate(user.userid, {
                 $pull: {deviceIds: deviceId}
             });
-            delCache("Device_Doctor: " + deviceId);
+            redis.delCache("Device_Doctor: " + deviceId);
             console.log("pulled token");
+
+            redis.closeConnnection();
+            redis = null;
     
             res.status(200).json(returnResponse(false, "loggedOut", "-"));
             

@@ -11,7 +11,7 @@ const { tagMap, tagGraph } = require("../../../serverSideWorks/tagCollection");
 const Post = require("../../../models/Post");
 const mongoose = require("mongoose");
 const { tagCountBubbleMap } = require("../../../serverSideWorks/bubbleCollection");
-const { getHashAll } = require("../../../middleware/redisCaching");
+const Redis = require("../../../config/redisObject");
 
 const User = mongoose.model("User", UserSchema);
 
@@ -38,8 +38,9 @@ router.get(["/graphBoard"],
         const user = await getTokenInformation(req, res);
 
         try {
+            let redis = new Redis();
             const usr = await User.findById(user.userid);
-            const temp = await getHashAll("GRAPHBOARD:");
+            const temp = await redis.getHashAll("GRAPHBOARD:");
 
             for (const tag of usr.bannedTags) {
                 if (temp.has(tag)) {
@@ -50,6 +51,9 @@ router.get(["/graphBoard"],
             const _bubbleList = Object.fromEntries(temp);
 
             res.status(200).json(returnResponse(false, "graphBoardData", {_bubbleList: _bubbleList}));
+
+            redis.closeConnnection();
+            redis = null;
 
             return;
         } catch (error) {

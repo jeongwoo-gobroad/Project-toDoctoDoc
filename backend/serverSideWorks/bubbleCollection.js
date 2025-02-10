@@ -1,10 +1,11 @@
-const { setHashValue, setCache, setCacheForever } = require("../middleware/redisCaching");
+const Redis = require("../config/redisObject");
 const Post = require("../models/Post")
 const removeSpacesAndHashes = require("../middleware/usefulFunctions").removeSpacesAndHashes;
 
 const bubbleCollection = async () => {
     try {
         const allItems = await Post.find();
+        let redis = new Redis();
         const tagCountBubbleMap = new Map();
         let maxTagCountVal = 0;
         let maxViewCountVal = 0;
@@ -45,14 +46,18 @@ const bubbleCollection = async () => {
         //     });
         // });
         for (const [key, value] of tagCountBubbleMap) {
-            await setHashValue("GRAPHBOARD:", key, {
+            await redis.setHashValue("GRAPHBOARD:", key, {
                 tagCount: value.tagCount / maxTagCountVal,
                 viewCount: value.viewCount / maxViewCountVal
             });
         }
 
-        await setCacheForever("GRAPHBOARD_MAX_VIEWCOUNT:", maxViewCountVal);
-        await setCacheForever("GRAPHBOARD_MAX_TAGCOUNT:", maxTagCountVal);
+        await redis.setCacheForever("GRAPHBOARD_MAX_VIEWCOUNT:", maxViewCountVal);
+        await redis.setCacheForever("GRAPHBOARD_MAX_TAGCOUNT:", maxTagCountVal);
+
+        redis.closeConnnection();
+
+        redis = null;
 
         console.log("GraphBoard Initiailized");
     } catch (error) {

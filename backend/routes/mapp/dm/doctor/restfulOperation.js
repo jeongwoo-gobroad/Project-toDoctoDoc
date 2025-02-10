@@ -3,11 +3,11 @@ const { checkIfLoggedIn, isDoctorThenProceed } = require("../../checkingMiddleWa
 const { getTokenInformation } = require("../../../auth/jwt");
 const Chat = require("../../../../models/Chat");
 const returnResponse = require("../../standardResponseJSON");
-const { getCache } = require("../../../../middleware/redisCaching");
 const UserSchema = require("../../../../models/User");
 const mongoose = require("mongoose");
 const Doctor = require("../../../../models/Doctor");
 const Appointment = require("../../../../models/Appointment");
+const Redis = require("../../../../config/redisObject");
 const User = mongoose.model('User', UserSchema);
 const router = express.Router();
 
@@ -25,6 +25,7 @@ router.get(["/list"],
             });
             const chats = usr.chats;
             const previews = [];
+            const redis = new Redis();
 
             for (const chat of chats) {
                 const prevChat = {};
@@ -40,7 +41,7 @@ router.get(["/list"],
                     prevChat.recentChat = {role: "system", message: "차단된 대화입니다.", createdAt: chat.date, autoIncrementId: -1};
                     prevChat.unreadChat = -1;
                 } else {
-                    if ((cache = await getCache("CHATROOM:RECENT:" + chat._id))) {
+                    if ((cache = await redis.getCache("CHATROOM:RECENT:" + chat._id))) {
                         prevChat.recentChat = cache;
                     } else {
                         prevChat.recentChat = {role: "system", message: "최근 채팅이 없거나 오래되었습니다.", createdAt: chat.date, autoIncrementId: -1};
@@ -50,6 +51,9 @@ router.get(["/list"],
             }
 
             res.status(200).json(returnResponse(false, "chatList", previews));
+
+            redis.closeConnnection();
+            redis = null;
 
             return;
         } catch (error) {

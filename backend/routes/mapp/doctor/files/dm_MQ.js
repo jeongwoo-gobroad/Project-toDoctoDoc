@@ -1,10 +1,8 @@
 const { default: mongoose } = require("mongoose");
-const {redisClient} = require("../../../../config/redis");
 const Chat = require("../../../../models/Chat");
 const UserSchema = require("../../../../models/User");
 const axios = require('axios');
 const jwt = require("jsonwebtoken");
-const { setSetForever, removeItemFromSet, doesSetContains, pushMessageToMessageQueue } = require("../../../../middleware/redisCaching");
 const sendDMPushNotification = require("../../push/dmPush");
 const Redis = require("../../../../config/redisObject");
 
@@ -17,8 +15,6 @@ const chatting_doctor = async (socket, next) => {
     try {
         const token_userid = jwt.verify(token, process.env.JWT_SECRET);
         const userid = token_userid.userid;
-
-        setSetForever("CHAT:MEMBER:" + roomNo, "DOCTOR");
 
         const chat = await Chat.findById(roomNo).populate({
             path: 'user',
@@ -34,7 +30,10 @@ const chatting_doctor = async (socket, next) => {
             return;
         }
 
-        const receiver = new Redis();
+        let receiver = new Redis();
+        let sender = new Redis();
+
+        sender.setSetForever("CHAT:MEMBER:" + roomNo, "DOCTOR");
 
         receiver.redisClient.subscribe(("CHATROOM_CHANNEL:" + roomNo).toString(), (message, channel) => {
             socket.emit('chatReceivedFromServer', message);
@@ -45,12 +44,12 @@ const chatting_doctor = async (socket, next) => {
             const chatObject = {role: "doctor", message: data, createdAt: now};
 
             try {
-                await pushMessageToMessageQueue("CHATROOM:QUEUE:" + roomNo, chatObject);
+                await sender.pushMessageToMessageQueue("CHATROOM:QUEUE:" + roomNo, chatObject);
             } catch (error) {
                 console.error(error, "errorAtDoctorSendChat");
             }
 
-            if (!(await doesSetContains("CHAT:MEMBER:" + roomNo, "USER"))) {
+            if (!(await sender.doesSetContains("CHAT:MEMBER:" + roomNo, "USER"))) {
                 sendDMPushNotification(chat.user.deviceIds, {title: chat.doctor.name + ": 읽지 않은 DM", body: chatObject});
             }
 
@@ -62,8 +61,11 @@ const chatting_doctor = async (socket, next) => {
             try {
                 await receiver.redisClient.unsubscribe(("CHATROOM_CHANNEL:" + roomNo).toString());
                 receiver.closeConnnection();
+                receiver = null;
 
-                await removeItemFromSet("CHAT:MEMBER:" + roomNo, "DOCTOR");
+                await sender.removeItemFromSet("CHAT:MEMBER:" + roomNo, "DOCTOR");
+                sender.closeConnnection();
+                sender = null;
 
                 const uri = encodeURI(`http://jeongwoo-kim-web.myds.me:5000/mapp/dm/leaveChat/${roomNo}`);
                 const uriOptions = {

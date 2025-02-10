@@ -1,12 +1,13 @@
-const { getHashAll, getCache, setHashValue, setCacheForever } = require("../middleware/redisCaching");
+const Redis = require("../config/redisObject");
 const { removeSpacesAndHashes } = require("../middleware/usefulFunctions");
 
 const tagCountRefreshWorksViaRedis = async (newTags) => {
     const tagLine = removeSpacesAndHashes(newTags);
     const tags = tagLine.split(",");
+    let redis = new Redis();
 
-    const prev = await getHashAll("GRAPHBOARD:");
-    let maxTagCount = await getCache("GRAPHBOARD_MAX_TAGCOUNT:");
+    const prev = await redis.getHashAll("GRAPHBOARD:");
+    let maxTagCount = await redis.getCache("GRAPHBOARD_MAX_TAGCOUNT:");
 
     for (let [tag, obj] of prev) {
         obj.tagCount *= maxTagCount;
@@ -32,9 +33,13 @@ const tagCountRefreshWorksViaRedis = async (newTags) => {
 
     for (let [tag, obj] of prev) {
         obj.tagCount /= maxTagCount;
-        await setHashValue("GRAPHBOARD:", tag, obj);
+        await redis.setHashValue("GRAPHBOARD:", tag, obj);
     }
-    await setCacheForever("GRAPHBOARD_MAX_TAGCOUNT:", maxTagCount);
+    await redis.setCacheForever("GRAPHBOARD_MAX_TAGCOUNT:", maxTagCount);
+
+    redis.closeConnnection();
+
+    redis = null;
 
     // console.log(prev, "tagCountRefreshWorksViaRedis");
 
@@ -44,9 +49,10 @@ const tagCountRefreshWorksViaRedis = async (newTags) => {
 const viewCountRefreshWorksViaRedis = async (currentTags) => {
     const tagLine = removeSpacesAndHashes(currentTags);
     const tags = tagLine.split(",");
+    const redis = new Redis();
 
-    const prev = await getHashAll("GRAPHBOARD:");
-    let maxViewCount = await getCache("GRAPHBOARD_MAX_VIEWCOUNT:");
+    const prev = await redis.getHashAll("GRAPHBOARD:");
+    let maxViewCount = await redis.getCache("GRAPHBOARD_MAX_VIEWCOUNT:");
 
     for (let [tag, obj] of prev) {
         obj.viewCount *= maxViewCount;
@@ -67,9 +73,13 @@ const viewCountRefreshWorksViaRedis = async (currentTags) => {
 
     for (let [tag, obj] of prev) {
         obj.viewCount /= maxViewCount;
-        await setHashValue("GRAPHBOARD:", tag, obj);
+        await redis.setHashValue("GRAPHBOARD:", tag, obj);
     }
-    await setCacheForever("GRAPHBOARD_MAX_VIEWCOUNT:", maxViewCount);
+    await redis.setCacheForever("GRAPHBOARD_MAX_VIEWCOUNT:", maxViewCount);
+
+    redis.closeConnnection();
+
+    redis = null;
 
     // console.log(prev, "viewCountRefreshWorksViaRedis");
 

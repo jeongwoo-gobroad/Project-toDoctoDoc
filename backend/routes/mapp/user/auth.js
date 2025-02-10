@@ -9,7 +9,7 @@ const { checkIfLoggedIn, checkIfNotLoggedIn } = require("../checkingMiddleWare")
 const returnLongLatOfAddress = require("../../../middleware/getcoordinate");
 const router = express.Router();
 const Doctor = require("../../../models/Doctor");
-const { setCacheForNDaysAsync, delCache, getCache } = require("../../../middleware/redisCaching");
+const Redis = require("../../../config/redisObject");
 const User = mongoose.model("User", UserSchema);
 
 router.post(["/dupidcheck"], 
@@ -60,7 +60,7 @@ router.post(["/dupemailcheck"],
 router.post(["/login"], async (req, res, next) => {
     try {
         const {userid, password, deviceId, pushToken} = req.body;
-
+        let redis = new Redis();
         const user = await User.findOne({id: userid});
 
         // console.log(userid, password);
@@ -91,16 +91,16 @@ router.post(["/login"], async (req, res, next) => {
             await User.findByIdAndUpdate(user._id, {
                 refreshToken: refreshToken,
             });
-            setCacheForNDaysAsync("DEVICE:" + user._id, pushToken, 270);
+            redis.setCacheForNDaysAsync("DEVICE:" + user._id, pushToken, 270);
         } else {
             if (user.deviceIds.includes(deviceId)) {
                 // console.log("sameDevice");
-                const prevToken = await getCache("DEVICE:" + deviceId);
+                const prevToken = await redis.getCache("DEVICE:" + deviceId);
                 await User.findByIdAndUpdate(user._id, {
                     refreshToken: refreshToken,
                 });
                 if (prevToken != pushToken) { // 만약 토큰이 갱신되었다면
-                    setCacheForNDaysAsync("DEVICE:" + deviceId, pushToken, 270);
+                    await redis.setCacheForNDaysAsync("DEVICE:" + deviceId, pushToken, 270);
                 }
             } else {
                 // console.log(deviceId, "->", pushToken); // 하지메떼노 등록
@@ -108,9 +108,12 @@ router.post(["/login"], async (req, res, next) => {
                     refreshToken: refreshToken,
                     $push: {deviceIds: deviceId}
                 });
-                setCacheForNDaysAsync("DEVICE:" + deviceId, pushToken, 270);
+                await redis.setCacheForNDaysAsync("DEVICE:" + deviceId, pushToken, 270);
             }
         }
+
+        redis.closeConnnection();
+        redis = null;
 
         res.status(200).json(returnResponse(false, "logged_in", {token: token, refreshToken: refreshToken}));
         
@@ -129,14 +132,18 @@ router.get(["/logout"],
         try {
             const {deviceId} = req.body;
             const user = await getTokenInformation(req, res);
+            let redis = new Redis();
     
             await User.findByIdAndUpdate(user.userid, {
                 $pull: {deviceIds: deviceId}
             });
-            delCache("Device: " + deviceId);
+            redis.delCache("Device: " + deviceId);
             console.log("pulled device ID");
     
             res.status(200).json(returnResponse(false, "loggedOut", "-"));
+
+            redis.closeConnnection();
+            redis = null;
             
             return;
         } catch (error) {

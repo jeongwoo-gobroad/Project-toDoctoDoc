@@ -13,8 +13,8 @@ const mongoose = require("mongoose");
 const returnLongLatOfAddress = require("../../../middleware/getcoordinate");
 const bcrypt = require("bcrypt");
 const userEmitter = require("../../../events/eventDrivenLists");
-const { getCache, setCacheForNDaysAsync, doesSetContains, setSetForNDays, doesHashContains, setHashValueWithTTL } = require("../../../middleware/redisCaching");
 const { tagCountRefreshWorksViaRedis, viewCountRefreshWorksViaRedis } = require("../../../serverSideWorks/redisBubbleCollection");
+const Redis = require("../../../config/redisObject");
 
 const User = mongoose.model("User", UserSchema);
 
@@ -115,6 +115,7 @@ router.get(["/view/:id"],
         const user = await getTokenInformation(req, res);
 
         try {
+            let redis = new Redis();
             const post = await Post.findById(req.params.id).populate("user");
 
             let isOwner = false;
@@ -136,15 +137,14 @@ router.get(["/view/:id"],
             //     post.views++;
             //     await post.save();
             // }
-            if (!(await doesHashContains("VIEW:" + req.userid, post._id))) {
+            if (!(await redis.doesHashContains("VIEW:" + req.userid, post._id))) {
                 viewCountRefreshWorksViaRedis(post.tag);
 
                 post.views++;
                 await post.save();
 
                 // setSetForNDays("VIEW:" + req.userid, post._id, 1);
-                setHashValueWithTTL("VIEW:" + req.userid, post._id, 1, 1);
-
+                redis.setHashValueWithTTL("VIEW:" + req.userid, post._id, 1, 1);
                 // console.log("Set cache");
             }
 
@@ -163,6 +163,9 @@ router.get(["/view/:id"],
             };
 
             res.status(200).json(returnResponse(false, "view", pageContent));
+
+            redis.closeConnnection();
+            redis = null;
 
             return;
         } catch (error) {

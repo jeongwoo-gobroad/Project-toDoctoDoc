@@ -1,14 +1,14 @@
 require('dotenv').config({path: "../_secrets/dotenv/.env"});
 const { parentPort, workerData } = require('worker_threads');
-const { connectRedis, redisClient } = require('../config/redis');
 const connectDB = require('../config/mongo');
-const { publishMessageToChatId } = require('./functions/redisOperations');
 const Chat = require('../models/Chat');
+const Redis = require('./functions/redisObject');
+const { connectRedis, doesKeyExist, popMessageFromMessageQueue, atomicallyIncrement, setCacheForever, publishMessageToChatId } = require('../config/redis-singleton');
 
 const { chatId } = workerData;
 
-connectRedis();
 connectDB();
+connectRedis();
 
 let globalSubQueue = [];
 
@@ -79,10 +79,10 @@ setInterval(async () => {
 
 setInterval(async () => {
     try {
-        if (await redisClient.exists(("CHATROOM:QUEUE:" + chatId).toString())) {
-            const message = await redisClient.rPop(("CHATROOM:QUEUE:" + chatId).toString());
+        if (await doesKeyExist("CHATROOM:QUEUE:" + chatId)) {
+            const message = await popMessageFromMessageQueue("CHATROOM:QUEUE:" + chatId);
             if (message) {
-                const messageCount = await redisClient.incr(("CHATROOM:CNTER:" + chatId).toString());
+                const messageCount = await atomicallyIncrement("CHATROOM:CNTER:" + chatId);
             
 
                 // console.log("Message Popped from Queue: ", message);
@@ -92,8 +92,8 @@ setInterval(async () => {
                 newMessage.autoIncrementId = messageCount;
 
                 globalSubQueue.push(newMessage);
-                await redisClient.set(("CHATROOM:RECENT:" + chatId).toString(), JSON.stringify(newMessage));
-                publishMessageToChatId(chatId, newMessage);
+                await setCacheForever("CHATROOM:RECENT:" + chatId, newMessage);
+                await publishMessageToChatId(chatId, newMessage);
             }
         }
     } catch (error) {
@@ -101,4 +101,4 @@ setInterval(async () => {
 
         return;
     }
-}, 0);
+}, 1);
