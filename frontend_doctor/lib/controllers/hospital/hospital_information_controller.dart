@@ -5,6 +5,7 @@ import '../auth/auth_interceptor.dart';
 
 class HospitalInformationController extends getter.GetxController {
   var isLoading = true.obs;
+  var isReviewLoading = true.obs;
 
   var name = '';
   var pid = '';
@@ -22,6 +23,10 @@ class HospitalInformationController extends getter.GetxController {
   var psyProfileImage = [];
   var breakTime = '';
   var openTime = '';
+
+  var starsNum = List<int>.filled(6, 0);
+  var reviews; /* = <Map<String, dynamic>>[];*/
+
 
 
   Future<bool> getInfo() async{
@@ -177,4 +182,54 @@ class HospitalInformationController extends getter.GetxController {
     }
     return false;
   }
+
+
+  Future<bool> getReviewList() async {
+    isReviewLoading.value = true;
+
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
+
+
+    try {
+      final response = await dio.get(
+        '${Apis.baseUrl}mapp/doctor/review/list',
+        options: Options(headers: {
+          'Content-Type':'application/json',
+          'accessToken': 'true',
+        },),
+      );
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.data);
+
+        print(data);
+
+        reviews = data['content']['reviews'];
+
+        starsNum = List<int>.filled(6, 0);
+        for (var review in reviews) {
+          print(review);
+
+          starsNum[review['stars']]++;
+
+
+
+        }
+
+
+
+        isReviewLoading.value = false;
+        return true;
+      }
+      else {
+        print('ERR');
+      }
+      return response.data;
+    } catch (e) {
+      print(e);
+    }
+    return false;
+  }
+
 }

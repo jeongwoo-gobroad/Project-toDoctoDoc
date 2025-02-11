@@ -152,6 +152,7 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
                            shape: const RoundedRectangleBorder(
                            borderRadius: BorderRadius.all(Radius.zero))),
                         onPressed: () {
+                          hospitalInformationController.getReviewList();
                           Get.to(()=>HospitalDetailScreen())?.whenComplete(() {
                             reloadScreen();
                           });

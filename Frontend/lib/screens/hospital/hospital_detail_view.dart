@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:to_doc/controllers/hospital/hospital_review_controller.dart';
 import 'package:to_doc/screens/hospital/hospital_rating_screen.dart';
 import 'package:to_doc/screens/hospital/star_rating_editor.dart';
 
@@ -14,7 +15,8 @@ class HospitalDetailView extends StatefulWidget {
 }
 
 class _HospitalDetailViewState extends State<HospitalDetailView> {
-  ScrollController pictureScrollController = ScrollController();
+  HospitalReviewController hospitalReviewController = Get.put(HospitalReviewController());
+  ScrollController rowScrollController = ScrollController();
 
 
   Widget chartRow(BuildContext context, String label, double pct) {
@@ -54,14 +56,9 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
       ],
     );
   }
-
-
   reviewWidget(String name, double rating, String content, DateTime time, bool isEdited) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.red),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
 
@@ -112,7 +109,6 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
       ),
     );
   }
-
   Widget placeInform(Icon thisIcon, String description) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
@@ -133,7 +129,38 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
       ),
     );
   }
+  Widget imageList() {
+    return SizedBox(
+      height: 250,
+      child: ListView.builder(
+        itemCount: widget.hospital['psyProfileImage'].length,
+        scrollDirection: Axis.horizontal,
+        controller: rowScrollController,
+        /*              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 5,
+                  mainAxisSpacing: 5,
+                ),*/
+        itemBuilder: (context, index) {
+          var nowImage = widget.hospital['psyProfileImage'][index];
+          return Image.network(
+            nowImage,
+            width: 250,
+            height: 250,
+            fit: BoxFit.cover,
+          );
+        },
+      ),
+    );
+  }
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    hospitalReviewController.getHospitalReviewList(widget.hospital['_id']);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -176,25 +203,7 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
           ),
         ),
 
-        Container(
-          height: 250,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            //controller: pictureScrollController,
-            child: Row(
-              children: [
-                Container(decoration: BoxDecoration(color: Colors.black),
-                  width: 100,),
-                Container(decoration: BoxDecoration(color: Colors.grey),
-                  width: 200,),
-                Container(decoration: BoxDecoration(color: Colors.blue),
-                  width: 300,),
-                Container(decoration: BoxDecoration(color: Colors.red),
-                  width: 200,),
-              ],
-            ),
-          ),
-        ),
+        imageList(),
 
         TextButton(
             onPressed: () {
@@ -205,70 +214,86 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
         
         
         // TODO 리뷰 평균 평점 및 별점 리스트
-        Container(
-          margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.red),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+        Obx(() {
+          if (hospitalReviewController.isReviewLoading.value) {
+            return Center(child: CircularProgressIndicator(),);
+          }
+          if (hospitalReviewController.reviews.length == 0) {
+            return Text('리뷰가 없습니다');
+          }
+          return Column(
             children: [
-              Column(
-                //mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Text(widget.hospital['stars'].toDouble().toStringAsFixed(1),
-                    //${{hospitalInformationController.averageRating}}',
-                    style: TextStyle(fontWeight: FontWeight.bold,
-                        fontSize: 50,
-                        height: 1),),
-                  StarRating(
-                    rating: widget.hospital['stars'].toDouble(),
-                    starSize: 20,
-                    isControllable: false,
-                    onRatingChanged: (rating) => {},
-                  ),
-                  //SizedBox(height: 5,),
-                  Text('(${widget.hospital['reviews'].length ?? 0}개)'),
-                ],
-              ),
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Column(
+                      //mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Text(widget.hospital['stars'].toDouble().toStringAsFixed(1),
+                          //${{hospitalInformationController.averageRating}}',
+                          style: TextStyle(fontWeight: FontWeight.bold,
+                              fontSize: 50,
+                              height: 1),),
+                        StarRating(
+                          rating: widget.hospital['stars'].toDouble(),
+                          starSize: 20,
+                          isControllable: false,
+                          onRatingChanged: (rating) => {},
+                        ),
+                        //SizedBox(height: 5,),
+                        Text('(${hospitalReviewController.reviews.length} 개)'),
+                      ],
+                    ),
 
-              //SizedBox(width: 10,),
+                    //SizedBox(width: 10,),
 
-              Column(
-                //crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  for (int i = 5; i > 0; i--) ...[
-                    chartRow(context, '$i', 0.2)
-                    //hospitalInformationController.reviewRatingArr[i]/hospitalInformationController.review.length),
+                    Column(
+                      //crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        for (int i = 5; i > 0; i--) ...[
+                          chartRow(context, '$i', hospitalReviewController.starsNum[i]/hospitalReviewController.reviews.length)
+                          //hospitalInformationController.reviewRatingArr[i]/hospitalInformationController.review.length),
+                        ],
+                      ],
+                    ),
                   ],
-                ],
+                ),
               ),
+
+              Text('내 리뷰'),
+              Text('내 리뷰'),
+
+
+
+              SingleChildScrollView(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return reviewWidget('익명 ${index+1}',
+                        hospitalReviewController.reviews[index]['stars'],
+                        hospitalReviewController.reviews[index]['content'],
+                        DateTime.parse(hospitalReviewController.reviews[index]['updatedAt']), false);
+                  },
+                  itemCount: hospitalReviewController.reviews.length,
+                ),
+              ),
+
             ],
-          ),
-        ),
+          );
+
+        }),
+
 
 
         // TODO 리뷰 리스트
         // TODO 맨위에 본인거 있으면 그거 따로 띄우기
-        Text('내 리뷰'),
-        Column(
-          children: [
-            reviewWidget('성이름', 3.5, 'ㅁㄴㅇㅇㄻㄴㄴㅁㄹㄴ', DateTime.now(), true),
-            reviewWidget('dd', 2.0, 'adsggaggdgagasggagsgadsgagasgas',
-                DateTime.now(), false),
-            reviewWidget('dd', 2.0, 'adsggaggdgagasggagsgadsgagasgas',
-                DateTime.now(), false),
-            reviewWidget(
-                'dafd', 1.5, 'asdgagsagagasgdagagagddgag\nafsadfafa',
-                DateTime.now(), false),
-            reviewWidget('dafd', 1.5,
-                'asdgagsagagasgdagagagddgagafsadfafaasdgagsagagasgdagagagddgagafsadfafaasdgagsagagasgdagagagddgagafsadfafa',
-                DateTime.now(), true),
-            reviewWidget(
-                'dafd', 1.5, 'asdgagsagagasgdagagagddgag\nafsadfafa',
-                DateTime.now(), false),
-          ],
-        ),
+        //
+        //
+
+
 
 
         /*

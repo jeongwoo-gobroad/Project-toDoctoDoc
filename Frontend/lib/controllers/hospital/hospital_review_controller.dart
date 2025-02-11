@@ -6,9 +6,14 @@ import 'package:to_doc/auth/auth_dio.dart';
 
 class HospitalReviewController extends GetxController{
   var isLoading = true.obs;
+  var isReviewLoading = true.obs;
 
   var isMyReviewExisted = false;
   late Map<String,dynamic> myReviews;
+
+  var starsNum = List<int>.filled(6, 0);
+  var reviews;
+
 
   Future<bool> postUserReview(String placeId, double rating, String review) async {
     isLoading = true.obs;
@@ -66,6 +71,41 @@ class HospitalReviewController extends GetxController{
       print('SUCCESS EDITED');
 
       isLoading.value = false;
+      return true;
+    } else{
+      print('코드: ${response.statusCode}');
+      return false;
+    }
+  }
+
+
+  Future<bool> getHospitalReviewList(String pid) async {
+    isReviewLoading = true.obs;
+
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
+
+    final response = await dio.get(
+      '${Apis.baseUrl}mapp/review/listing/$pid',
+      options: Options(headers: {
+        'Content-Type': 'application/json',
+        'accessToken': 'true',
+      },),
+    );
+
+    if (response.statusCode == 200) {
+      var data = json.decode(response.data);
+
+      print(data);
+      reviews = data['content']['reviews'];
+
+      starsNum = List<int>.filled(6, 0);
+      for (var review in reviews) {
+        print(review);
+        starsNum[review['stars']]++;
+      }
+
+      isReviewLoading.value = false;
       return true;
     } else{
       print('코드: ${response.statusCode}');

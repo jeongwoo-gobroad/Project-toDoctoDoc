@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:to_doc/screens/hospital/star_rating_editor.dart';
 
 import '../../controllers/hospital/hospital_review_controller.dart';
@@ -14,9 +15,6 @@ class HospitalRatingScreen extends StatefulWidget {
 
 /*
   TODO : UI 완성
-
-
-
   Object 구조
   user
   createdAt
@@ -28,11 +26,11 @@ class HospitalRatingScreen extends StatefulWidget {
 
 
 class _HospitalRatingScreenState extends State<HospitalRatingScreen> {
-  double rating = 3.5;
+  double rating = 3;
   bool willReVisit = false;
 
   TextEditingController textEditingController = TextEditingController();
-  HospitalReviewController hospitalReviewController = HospitalReviewController();
+  HospitalReviewController hospitalReviewController = Get.put(HospitalReviewController());
 
   Future<void> sendReviewApprovalAlert(BuildContext context) async {
     return showDialog<void>(
@@ -83,63 +81,60 @@ class _HospitalRatingScreenState extends State<HospitalRatingScreen> {
       ),
       body: Column(
         children: [
-          Container(
-            child: Column(
-              //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
+          Column(
+            //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
 
-              children: [
-                //Text('별점을 남겨주세요', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+            children: [
+              //Text('별점을 남겨주세요', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
 
-                SizedBox(height: 50,),
-                StarRating(
+              SizedBox(height: 50,),
+              Center(
+                child: StarRating(
                   rating: rating,
                   starSize: 50,
                   isControllable: true,
                   onRatingChanged: (rating) => setState(() => this.rating = rating),
                 ),
-                SizedBox(height: 20,),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      willReVisit = !willReVisit;
-                    });
-                  },
-                  style: TextButton.styleFrom(
-                    //minimumSize: Size(10, 10),
-                    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                    backgroundColor: (willReVisit)? Colors.green : null,
-                  ),
-                  child: SizedBox(
-                    width: 150,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.check, color: (willReVisit)? Colors.white : null,),
-                        Text('다시 방문히고 싶어요', style: TextStyle(color: (willReVisit)? Colors.white : null),)
-                      ],
-                    ),
-                  )
+              ),
+              SizedBox(height: 20,),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    willReVisit = !willReVisit;
+                  });
+                },
+                style: TextButton.styleFrom(
+                  //minimumSize: Size(10, 10),
+                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                  backgroundColor: (willReVisit)? Colors.green : null,
                 ),
-
-                Container(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width - 100,
-                  decoration: BoxDecoration(
-                    border: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
+                child: SizedBox(
+                  width: 150,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.check, color: (willReVisit)? Colors.white : null,),
+                      Text('다시 방문히고 싶어요', style: TextStyle(color: (willReVisit)? Colors.white : null),)
+                    ],
                   ),
+                )
+              ),
+              Container(
+                height: 50,
+                width: MediaQuery.of(context).size.width - 100,
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-
 
           Container(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
             child: Column(
               children: [
                 Text('리뷰를 작성해 보세요', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
-
 
                 Container(
                   padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
