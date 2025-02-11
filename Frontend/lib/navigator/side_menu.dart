@@ -16,8 +16,8 @@ import '../screens/intro.dart';
 
 class SideMenu extends StatelessWidget {
   final String? usernick, email;
-  const SideMenu(this.usernick, this.email ,{super.key});
-
+  SideMenu(this.usernick, this.email ,{super.key});
+  ChatController chatController = Get.put(ChatController());
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -68,7 +68,7 @@ class SideMenu extends StatelessWidget {
             leading: Icon(Icons.chat),
             title: Text('큐레이팅 DM'),
             onTap: () async {
-              Get.to(()=>DMList(controller: ChatController()));
+              Get.to(()=>DMList(controller: chatController));
               },
             trailing: Icon(Icons.navigate_next),
           ),

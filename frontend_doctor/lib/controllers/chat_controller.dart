@@ -10,7 +10,7 @@ class ChatController extends GetxController{
   final chatList = <ChatContent>[].obs;
   var isLoading = true.obs;
 
-
+  RxInt serverAutoIncrementId = 0.obs;
   Future<void> getChatList() async {
     Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
@@ -42,6 +42,7 @@ class ChatController extends GetxController{
           'createdAt' : chat['recentChat']['createdAt'],
           'autoIncrementId' : chat['recentChat']['autoIncrementId'],
         };
+        serverAutoIncrementId.value = chat['recentChat']['autoIncrementId'];
         chatList.add(ChatContent.fromMap(chat, temp));
       }
       print(chatList);
@@ -51,6 +52,10 @@ class ChatController extends GetxController{
     }
     isLoading.value = false;
   }
+
+
+  final RxList<dynamic> chatContents = <dynamic>[].obs;
+
   Future<void> enterChat(String cid, int value) async {
     Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
@@ -69,8 +74,9 @@ class ChatController extends GetxController{
     if(response.statusCode == 200){
       final data = json.decode(response.data);
 
-      
-      print(data);
+      chatContents.value = [];
+      print('from chat controller joinChat: ${data}');
+      chatContents.value = data['content'];
 
       
       

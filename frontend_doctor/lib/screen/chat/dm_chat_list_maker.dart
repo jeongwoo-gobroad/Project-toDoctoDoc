@@ -10,7 +10,24 @@ class makeChatList extends StatelessWidget {
   final ScrollController scrollController;
   final List<ChatObject> messageList;
   final updateUnread;
-
+  Widget _buildUnreadDivider() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Expanded(child: Divider(color: Colors.grey, thickness: 1)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text(
+              '새 메시지',
+              style: TextStyle(color: Colors.grey, fontSize: 12),
+            ),
+          ),
+          Expanded(child: Divider(color: Colors.grey, thickness: 1)),
+        ],
+      ),
+    );
+  }
   String formatTime(DateTime? dateTime) {
     try {
       return DateFormat('aa hh:mm', 'ko_KR').format(dateTime!);
@@ -49,11 +66,30 @@ class makeChatList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<int> unreadIndices = [];
+    int firstUnreadIndex = -1;
+    
+    if (updateUnread != null && updateUnread! > 0) {
+      int remaining = updateUnread!;
+      for (int i = messageList.length - 1; i >= 0; i--) {
+        if (remaining <= 0) break;
+        if (messageList[i].role == 'user') {
+          unreadIndices.add(i);
+          print('unreadIndies: ${i}');
+          remaining--;
+        }
+      }
+      if (unreadIndices.isNotEmpty) {
+        unreadIndices.sort();
+        firstUnreadIndex = unreadIndices.first;
+      }
+    }
     return Expanded(
       child: ListView.builder(
         controller: scrollController,
         itemCount: messageList.length,
         itemBuilder: (context, index) {
+        
           final isDoctor = messageList[index].role == 'doctor';
           final showTime = shouldShowTime(index);
           final showDate = shouldShowDate(index);
@@ -65,7 +101,9 @@ class makeChatList extends StatelessWidget {
             ),
             child: Column(
               children: [
+                
                 if (showDate) ... [
+                  
                   Container(
                     padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(

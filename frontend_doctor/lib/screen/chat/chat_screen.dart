@@ -6,6 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:to_doc_for_doc/controllers/appointment_controller.dart';
 import 'package:to_doc_for_doc/controllers/chat_appointment_controller.dart';
+import 'package:to_doc_for_doc/controllers/chat_controller.dart';
 import 'package:to_doc_for_doc/screen/auth/login_screen.dart';
 import 'package:to_doc_for_doc/screen/chat/dm_chat_list_maker.dart';
 import 'package:to_doc_for_doc/screen/chat/upper_appointment_information.dart';
@@ -38,6 +39,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   late ChatAppointmentController chatAppointmentController = ChatAppointmentController(userId: widget.userId, chatId: widget.chatId);
   final AppointmentController appointmentController = AppointmentController();
   late ChatSocketService socketService;
+  ChatController chatController = Get.put(ChatController());
   final ChatDatabase chatDb = ChatDatabase();
 
   RxBool isLoading = true.obs;
@@ -99,7 +101,36 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     );
   }
 
+  void parseAndStoreChats() {
 
+    print('parseAndStore');
+    List<dynamic> chatsJson = chatController.chatContents;
+    
+    print(chatsJson);
+
+     for (var chatData in chatsJson) {
+      DateTime time;
+      
+      var tempTime = chatData['createdAt'];
+      if(tempTime is String){
+       time = DateTime.parse(chatData['createdAt']).toLocal();
+      }
+      else{
+      time = DateTime.fromMillisecondsSinceEpoch(tempTime);
+      }
+      
+      // messageList에 추가
+      _messageList.add(
+        ChatObject(
+          content: chatData['message'],
+          role: chatData['role'],
+          createdAt: time.toLocal()
+        )
+      );
+      chatDb.saveChat(widget.chatId, widget.userId, chatData['message'], time, 'user');
+    }
+  
+}
   void asyncBefore() async {
     isLoading.value = true;
     SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
@@ -125,6 +156,13 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         _messageList.add(ChatObject(content: chat['message'], role: chat['role'], createdAt: DateTime.parse(chat['timestamp']).toLocal()));
       }
     }
+
+    if(widget.unreadChat != 0){
+      print('parse: ${widget.unreadChat}');
+      parseAndStoreChats();
+
+    }
+
     if(this.mounted){
     setState(() {
       Future.delayed(Duration(milliseconds: 100), () {
@@ -146,12 +184,13 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         Map<String, dynamic> chatData;
         chatData = json.decode(data);
         var tempTime = chatData['createdAt'];
+        final role = chatData['role'];
         DateTime time = DateTime.fromMillisecondsSinceEpoch(tempTime);
 
         if (this.mounted) {
           setState(() {
-            _messageList.add(ChatObject(content: chatData['message'], role: 'user', createdAt: time.toLocal()));
-            chatDb.saveChat(widget.chatId, widget.userId, chatData['message'], time, 'user');
+            _messageList.add(ChatObject(content: chatData['message'], role: role, createdAt: time.toLocal()));
+            chatDb.saveChat(widget.chatId, widget.userId, chatData['message'], time, role);
 
             Future.delayed(Duration(milliseconds: 100), () {
               _scrollController.animateTo(
@@ -199,24 +238,24 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       socketService.sendMessage(value);
       messageController.clear();
 
-      setState(() {
-        _messageList.add(ChatObject(content: value,
-            role: 'doctor',
-            createdAt: DateTime.now()));
+      // setState(() {
+      //   _messageList.add(ChatObject(content: value,
+      //       role: 'doctor',
+      //       createdAt: DateTime.now()));
 
-        DateTime now = DateTime.now().toUtc();
-        chatDb.saveChat(widget.chatId, widget.userId, value, now, 'doctor');
+      //   DateTime now = DateTime.now().toUtc();
+      //   chatDb.saveChat(widget.chatId, widget.userId, value, now, 'doctor');
 
-        print(_messageList);
-      });
+      //   print(_messageList);
+      // });
 
-      Future.delayed(Duration(milliseconds: 100), () {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      });
+      // Future.delayed(Duration(milliseconds: 100), () {
+      //   _scrollController.animateTo(
+      //     _scrollController.position.maxScrollExtent,
+      //     duration: Duration(milliseconds: 300),
+      //     curve: Curves.easeOut,
+      //   );
+      // });
     }
 
     return Scaffold(
@@ -226,7 +265,10 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         shape: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
       ),
       body: PopScope(
-        onPopInvokedWithResult: (didPop, result) {
+        onPopInvokedWithResult: (didPop, result) async {
+          await chatController.getChatList();
+          print('popped: ${chatController.serverAutoIncrementId}');
+          await chatDb.updateLastReadId(widget.chatId, chatController.serverAutoIncrementId.value);
           socketService.onDisconnect();
         },
         child: Column(

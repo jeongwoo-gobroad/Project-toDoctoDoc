@@ -116,7 +116,10 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       }
     }
     //enterChat으로 받는 인자들 db에 삽입
+    if(widget.unreadMsg != 0){
     parseAndStoreChats();
+
+    }
     if (this.mounted) {
       setState(() {
         animateToBottom();
@@ -168,8 +171,9 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     super.initState();
     chatAppointmentController.getAppointmentInformation(widget.chatId);
 
-    //최신id - 기존 id  
+    //최신id - 기존 id
     updateUnread = widget.unreadMsg;
+    print('updateUnread = ${updateUnread}');
     autoIncrement = widget.autoIncrementId;
     isLoading.value = false;
   }
@@ -200,8 +204,9 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       ),
       body: PopScope(
         onPopInvokedWithResult: (didPop, result) async {
-          print('popping');
+          
           await chatController.getChatList();
+          print('popped: ${chatController.serverAutoIncrementId}');
           await chatDb.updateLastReadId(widget.chatId, chatController.serverAutoIncrementId.value);
           socketService.onDisconnect();
         },
