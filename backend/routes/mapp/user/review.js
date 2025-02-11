@@ -39,12 +39,20 @@ router.post(["/write"],
     checkIfLoggedIn,
     // ifPremiumThenProceed,
     async (req, res, next) => {
-        const user = await getTokenInformation(req, res);
         const {pid, stars, content} = req.body;
 
         try {
-            if (!(await User.findById(user.userid)).visitedPsys.toString().includes(pid)) {
+            if (!(await User.findById(req.userid)).visitedPsys.toString().includes(pid)) {
                 res.status(401).json(returnResponse(true, "notVisitedYet", "-"));
+
+                return;
+            }
+
+            const prev = await Review.findOne({user: req.userid, place_id: pid});
+            const psy = await Psychiatry.findById(pid);
+
+            if (prev || !psy) {
+                res.status(402).json(returnResponse(true, "alreadyWrittenOrPsyDoesNotExist", "-"));
 
                 return;
             }
@@ -54,21 +62,21 @@ router.post(["/write"],
             }
 
             const review = await Review.create({
-                user: user.userid,
+                user: req.userid,
                 place_id: pid,
                 stars: stars,
                 content: content,
             });
 
-            await User.findByIdAndUpdate(user.userid, {
+            await User.findByIdAndUpdate(req.userid, {
                 $push: {reviews: review._id}
             });
-
-            userEmitter.emit('reviewUpdated', pid, 0, stars, -1);
 
             await Psychiatry.findByIdAndUpdate(pid, {
                 $push: {reviews: review._id}
             });
+
+            userEmitter.emit('reviewUpdated', pid, 0, stars, -1);
 
             res.status(200).json(returnResponse(false, "reviewWritten", "-"));
 
@@ -87,13 +95,12 @@ router.patch(["/edit/:id"],
     checkIfLoggedIn,
     // ifPremiumThenProceed,
     async (req, res, next) => {
-        const user = await getTokenInformation(req, res);
         const {stars, content, pid} = req.body;
 
         try {
             const review = await Review.findById(req.params.id);
 
-            if (!review || review.user != user.userid) {
+            if (!review || review.user != req.userid) {
                 res.status(401).json(returnResponse(true, "notYourReviewOrNoSuchReview", "-"));
 
                 return;
@@ -103,13 +110,13 @@ router.patch(["/edit/:id"],
                 stars = 5;
             }
 
-            userEmitter.emit('reviewUpdated', pid, review.stars, stars, 0);
-
             await Review.findByIdAndUpdate(req.params.id, {
                 stars: stars,
                 content: content,
                 updatedAt: Date.now()
             });
+
+            userEmitter.emit('reviewUpdated', pid, review.stars, stars, 0);
 
             res.status(200).json(returnResponse(false, "reviewEdited", "-"));
 
@@ -128,27 +135,26 @@ router.delete(["/delete/:id"],
     checkIfLoggedIn,
     // ifPremiumThenProceed,
     async (req, res, next) => {
-        const user = await getTokenInformation(req, res);
         const {pid} = req.body;
 
         try {
             const review = await Review.findById(req.params.id);
 
-            if (!review || review.user != user.userid) {
+            if (!review || review.user != req.userid) {
                 res.status(401).json(returnResponse(true, "notYourReviewOrNoSuchReview", "-"));
 
                 return;
             }
 
-            userEmitter.emit('reviewUpdated', pid, review.stars, 0, 1);
-
-            await User.findByIdAndUpdate(user.userid, {
+            await User.findByIdAndUpdate(req.userid, {
                 $pull: {reviews: req.params.id}
             });
             await Psychiatry.findByIdAndUpdate(review.place_id, {
                 $pull: {reviews: req.params.id}
             });
             await Review.findByIdAndDelete(req.params.id);
+
+            userEmitter.emit('reviewUpdated', pid, review.stars, 0, 1);
 
             res.status(200).json(returnResponse(false, "reviewDeleted", "-"));
 

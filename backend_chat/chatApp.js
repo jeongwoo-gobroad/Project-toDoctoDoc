@@ -145,7 +145,7 @@ server.listen(port, () => {
 setInterval(async () => {
     try {
         for (const [key, val] of map) {
-            if (!(await doesAtLeastOneUserExist(key))) {
+            if (!(await doesKeyExist("CHAT:MEMBER:" + key)) || !(await doesAtLeastOneUserExist(key))) {
                 map.delete(key);
                 const worker = threadPool.get(key);
                 threadPool.delete(key);
