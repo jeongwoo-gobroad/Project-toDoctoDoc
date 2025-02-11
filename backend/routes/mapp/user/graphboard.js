@@ -39,6 +39,9 @@ router.get(["/graphBoard"],
 
         try {
             let redis = new Redis();
+
+            await redis.connect();
+
             const usr = await User.findById(user.userid);
             const temp = await redis.getHashAll("GRAPHBOARD:");
 

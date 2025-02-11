@@ -35,6 +35,8 @@ const sendAppointmentDonePushNotification = async (deviceIds, info) => {
     try {
         let redis = new Redis();
 
+        await redis.connect();
+
         for (const deviceId of deviceIds) {
             try {
                 let cache = null;

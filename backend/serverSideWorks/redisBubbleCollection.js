@@ -6,6 +6,8 @@ const tagCountRefreshWorksViaRedis = async (newTags) => {
     const tags = tagLine.split(",");
     let redis = new Redis();
 
+    await redis.connect();
+
     const prev = await redis.getHashAll("GRAPHBOARD:");
     let maxTagCount = await redis.getCache("GRAPHBOARD_MAX_TAGCOUNT:");
 
@@ -50,6 +52,8 @@ const viewCountRefreshWorksViaRedis = async (currentTags) => {
     const tagLine = removeSpacesAndHashes(currentTags);
     const tags = tagLine.split(",");
     const redis = new Redis();
+
+    await redis.connect();
 
     const prev = await redis.getHashAll("GRAPHBOARD:");
     let maxViewCount = await redis.getCache("GRAPHBOARD_MAX_VIEWCOUNT:");

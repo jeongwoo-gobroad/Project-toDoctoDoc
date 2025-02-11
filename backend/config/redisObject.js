@@ -5,15 +5,26 @@ class Redis {
         this.redisClient = redis.createClient({
             url: `redis://${process.env.RS_USERNAME}:${process.env.RS_PASSWORD}@${process.env.RS_HOST}:${process.env.RS_PORT}/0`
         });
-        this.redisClient.connect().then(() => {console.log("Redis Object Connected");}).catch((error) => {
-            console.error(error, "Redis Object Connection Error");
-        });
     }
 
-    closeConnnection() {
-        this.redisClient.disconnect().then(() => {console.log("Redis Object Disconnected");}).catch((error) => {
-            console.error(error, "Redis Object Disconnection Error");
-        });
+    async connect() {
+        try {
+            await this.redisClient.connect();
+            console.log("Redis object connected");
+        } catch (error) {
+            console.error(error, "Redis object connection error");
+            return;
+        }
+    }
+
+    async closeConnnection() {
+        try {
+            await this.redisClient.quit();
+            console.log("Redis object disconnected");
+        } catch (error) {
+            console.error(error, "Redis object disconnection error");
+            return;
+        }
     }
 
     async setSetForNDays(key, item, days) {
@@ -105,6 +116,24 @@ class Redis {
             return rtn;
         } catch (error) {
             console.error(error, "errorAtDoesHashContains");
+            return null;
+        }
+    }
+
+    async incrementHashValue(key, field) {
+        try {
+            await this.redisClient.hIncrBy(key.toString(), field.toString(), 1);
+        } catch (error) {
+            console.error(error, "errorAtIncrementHashValue");
+            return null;
+        }
+    }
+
+    async decrementHashValue(key, field) {
+        try {
+            return (await this.redisClient.hIncrBy(key.toString(), field.toString(), -1));
+        } catch (error) {
+            console.error(error, "errorAtDecrementHashValue");
             return null;
         }
     }

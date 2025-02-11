@@ -116,6 +116,9 @@ router.get(["/view/:id"],
 
         try {
             let redis = new Redis();
+
+            await redis.connect();
+
             const post = await Post.findById(req.params.id).populate("user");
 
             let isOwner = false;

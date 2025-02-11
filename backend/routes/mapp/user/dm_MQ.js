@@ -29,9 +29,14 @@ const chatting_user = async (socket, next) => {
         }
 
         let receiver = new Redis();
+
+        await receiver.connect();
+
         let sender = new Redis();
 
-        sender.setSetForever("CHAT:MEMBER:" + roomNo, "USER");
+        await sender.connect();
+
+        sender.incrementHashValue("CHAT:MEMBER:" + roomNo, "USER");
 
         receiver.redisClient.subscribe(("CHATROOM_CHANNEL:" + roomNo).toString(), (message, channel) => {
             socket.emit('chatReceivedFromServer', message);
@@ -47,7 +52,7 @@ const chatting_user = async (socket, next) => {
                 console.error(error, "errorAtUserSendChat");
             }
 
-            if (!(await sender.doesSetContains("CHAT:MEMBER:" + roomNo, "DOCTOR"))) {
+            if (!(await sender.getHashValue("CHAT:MEMBER:" + roomNo, "DOCTOR"))) {
                 sendDMPushNotification(chat.doctor.deviceIds, {title: chat.user.usernick + ": 읽지 않은 DM", body: chatObject});
             }
 
@@ -61,7 +66,37 @@ const chatting_user = async (socket, next) => {
                 receiver.closeConnnection();
                 receiver = null;
                 
-                await sender.removeItemFromSet("CHAT:MEMBER:" + roomNo, "USER");
+                sender.decrementHashValue("CHAT:MEMBER:" + roomNo, "USER");
+                sender.closeConnnection();
+                sender = null;
+
+                const uri = encodeURI(`http://jeongwoo-kim-web.myds.me:5000/mapp/dm/leaveChat/${roomNo}`);
+                const uriOptions = {
+                    method: 'GET',
+                    data: {},
+                    headers: {
+                        authorization: 'Bearer: ' + token
+                    }
+                };
+                await axios.get(uri, uriOptions);
+
+                console.log("successfully disconnected");
+            } catch (error) {
+                console.error(error, "errorAtUserSocketDisconnect");
+            }
+
+            return;
+        });
+
+        socket.on("error", async (error) => {
+            console.log("User socket error", error);
+
+            try {
+                await receiver.redisClient.unsubscribe(("CHATROOM_CHANNEL:" + roomNo).toString());
+                receiver.closeConnnection();
+                receiver = null;
+                
+                sender.decrementHashValue("CHAT:MEMBER:" + roomNo, "USER");
                 sender.closeConnnection();
                 sender = null;
 

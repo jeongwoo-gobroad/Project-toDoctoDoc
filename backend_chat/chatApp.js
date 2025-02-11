@@ -7,11 +7,12 @@ const axios = require('axios');
 const cors = require('cors');
 const returnResponse = require("./dmWorks/functions/standardResponseJSON");
 const { checkIfLoggedIn, checkIfMyChat } = require('./middlewares/checkingMiddleware');
-const Redis = require('./dmWorks/functions/redisObject');
 const connectDB = require('./config/mongo');
 const EventEmitter = require('events');
+const { connectRedis, doesKeyExist } = require('./config/redis-singleton');
 
 connectDB();
+connectRedis();
 
 const app = express();
 const server = http.createServer(app);
@@ -83,6 +84,8 @@ router.get(["/mapp/dm/leaveChat/:cid"],
 
                 people--;
 
+                map.set(req.params.cid, people);
+
                 if (people === 0) {
                     map.delete(req.params.cid);
                     const worker = threadPool.get(req.params.cid);
@@ -141,25 +144,15 @@ server.listen(port, () => {
 /* To iterate and check if unnecessary chatrooms are still in the memory and thread pool */
 setInterval(async () => {
     try {
-        let redis = new Redis();
-
         for (const [key, val] of map) {
-            if (!(await redis.doesKeyExist("CHAT:MEMBER:" + key))) {
+            if (!(await doesKeyExist("CHAT:MEMBER:" + key))) {
                 map.delete(key);
                 const worker = threadPool.get(key);
                 threadPool.delete(key);
                 worker.terminate();
             }
         }
-
-        redis.closeConnnection();
-
-        redis = null;
     } catch (error) {
         console.error(error, "errorAtSetInterval");
     }
-}, 100000);
-
-setInterval(async () => {
-    console.log(map);
-}, 5000);
+}, 10000);

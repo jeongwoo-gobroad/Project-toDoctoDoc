@@ -66,15 +66,10 @@ io.use(wrap(session({
 io.use(wrap(cookieParser()));
 io.use(wrap(express.json()));
 io.use(wrap(express.urlencoded({extended: true})));
-io.of('/chat').use(require('./routes/dm_auth/dm_isValid'));
-io.of('/chat').use(require("./middleware/dmAlgorithm"));
 const aichat = io.of('/aichat');
 aichat.on('connect', require("./routes/mapp/user/chatbot").aiChatting);
 const dm_user = io.of('/dm_user');
 const dm_doctor = io.of('/dm_doctor');
-// dm.on('connect', require("./routes/mapp/dm/socketOperation"));
-// dm.on('connect', require("./routes/mapp/user/dm_socket"));
-// dm.on('connect', require("./routes/mapp/doctor/files/dm_socket"));
 dm_user.on('connect', require("./routes/mapp/user/dm_MQ"));
 dm_doctor.on('connect', require("./routes/mapp/doctor/files/dm_MQ"));
 

@@ -31,9 +31,14 @@ const chatting_doctor = async (socket, next) => {
         }
 
         let receiver = new Redis();
+
+        await receiver.connect();
+
         let sender = new Redis();
 
-        sender.setSetForever("CHAT:MEMBER:" + roomNo, "DOCTOR");
+        await sender.connect();
+
+        sender.incrementHashValue("CHAT:MEMBER:" + roomNo, "DOCTOR");
 
         receiver.redisClient.subscribe(("CHATROOM_CHANNEL:" + roomNo).toString(), (message, channel) => {
             socket.emit('chatReceivedFromServer', message);
@@ -49,7 +54,7 @@ const chatting_doctor = async (socket, next) => {
                 console.error(error, "errorAtDoctorSendChat");
             }
 
-            if (!(await sender.doesSetContains("CHAT:MEMBER:" + roomNo, "USER"))) {
+            if (!(await sender.getHashValue("CHAT:MEMBER:" + roomNo, "USER"))) {
                 sendDMPushNotification(chat.user.deviceIds, {title: chat.doctor.name + ": 읽지 않은 DM", body: chatObject});
             }
 
@@ -63,7 +68,7 @@ const chatting_doctor = async (socket, next) => {
                 receiver.closeConnnection();
                 receiver = null;
 
-                await sender.removeItemFromSet("CHAT:MEMBER:" + roomNo, "DOCTOR");
+                sender.decrementHashValue("CHAT:MEMBER:" + roomNo, "DOCTOR");
                 sender.closeConnnection();
                 sender = null;
 
@@ -84,6 +89,35 @@ const chatting_doctor = async (socket, next) => {
             return;
         });
 
+        socket.on("error", async (error) => {
+            console.log("Doctor socket error", error);
+
+            try {
+                await receiver.redisClient.unsubscribe(("CHATROOM_CHANNEL:" + roomNo).toString());
+                receiver.closeConnnection();
+                receiver = null;
+                
+                sender.decrementHashValue("CHAT:MEMBER:" + roomNo, "DOCTOR");
+                sender.closeConnnection();
+                sender = null;
+
+                const uri = encodeURI(`http://jeongwoo-kim-web.myds.me:5000/mapp/dm/leaveChat/${roomNo}`);
+                const uriOptions = {
+                    method: 'GET',
+                    data: {},
+                    headers: {
+                        authorization: 'Bearer: ' + token
+                    }
+                };
+                await axios.get(uri, uriOptions);
+
+                console.log("successfully disconnected");
+            } catch (error) {
+                console.error(error, "errorAtUserSocketDisconnect");
+            }
+
+            return;
+        });
     } catch (error) {
         if (error.name === "TokenExpiredError") {
             socket.emit("error", "tokenExpiredError");

@@ -10,6 +10,8 @@ const bubbleCollection = async () => {
         let maxTagCountVal = 0;
         let maxViewCountVal = 0;
         
+        await redis.connect();
+
         tagCountBubbleMap.clear();
 
         for (const post of allItems) {

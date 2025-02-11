@@ -63,6 +63,8 @@ router.post(["/login"], async (req, res, next) => {
         let redis = new Redis();
         const user = await User.findOne({id: userid});
 
+        await redis.connect();
+
         // console.log(userid, password);
 
         if (!user) {
@@ -133,6 +135,8 @@ router.get(["/logout"],
             const {deviceId} = req.body;
             const user = await getTokenInformation(req, res);
             let redis = new Redis();
+
+            await redis.connect();
     
             await User.findByIdAndUpdate(user.userid, {
                 $pull: {deviceIds: deviceId}

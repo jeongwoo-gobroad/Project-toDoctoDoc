@@ -66,6 +66,8 @@ router.get(["/list"],
             const chats = usr.chats;
             const previews = [];
 
+            await redis.connect();
+
             for (const chat of chats) {
                 const prevChat = {};
                 let cache;

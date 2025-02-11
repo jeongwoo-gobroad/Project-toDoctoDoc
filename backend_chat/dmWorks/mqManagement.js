@@ -2,7 +2,6 @@ require('dotenv').config({path: "../_secrets/dotenv/.env"});
 const { parentPort, workerData } = require('worker_threads');
 const connectDB = require('../config/mongo');
 const Chat = require('../models/Chat');
-const Redis = require('./functions/redisObject');
 const { connectRedis, doesKeyExist, popMessageFromMessageQueue, atomicallyIncrement, setCacheForever, publishMessageToChatId } = require('../config/redis-singleton');
 
 const { chatId } = workerData;

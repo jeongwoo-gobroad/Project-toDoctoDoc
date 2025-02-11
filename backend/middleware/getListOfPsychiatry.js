@@ -16,6 +16,8 @@ const returnListOfPsychiatry = async (x, y, radius, page) => {
 
     try {   
         let redis = new Redis();
+        await redis.connect();
+
         if ((cached = await redis.getCache("DOCS:" + uri))) {
             console.log("returned cached documents");
     

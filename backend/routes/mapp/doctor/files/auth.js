@@ -70,6 +70,8 @@ router.post(["/login"],
         const {userid, password, deviceId, pushToken} = req.body;
         let redis = new Redis();
 
+        await redis.connect();
+
         try {
             const doctor = await Doctor.findOne({id: userid});
 
@@ -134,6 +136,9 @@ router.get(["/logout"],
         try {
             const {pushToken} = req.body;
             let redis = new Redis();
+
+            await redis.connect();
+
             const user = await getTokenInformation(req, res);
     
             await Doctor.findByIdAndUpdate(user.userid, {
