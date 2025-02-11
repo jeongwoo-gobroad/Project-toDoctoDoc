@@ -273,7 +273,7 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     return reviewWidget('익명 ${index+1}',
-                        hospitalReviewController.reviews[index]['stars'],
+                        hospitalReviewController.reviews[index]['stars'].toDouble(),
                         hospitalReviewController.reviews[index]['content'],
                         DateTime.parse(hospitalReviewController.reviews[index]['updatedAt']), false);
                   },
