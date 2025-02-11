@@ -43,6 +43,7 @@ class ChatController extends GetxController{
   }
 
   int lastReadId = 0;
+  RxInt serverAutoIncrementId = 0.obs;
   Future<void> getChatList() async {
     Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
@@ -78,18 +79,18 @@ class ChatController extends GetxController{
         };
 
 
-        int serverAutoIncrementId = chat['recentChat']['autoIncrementId'];
+        serverAutoIncrementId.value = chat['recentChat']['autoIncrementId'];
         print('serverAutoIncremented: ${serverAutoIncrementId}');
         
-        lastReadId = await chatDatabase.getLastReadId(chat['cid']); //기존 불러오기
-        print('lastreadId : ${lastReadId}');
+        // //lastReadId = await chatDatabase.getLastReadId(chat['cid']); //기존 불러오기
+        // print('lastreadId : ${lastReadId}');
         
-        await chatDatabase.updateLastReadId(chat['cid'], serverAutoIncrementId); //저장장
+        //await chatDatabase.updateLastReadId(chat['cid'], serverAutoIncrementId); //저장장
 
         // unreadCount = 서버 최신 id - 로컬 마지막 읽은 id
-        int unreadCount = serverAutoIncrementId - lastReadId;
-        temp['unreadCount'] = unreadCount;
-        print('안읽은 개수: ${unreadCount}');
+        // int unreadCount = serverAutoIncrementId - lastReadId;
+        // temp['unreadCount'] = unreadCount;
+        // print('안읽은 개수: ${unreadCount}');
         
         chatList.add(ChatContent.fromMap(chat, temp));
       }
@@ -106,11 +107,12 @@ class ChatController extends GetxController{
   final RxList<dynamic> chatContents = <dynamic>[].obs;
 
   Future<void> enterChat(String cid, int value) async {
+    //value = 1;
     print('enter chat');
     Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
     String strvalue = value.toString();
-    
+    //print(strvalue);
     final response = await dio.get(
       '${Apis.dmUrl}mapp/dm/joinChat/$cid?readedUntil=$strvalue',
       options:
@@ -123,7 +125,7 @@ class ChatController extends GetxController{
 
     if(response.statusCode == 200){
       final data = json.decode(response.data);
-      
+      chatContents.value = [];
       
       print('from chat controller joinChat: ${data}');
       chatContents.value = data['content'];

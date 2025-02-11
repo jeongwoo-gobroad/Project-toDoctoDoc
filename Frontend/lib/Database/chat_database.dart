@@ -23,7 +23,7 @@ _onDbCreate(Database db, int version) async {
       '''
       CREATE TABLE chat_meta (
         room_id TEXT PRIMARY KEY,
-        last_read_id INTEGER NOT NULL DEFAULT 0
+        last_read_id INTEGER NOT NULL DEFAULT 1
       )
       '''
   );
@@ -64,7 +64,7 @@ initDatabase() async {
         '''
         CREATE TABLE chat_meta (
           room_id TEXT PRIMARY KEY,
-          last_read_id INTEGER NOT NULL DEFAULT 0
+          last_read_id INTEGER NOT NULL DEFAULT 1
         )
         '''
       );
@@ -89,7 +89,7 @@ class ChatDatabase {
     await db.insert('chat_messages', <String, dynamic>{'room_id':chatId, 'doctor_id':doctorId, 'message': message, 'timestamp': time.toString(), 'role': role});
 
     var i = await db.rawQuery('SELECT * from chat_messages');
-    print('QUERY');
+    print('QUERY SaveChat function');
     print(i.toString());
   }
 

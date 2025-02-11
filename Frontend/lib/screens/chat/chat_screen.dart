@@ -33,7 +33,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   late ChatSocketService socketService;
   final ChatDatabase chatDb = ChatDatabase();
   final ChatController chatController = Get.put(ChatController());
-
+  late int lastAutoIncrementID;
   RxBool isLoading = true.obs;
 
   late int updateUnread;
@@ -93,6 +93,14 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
     print(token);
     socketService = ChatSocketService(token!, widget.chatId);
+
+    //채팅창 진입시 Db에서 마지막 id 불러옴
+    //lastAutoIncrementID = await chatDb.getLastReadId(widget.chatId);
+
+    //print('안 읽은 개수: ${widget.autoIncrementId - lastAutoIncrementID}');
+
+    //updateUnread 전달달 widget.autoIncrementId - lastAutoIncrementId;
+
     //print('chat screen');
     var chatData = await chatDb.loadChat(widget.chatId);
 
@@ -128,16 +136,21 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         print('continue');
         print(data);
         chatData = json.decode(data);
+        // if(chatData['role'] == 'user'){
+          
+        //   return;
+        // }
         print(chatData['message']);
         var tempTime = chatData['createdAt'];
-        
+        final role = chatData['role'];
         DateTime time = DateTime.fromMillisecondsSinceEpoch(tempTime);
 
         if (this.mounted) {
           setState(() {
-            _messageList.add(ChatObject(content: chatData['message'], role: 'doctor', createdAt: time.toLocal()));
-            chatDb.saveChat(widget.chatId, widget.doctorId, chatData['message'], time, 'doctor');
-            //chatDb.updateLastReadId(widget.chatId, ++autoIncrement);
+            _messageList.add(ChatObject(content: chatData['message'], role: role, createdAt: time.toLocal()));
+            chatDb.saveChat(widget.chatId, widget.doctorId, chatData['message'], time, role);
+          
+            print('autoIncrement: $autoIncrement');
             animateToBottom();
           });
         }
@@ -150,9 +163,12 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    
     asyncBefore();
     super.initState();
     chatAppointmentController.getAppointmentInformation(widget.chatId);
+
+    //최신id - 기존 id  
     updateUnread = widget.unreadMsg;
     autoIncrement = widget.autoIncrementId;
     isLoading.value = false;
@@ -166,14 +182,14 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
        socketService.sendMessage(value);
        messageController.clear();
 
-       setState(() {
-         _messageList.add(ChatObject(content: value, role: 'user', createdAt: DateTime.now()));
-         print(_messageList);
-       });
+      //  setState(() {
+      //    _messageList.add(ChatObject(content: value, role: 'user', createdAt: DateTime.now()));
+      //    print(_messageList);
+      //  });
 
-       DateTime now = DateTime.now().toUtc();
-       chatDb.saveChat(widget.chatId, widget.doctorId, value, now, 'user');
-       animateToBottom();
+      //  DateTime now = DateTime.now().toUtc();
+      //  chatDb.saveChat(widget.chatId, widget.doctorId, value, now, 'user');
+      //  animateToBottom();
      }
 
     return Scaffold(
@@ -183,8 +199,10 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         shape: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
       ),
       body: PopScope(
-        onPopInvokedWithResult: (didPop, result) {
-          chatController.getChatList();
+        onPopInvokedWithResult: (didPop, result) async {
+          print('popping');
+          await chatController.getChatList();
+          await chatDb.updateLastReadId(widget.chatId, chatController.serverAutoIncrementId.value);
           socketService.onDisconnect();
         },
         child: Column(

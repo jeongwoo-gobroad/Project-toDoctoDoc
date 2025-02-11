@@ -16,14 +16,23 @@ class DMList extends StatefulWidget {
 }
 
 class _DMListState extends State<DMList> {
+  final ChatDatabase chatDb = ChatDatabase();
 
   void goToChatScreen(chat) async {
-    print('안읽은 개수: ${chat.recentChat['unreadCount']}');
-    print('lastreadid: ${widget.controller.lastReadId}');
-    await widget.controller.enterChat(chat.cid, widget.controller.lastReadId);
+    print("최신 id: ${widget.controller.serverAutoIncrementId}");
+
+    int lastAutoIncrementID;
+    lastAutoIncrementID = await chatDb.getLastReadId(chat.cid);
+    print("마지막 id: $lastAutoIncrementID");
+
+    int unread = chat.recentChat['autoIncrementId'] - lastAutoIncrementID;
+
+    print('안읽은 개수: ${unread}');
+    //print('lastreadid: ${widget.controller.lastReadId}');
+    await widget.controller.enterChat(chat.cid, lastAutoIncrementID);
     //widget.controller.enterChat(chat.cid, chat.recentChat['autoIncrementId']);
 
-    Get.to(()=> ChatScreen(doctorId: chat.doctorId, chatId: chat.cid, unreadMsg: chat.recentChat['unreadCount'], doctorName: chat.doctorName,autoIncrementId: chat.recentChat['autoIncrementId']));
+    Get.to(()=> ChatScreen(doctorId: chat.doctorId, chatId: chat.cid, unreadMsg: unread, doctorName: chat.doctorName,autoIncrementId: chat.recentChat['autoIncrementId']));
       
    
   }
@@ -32,12 +41,13 @@ class _DMListState extends State<DMList> {
   void initState() {
     super.initState();
 
-    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    //     setState(() {
-    //       widget.controller.getChatList();
-    //     });
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        setState(() {
+          widget.controller.getChatList();
+        });
 
-    // });
+    });
+    
 
   }
 
@@ -118,24 +128,35 @@ class _DMListState extends State<DMList> {
                         ],
                       ),
                     ),
-                    if (chat.recentChat['unreadCount'] != null &&
-                        chat.recentChat['unreadCount'] > 0)
-                      Container(
-                        margin: const EdgeInsets.only(left: 8),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          '${chat.recentChat['unreadCount']}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                     FutureBuilder<int>(
+              future: chatDb.getLastReadId(chat.cid),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const SizedBox();
+                }
+                int lastAutoIncrementID = snapshot.data!;
+                int unread = chat.recentChat['autoIncrementId'] - lastAutoIncrementID;
+                if (unread > 0) {
+                  return Container(
+                    margin: const EdgeInsets.only(left: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '$unread',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
                       ),
+                    ),
+                  );
+                } else {
+                  return const SizedBox();
+                }
+              },
+            ),
                   ],
                 ),
               ),

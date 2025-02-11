@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:to_doc/Database/chat_database.dart';
 import 'package:to_doc/controllers/careplus/appointment_controller.dart';
 import 'package:to_doc/screens/careplus/appointment_listview.dart';
 import 'package:to_doc/screens/appointment/appointment_detail_screen.dart';
@@ -25,11 +26,16 @@ class _CurateMainState extends State<CurateMain> {
   final CurateListController curateListController = Get.put(CurateListController());
   final AppointmentController appointmentController = Get.put(AppointmentController());
   final ChatController chatController = Get.put(ChatController());
+  final ChatDatabase chatDb = ChatDatabase();
 
   void goToChatScreen(chat) async {
-    print(chat.chatId);
+    //print(chat.chatId);
     //linkTest();
-    Get.to(()=> ChatScreen(doctorId: chat.doctorId, chatId: chat.chatId, unreadMsg: chat.unreadChat, doctorName: chat.doctorName, autoIncrementId: chat.recentChat['autoIncrementId'],))?.whenComplete(() {
+    int lastAutoIncrementID;
+    lastAutoIncrementID = await chatDb.getLastReadId(chat.cid);
+    int unread = chat.recentChat['autoIncrementId'] - lastAutoIncrementID;
+    await chatController.enterChat(chat.cid, lastAutoIncrementID);
+    Get.to(()=> ChatScreen(doctorId: chat.doctorId, chatId: chat.cid, unreadMsg: unread, doctorName: chat.doctorName, autoIncrementId: chat.recentChat['autoIncrementId'],))?.whenComplete(() {
       setState(() {
         chatController.getChatList();
       });
