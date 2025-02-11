@@ -17,6 +17,12 @@ const PatientMemoSchema = new mongoose.Schema({
     memo: {
         type: String,
     },
+    aiSummary: {
+        type: String,
+    },
+    details: {
+        type: String,
+    },
     updatedAt: {
         type: Date,
         default: Date.now

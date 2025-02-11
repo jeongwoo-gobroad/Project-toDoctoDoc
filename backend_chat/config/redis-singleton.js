@@ -32,6 +32,22 @@ const doesKeyExist = async (key) => {
     }
 };
 
+const doesAtLeastOneUserExist = async (roomNo) => {
+    try {
+        const users = await redisClient.hGetAll(("CHAT:MEMBER:" + roomNo).toString());
+
+        if (parseInt(users.DOCTOR) == 0 && parseInt(users.USER) == 0) {
+            return false;
+        }
+
+        return true;
+    } catch (error) {
+        console.error(error, "errorAtDoesAtLeastOneUserExist");
+
+        return;
+    }
+};
+
 const popMessageFromMessageQueue = async (channel) => {
     try {
         const rtn = await redisClient.rPop(channel.toString());
@@ -76,4 +92,4 @@ const publishMessageToChatId = async (chatId, message) => {
     }
 };
 
-module.exports = {redisClient, connectRedis, doesKeyExist, popMessageFromMessageQueue, atomicallyIncrement, setCacheForever, publishMessageToChatId};
+module.exports = {redisClient, connectRedis, doesKeyExist, popMessageFromMessageQueue, atomicallyIncrement, setCacheForever, publishMessageToChatId, doesAtLeastOneUserExist};

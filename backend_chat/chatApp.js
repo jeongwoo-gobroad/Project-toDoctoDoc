@@ -9,7 +9,7 @@ const returnResponse = require("./dmWorks/functions/standardResponseJSON");
 const { checkIfLoggedIn, checkIfMyChat } = require('./middlewares/checkingMiddleware');
 const connectDB = require('./config/mongo');
 const EventEmitter = require('events');
-const { connectRedis, doesKeyExist } = require('./config/redis-singleton');
+const { connectRedis, doesKeyExist, doesAtLeastOneUserExist } = require('./config/redis-singleton');
 
 connectDB();
 connectRedis();
@@ -145,7 +145,7 @@ server.listen(port, () => {
 setInterval(async () => {
     try {
         for (const [key, val] of map) {
-            if (!(await doesKeyExist("CHAT:MEMBER:" + key))) {
+            if (!(await doesAtLeastOneUserExist(key))) {
                 map.delete(key);
                 const worker = threadPool.get(key);
                 threadPool.delete(key);
