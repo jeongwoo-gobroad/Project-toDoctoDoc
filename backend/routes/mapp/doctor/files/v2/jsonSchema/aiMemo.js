@@ -2,6 +2,7 @@ const { z } = require("zod");
 
 const appointmentSchema = z.object({
     startFrom: z.string(),
+    // endAt: z.string(),
     duration: z.number(),
     patientName: z.string(),
     shortMemo: z.string(),
