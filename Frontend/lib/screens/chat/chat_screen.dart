@@ -78,7 +78,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
           createdAt: time.toLocal()
         )
       );
-      chatDb.saveChat(widget.chatId, widget.doctorId, chatData['message'], time, 'doctor');
+      chatDb.saveChat(widget.chatId, widget.doctorId, chatData['message'], time, chatData['role']);
     }
   
 }

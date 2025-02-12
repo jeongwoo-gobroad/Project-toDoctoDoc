@@ -166,7 +166,7 @@ class _HomeState extends State<Home> {
               userController.usernick.value, userController.email.value)),
           onDrawerChanged: (isOpened) {
             if (isOpened) {
-              FocusScope.of(context).unfocus();
+              FocusScope.of(context).requestFocus(FocusNode());
               setState(() {
                 _isKeyboardVisible = false;
               });

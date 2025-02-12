@@ -127,7 +127,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
           createdAt: time.toLocal()
         )
       );
-      chatDb.saveChat(widget.chatId, widget.userId, chatData['message'], time, 'user');
+      chatDb.saveChat(widget.chatId, widget.userId, chatData['message'], time, chatData['role']);
     }
   
 }
@@ -229,7 +229,149 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       },
     );
   }
+  Widget _buildColorButton(Color color, int value) {
+  return GestureDetector(
+    onTap: () {
+      
+      print('Selected color value: $value');
+    },
+    child: Container(
+      width: 30,
+      height: 30,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: Colors.grey[300]!,
+          width: 2,
+        ),
+      ),
+    ),
+  );
+}
+  Future<void> showMemoDialog(BuildContext context) async {
+    final memoController = TextEditingController();
+    final characterCount = ValueNotifier<int>(0);
+    
+    memoController.addListener(() {
+      characterCount.value = memoController.text.length;
+      if(characterCount.value > 500){}
+    });
+    
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: EdgeInsets.all(20),
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.9,
+            height: MediaQuery.of(context).size.height * 0.7,
+            padding: EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '메모하기',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildColorButton(Colors.red, 0),
+                    _buildColorButton(Colors.orange, 1),
+                    _buildColorButton(Colors.yellow, 2),
+                    _buildColorButton(Colors.green, 3),
+                    _buildColorButton(Colors.blue, 4),
+                    _buildColorButton(Colors.purple, 5),
+                    _buildColorButton(Colors.brown, 6),
+                  ],
+                ),
+                SizedBox(height: 20,),
+                
 
+                Expanded(
+                  child: Stack(
+                    children: [
+                      TextField(
+                        controller: memoController,
+                        maxLines: null,
+                        expands: true,
+                        textAlignVertical: TextAlignVertical.top,
+                        decoration: InputDecoration(
+                          hintText: '메모를 입력하세요',
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.all(16),
+                        ),
+                      ),
+                      Positioned(
+                        right: 10,
+                        bottom: 10,
+                        child: ValueListenableBuilder<int>(
+                          valueListenable: characterCount,
+                          builder: (context, count, child) {
+                            return Container(
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                '$count자 / 500',
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 12,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('취소'),
+                    ),
+                    SizedBox(width: 10),
+                    TextButton(
+                      style: TextButton.styleFrom(backgroundColor: Color.fromARGB(255, 225, 234, 205)),
+                      
+                      
+                      onPressed: () {
+                        if (memoController.text.isNotEmpty) {
+                          
+                          //서버로 보내기
+
+                          print('메모 내용: ${memoController.text}');
+                        }
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        '확인',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
   @override
   Widget build(BuildContext context) {
     final messageController = TextEditingController();
@@ -263,7 +405,90 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         title: Text(widget.userName, style: TextStyle(fontWeight: FontWeight.bold),),
         //centerTitle: true,
         shape: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
+        actions: [
+          Builder(
+            builder: (context) => IconButton(
+              icon: Icon(Icons.menu),
+              onPressed: () => Scaffold.of(context).openEndDrawer(),
+            ),
+          ),
+        ],
       ),
+      endDrawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    child: Text(
+                      widget.userName,
+                      style: TextStyle(fontSize: 24),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    widget.userName,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                    ),
+                  ),
+                  // Text(
+                  //   'ID: ${widget.userId}',
+                  //   style: TextStyle(
+                  //     color: Colors.white70,
+                  //     fontSize: 14,
+                  //   ),
+                  // ),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.history),
+              title: Text('메모모'),
+              onTap: () {
+                
+                Navigator.pop(context);
+                showMemoDialog(context); 
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.calendar_today),
+              title: Text('약속 관리'),
+              onTap: () {
+                
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.block),
+              title: Text('차단하기'),
+              onTap: () {
+                
+                Navigator.pop(context);
+              },
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.report),
+              title: Text('나가기'),
+              onTap: () {
+                
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
+      
+      
       body: PopScope(
         onPopInvokedWithResult: (didPop, result) async {
           await chatController.getChatList();
