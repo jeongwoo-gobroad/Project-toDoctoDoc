@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc_for_doc/controllers/chat_controller.dart';
 import 'package:to_doc_for_doc/controllers/memo/memo_controller.dart';
+import 'package:to_doc_for_doc/screen/patient_manage/memo_main.dart';
 import 'package:to_doc_for_doc/screen/patient_manage/memo_write.dart';
 
 class PatientManageMain extends StatefulWidget {
-  PatientManageMain({super.key});
+  const PatientManageMain({super.key});
 
   @override
   State<PatientManageMain> createState() => _PatientManageMainState();
@@ -108,15 +109,15 @@ class _PatientManageMainState extends State<PatientManageMain> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('환자 관리'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.help_outline),
-            onPressed: () {},
-          ),
-        ],
-      ),
+      // appBar: AppBar(
+      //   title: Text('환자 관리'),
+      //   actions: [
+      //     IconButton(
+      //       icon: Icon(Icons.help_outline),
+      //       onPressed: () {},
+      //     ),
+      //   ],
+      // ),
       body: Stack(
         children: [
           Padding(
@@ -196,9 +197,11 @@ class _PatientManageMainState extends State<PatientManageMain> {
                                 }
                               } else{
                                 //수정화면 이동 
-                                Get.to(() => MemoWriteScreen(
-                                      patientId: patient['id']));
+                                // Get.to(() => MemoWriteScreen(
+                                //       patientId: patient['id']));
+                                Get.to(() => MemoMain());
                                 await memoController.getMemoList();
+                                
                               }
                              
                             },
@@ -220,13 +223,7 @@ class _PatientManageMainState extends State<PatientManageMain> {
                                           ),
                                         ),
                                         SizedBox(height: 8),
-                                        Text(
-                                          'ID: ${patient['id']}',
-                                          style: TextStyle(
-                                            color: Colors.grey[600],
-                                            fontSize: 12,
-                                          ),
-                                        ),
+                                        
                                       ],
                                     ),
                                   ),

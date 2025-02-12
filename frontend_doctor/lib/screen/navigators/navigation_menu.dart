@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc_for_doc/screen/curate/curate_screen.dart';
 import 'package:to_doc_for_doc/screen/home.dart';
+import 'package:to_doc_for_doc/screen/patient_manage/combined_main.dart';
 import 'package:to_doc_for_doc/screen/patient_manage/memo_main.dart';
 import 'package:to_doc_for_doc/screen/patient_manage/memo_write.dart';
 import 'package:to_doc_for_doc/screen/patient_manage/patient_manage_main.dart';
@@ -39,6 +40,6 @@ class NavigationMenu extends StatelessWidget {
 class NavigationController extends GetxController{
   final Rx<int> selectedIndex = 0.obs; //home 상태관리
 
-  final screens = [Home(), DMList(), PatientManageMain(), CurateScreen() , DoctorProfileView()];
+  final screens = [Home(), DMList(), CombinedTabs(), CurateScreen() , DoctorProfileView()];
 
 }
