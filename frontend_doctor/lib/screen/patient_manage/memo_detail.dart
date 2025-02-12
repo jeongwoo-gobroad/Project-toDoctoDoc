@@ -18,7 +18,8 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
   final MemoController controller = Get.put(MemoController());
   int selectedColor = 0;
 
-  AiAssistantController aiAssistantController = Get.put(AiAssistantController());
+  AiAssistantController aiAssistantController =
+      Get.put(AiAssistantController());
   final TextEditingController memoTextController = TextEditingController();
   final TextEditingController detailsTextController = TextEditingController();
 
@@ -29,14 +30,15 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
   @override
   void initState() {
     super.initState();
-    
-      //print(memoController.memoDetail.value!.memo);
-      aiAssistantController.assistantDailyLimit();
-      memoTextController.text = controller.memoDetail.value!.memo;
-      detailsTextController.text = controller.memoDetail.value!.details;
-      
-    
-      detailsTextController.addListener(() {
+    print(widget.patientId);
+    //print(memoController.memoDetail.value!.memo);
+    aiAssistantController.assistantDailyLimit();
+    memoTextController.text = controller.memoDetail.value!.memo;
+    detailsTextController.text = controller.memoDetail.value!.details;
+
+    detailCharCount.value = detailsTextController.text.length;
+    memoCharCount.value = memoTextController.text.length;
+    detailsTextController.addListener(() {
       detailCharCount.value = detailsTextController.text.length;
     });
 
@@ -53,6 +55,34 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
     super.dispose();
   }
 
+  Widget _buildAiSummaryPrompt() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Color.fromARGB(255, 225, 234, 205),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.green, width: 1),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.lightbulb_outline, color: Color.fromARGB(255, 255, 230, 0)),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              "Ai 요약을 위해서 플로팅버튼을 눌러보세요.",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,8 +93,7 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
         ),
         centerTitle: true,
       ),
-       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.star),
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           showDialog(
             context: context,
@@ -73,32 +102,24 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
                 title: const Text("유의"),
                 content: const Text("100자 이상 적은 메모에 대해서만 입력 데이터를 생성합니다."),
                 actions: [
-                  
                   TextButton(
                     onPressed: () {
-                      //todo 백에서 리턴하는 걸로 바꿀것것
-                      if(detailCharCount.value < 100){
-
+                      if (detailCharCount.value < 100) {
                         Navigator.of(context).pop();
-                        Get.snackbar("실패", "100자 이상의 세부사항을을 작성해주세요.");
-                      }
-                      else{
-
-                      Navigator.of(context).pop();
-                      setState(() {
+                        Get.snackbar("실패", "100자 이상의 세부사항을 작성해주세요.");
+                      } else {
+                        Navigator.of(context).pop();
+                        setState(() {
                           isGeneratingAnswer = true;
                         });
-                      aiAssistantController.detailsSummary(widget.patientId);
-
-                      // Get.snackbar("입력 데이터 생성", "입력 데이터가 생성되었습니다.");
+                        aiAssistantController.detailsSummary(widget.patientId);
                       }
                     },
                     child: const Text("확인"),
-                    
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).pop(); // 취소
+                      Navigator.of(context).pop();
                     },
                     child: const Text("취소"),
                   ),
@@ -107,6 +128,9 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
             },
           );
         },
+        icon: const Icon(Icons.auto_awesome),
+        label: const Text("AI 요약"),
+        backgroundColor: Color.fromARGB(255, 225, 234, 205),
       ),
       body: Obx(() {
         if (controller.detailLoading.value == true) {
@@ -117,10 +141,10 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              isGeneratingAnswer 
-                  ? const LoadingAnimationText() 
-                  : const Text('--------------------Ai 부분----------------------'),
-                  const SizedBox(height: 16),
+              isGeneratingAnswer
+                  ? const LoadingAnimationText()
+                  : _buildAiSummaryPrompt(),
+              const SizedBox(height: 16),
               Card(
                 elevation: 2,
                 shape: RoundedRectangleBorder(
@@ -190,7 +214,6 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-  
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -280,23 +303,22 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
                             },
                           ),
                           ElevatedButton(
-                            onPressed: () async{
-                            final updatedDetails = detailsTextController.text;
-                            bool result = await controller.editDetails(
-                                  widget.patientId,
-                                  updatedDetails,
-                                );
-                                if(result){
-                                  Get.snackbar('성공', '세부사항이 업데이트 되었습니다.');
-                                } else{
-                                  Get.snackbar('실패', '세부사항을 업데이트 하지 못했습니다.');
-                                }
-                          },
-                          child: const Text('세부사항 업데이트'),
+                            onPressed: () async {
+                              final updatedDetails = detailsTextController.text;
+                              bool result = await controller.editDetails(
+                                widget.patientId,
+                                updatedDetails,
+                              );
+                              if (result) {
+                                Get.snackbar('성공', '세부사항이 업데이트 되었습니다.');
+                              } else {
+                                Get.snackbar('실패', '세부사항을 업데이트 하지 못했습니다.');
+                              }
+                            },
+                            child: const Text('세부사항 업데이트'),
                           ),
                         ],
                       ),
-                  
                     ],
                   ),
                 ),
@@ -308,14 +330,12 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
     );
   }
 
-
   Widget _buildColorButton(Color color, int index) {
     return GestureDetector(
       onTap: () {
         setState(() {
           selectedColor = index;
         });
-
       },
       child: Container(
         width: 30,
@@ -331,6 +351,7 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
     );
   }
 }
+
 class LoadingAnimationText extends StatefulWidget {
   const LoadingAnimationText({Key? key}) : super(key: key);
 
@@ -347,7 +368,6 @@ class _LoadingAnimationTextState extends State<LoadingAnimationText>
   @override
   void initState() {
     super.initState();
-
     _controller = AnimationController(
       duration: const Duration(milliseconds: 1200),
       vsync: this,
@@ -383,12 +403,29 @@ class _LoadingAnimationTextState extends State<LoadingAnimationText>
           opacity: _fadeAnimation.value,
           child: Transform.scale(
             scale: _scaleAnimation.value,
-            child: const Text(
-              '답변 생성 중...',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 225, 234, 205),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.green, width: 1),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.lightbulb_outline, color: Color.fromARGB(255, 255, 230, 0)),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      "답변 생성중...",
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
