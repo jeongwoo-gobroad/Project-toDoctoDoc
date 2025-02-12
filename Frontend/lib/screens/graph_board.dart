@@ -51,7 +51,7 @@ class _GraphBoardState extends State<GraphBoard>
   final double bottomNavHeight = 80;
   bool showTrashCan = false;
   bool isDragging = false;
-  final double trashCanHeight = 50.0;
+  final double trashCanHeight = 100.0;
   bool isTrashHighlighted = false;
 
 

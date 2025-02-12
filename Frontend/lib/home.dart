@@ -18,7 +18,7 @@ class _HomeState extends State<Home> {
   //final AboutpageProvider aboutpage = Get.put(AboutpageProvider());
   final TextEditingController queryController = TextEditingController();
   final UserinfoController userController = Get.find<UserinfoController>();
- //추후 수정
+  //추후 수정
   Color _green = Color.fromARGB(255, 225, 234, 205);
 
   final QueryController query = Get.put(QueryController());
@@ -29,11 +29,11 @@ class _HomeState extends State<Home> {
   int randIndex2 = 0;
   int randIndex3 = 0;
   bool isLoading = true;
-   final FocusNode _focusNode = FocusNode();
-  
+  final FocusNode _focusNode = FocusNode();
+
   bool _isKeyboardVisible = false;
 
-  Future<void> _getUserInfo() async{
+  Future<void> _getUserInfo() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       id = prefs.getString('id');
@@ -42,10 +42,11 @@ class _HomeState extends State<Home> {
       isLoading = false;
     });
   }
+
   @override
   void initState() {
     final random = Random();
-    
+
     randIndex = random.nextInt(welcomeMessages.length);
     randIndex2 = random.nextInt(mindfulnessQuotes.length);
     randIndex3 = random.nextInt(queryQuotes.length);
@@ -54,15 +55,15 @@ class _HomeState extends State<Home> {
     _getUserInfo();
     query.queryLimit();
     //query.chatLimit();
-    
-       _focusNode.addListener(() {
+
+    _focusNode.addListener(() {
       setState(() {
         _isKeyboardVisible = _focusNode.hasFocus;
       });
     });
-  
   }
-    @override
+
+  @override
   void dispose() {
     _focusNode.dispose();
     queryController.dispose();
@@ -71,13 +72,13 @@ class _HomeState extends State<Home> {
 
   // 환영 문구 리스트
   final List<String> welcomeMessages = [
-      '반가워요!',
-      '어서오세요!',
-      '어서와요!',
-      '환영합니다!',
-      '안녕하세요!',
-      '환영해요!',
-      '잘 오셨습니다!'
+    '반가워요!',
+    '어서오세요!',
+    '어서와요!',
+    '환영합니다!',
+    '안녕하세요!',
+    '환영해요!',
+    '잘 오셨습니다!'
   ];
 
   final List<String> mindfulnessQuotes = [
@@ -108,34 +109,47 @@ class _HomeState extends State<Home> {
   ChatController chatController = Get.put(ChatController());
 
   Widget _buildQueryUsageDisplay() {
-    return Obx(() => Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Text(
-        '일일 제한 횟수: 현재 - ${query.userTotal.value} / 총 - ${query.query.value}',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 16,
-          color: query.userTotal.value >= query.query.value
-              ? Colors.red
-              : Colors.black,
-        ),
-      ),
-    ));
+    return Obx(() => Container(
+          decoration: BoxDecoration(
+            color: _green,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Text(
+            '일일 제한 횟수: ${query.userTotal.value}/${query.query.value}',
+            style: TextStyle(
+              fontSize: 14,
+              color: query.userTotal.value >= query.query.value
+                  ? Colors.red
+                  : Colors.black,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ));
   }
 
   @override
   Widget build(context) {
     bool isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         FocusScope.of(context).unfocus();
         setState(() {
           _isKeyboardVisible = false;
         });
       },
-      child: Scaffold(
-        //floating 아이콘 
-      /*
+      child: PopScope(
+        onPopInvokedWithResult: (didPop, result) async {
+          if (_isKeyboardVisible) {
+            FocusScope.of(context).unfocus();
+            setState(() {
+              _isKeyboardVisible = false;
+            });
+          }
+        },
+        child: Scaffold(
+          //floating 아이콘
+          /*
           floatingActionButton: FloatingActionButton(
             onPressed: (){
               //chatController.getChatList();
@@ -146,13 +160,19 @@ class _HomeState extends State<Home> {
           ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       */
-      
-        //appBar
-        drawer: Obx(() => SideMenu(
-            userController.usernick.value,
-            userController.email.value
-          )),
-         appBar: AppBar(
+
+          //appBar
+          drawer: Obx(() => SideMenu(
+              userController.usernick.value, userController.email.value)),
+          onDrawerChanged: (isOpened) {
+            if (isOpened) {
+              FocusScope.of(context).unfocus();
+              setState(() {
+                _isKeyboardVisible = false;
+              });
+            }
+          },
+          appBar: AppBar(
             centerTitle: true,
             title: InkWell(
               onTap: () {
@@ -162,118 +182,131 @@ class _HomeState extends State<Home> {
                   style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
             ),
           ),
-        body: isLoading ?  Center(child: CircularProgressIndicator())  //아직 갱신안됐으면 로딩창띄움움
-          : 
-            Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Obx(()=>
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                    
-                            SizedBox(height: 50),
-                    
-                            Icon(Icons.circle_outlined, size: 100,),
-                    
-                            SizedBox(height: 50),
-                    
-                            Text(
-                              '${welcomeMessages[randIndex]} ${userController.usernick.value ?? '로그인이 필요합니다.'}님',
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 35,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            //if (isKeyboardVisible) _buildQueryUsageDisplay(),
-                            SizedBox(height: 20),
-                    
-                            Container(
-                              child: Row(
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                                    child: Text("\“", style: TextStyle(fontSize: 100, color:_green)),
+          body: isLoading
+              ? Center(child: CircularProgressIndicator()) //아직 갱신안됐으면 로딩창띄움움
+              : Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Obx(
+                          () => Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 10),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                SizedBox(height: 50),
+
+                                Icon(
+                                  Icons.circle_outlined,
+                                  size: 100,
+                                ),
+
+                                SizedBox(height: 50),
+
+                                Text(
+                                  '${welcomeMessages[randIndex]} ${userController.usernick.value ?? '로그인이 필요합니다.'}님',
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 35,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  Container(
-                                    width: MediaQuery.of(context).size.width - 150,
-                                    child: Text(
-                                      '${mindfulnessQuotes[randIndex2]}',
-                                      textAlign: TextAlign.center,
-                                      overflow: TextOverflow.clip,
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
+                                ),
+                                //if (isKeyboardVisible) _buildQueryUsageDisplay(),
+                                SizedBox(height: 20),
+
+                                Container(
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        padding:
+                                            EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                        child: Text("\“",
+                                            style: TextStyle(
+                                                fontSize: 100, color: _green)),
                                       ),
-                                    ),
+                                      Container(
+                                        width:
+                                            MediaQuery.of(context).size.width -
+                                                150,
+                                        child: Text(
+                                          '${mindfulnessQuotes[randIndex2]}',
+                                          textAlign: TextAlign.center,
+                                          overflow: TextOverflow.clip,
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        child: Text("\”",
+                                            style: TextStyle(
+                                                fontSize: 100, color: _green)),
+                                        padding:
+                                            EdgeInsets.fromLTRB(10, 0, 0, 0),
+                                      ),
+                                    ],
                                   ),
-                                  Container(
-                                    child: Text("\”", style: TextStyle(fontSize: 100, color:_green)),
-                                    padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-      
-                Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-      
-                      if (_isKeyboardVisible) 
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: _buildQueryUsageDisplay(),
-                        ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: _green,
-                          borderRadius: BorderRadius.circular(40),
-                        ),
-                        child: TextField(
-                          focusNode: _focusNode,
-                          controller: queryController,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 20),
-                            hintText: '${queryQuotes[randIndex3]}',
-                            hintStyle: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                            prefixIcon: IconButton(
-                              onPressed: () {},
-                              icon: Icon(Icons.mic),
-                            ),
-                            suffixIcon: IconButton(
-                              onPressed: () async {
-                                if (queryController.text.isNotEmpty) {
-                                  query.queryLimit();
-                                  query.sendQuery(queryController.text);
-                                  Get.to(() => Airesult());
-                                }
-                              },
-                              icon: Icon(Icons.arrow_circle_right_outlined, size: 45),
+                                ),
+                              ],
                             ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          if (_isKeyboardVisible)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: _buildQueryUsageDisplay(),
+                            ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: _green,
+                              borderRadius: BorderRadius.circular(40),
+                            ),
+                            child: TextField(
+                              focusNode: _focusNode,
+                              controller: queryController,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 14, vertical: 20),
+                                hintText: '${queryQuotes[randIndex3]}',
+                                hintStyle: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold),
+                                prefixIcon: IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(Icons.mic),
+                                ),
+                                suffixIcon: IconButton(
+                                  onPressed: () async {
+                                    if (queryController.text.isNotEmpty) {
+                                      query.queryLimit();
+                                      query.sendQuery(queryController.text);
+                                      Get.to(() => Airesult());
+                                    }
+                                  },
+                                  icon: Icon(Icons.arrow_circle_right_outlined,
+                                      size: 45),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+        ),
+      ),
     );
   }
-
 }
