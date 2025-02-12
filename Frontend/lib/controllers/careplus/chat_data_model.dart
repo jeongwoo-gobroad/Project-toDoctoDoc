@@ -3,6 +3,7 @@ class ChatContent {
   final String doctorName;
   final DateTime date;
   final String cid;
+  final String profilePic;
   final bool isBanned;
   final Map<String, dynamic> recentChat;
 
@@ -13,6 +14,7 @@ class ChatContent {
     required this.cid,
     required this.isBanned,
     required this.recentChat,
+    required this.profilePic
   });
 
   factory ChatContent.fromMap(dynamic map, Map<String, dynamic> temp) {
@@ -25,6 +27,7 @@ class ChatContent {
       cid: map != null && map['cid'] != null ? map['cid'].toString() : '',
       isBanned: map != null && map['isBanned'] != null ? map['isBanned'] : false,
       recentChat: temp,
+      profilePic: map != null && map['doctorProfilePictureLink'] != null ? map['doctorProfilePictureLink'].toString() : ''
     );
   }
 }

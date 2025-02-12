@@ -67,7 +67,7 @@ class makeChatList extends StatelessWidget {
   Widget build(BuildContext context) {
     List<int> unreadIndices = [];
     int firstUnreadIndex = -1;
-    print('from dm chat maker : ${messageList}, unread: ${updateUnread}');
+    print('from dm chat maker : $messageList, unread: $updateUnread');
     if (updateUnread != null && updateUnread! > 0) {
       int remaining = updateUnread!;
       for (int i = messageList.length - 1; i >= 0; i--) {

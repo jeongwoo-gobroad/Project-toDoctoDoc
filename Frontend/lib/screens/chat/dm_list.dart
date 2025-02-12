@@ -33,8 +33,6 @@ class _DMListState extends State<DMList> {
     //widget.controller.enterChat(chat.cid, chat.recentChat['autoIncrementId']);
 
     Get.to(()=> ChatScreen(doctorId: chat.doctorId, chatId: chat.cid, unreadMsg: unread, doctorName: chat.doctorName,autoIncrementId: chat.recentChat['autoIncrementId']));
-      
-   
   }
 
   @override
@@ -45,10 +43,7 @@ class _DMListState extends State<DMList> {
         setState(() {
           widget.controller.getChatList();
         });
-
     });
-    
-
   }
 
   @override
@@ -76,7 +71,6 @@ class _DMListState extends State<DMList> {
             final formattedDate = DateFormat('MM/dd HH:mm').format(chat.date.toLocal());
             return InkWell(
               onTap: () {
-                
                 goToChatScreen(chat);
               },
               child: Container(
@@ -91,7 +85,14 @@ class _DMListState extends State<DMList> {
                 ),
                 child: Row(
                   children: [
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 10),
+
+                    //Icon(Icons.people, size: 30),
+
+                    Image.network(chat.profilePic, scale: 20,),
+
+                    const SizedBox(width: 10),
+
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
