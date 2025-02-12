@@ -45,6 +45,42 @@ const ifDailyRequestNotExceededThenProceed = async (req, res, next) => {
     }
 };
 
+const ifDailyRequestNotExceededThenProceed_chatHintMessage = async (req, res, next) => {
+    try {
+        const db = await User.findById(req.userid);
+    
+        const limits = db.limits;
+        const current = new Date();
+    
+        if (limits.dailyRequestDate.toLocaleDateString() !== current.toLocaleDateString()) {
+            limits.dailyRequestDate = current;
+            limits.dailyRequestCount = 0;
+        }
+    
+        if (limits.dailyRequestCount >= 10) {
+            res.status(555).json(returnResponse(true, "moreThan10", "지정된 호출 횟수 초과"));
+    
+            return;
+        } else {
+            try {
+                next();
+    
+                return;
+            } catch (error) {
+                res.status(500).json(returnResponse(true, "mongodberror", "몽고DB 에러"));
+    
+                return;
+            }
+        }
+    } catch (error) {
+        console.log(error, "errorAtIfDailyRequestNotExceededThenProceed");
+
+        res.status(500).json(returnResponse(true, "errorAtIfDailyRequestNotExceededThenProceed", "-"));
+    
+        return;
+    }
+};
+
 const ifDailyChatNotExceededThenProceed = async (req, res, next) => {
 
     // if (user.isPremium) {
@@ -119,4 +155,5 @@ module.exports = {
     ifDailyRequestNotExceededThenProceed, 
     ifDailyChatNotExceededThenProceed, 
     ifDailyCurateNotExceededThenProceed,
+    ifDailyRequestNotExceededThenProceed_chatHintMessage,
 };

@@ -30,7 +30,7 @@ router.get(["/"],
 
             // console.log(docInfo.curatesRead);
 
-            set = new Set(docInfo.curatesRead);
+            const set = new Set(docInfo.curatesRead);
 
             for (let index of aroundPatientList) {
                 if (set.has(index._id.toString())) {

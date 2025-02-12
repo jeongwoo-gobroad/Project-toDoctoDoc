@@ -3,6 +3,7 @@ const { checkIfLoggedIn, isDoctorThenProceed } = require('../../../../checkingMi
 const Doctor = require('../../../../../../models/Doctor');
 const Curate = require('../../../../../../models/Curate');
 const returnResponse = require('../../../../standardResponseJSON');
+const nearbyPatientCurateV2 = require('../../../../../../middleware/nearCurateV2');
 const router = express.Router();
 
 router.get(["/myReadList"],
@@ -81,6 +82,52 @@ router.get(["/myCommentList"],
             console.error(error, "error at doctor_curating_myCommentList");
 
             res.status(403).json(returnResponse(true, "error_at_doctor_curating_myCommentList", "-"))
+
+            return;
+        }
+    }
+);
+
+router.get(["/curate"],
+    checkIfLoggedIn,
+    isDoctorThenProceed,
+    async (req, res, next) => {
+        const {radius, amount, pageNumber, sort} = req.query;
+
+        try {
+            const sortOrder = parseInt(sort);
+            const doctor = await Doctor.findById(req.userid);
+            const patients = await nearbyPatientCurateV2(doctor.address.longitude, doctor.address.latitude, radius);
+
+            if (sortOrder === 1) {
+                patients.sort((a, b) => {
+                    return a.recentCurateDate - b.recentCurateDate;
+                });
+            } else {
+                patients.sort((a, b) => {
+                    return b.recentCurateDate - a.recentCurateDate;
+                });
+            }
+            
+            const set = new Set(doctor.curatesRead);
+
+            for (const patient of patients) {
+                if (set.has(patient.recentCurate.toString())) {
+                    patient.isRead = true;
+                } else {
+                    patient.isRead = false;
+                }
+            }
+
+            const rtnVal = patients.slice((pageNumber - 1) * amount, pageNumber * amount);
+
+            res.status(200).json(returnResponse(false, "doctorCurateList", rtnVal));
+
+            return;
+        } catch (error) {
+            console.error(error, "error at doctor_curating_curate");
+
+            res.status(500).json(returnResponse(true, "error_at_doctor_curating_curate", "-"))
 
             return;
         }
