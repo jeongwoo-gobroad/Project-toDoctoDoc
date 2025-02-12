@@ -166,6 +166,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     if(this.mounted){
     setState(() {
       Future.delayed(Duration(milliseconds: 100), () {
+        if(!mounted) return;
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
           duration: Duration(milliseconds: 300),
@@ -178,6 +179,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       socketService.onDoctorReceived((data) {
+         if (!mounted) return;
         print('user chat received');
         print('data1');
         print(data);
@@ -193,6 +195,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
             chatDb.saveChat(widget.chatId, widget.userId, chatData['message'], time, role);
 
             Future.delayed(Duration(milliseconds: 100), () {
+               if (!mounted) return; 
               _scrollController.animateTo(
                 _scrollController.position.maxScrollExtent,
                 duration: Duration(milliseconds: 300),
@@ -214,7 +217,14 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     super.initState();
     isLoading.value = false;
   }
-
+  @override
+void dispose() {
+  
+  WidgetsBinding.instance.removeObserver(this); 
+  socketService.onDisconnect(); 
+  _scrollController.dispose(); 
+  super.dispose();
+}
   setAppointmentDay() {
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
