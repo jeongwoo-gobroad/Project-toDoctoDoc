@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
+import 'package:to_doc_for_doc/controllers/AIassistant/ai_assistant_controller.dart';
 import 'package:to_doc_for_doc/controllers/memo/memo_controller.dart';
 
 class MemoDetailScreen extends StatefulWidget {
@@ -15,23 +18,27 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
   final MemoController controller = Get.put(MemoController());
   int selectedColor = 0;
 
-  // 텍스트 컨트롤러들
+  AiAssistantController aiAssistantController = Get.put(AiAssistantController());
   final TextEditingController memoTextController = TextEditingController();
   final TextEditingController detailsTextController = TextEditingController();
 
-  // 메모 필드의 글자수를 실시간으로 관리하는 ValueNotifier
   final ValueNotifier<int> memoCharCount = ValueNotifier<int>(0);
+  final ValueNotifier<int> detailCharCount = ValueNotifier<int>(0);
+  bool isGeneratingAnswer = false;
 
   @override
   void initState() {
     super.initState();
     
       //print(memoController.memoDetail.value!.memo);
-      
+      aiAssistantController.assistantDailyLimit();
       memoTextController.text = controller.memoDetail.value!.memo;
       detailsTextController.text = controller.memoDetail.value!.details;
       
     
+      detailsTextController.addListener(() {
+      detailCharCount.value = detailsTextController.text.length;
+    });
 
     memoTextController.addListener(() {
       memoCharCount.value = memoTextController.text.length;
@@ -56,6 +63,51 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
         ),
         centerTitle: true,
       ),
+       floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.star),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("유의"),
+                content: const Text("100자 이상 적은 메모에 대해서만 입력 데이터를 생성합니다."),
+                actions: [
+                  
+                  TextButton(
+                    onPressed: () {
+                      //todo 백에서 리턴하는 걸로 바꿀것것
+                      if(detailCharCount.value < 100){
+
+                        Navigator.of(context).pop();
+                        Get.snackbar("실패", "100자 이상의 세부사항을을 작성해주세요.");
+                      }
+                      else{
+
+                      Navigator.of(context).pop();
+                      setState(() {
+                          isGeneratingAnswer = true;
+                        });
+                      aiAssistantController.detailsSummary(widget.patientId);
+
+                      // Get.snackbar("입력 데이터 생성", "입력 데이터가 생성되었습니다.");
+                      }
+                    },
+                    child: const Text("확인"),
+                    
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // 취소
+                    },
+                    child: const Text("취소"),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      ),
       body: Obx(() {
         if (controller.detailLoading.value == true) {
           return const Center(child: CircularProgressIndicator());
@@ -65,7 +117,10 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('--------------------Ai 부분----------------------'),
+              isGeneratingAnswer 
+                  ? const LoadingAnimationText() 
+                  : const Text('--------------------Ai 부분----------------------'),
+                  const SizedBox(height: 16),
               Card(
                 elevation: 2,
                 shape: RoundedRectangleBorder(
@@ -135,7 +190,7 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      // 카운터와 업데이트 버튼을 Row로 배치
+  
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -209,10 +264,23 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: ElevatedButton(
-                          onPressed: () async{
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ValueListenableBuilder<int>(
+                            valueListenable: detailCharCount,
+                            builder: (context, count, child) {
+                              return Text(
+                                '$count자',
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 12,
+                                ),
+                              );
+                            },
+                          ),
+                          ElevatedButton(
+                            onPressed: () async{
                             final updatedDetails = detailsTextController.text;
                             bool result = await controller.editDetails(
                                   widget.patientId,
@@ -225,8 +293,10 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
                                 }
                           },
                           child: const Text('세부사항 업데이트'),
-                        ),
+                          ),
+                        ],
                       ),
+                  
                     ],
                   ),
                 ),
@@ -245,8 +315,7 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
         setState(() {
           selectedColor = index;
         });
-        // 필요시 색상 업데이트 메서드 호출 가능 (예: controller.updateColor(...))
-        print('Color $index selected');
+
       },
       child: Container(
         width: 30,
@@ -259,6 +328,72 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
               : null,
         ),
       ),
+    );
+  }
+}
+class LoadingAnimationText extends StatefulWidget {
+  const LoadingAnimationText({Key? key}) : super(key: key);
+
+  @override
+  _LoadingAnimationTextState createState() => _LoadingAnimationTextState();
+}
+
+class _LoadingAnimationTextState extends State<LoadingAnimationText>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _fadeAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Opacity(
+          opacity: _fadeAnimation.value,
+          child: Transform.scale(
+            scale: _scaleAnimation.value,
+            child: const Text(
+              '답변 생성 중...',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
