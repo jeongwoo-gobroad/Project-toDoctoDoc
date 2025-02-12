@@ -137,18 +137,13 @@ class _CurateDetailScreenState extends State<CurateDetailScreen> with TickerProv
                         return InkWell(
                           onTap: () {
                             //Get.to(()=>PostDetailScreen(post: post));
-
-
                             showDialog(
-
                               //backgroundColor: Colors.transparent,
                               context: context,
                               builder: (context) {
                                 return PostDetailScreen(post: post,);
                               },
                             );
-
-
                             //Navigator.push(context, MaterialPageRoute(builder: (context) => PostDetailScreen(post: post)));
                           },
                           child: Container(

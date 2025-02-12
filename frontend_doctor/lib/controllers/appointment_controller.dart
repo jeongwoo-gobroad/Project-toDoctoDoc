@@ -8,7 +8,7 @@ import 'auth/auth_interceptor.dart';
 
 class AppointmentController extends GetxController {
   var isLoading = true.obs;
-  late List<dynamic> appointmentList;
+  late List<dynamic> appList;
   var isAfterTodayAppointmentExist = true.obs;
 
   var nearAppointment = 0;
@@ -33,10 +33,10 @@ class AppointmentController extends GetxController {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.data);
-      appointmentList = data['content'];
+      appList = data['content'];
 
       print('APPOINTMENT LIST -------------');
-      print(appointmentList);
+      print(appList);
 
       if (data['content'].isEmpty) {
         isAfterTodayAppointmentExist.value = false;
@@ -44,11 +44,11 @@ class AppointmentController extends GetxController {
         return false;
       }
 
-      appointmentList.sort((a, b) => a['appointmentTime'].compareTo(b['appointmentTime']));
+      appList.sort((a, b) => a['appointmentTime'].compareTo(b['appointmentTime']));
 
       var index = 0;
       nearAppointment = 0;
-      for (var appointment in appointmentList) {
+      for (var appointment in appList) {
         appointment['appointmentTime'] = DateTime.parse(appointment['appointmentTime']).toLocal();
 
         if (appointment['appointmentTime'].isBefore(DateTime.now())) {
@@ -62,7 +62,7 @@ class AppointmentController extends GetxController {
 
       print(nearAppointment);
 
-      if (appointmentList.length == nearAppointment) {
+      if (appList.length == nearAppointment) {
         isAfterTodayAppointmentExist.value = false;
       }
       else {
@@ -95,10 +95,10 @@ class AppointmentController extends GetxController {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.data);
-      appointmentList = data['content'];
+      appList = data['content'];
 
       print('APPOINTMENT LIST -------------');
-      print(appointmentList);
+      print(appList);
 
       if (data['content'].isEmpty) {
         isAfterTodayAppointmentExist.value = false;
@@ -106,10 +106,10 @@ class AppointmentController extends GetxController {
         return false;
       }
 
-      appointmentList.sort((a, b) => a['appointmentTime'].compareTo(b['appointmentTime']));
+      appList.sort((a, b) => a['appointmentTime'].compareTo(b['appointmentTime']));
 
       nearAppointment = 0;
-      for (var appointment in appointmentList) {
+      for (var appointment in appList) {
         appointment['appointmentTime'] = DateTime.parse(appointment['appointmentTime']).toLocal();
 
         if (appointment['appointmentTime'].isBefore(DateTime.now())) {
@@ -119,7 +119,7 @@ class AppointmentController extends GetxController {
 
       print(nearAppointment);
 
-      if (appointmentList.length == nearAppointment) {
+      if (appList.length == nearAppointment) {
         isAfterTodayAppointmentExist.value = false;
       }
       else {

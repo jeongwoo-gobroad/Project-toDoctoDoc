@@ -15,7 +15,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   CurateController curateController = Get.put(CurateController());
-  AppointmentController appointmentController = AppointmentController();
+  AppointmentController appointmentController = Get.put(AppointmentController());
   ScrollController scrollController = ScrollController();
 
   String formatDate(String date) {
@@ -28,7 +28,7 @@ class _HomeState extends State<Home> {
   }
 
   gotoDetainScreen(index) async {
-    Get.to(()=>AppointmentDetailScreen(appointmentController: appointmentController, appointment: appointmentController.appointmentList[index]));
+    //Get.to(()=>AppointmentDetailScreen(appointment: appointmentController.appointmentList[index]));
   }
 
   makeAppointmentList() {
@@ -38,7 +38,7 @@ class _HomeState extends State<Home> {
     return Expanded(
       child: ListView.builder(
         controller: scrollController,
-        itemCount: appointmentController.appointmentList.length - appointmentController.nearAppointment,
+        itemCount: appointmentController.appList.length - appointmentController.nearAppointment,
         itemBuilder: (context, index) {
           return Container(
             padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -47,9 +47,9 @@ class _HomeState extends State<Home> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('${appointmentController.appointmentList[index + appointmentController.nearAppointment]['user']['usernick']}와의 약속', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
-                Text(DateFormat.yMMMEd('ko_KR').add_jm().format(appointmentController.appointmentList[index + appointmentController.nearAppointment]['appointmentTime']),
-                  style: TextStyle(color: (appointmentController.appointmentList[index + appointmentController.nearAppointment]['appointmentTime'].day == DateTime.now().day)? Colors.red : null),),
+                Text('${appointmentController.appList[index + appointmentController.nearAppointment]['user']['usernick']}와의 약속', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
+                Text(DateFormat.yMMMEd('ko_KR').add_jm().format(appointmentController.appList[index + appointmentController.nearAppointment]['appointmentTime']),
+                  style: TextStyle(color: (appointmentController.appList[index + appointmentController.nearAppointment]['appointmentTime'].day == DateTime.now().day)? Colors.red : null),),
               ],
             ),
           );
@@ -123,7 +123,7 @@ class _HomeState extends State<Home> {
                             if (appointmentController.isLoading.value) {
                               return;
                             }
-                            Get.to(()=>AppointmentListview(appointmentController: appointmentController));
+                            Get.to(()=>AppointmentListview());
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
