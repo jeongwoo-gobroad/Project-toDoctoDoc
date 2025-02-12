@@ -9,7 +9,8 @@ class HospitalReviewController extends GetxController{
   var isReviewLoading = true.obs;
 
   var isMyReviewExisted = false;
-  late Map<String,dynamic> myReviews;
+  late List<dynamic> myReview;
+
 
   var starsNum = List<int>.filled(6, 0);
   var reviews;
@@ -49,13 +50,13 @@ class HospitalReviewController extends GetxController{
     }
   }
 
-  Future<bool> editUserReview(String reviewId, double rating, String review) async {
+  Future<bool> editUserReview(String pid, String reviewId, double rating, String review) async {
     isLoading = true.obs;
 
     Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
 
-    final response = await dio.post(
+    final response = await dio.patch(
         '${Apis.baseUrl}mapp/review/edit/$reviewId',
         options: Options(headers: {
           'Content-Type': 'application/json',
@@ -64,6 +65,7 @@ class HospitalReviewController extends GetxController{
         data: json.encode({
           'stars' : rating,
           'content' : review,
+          'pid' : pid,
         })
     );
 
@@ -113,38 +115,58 @@ class HospitalReviewController extends GetxController{
     }
   }
 
-  Future<bool> getMyReviewList(String reviewId, double rating, String review) async {
-    isLoading = true.obs;
+  Future<bool> deleteMyReview(String reviewId) async {
+    isReviewLoading.value = true;
+
+    Dio dio = Dio();
+    dio.interceptors.add(CustomInterceptor());
+
+    final response = await dio.delete(
+      '${Apis.baseUrl}mapp/review/delete/$reviewId',
+      options: Options(headers: {
+        'Content-Type': 'application/json',
+        'accessToken': 'true',
+      },),
+    );
+
+    if (response.statusCode == 200) {
+      print('SUCCESS DELETE');
+
+      myReview.removeWhere((review)=>review['_id'] == 'reviewId');
+
+      isReviewLoading.value = false;
+      return true;
+    } else{
+      print('코드: ${response.statusCode}');
+      return false;
+    }
+  }
+
+
+  Future<bool> getMyReviewList() async {
+    isReviewLoading.value = true;
 
     Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
 
     final response = await dio.get(
-        '${Apis.baseUrl}mapp/review/myReviews',
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'accessToken': 'true',
-        },),
+      '${Apis.baseUrl}mapp/review/myReviews',
+      options: Options(headers: {
+        'Content-Type': 'application/json',
+        'accessToken': 'true',
+      },),
     );
 
     if (response.statusCode == 200) {
       print('SUCCESS GET');
       final data = json.decode(response.data);
-      print(data);
 
-      // TODO MY REVIEW LIST
+      print('MYREVIEW');
 
+      myReview = data['content']['reviews'];
+      print(myReview);
 
-/*      if (data['content'] == null) {
-        isMyReviewExisted = false;
-        return true;
-      }
-
-      List<dynamic> myReviews = data['content'];
-
-      print(myReviews);*/
-
-      isLoading.value = false;
+      isReviewLoading.value = false;
       return true;
     } else{
       print('코드: ${response.statusCode}');

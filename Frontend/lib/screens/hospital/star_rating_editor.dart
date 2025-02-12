@@ -1,3 +1,5 @@
+import 'dart:core';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 typedef void RatingChangeCallback(double rating);
@@ -9,7 +11,9 @@ class StarRating extends StatelessWidget {
   final bool isControllable;
   final double starSize;
 
-  StarRating({this.starCount = 5, this.rating = .0, required this.onRatingChanged, required this.isControllable, required this.starSize, });
+  final bool isCentered;
+
+  StarRating({this.starCount = 5, this.rating = .0, required this.onRatingChanged, required this.isControllable, required this.starSize, required this.isCentered, });
 
   Widget buildStar(BuildContext context, int index) {
     Icon icon;
@@ -50,8 +54,8 @@ class StarRating extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Row(
-      //mainAxisAlignment: MainAxisAlignment.center,
-        children: new List.generate(starCount, (index) => buildStar(context, index))
+      mainAxisAlignment: (isCentered)? MainAxisAlignment.center : MainAxisAlignment.start,
+      children: new List.generate(starCount, (index) => buildStar(context, index))
     );
   }
 }

@@ -344,6 +344,7 @@ class _MapAndListScreenState extends State<MapAndListScreen> {
                                         starSize: 20,
                                         isControllable: false,
                                         onRatingChanged: (rating) => {},
+                                        isCentered: false,
                                     ),
                                 ],
                               ],

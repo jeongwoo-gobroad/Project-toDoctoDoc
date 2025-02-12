@@ -4,12 +4,14 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc/controllers/hospital/hospital_review_controller.dart';
 import 'package:to_doc/screens/hospital/hospital_rating_screen.dart';
+import 'package:to_doc/screens/hospital/review_widget.dart';
 import 'package:to_doc/screens/hospital/star_rating_editor.dart';
+
 
 class HospitalDetailView extends StatefulWidget {
   const HospitalDetailView({super.key, required this.hospital});
   final Map<String, dynamic> hospital;
-  
+
   @override
   State<HospitalDetailView> createState() => _HospitalDetailViewState();
 }
@@ -17,7 +19,6 @@ class HospitalDetailView extends StatefulWidget {
 class _HospitalDetailViewState extends State<HospitalDetailView> {
   HospitalReviewController hospitalReviewController = Get.put(HospitalReviewController());
   ScrollController rowScrollController = ScrollController();
-
 
   Widget chartRow(BuildContext context, String label, double pct) {
     return Row(
@@ -54,59 +55,6 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
         ),
         //Text('${pct * 100}%',),
       ],
-    );
-  }
-  reviewWidget(String name, double rating, String content, DateTime time, bool isEdited) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-
-        children: [
-          // PROFILE NICKNAME TIME
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Icon(CupertinoIcons.profile_circled, size: 40,),
-                  SizedBox(width: 5,),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(name, ),
-                      SizedBox(height: 2),
-                      StarRating(
-                        rating: rating,
-                        starSize: 20,
-                        isControllable: false,
-                        onRatingChanged: (rating) => {},
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  if (isEdited) Text('(수정됨) ', style: TextStyle(color: Colors.grey, fontSize: 10),),
-                  Text(DateFormat.yMd().format(time)),
-                  IconButton(
-                    onPressed: (){},
-                    icon: Icon(Icons.more_vert),
-                  ),
-                ],
-              ),
-            ],
-          ),
-
-          // STAR RATING
-          SizedBox(height: 10),
-
-          // TODO 더보기 기능 추가
-          Text(content),
-
-        ],
-      ),
     );
   }
   Widget placeInform(Icon thisIcon, String description) {
@@ -154,11 +102,17 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
     );
   }
 
+
+  void refreshScreen() {
+    hospitalReviewController.getHospitalReviewList(widget.hospital['_id']);
+    setState(() {
+
+    });
+  }
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-
     hospitalReviewController.getHospitalReviewList(widget.hospital['_id']);
   }
 
@@ -181,9 +135,6 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
     body: Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // TODO 병원 사진 LIST
-        //(height: 40, color: Colors,),
-
         // TODO 간단한 병원 주소 및 연락처
         Container(
           margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -207,7 +158,7 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
 
         TextButton(
             onPressed: () {
-              Get.to(()=>HospitalRatingScreen(hospitalId: widget.hospital['_id'],));
+              Get.to(()=>HospitalRatingScreen(reviewId: '', hospitalId: widget.hospital['_id'], hospitalName: widget.hospital['name'], isMakeNewReview: true, content: '', rating: 3.0,));
             },
             child: Text('리뷰 쓰기 (예외처리 안함 조심)'),
         ),
@@ -242,6 +193,7 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
                           starSize: 20,
                           isControllable: false,
                           onRatingChanged: (rating) => {},
+                          isCentered: true,
                         ),
                         //SizedBox(height: 5,),
                         Text('(${hospitalReviewController.reviews.length} 개)'),
@@ -266,47 +218,26 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
               Text('내 리뷰'),
               Text('내 리뷰'),
 
-
-
-              SingleChildScrollView(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return reviewWidget('익명 ${index+1}',
-                        hospitalReviewController.reviews[index]['stars'].toDouble(),
-                        hospitalReviewController.reviews[index]['content'],
-                        DateTime.parse(hospitalReviewController.reviews[index]['updatedAt']), false);
-                  },
-                  itemCount: hospitalReviewController.reviews.length,
-                ),
+              ListView.builder(
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return ReviewWidget(
+                      reviewId: hospitalReviewController.reviews[index]['_id'],
+                      name: '익명 ${index+1}',
+                      rating: hospitalReviewController.reviews[index]['stars'].toDouble(),
+                      content: hospitalReviewController.reviews[index]['content'],
+                      time: DateTime.parse(hospitalReviewController.reviews[index]['updatedAt']),
+                      isEdited: hospitalReviewController.reviews[index]['updatedAt'] != hospitalReviewController.reviews[index]['createdAt'],
+                      isMine: false,
+                      setState: refreshScreen,
+                  );
+                },
+                itemCount: hospitalReviewController.reviews.length,
               ),
 
             ],
           );
-
         }),
-
-
-
-        // TODO 리뷰 리스트
-        // TODO 맨위에 본인거 있으면 그거 따로 띄우기
-        //
-        //
-
-
-
-
-        /*
-      ListView.builder(
-        controller : scrollController,
-        itemCount: 0,
-        itemBuilder: (context, index) {
-          return reviewWidget();
-        },
-      ),
-      */
-
-
       ],
     )
     );

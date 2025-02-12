@@ -5,32 +5,49 @@ import 'package:to_doc/screens/hospital/star_rating_editor.dart';
 import '../../controllers/hospital/hospital_review_controller.dart';
 
 class HospitalRatingScreen extends StatefulWidget {
-  const HospitalRatingScreen({super.key, required this.hospitalId});
+  const HospitalRatingScreen({super.key,
+    required this.hospitalId,
+    required this.hospitalName,
+    required this.isMakeNewReview,
+    required this.content,
+    required this.rating,
+    required this.reviewId,
+  });
 
   final String hospitalId;
+  final String hospitalName;
+  final bool isMakeNewReview;
+  final String content;
+  final double rating;
+  final String reviewId;
 
   @override
   State<HospitalRatingScreen> createState() => _HospitalRatingScreenState();
 }
 
-/*
-  TODO : UI 완성
-  Object 구조
-  user
-  createdAt
-  updatedAt
-  place_id
-  stars
-  content
-*/
-
-
 class _HospitalRatingScreenState extends State<HospitalRatingScreen> {
   double rating = 3;
   bool willReVisit = false;
 
-  TextEditingController textEditingController = TextEditingController();
+  late TextEditingController textEditingController = TextEditingController(text: widget.content);
   HospitalReviewController hospitalReviewController = Get.put(HospitalReviewController());
+
+  @override
+  void initState() {
+    print(widget.hospitalId);
+    print(widget.hospitalName);
+    print(widget.isMakeNewReview);
+    print(widget.content);
+    print(widget.reviewId);
+    print(widget.rating);
+
+
+    if (widget.isMakeNewReview) {
+      rating = widget.rating;
+    }
+
+    super.initState();
+  }
 
   Future<void> sendReviewApprovalAlert(BuildContext context) async {
     return showDialog<void>(
@@ -49,8 +66,14 @@ class _HospitalRatingScreenState extends State<HospitalRatingScreen> {
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                hospitalReviewController.postUserReview(widget.hospitalId, rating, textEditingController.text);
+              onPressed: () async {
+                if (widget.isMakeNewReview) {
+                  hospitalReviewController.postUserReview(widget.hospitalId, rating, textEditingController.text);
+                }
+                else {
+                  await hospitalReviewController.editUserReview(widget.hospitalId, widget.reviewId, rating, textEditingController.text);
+                }
+
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               },
@@ -76,7 +99,7 @@ class _HospitalRatingScreenState extends State<HospitalRatingScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('병원명 (가)',
+        title: Text(widget.hospitalName,
         style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
       ),
       body: Column(
@@ -95,6 +118,7 @@ class _HospitalRatingScreenState extends State<HospitalRatingScreen> {
                   starSize: 50,
                   isControllable: true,
                   onRatingChanged: (rating) => setState(() => this.rating = rating),
+                  isCentered: true,
                 ),
               ),
               SizedBox(height: 20,),
