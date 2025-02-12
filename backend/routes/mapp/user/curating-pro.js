@@ -182,7 +182,9 @@ router.post(["/curate"],
 
             await curate.save();
             await User.findByIdAndUpdate(req.userid, {
-                $push: {curates: curate._id}
+                $push: {curates: curate._id},
+                recentCurateDate: Date.now(),
+                recentCurate: curate._id,
             });
 
             // console.log(curate);

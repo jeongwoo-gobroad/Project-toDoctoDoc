@@ -62,7 +62,7 @@ router.post(["/query"],
                 return;
             }
         } else {
-            res.status(401).json(returnResponse(true, "typemorethanone", "입력 데이터 없음"));
+            res.status(403).json(returnResponse(true, "typemorethanone", "입력 데이터 없음"));
 
             return;
         }

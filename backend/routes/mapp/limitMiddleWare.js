@@ -23,7 +23,7 @@ const ifDailyRequestNotExceededThenProceed = async (req, res, next) => {
             limits.dailyRequestCount += 1;
     
             try {
-                await User.findByIdAndUpdate(user.userid, {
+                await User.findByIdAndUpdate(req.userid, {
                     limits: limits
                 });
     

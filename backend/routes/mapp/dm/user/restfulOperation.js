@@ -60,7 +60,7 @@ router.get(["/list"],
                 path: 'chats',
                 populate: {
                     path: 'doctor',
-                    select: 'name'
+                    select: 'name myProfileImage'
                 }
             });
             const chats = usr.chats;
@@ -73,6 +73,7 @@ router.get(["/list"],
                 let cache;
 
                 prevChat.doctorId = chat.doctor._id;
+                prevChat.doctorProfilePictureLink = chat.doctor.myProfileImage;
                 prevChat.doctorName = chat.doctor.name;
                 prevChat.date = chat.date;
                 prevChat.cid = chat._id;

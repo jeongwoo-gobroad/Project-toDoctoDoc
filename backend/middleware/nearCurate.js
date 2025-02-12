@@ -1,9 +1,13 @@
 const Curate = require("../models/Curate");
+const UserSchema = require("../models/User");
+const mongoose = require("mongoose");
+const User = mongoose.model('User', UserSchema);
 
 const nearbyPatientCurate = async (long, lat, radius) => {
     const longConstant = 1 / 111.19;
     const latConstant = 1 / (6371 * 1 * Math.PI / 180 * Math.cos(parseFloat(lat) * Math.PI / 180));
-    const nearCurates = [];
+
+    // const nearCurates = [];
 
     const curates = await Curate.aggregate([
         {

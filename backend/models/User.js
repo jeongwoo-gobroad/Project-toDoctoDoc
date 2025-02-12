@@ -78,6 +78,10 @@ const UserSchema = new mongoose.Schema({
     recentCurateDate: {
         type: Date,
     },
+    recentCurate: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Curate',
+    },
     visitedPsys: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Psychiatry',
