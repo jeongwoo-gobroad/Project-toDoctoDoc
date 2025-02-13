@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:to_doc_for_doc/controllers/appointment_controller.dart';
@@ -46,7 +47,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
   late int updateUnread;
   late String appointmentId;
-
+  int selectColor = 0;
   List<ChatObject> _messageList = [];
 
   alterParent() { setState(() {}); }
@@ -239,26 +240,26 @@ void dispose() {
       },
     );
   }
-  Widget _buildColorButton(Color color, int value) {
-  return GestureDetector(
-    onTap: () {
-      
-      print('Selected color value: $value');
-    },
-    child: Container(
-      width: 30,
-      height: 30,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: Colors.grey[300]!,
-          width: 2,
+  Widget _buildColorButton(Color color, int index) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectColor = index;
+        });
+      },
+      child: Container(
+        width: 30,
+        height: 30,
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+          border: selectColor == index
+              ? Border.all(color: Colors.black, width: 2)
+              : null,
         ),
       ),
-    ),
-  );
-}
+    );
+  }
   Future<void> showMemoDialog(BuildContext context) async {
     final memoController = TextEditingController();
     final characterCount = ValueNotifier<int>(0);
@@ -307,15 +308,17 @@ void dispose() {
                 Expanded(
                   child: Stack(
                     children: [
-                      TextField(
+                      TextFormField(
                         controller: memoController,
                         maxLines: null,
-                        expands: true,
-                        textAlignVertical: TextAlignVertical.top,
-                        decoration: InputDecoration(
-                          hintText: '메모를 입력하세요',
-                          border: OutlineInputBorder(),
+                        keyboardType: TextInputType.multiline,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(500),
+                        ],
+                        decoration: const InputDecoration(
+                          hintText: '메모를 입력하세요 (최대 500자)',
                           contentPadding: EdgeInsets.all(16),
+                          border: InputBorder.none,
                         ),
                       ),
                       Positioned(
@@ -360,6 +363,7 @@ void dispose() {
                       
                       
                       onPressed: () {
+                        //exists한지부터 판단하고 
                         if (memoController.text.isNotEmpty) {
                           
                           //서버로 보내기

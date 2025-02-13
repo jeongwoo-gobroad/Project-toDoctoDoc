@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
+import 'package:to_doc_for_doc/controllers/AIassistant/ai_assistant_controller.dart';
 import 'package:to_doc_for_doc/controllers/auth/auth_interceptor.dart';
 import 'package:to_doc_for_doc/controllers/memo/memo_detail_model.dart';
 import 'package:to_doc_for_doc/controllers/memo/memo_model.dart';
@@ -11,7 +12,8 @@ import 'package:to_doc_for_doc/controllers/memo/memo_model.dart';
 
 class MemoController extends GetxController {
   var isLoading = true.obs;
- 
+  RxString memoID = "".obs;
+  AiAssistantController aiAssistantController = Get.find<AiAssistantController>();
 
   Future<bool> memoExists(String userId) async {
     isLoading.value = true;
@@ -30,6 +32,9 @@ class MemoController extends GetxController {
     if (response.statusCode == 200) {
       final data = json.decode(response.data);
       print(data);
+      memoID.value = data['content']['memoId'];
+    
+      
       
       isLoading.value = false;
       return true;
@@ -108,7 +113,14 @@ class MemoController extends GetxController {
       final memo = data['content'];
       memoDetail.value = MemoDetail.fromJson(memo);
       print(memoDetail.value);
-
+      if(memo['aiSummary'] != null){
+        print('not null');
+        aiAssistantController.summary.value = memo['aiSummary'];
+        print(aiAssistantController.summary.value);
+      }else{
+        aiAssistantController.summary.value = "";
+      }
+      
       detailLoading.value = false;
       return true;
     }

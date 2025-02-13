@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:to_doc_for_doc/controllers/chat_controller.dart';
 import 'package:to_doc_for_doc/controllers/memo/memo_controller.dart';
+import 'package:to_doc_for_doc/screen/patient_manage/memo_detail.dart';
 import 'package:to_doc_for_doc/screen/patient_manage/memo_main.dart';
 import 'package:to_doc_for_doc/screen/patient_manage/memo_write.dart';
 
@@ -147,6 +148,18 @@ class _PatientManageMainState extends State<PatientManageMain> {
                             EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                       ),
                     ),
+                    ElevatedButton.icon(
+                      icon: Icon(Icons.menu),
+                      label: Text('메모 목록'),
+                      onPressed: () { memoController.getMemoList();
+                                Get.to(() => MemoMain());},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color.fromARGB(255, 225, 234, 205),
+                        foregroundColor: Colors.black,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      ),
+                    ),
                     Obx(() => Text(
                           '환자 수: ${selectedPatients.length}명',
                           style: TextStyle(
@@ -204,12 +217,11 @@ class _PatientManageMainState extends State<PatientManageMain> {
                                       patientId: patient['id']));
                                 }
                               } else{
-                                //수정화면 이동 
-                                // Get.to(() => MemoWriteScreen(
-                                //       patientId: patient['id']));
-                                Get.to(() => MemoMain());
-                                await memoController.getMemoList();
+                                print(memoController.memoID.value);
+                                await memoController.getMemoDetail(memoController.memoID.value);
+                                Get.to(()=> MemoDetailScreen(patientId: memoController.memoID.value, selectedColor: memoController.memoDetail.value!.color,));
                                 
+                            
                               }
                              
                             },

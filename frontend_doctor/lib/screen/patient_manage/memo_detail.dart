@@ -424,24 +424,20 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
                           ),
                           if (_isEditingDetails)
                             ElevatedButton(
-                              onPressed: () async {
-                                final updatedDetails =
-                                    detailsTextController.text;
-                                bool result = await controller.editDetails(
-                                  widget.patientId,
-                                  updatedDetails,
-                                );
-                                if (result) {
-                                  Get.snackbar('성공', '세부사항이 업데이트 되었습니다.');
-                                  setState(() {
-                                    _isEditingDetails = false;
-                                  });
-                                } else {
-                                  Get.snackbar('실패', '세부사항 업데이트에 실패했습니다.');
-                                }
-                              },
-                              child: const Text("수정 완료"),
-                            ),
+                            onPressed: () async {
+                              final updatedDetails = detailsTextController.text;
+                              bool result = await controller.editDetails(
+                                widget.patientId,
+                                updatedDetails,
+                              );
+                              if (result) {
+                                Get.snackbar('성공', '세부사항이 업데이트 되었습니다.');
+                              } else {
+                                Get.snackbar('실패', '세부사항을 업데이트 하지 못했습니다.');
+                              }
+                            },
+                            child: const Text('세부사항 업데이트'),
+                          ),
                         ],
                       ),
                       Row(
@@ -459,21 +455,7 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
                               );
                             },
                           ),
-                          ElevatedButton(
-                            onPressed: () async {
-                              final updatedDetails = detailsTextController.text;
-                              bool result = await controller.editDetails(
-                                widget.patientId,
-                                updatedDetails,
-                              );
-                              if (result) {
-                                Get.snackbar('성공', '세부사항이 업데이트 되었습니다.');
-                              } else {
-                                Get.snackbar('실패', '세부사항을 업데이트 하지 못했습니다.');
-                              }
-                            },
-                            child: const Text('세부사항 업데이트'),
-                          ),
+                          
                         ],
                       ),
                     ],
