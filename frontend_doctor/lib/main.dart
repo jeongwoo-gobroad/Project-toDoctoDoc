@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:to_doc_for_doc/Database/chat_database.dart';
+import 'package:to_doc_for_doc/controllers/AIassistant/ai_assistant_controller.dart';
 import 'package:to_doc_for_doc/screen/auth/login_screen.dart';
 
 import 'controllers/auth/auth_secure.dart';
@@ -17,7 +18,7 @@ void main() async{
   //clearSecureStorageOnReinstall();
   initFirebase();
   initDatabase();
-
+   Get.put(AiAssistantController(), permanent: true);
   runApp(GetMaterialApp(
     home: LoginPage(),
     theme: ThemeData(

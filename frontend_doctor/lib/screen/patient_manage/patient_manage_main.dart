@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:to_doc_for_doc/controllers/chat_controller.dart';
 import 'package:to_doc_for_doc/controllers/memo/memo_controller.dart';
 import 'package:to_doc_for_doc/screen/patient_manage/memo_main.dart';
@@ -16,11 +17,17 @@ class _PatientManageMainState extends State<PatientManageMain> {
   final ChatController controller = Get.put(ChatController());
   final MemoController memoController = Get.put(MemoController());
   final RxList selectedPatients = [].obs;
+  final box = GetStorage();
 
   @override
   void initState() {
-    controller.getChatList();
     super.initState();
+    var storedPatients = box.read<List>('selectedPatients') ?? [];
+    selectedPatients.assignAll(storedPatients);
+    controller.getChatList();
+  }
+  void _updateStoredPatients() {
+  box.write('selectedPatients', selectedPatients.toList());
   }
 
   void _showPatientListDialog(BuildContext context) {
@@ -89,6 +96,7 @@ class _PatientManageMainState extends State<PatientManageMain> {
                                   'name': chat.userName,
                                 });
                               }
+                               _updateStoredPatients();
 
                               Navigator.of(context).pop();
                             },
@@ -234,6 +242,8 @@ class _PatientManageMainState extends State<PatientManageMain> {
                                       icon: Icon(Icons.close, size: 20),
                                       onPressed: () {
                                         selectedPatients.removeAt(index);
+                                        _updateStoredPatients();
+
                                       },
                                     ),
                                   ),

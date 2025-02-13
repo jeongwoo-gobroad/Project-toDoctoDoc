@@ -22,7 +22,7 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
   int selectColor = 0;
 
   AiAssistantController aiAssistantController =
-      Get.put(AiAssistantController());
+      Get.find<AiAssistantController>();
   final TextEditingController memoTextController = TextEditingController();
   final TextEditingController detailsTextController = TextEditingController();
 
@@ -33,6 +33,7 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
   @override
   void initState() {
     super.initState();
+    print('summary: ${aiAssistantController.summary}');
     selectColor = widget.selectedColor;
     print(widget.patientId);
     //print(memoController.memoDetail.value!.memo);
@@ -126,7 +127,7 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
             builder: (BuildContext context) {
               return AlertDialog(
                 title: const Text("유의"),
-                content: const Text("100자 이상 적은 메모에 대해서만 입력 데이터를 생성합니다."),
+                content: const Text("100자 이상 적은 세부사항에 대해서만 입력 데이터를 생성합니다."),
                 actions: [
                   TextButton(
                     onPressed: () {
