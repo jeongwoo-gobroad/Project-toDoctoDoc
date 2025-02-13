@@ -33,10 +33,12 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
   bool _isEditingDetails = false;
   bool _animateNewSummary = false;
   String _oldSummary = '';
-
+  double _buttonOpacity = 1.0;
+  Timer? _fadeTimer;
   @override
   void initState() {
     super.initState();
+     _resetFadeTimer();
     _oldSummary = aiAssistantController.summary.value;
 
     print('summary: ${aiAssistantController.summary}');
@@ -60,10 +62,24 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
 
   @override
   void dispose() {
+    _fadeTimer?.cancel();
     memoTextController.dispose();
     detailsTextController.dispose();
     memoCharCount.dispose();
     super.dispose();
+  }
+  void _resetFadeTimer() {
+    _fadeTimer?.cancel();
+
+    setState(() {
+      _buttonOpacity = 1.0;
+    });
+
+    _fadeTimer = Timer(Duration(seconds: 3), () {
+      setState(() {
+        _buttonOpacity = 0.3;
+      });
+    });
   }
 
   Widget _buildQueryUsageDisplay() {
@@ -126,62 +142,67 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
         ),
         centerTitle: true,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text("유의"),
-                content: const Text("100자 이상 적은 세부사항에 대해서만 입력 데이터를 생성합니다."),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      if (detailCharCount.value < 100) {
-                        Navigator.of(context).pop();
-                        Get.snackbar("실패", "100자 이상의 세부사항을 작성해주세요.");
-                      } else if (aiAssistantController.patientLimited.value ==
-                          true) {
-                        Navigator.of(context).pop();
-                        Get.snackbar("실패", "일일제한 횟수를 초과하였습니다.");
-                      } else {
-                        Navigator.of(context).pop();
-                        setState(() {
-                          isGeneratingAnswer = true;
-                          aiAssistantController.summary.value = "";
-                        });
-                        aiAssistantController
-                            .detailsSummary(widget.patientId)
-                            .then((_) {
+      floatingActionButton: AnimatedOpacity(
+        opacity: _buttonOpacity,
+        duration: Duration(seconds: 1),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            _resetFadeTimer();
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text("유의"),
+                  content: const Text("100자 이상 적은 세부사항에 대해서만 입력 데이터를 생성합니다."),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        if (detailCharCount.value < 100) {
+                          Navigator.of(context).pop();
+                          Get.snackbar("실패", "100자 이상의 세부사항을 작성해주세요.");
+                        } else if (aiAssistantController.patientLimited.value ==
+                            true) {
+                          Navigator.of(context).pop();
+                          Get.snackbar("실패", "일일제한 횟수를 초과하였습니다.");
+                        } else {
+                          Navigator.of(context).pop();
                           setState(() {
-                            isGeneratingAnswer = false;
-                            if (aiAssistantController.summary.value !=
-                                _oldSummary) {
-                              _oldSummary = aiAssistantController.summary.value;
-                              _animateNewSummary = true;
-                            } else {
-                              _animateNewSummary = false;
-                            }
+                            isGeneratingAnswer = true;
+                            aiAssistantController.summary.value = "";
                           });
-                        });
-                      }
-                    },
-                    child: const Text("확인"),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text("취소"),
-                  ),
-                ],
-              );
-            },
-          );
-        },
-        icon: const Icon(Icons.auto_awesome),
-        label: const Text("AI 요약"),
-        backgroundColor: Color.fromARGB(255, 225, 234, 205),
+                          aiAssistantController
+                              .detailsSummary(widget.patientId)
+                              .then((_) {
+                            setState(() {
+                              isGeneratingAnswer = false;
+                              if (aiAssistantController.summary.value !=
+                                  _oldSummary) {
+                                _oldSummary = aiAssistantController.summary.value;
+                                _animateNewSummary = true;
+                              } else {
+                                _animateNewSummary = false;
+                              }
+                            });
+                          });
+                        }
+                      },
+                      child: const Text("확인"),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text("취소"),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          icon: const Icon(Icons.auto_awesome),
+          label: const Text("AI 요약"),
+          backgroundColor: Color.fromARGB(255, 225, 234, 205),
+        ),
       ),
       body: Obx(() {
         if (controller.detailLoading.value == true) {
