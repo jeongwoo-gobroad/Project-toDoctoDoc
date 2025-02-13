@@ -12,12 +12,12 @@ router.get(["/exists/:uid"],
             const memo = await PatientMemo.findOne({doctor: req.userid, user:req.params.uid}, '-memo -aiSummary -details');
 
             if (!memo) {
-                res.status(201).json(returnResponse(false, "memoDoesNotExist", false));
+                res.status(201).json(returnResponse(false, "memoDoesNotExist", {exists: false}));
 
                 return;
             }
 
-            res.status(200).json(returnResponse(false, "memoExists", true));
+            res.status(200).json(returnResponse(false, "memoExists", {exists: true, memoId: memo._id}));
 
             return;
         } catch (error) {
