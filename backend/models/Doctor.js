@@ -69,7 +69,8 @@ const DoctorSchema = new mongoose.Schema({
         type: String,
     },
     myPsyID: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Psychiatry'
     },
     isPremiumPsy: {
         type: Boolean,

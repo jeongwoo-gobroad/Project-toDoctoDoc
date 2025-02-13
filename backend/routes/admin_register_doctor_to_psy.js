@@ -53,11 +53,12 @@ router.put(["/registerDoctorToPsy"],
         const {doctorId, psyId} = req.body;
 
         try {
-            await Doctor.findByIdAndUpdate(doctorId, {
-                myPsyID: psyId
-            });
-
             const psy = await Psychiatry.findById(psyId);
+
+            await Doctor.findByIdAndUpdate(doctorId, {
+                myPsyID: psyId,
+                address: psy.address,
+            });
 
             if (psy) {
                 psy.doctors.push(doctorId);

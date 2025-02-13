@@ -35,7 +35,10 @@ const ScheduleSchema = new mongoose.Schema({
     },
     availableTime: [{ // 0: 월요일 6: 일요일
         type: [TimeChunkSchema],
-    }]
+    }],
+    minimalAppointmentTime: {
+        type: Number,
+    }
 });
 
 module.exports = mongoose.model("Schedule", ScheduleSchema);
