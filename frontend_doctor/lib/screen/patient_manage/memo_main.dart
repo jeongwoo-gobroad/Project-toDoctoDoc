@@ -111,7 +111,7 @@ class _MemoMainState extends State<MemoMain> {
                   onTap: ()async{
                     print(memo.id);
                     await memoController.getMemoDetail(memo.id);
-                    Get.to(()=> MemoDetailScreen(patientId: memo.id));
+                    Get.to(()=> MemoDetailScreen(patientId: memo.id, selectedColor: memo.color,));
                   },
                 ),
               );

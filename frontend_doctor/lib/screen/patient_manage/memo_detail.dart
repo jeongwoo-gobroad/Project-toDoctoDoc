@@ -7,8 +7,11 @@ import 'package:to_doc_for_doc/controllers/AIassistant/ai_assistant_controller.d
 import 'package:to_doc_for_doc/controllers/memo/memo_controller.dart';
 
 class MemoDetailScreen extends StatefulWidget {
-  const MemoDetailScreen({Key? key, required this.patientId}) : super(key: key);
+  const MemoDetailScreen(
+      {Key? key, required this.patientId, required this.selectedColor})
+      : super(key: key);
   final String patientId;
+  final int selectedColor;
 
   @override
   _MemoDetailScreenState createState() => _MemoDetailScreenState();
@@ -16,7 +19,7 @@ class MemoDetailScreen extends StatefulWidget {
 
 class _MemoDetailScreenState extends State<MemoDetailScreen> {
   final MemoController controller = Get.put(MemoController());
-  int selectedColor = 0;
+  int selectColor = 0;
 
   AiAssistantController aiAssistantController =
       Get.put(AiAssistantController());
@@ -30,6 +33,7 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
   @override
   void initState() {
     super.initState();
+    selectColor = widget.selectedColor;
     print(widget.patientId);
     //print(memoController.memoDetail.value!.memo);
     aiAssistantController.assistantDailyLimit();
@@ -55,6 +59,27 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
     super.dispose();
   }
 
+  Widget _buildQueryUsageDisplay() {
+    return Obx(() => Container(
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 225, 234, 205),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Text(
+            '일일 제한 횟수: ${aiAssistantController.patientTotal.value}/${aiAssistantController.dailyPatientLimit}',
+            style: TextStyle(
+              fontSize: 14,
+              color: aiAssistantController.patientTotal.value >=
+                      aiAssistantController.dailyPatientLimit
+                  ? Colors.red
+                  : Colors.black,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ));
+  }
+
   Widget _buildAiSummaryPrompt() {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 16),
@@ -66,7 +91,8 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
       ),
       child: Row(
         children: [
-          const Icon(Icons.lightbulb_outline, color: Color.fromARGB(255, 255, 230, 0)),
+          const Icon(Icons.lightbulb_outline,
+              color: Color.fromARGB(255, 255, 230, 0)),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -107,6 +133,10 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
                       if (detailCharCount.value < 100) {
                         Navigator.of(context).pop();
                         Get.snackbar("실패", "100자 이상의 세부사항을 작성해주세요.");
+                      } else if (aiAssistantController.patientLimited.value ==
+                          true) {
+                        Navigator.of(context).pop();
+                        Get.snackbar("실패", "일일제한 횟수를 초과하였습니다.");
                       } else {
                         Navigator.of(context).pop();
                         setState(() {
@@ -141,9 +171,18 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              isGeneratingAnswer
-                  ? const LoadingAnimationText()
-                  : _buildAiSummaryPrompt(),
+              _buildQueryUsageDisplay(),
+              const SizedBox(height: 3),
+              Obx(() {
+                if (aiAssistantController.summary.value.isNotEmpty) {
+                  return AnimatedSummaryText(
+                      text: aiAssistantController.summary.value);
+                } else if (isGeneratingAnswer) {
+                  return const LoadingAnimationText();
+                } else {
+                  return _buildAiSummaryPrompt();
+                }
+              }),
               const SizedBox(height: 16),
               Card(
                 elevation: 2,
@@ -176,21 +215,7 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
                           _buildColorButton(Colors.brown, 6),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                      const SizedBox(height: 16),
                       Text(
                         '메모 내용',
                         style: TextStyle(
@@ -234,7 +259,7 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
                               final updatedMemo = memoTextController.text;
                               bool result = await controller.editMemo(
                                 widget.patientId,
-                                selectedColor,
+                                selectColor,
                                 updatedMemo,
                               );
                               if (result) {
@@ -278,7 +303,8 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
                         ),
                         child: TextFormField(
                           controller: detailsTextController,
-                          maxLines: 3,
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
                           decoration: const InputDecoration(
                             hintText: '세부사항을 입력하세요',
                             contentPadding: EdgeInsets.all(16),
@@ -334,7 +360,7 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          selectedColor = index;
+          selectColor = index;
         });
       },
       child: Container(
@@ -343,7 +369,7 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
         decoration: BoxDecoration(
           color: color,
           shape: BoxShape.circle,
-          border: selectedColor == index
+          border: selectColor == index
               ? Border.all(color: Colors.black, width: 2)
               : null,
         ),
@@ -413,7 +439,8 @@ class _LoadingAnimationTextState extends State<LoadingAnimationText>
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.lightbulb_outline, color: Color.fromARGB(255, 255, 230, 0)),
+                  const Icon(Icons.lightbulb_outline,
+                      color: Color.fromARGB(255, 255, 230, 0)),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -431,6 +458,138 @@ class _LoadingAnimationTextState extends State<LoadingAnimationText>
           ),
         );
       },
+    );
+  }
+}
+
+class AnimatedSummaryText extends StatefulWidget {
+  final String text;
+  final Duration duration;
+  const AnimatedSummaryText({
+    Key? key,
+    required this.text,
+    this.duration = const Duration(milliseconds: 1500),
+  }) : super(key: key);
+
+  @override
+  _AnimatedSummaryTextState createState() => _AnimatedSummaryTextState();
+}
+
+class _AnimatedSummaryTextState extends State<AnimatedSummaryText> {
+  int currentIndex = 0;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.text.isNotEmpty) {
+      _startAnimation();
+    }
+  }
+
+  void _startAnimation() {
+    final int totalLetters = widget.text.length;
+    final int delayMs = widget.duration.inMilliseconds ~/ totalLetters;
+    _timer = Timer.periodic(Duration(milliseconds: delayMs), (timer) {
+      setState(() {
+        currentIndex++;
+      });
+      if (currentIndex > totalLetters) {
+        _timer?.cancel();
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant AnimatedSummaryText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.text != widget.text) {
+      _timer?.cancel();
+      currentIndex = 0;
+      if (widget.text.isNotEmpty) {
+        _startAnimation();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 225, 234, 205),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.green, width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: const [
+              Icon(Icons.auto_awesome, color: Color.fromARGB(255, 255, 230, 0)),
+              SizedBox(width: 8),
+              Text(
+                "AI 요약",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            children: List.generate(widget.text.length, (index) {
+              if (index < currentIndex) {
+                return Text(
+                  widget.text[index],
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                );
+              } else if (index == currentIndex &&
+                  currentIndex <= widget.text.length) {
+                return TweenAnimationBuilder<Offset>(
+                  tween: Tween<Offset>(
+                    begin: const Offset(-1.0, 0),
+                    end: Offset.zero,
+                  ),
+                  duration: Duration(
+                    milliseconds:
+                        widget.duration.inMilliseconds ~/ widget.text.length,
+                  ),
+                  builder: (context, offset, child) {
+                    return Transform.translate(
+                      offset: Offset(offset.dx * 20, 0),
+                      child: child,
+                    );
+                  },
+                  child: Text(
+                    widget.text[index],
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            }),
+          ),
+        ],
+      ),
     );
   }
 }
