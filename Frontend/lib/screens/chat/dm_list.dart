@@ -86,10 +86,10 @@ class _DMListState extends State<DMList> {
                 child: Row(
                   children: [
                     const SizedBox(width: 10),
-
-                    //Icon(Icons.people, size: 30),
-
-                    Image.network(chat.profilePic, scale: 20,),
+                    Container(
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
+                        child: Image.network(chat.profilePic, scale: 20,)
+                    ),
 
                     const SizedBox(width: 10),
 
@@ -97,24 +97,12 @@ class _DMListState extends State<DMList> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                chat.doctorName,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                formattedDate,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade600,
-                                ),
-                              ),
-                            ],
+                          Text(
+                            chat.doctorName,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
@@ -129,35 +117,52 @@ class _DMListState extends State<DMList> {
                         ],
                       ),
                     ),
-                     FutureBuilder<int>(
-              future: chatDb.getLastReadId(chat.cid),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const SizedBox();
-                }
-                int lastAutoIncrementID = snapshot.data!;
-                int unread = chat.recentChat['autoIncrementId'] - lastAutoIncrementID;
-                if (unread > 0) {
-                  return Container(
-                    margin: const EdgeInsets.only(left: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      '$unread',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  );
-                } else {
-                  return const SizedBox();
-                }
-              },
-            ),
+
+
+                   Column(
+                     crossAxisAlignment: CrossAxisAlignment.end,
+                     children: [
+                       Text(
+                         formattedDate,
+                         style: TextStyle(
+                           fontSize: 12,
+                           color: Colors.grey.shade600,
+                         ),
+                       ),
+                       SizedBox(height: 5,),
+
+                       FutureBuilder<int>(
+                          future: chatDb.getLastReadId(chat.cid),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return const SizedBox();
+                            }
+                            int lastAutoIncrementID = snapshot.data!;
+                            int unread = chat.recentChat['autoIncrementId'] - lastAutoIncrementID;
+                            if (unread > 0) {
+                              return Container(
+                                margin: const EdgeInsets.only(left: 8),
+                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  '$unread',
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              );
+                            } else {
+                              return const SizedBox();
+                            }
+                          },
+                        ),
+                     ],
+                   ),
                   ],
                 ),
               ),

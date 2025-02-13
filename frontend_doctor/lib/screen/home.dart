@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:to_doc_for_doc/controllers/appointment_controller.dart';
 import 'package:to_doc_for_doc/controllers/curate/curate_controller.dart';
 import 'package:to_doc_for_doc/screen/appointment/appointment_listview.dart';
-import 'appointment/appointment_detail_screen.dart';
 import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
@@ -15,7 +14,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   CurateController curateController = Get.put(CurateController());
-  AppointmentController appointmentController = Get.put(AppointmentController());
+  AppointmentController appController = Get.put(AppointmentController());
   ScrollController scrollController = ScrollController();
 
   String formatDate(String date) {
@@ -27,40 +26,72 @@ class _HomeState extends State<Home> {
     }
   }
 
-  gotoDetainScreen(index) async {
-    //Get.to(()=>AppointmentDetailScreen(appointment: appointmentController.appointmentList[index]));
+  showSimplifySheet() {
+    showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      context: context,
+      isScrollControlled: true,
+      builder: (_) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.4,
+          minChildSize: 0.4,
+          maxChildSize: 1.0,
+
+          builder: (BuildContext context, ScrollController scrollController) {
+            return Wrap(
+              children: [
+                Container(
+                  height: 500,
+                  color: Colors.white
+                ),
+              ]
+            );
+          }
+        );
+      },
+    );
   }
 
   makeAppointmentList() {
-    if (appointmentController.isLoading.value) {
+    if (appController.isLoading.value) {
       return Center(child: CircularProgressIndicator(),);
     }
-    return Expanded(
-      child: ListView.builder(
-        controller: scrollController,
-        itemCount: appointmentController.appList.length - appointmentController.nearAppointment,
-        itemBuilder: (context, index) {
-          return Container(
-            padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-            decoration: BoxDecoration(border: BorderDirectional(bottom: BorderSide(color: Colors.grey.shade100))),
-            height: 55,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('${appointmentController.appList[index + appointmentController.nearAppointment]['user']['usernick']}와의 약속', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
-                Text(DateFormat.yMMMEd('ko_KR').add_jm().format(appointmentController.appList[index + appointmentController.nearAppointment]['appointmentTime']),
-                  style: TextStyle(color: (appointmentController.appList[index + appointmentController.nearAppointment]['appointmentTime'].day == DateTime.now().day)? Colors.red : null),),
-              ],
-            ),
-          );
-        },
-      )
+    return ListView.builder(
+      shrinkWrap: true,
+      controller: scrollController,
+      itemCount: appController.todayList.length,
+      itemBuilder: (context, index) {
+        return Container(
+          padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+          decoration: BoxDecoration(border: BorderDirectional(bottom: BorderSide(color: Colors.grey.shade100))),
+          height: 55,
+          child: Row(
+            children: [
+              // TODO 이거 유저 색깔 넣는거 추가 할 거 같은데 유저 에서 ID랑 nick 만 들어 와서 애매함
+              Container(
+                width: 10,
+                decoration: BoxDecoration(color: Colors.orange, borderRadius: BorderRadius.circular(5)),
+              ),
+
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('${appController.appList[appController.todayList[index]]['user']['usernick']}와의 약속', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
+                  Text(DateFormat.yMMMEd('ko_KR').add_jm().format(appController.appList[appController.todayList[index]]['appointmentTime']),),
+
+                  // TODO 끝나는 시간 추가 필요
+                  Text(DateFormat.yMMMEd('ko_KR').add_jm().format(appController.appList[appController.todayList[index]]['appointmentTime']),),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
   asyncBefore() async {
-    //await curateController.getCurateInfo('5');
-    await appointmentController.getSimpleInformation();
+    await appController.getSimpleInformation();
     setState(() {});
   }
 
@@ -79,66 +110,160 @@ class _HomeState extends State<Home> {
         title: Text('토닥toDoc - Doctor',
             style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
       ),
+      floatingActionButton: FloatingActionButton(
+        elevation: 0,
+        onPressed: () {
+          showSimplifySheet();
+        },
+        //heroTag: "actionButton",
+        backgroundColor: Color.fromARGB(255, 225, 234, 205),
+        child: Icon(Icons.auto_awesome, color: Colors.lightBlue),
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            Obx (() {
+              if (appController.isLoading.value) {
+                return Center(child: CircularProgressIndicator(),);
+              }
+              if (appController.isBeforeAppExist) {
+                return Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                  ),
+                  width: MediaQuery.of(context).size.width - 20,
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            //onTaptoGo();
+                          },
+                          child: Container(
+                            padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+                            width: 300,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  children: [
+                                    Icon(Icons.calendar_month),
+                                    Text('최근에 약속이 있었어요', style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20),),
+                                  ],
+                                ),
+                                SizedBox(height: 5),
+                                Text('${appController.appList[appController.nearAppointment-1]['user']['usernick']}, '
+                                    '${DateFormat.yMMMEd('ko_KR').add_jm()
+                                    .format(appController.appList[appController.nearAppointment-1]['appointmentTime'])}'),
+
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        InkWell(
+                          onTap: () {
+                            appController.isLoading.value = true;
+                            Get.to(()=>AppointmentListview());
+                          },
+                          child: Container(
+                            padding: EdgeInsets.fromLTRB(0, 50, 20, 0),
+                            width: MediaQuery
+                                .of(context)
+                                .size
+                                .width - 320,
+                            decoration: BoxDecoration(
+                                border: Border(
+                                    left: BorderSide(color: Colors.grey))
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text('더보기', style: TextStyle(
+                                    color: Colors.grey, fontSize: 10),),
+                                Icon(Icons.arrow_forward_ios,
+                                  color: Colors.grey.shade100,
+                                  size: 10,),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ]
+                  ),
+                );
+              }
+              else {
+                return SizedBox();
+              }
+            }),
+
+            SizedBox(height: 10,),
+
             Expanded(
-              flex: 2,
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(15),
                   //border: Border.all(color: Colors.grey[300]!),
                 ),
-                child: Center(
-                  child: Column(
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width - 70,
-                        padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        decoration: BoxDecoration(
-                          border: BorderDirectional(bottom: BorderSide(color: Colors.grey.shade300)),
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.fromLTRB(20, 10, 20, 5),
+                      decoration: BoxDecoration(
+                        border: BorderDirectional(bottom: BorderSide(color: Colors.grey.shade300)),
+                      ),
+                      child:
+                        Text('오늘의 예약', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        //),
+                      ),
+                    ),
+                    //SizedBox(width: 30, height: 200,),
+
+                    // 기존 일자 리스트
+                    makeAppointmentList(),
+
+                    // 더보기 버튼
+                   /*
+                   Container(
+                      width : double.infinity,
+                      padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                      decoration: BoxDecoration(
+                        border: BorderDirectional(top: BorderSide(color: Colors.grey.shade300)),
+                      ),
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                            shape: const RoundedRectangleBorder(),
                         ),
-                        child: //Center(
-                          /*child: */Text('다가오는 예약', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                          //),
+                        onPressed: () {
+                          if (appointmentController.isLoading.value) {
+                            return;
+                          }
+                          Get.to(()=>AppointmentListview());
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('더보기', style: TextStyle(fontSize: 15, color: Colors.grey),),
+                            Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 15,),
+                          ],
                         ),
                       ),
-                      SizedBox(width: 30),
-
-                      makeAppointmentList(),
-
-                      Container(
-                        width : double.infinity,
-                        padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                        decoration: BoxDecoration(
-                          border: BorderDirectional(top: BorderSide(color: Colors.grey.shade300)),
-                        ),
-                        child: TextButton(
-                          style: TextButton.styleFrom(
-                              shape: const RoundedRectangleBorder(),
-                          ),
-                          onPressed: () {
-                            if (appointmentController.isLoading.value) {
-                              return;
-                            }
-                            Get.to(()=>AppointmentListview());
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text('더보기', style: TextStyle(fontSize: 15, color: Colors.grey),),
-                              Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 15,),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                    */
+              
+                  ],
                 ),
               ),
             ),
+            SizedBox(height: 10,),
           ],
         ),
       ),

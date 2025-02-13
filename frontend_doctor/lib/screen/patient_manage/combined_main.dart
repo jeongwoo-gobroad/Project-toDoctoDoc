@@ -17,7 +17,7 @@ class CombinedTabs extends StatelessWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('채팅 및 환자 관리'),
+          title: const Text('채팅 및 환자 관리', style: TextStyle(fontWeight: FontWeight.bold),),
           bottom: const TabBar(
             tabs: [
               Tab(text: 'DM'),

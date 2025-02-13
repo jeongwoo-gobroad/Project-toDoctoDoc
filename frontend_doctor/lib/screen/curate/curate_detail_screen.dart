@@ -6,6 +6,8 @@ import 'package:to_doc_for_doc/controllers/curate/curate_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc_for_doc/screen/curate/post_detail_screen.dart';
 
+import 'aichat_detail_screen.dart';
+
 class CurateDetailScreen extends StatefulWidget {
   final String userName;
 
@@ -87,8 +89,6 @@ class _CurateDetailScreenState extends State<CurateDetailScreen> with TickerProv
                 ],
               ),
             ),
-
-
             Padding(
               padding: EdgeInsets.all(16),
               child: Text(
@@ -108,8 +108,6 @@ class _CurateDetailScreenState extends State<CurateDetailScreen> with TickerProv
               ),
             ),
 
-
-
             Padding(
               padding: EdgeInsets.all(16),
               child: Text(
@@ -122,7 +120,7 @@ class _CurateDetailScreenState extends State<CurateDetailScreen> with TickerProv
             ),
 
             SizedBox(
-              height: 520,
+              height : 55*((detail.posts.length - postTabController.index * 10 > 10) ? 10 : detail.posts.length - postTabController.index * 10) ,
               child: TabBarView(
                 //physics: const NeverScrollableScrollPhysics(),
                 controller: postTabController,
@@ -152,7 +150,7 @@ class _CurateDetailScreenState extends State<CurateDetailScreen> with TickerProv
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(post.title, style: TextStyle(fontSize: 15), overflow: TextOverflow.ellipsis,),
-                                Text(formatDate(post.editedAt))
+                                Text(formatDate(post.editedAt), style: TextStyle(color: Colors.grey),)
                               ],
                             ),
                           ),
@@ -176,7 +174,7 @@ class _CurateDetailScreenState extends State<CurateDetailScreen> with TickerProv
 
                     child: Icon(Icons.arrow_back_ios, color: (postTabController.index < 1)? Colors.grey : Colors.black,)),
 
-                Text('Page ${postTabController.index + 1}/${(detail.posts.length/10).ceil()}'),
+                Text('Page ${(detail.posts.isEmpty) ? 0 : postTabController.index + 1}/${(detail.posts.length/10).ceil()}'),
 
                 TextButton(
                     onPressed: () {
@@ -272,7 +270,7 @@ class _CurateDetailScreenState extends State<CurateDetailScreen> with TickerProv
 
 
             SizedBox(
-              height: 400,
+              height: 65*((detail.aiChats.length - chatTabController.index * 10 > 10) ? 10 : detail.aiChats.length - chatTabController.index * 10),
               child: TabBarView(
                 physics: const NeverScrollableScrollPhysics(),
                 controller: chatTabController,
@@ -283,51 +281,30 @@ class _CurateDetailScreenState extends State<CurateDetailScreen> with TickerProv
                       itemCount: (detail.aiChats.length - i * 10 > 10) ? 10 : detail.aiChats.length - i * 10,
                       itemBuilder:(context, index) {
                         final chat = detail.aiChats[index];
-                        return Card(
-                          margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          child: ExpansionTile(
-                            title: Text(chat.title),
-                            subtitle: Text(
-                              '최근 메시지: ${chat.recentMessage}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                        return InkWell(
+                          onTap: () {
+                            showDialog(
+                              //backgroundColor: Colors.transparent,
+                              context: context,
+                              builder: (context) {
+                                return AiChatDetailScreen(chat: chat);
+                              },
+                            );
+                          },
+                          child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(chat.title, style: TextStyle(fontSize: 15),),
+                                SizedBox(height: 6,),
+                                Text('최근 메시지: ${chat.recentMessage}',
+                                  style: TextStyle(fontSize: 15),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ),
-                            children: [
-                              ListView.builder(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount: chat.response.length,
-                                itemBuilder: (context, msgIndex) {
-                                  final message = chat.response[msgIndex];
-                                  return Container(
-                                    padding: EdgeInsets.all(8),
-                                    margin: EdgeInsets.all(4),
-                                    decoration: BoxDecoration(
-                                      color: message.role == 'assistant'
-                                          ? Colors.blue[50]
-                                          : Colors.grey[50],
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          message.role == 'assistant' ? 'AI' : '사용자',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: message.role == 'assistant'
-                                                ? Colors.blue
-                                                : Colors.grey[700],
-                                          ),
-                                        ),
-                                        SizedBox(height: 4),
-                                        Text(message.content),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
                           ),
                         );
                       },
@@ -347,7 +324,7 @@ class _CurateDetailScreenState extends State<CurateDetailScreen> with TickerProv
                       setState(() { });
                     },
                     child: Icon(Icons.arrow_back_ios, color: (chatTabController.index < 1)? Colors.grey : Colors.black,)),
-                Text('Page ${chatTabController.index + 1}/${(detail.aiChats.length/10).ceil()}'),
+                Text('Page ${(detail.aiChats.isEmpty) ? 0 : chatTabController.index + 1}/${(detail.aiChats.length/10).ceil()}'),
 
                 TextButton(
                     onPressed: () {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
@@ -26,43 +27,47 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
           child: Wrap(
             children: [
               Container(
-                decoration: BoxDecoration(color: Colors.white),
+                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
                 margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20,),
                 padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10,),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Container(
-                      child: Column(
-                        children: [
-                          Text('정보', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
-                          SizedBox(height: 5),
-                          Text(widget.appointment['_id'] ?? ''),
-                          Text(widget.appointment['user']['usernick'] ?? ''),
-                          Text(DateFormat.yMMMEd('ko_KR').add_jm().format(widget.appointment['appointmentTime'])),
-                          Text(widget.appointment['isAppointmentApproved'].toString()),
-                          Text(widget.appointment['hasAppointmentDone'].toString()),
-                          Text(widget.appointment['hasFeedbackDone'].toString()),
-                          Text(widget.appointment['appointmentCreatedAt'] ?? ''),
-                          Text(widget.appointment['appointmentEditedAt'] ?? ''),
-                        ],
-                      ),
-                    ),
                     SizedBox(height: 5),
+                    Text('피드백 정보', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                    SizedBox(height: 25),
 
                     Container(
-                      child: Column(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Text('피드백 정보', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
-                          SizedBox(height: 5),
-                          Text('얼마나 좋았나요?'),
-                          if (widget.appointment['feedback']['rating'] == 0) Text('별로였어요'),
-                          if (widget.appointment['feedback']['rating'] == 1) Text('보통이였어요'),
-                          if (widget.appointment['feedback']['rating'] == 2) Text('좋았어요'),
-                          Text(widget.appointment['feedback']['content'] ?? ''),
+                          Column(
+                            children: [
+                              //Text('얼마나 좋았나요?'),
+                              if (widget.appointment['feedback']['rating'] == 0) ... [
+                                SvgPicture.asset('asset/images/emoji/frowning-face.svg', width: 50),
+                                SizedBox(height: 10,),
+                                Text('별로였어요'),
+                              ]
+                              else if (widget.appointment['feedback']['rating'] == 1) ... [
+                                SvgPicture.asset('asset/images/emoji/neutral-face.svg', width: 50),
+                                SizedBox(height: 10,),
+                                Text('보통이였어요'),
+                              ]
+                              else ... [
+                                SvgPicture.asset('asset/images/emoji/grinning-squinting-face.svg', width: 50),
+                                SizedBox(height: 10,),
+                                Text('좋았어요'),
+                              ],
+                              //Text('피드백 내용', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                            ],
+                          ),
+                          Text(widget.appointment['feedback']['content'] ?? '', 
+                            style: TextStyle(fontSize: 15),),
                         ],
                       ),
                     ),
+                    SizedBox(height: 25),
                   ],
                 ),
               ),

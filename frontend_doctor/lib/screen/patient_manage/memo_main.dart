@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:to_doc_for_doc/controllers/memo/memo_controller.dart';
 import 'package:to_doc_for_doc/screen/patient_manage/memo_detail.dart';
 
+import '../../model/color_list.dart';
+
 class MemoMain extends StatefulWidget {
   const MemoMain({super.key});
 
@@ -13,7 +15,7 @@ class MemoMain extends StatefulWidget {
 
 class _MemoMainState extends State<MemoMain> {
   final MemoController memoController = Get.put(MemoController());
-  Color _getColorForIndex(int index) {
+/*  Color _getColorForIndex(int index) {
     switch (index) {
       case 0:
         return Colors.red;
@@ -32,7 +34,7 @@ class _MemoMainState extends State<MemoMain> {
       default:
         return Colors.grey;
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +63,7 @@ class _MemoMainState extends State<MemoMain> {
                     height: 24,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: _getColorForIndex(memo.color),
+                      color: ColorType.getByCode(memo.color).color,
                     ),
                   ),
                   title: Text('유저: ${memo.user.usernick}'), 

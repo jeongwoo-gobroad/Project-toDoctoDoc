@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:to_doc_for_doc/controllers/AIassistant/ai_assistant_controller.dart';
 import 'package:to_doc_for_doc/controllers/memo/memo_controller.dart';
 
+import '../../model/color_list.dart';
+
 class MemoDetailScreen extends StatefulWidget {
   const MemoDetailScreen(
       {Key? key, required this.patientId, required this.selectedColor})
@@ -295,13 +297,19 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          _buildColorButton(Colors.red, 0),
+                          for (final i in ColorType.values) ... [
+                            if (i.num != 7) ... [
+                              _buildColorButton(i)
+                            ]
+                          ],
+
+/*                          _buildColorButton(Colors.red, 0),
                           _buildColorButton(Colors.orange, 1),
                           _buildColorButton(Colors.yellow, 2),
                           _buildColorButton(Colors.green, 3),
                           _buildColorButton(Colors.blue, 4),
                           _buildColorButton(Colors.purple, 5),
-                          _buildColorButton(Colors.brown, 6),
+                          _buildColorButton(Colors.brown, 6),*/
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -469,20 +477,20 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
     );
   }
 
-  Widget _buildColorButton(Color color, int index) {
+  Widget _buildColorButton(ColorType color) {
     return GestureDetector(
       onTap: () {
         setState(() {
-          selectColor = index;
+          selectColor = color.num;
         });
       },
       child: Container(
         width: 30,
         height: 30,
         decoration: BoxDecoration(
-          color: color,
+          color: color.color,
           shape: BoxShape.circle,
-          border: selectColor == index
+          border: selectColor == color.num
               ? Border.all(color: Colors.black, width: 2)
               : null,
         ),

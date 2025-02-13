@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../controllers/careplus/chat_appointment_controller.dart';
 
 class UpperAppointmentInform extends StatefulWidget {
-  const UpperAppointmentInform({super.key, required this.appointmentController, required this.chatId});
+  const UpperAppointmentInform({super.key, required this.chatId});
 
-  final ChatAppointmentController appointmentController;
   final String chatId;
 
   @override
@@ -16,10 +16,12 @@ class UpperAppointmentInform extends StatefulWidget {
 }
 
 class _UpperAppointmentInformState extends State<UpperAppointmentInform> {
+  ChatAppointmentController appointmentController = Get.find<ChatAppointmentController>();
+
   late Timer _timer;
 
   void getAppointment(Timer timer) {
-    widget.appointmentController.getAppointmentInformation(widget.chatId);
+    appointmentController.getAppointmentInformation(widget.chatId);
     if (this.mounted) setState(() {    });
   }
 
@@ -57,7 +59,7 @@ class _UpperAppointmentInformState extends State<UpperAppointmentInform> {
             ),
             TextButton(
               onPressed: () {
-                widget.appointmentController.sendAppointmentApproval();
+                appointmentController.sendAppointmentApproval();
                 Navigator.of(context).pop();
               },
               style: ButtonStyle(
@@ -78,7 +80,7 @@ class _UpperAppointmentInformState extends State<UpperAppointmentInform> {
       },
       child: Column(
           children: [
-            if (widget.appointmentController.isAppointmentExisted) ...[
+            if (appointmentController.isAppointmentExisted) ...[
               Container(
                 padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
                 decoration: BoxDecoration(
@@ -98,12 +100,12 @@ class _UpperAppointmentInformState extends State<UpperAppointmentInform> {
                             Text('이 의사와 약속이 있어요', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
                           ],
                         ),
-                        Text(DateFormat.yMMMEd('ko_KR').add_jm().format(widget.appointmentController.appointment['appointmentTime']),
+                        Text(DateFormat.yMMMEd('ko_KR').add_jm().format(appointmentController.appointment['appointmentTime']),
                           style: TextStyle(fontSize: 15, ),),
                       ],
                     ),
                     //Text('${appointmentController.appointmentId} : 약속 ID', style: TextStyle(fontSize: 10),),
-                    if (!widget.appointmentController.isAppointmentApproved) ...[
+                    if (!appointmentController.isAppointmentApproved) ...[
                       Align(
                         alignment: Alignment.center,
                         child: TextButton(

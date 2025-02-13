@@ -86,17 +86,19 @@ class ChatAppointmentController extends GetxController {
     return true;
   }
 
-  Future<bool> makeAppointment(DateTime selectedDay, int diffTime) async{
+  Future<bool> makeAppointment(DateTime selectedDay, DateTime endTime) async{
     //isLoading = true.obs;
 
     Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
 
     DateTime dayToUTC = selectedDay.toUtc();
+    DateTime endDayToUTC = endTime.toUtc();
 
     print('----------------$userId');
     print('----------------$chatId');
     print(dayToUTC.toIso8601String());
+    print(endDayToUTC.toIso8601String());
 
     try {
       final response = await dio.post(
@@ -109,28 +111,17 @@ class ChatAppointmentController extends GetxController {
           'cid' : chatId,
           'uid' : userId,
           'time': dayToUTC.toIso8601String(),
-          'length' : diffTime,
+          'length' : endDayToUTC.toIso8601String(),
         }),
       );
 
       if (response.statusCode == 200) {
         print('SUCCESS');
         isLoading.value = true;
-        //var data = json.decode(response.data);
-        //print(data);
-        //appointmentId = data['content']['_id'];
-        //print(appointmentId);
-
-        //appointmentTime = selectedDay;
 
         initialDay  = DateTime(selectedDay.year,selectedDay.month,selectedDay.day);
         initialTime = TimeOfDay(hour: selectedDay.hour, minute: selectedDay.minute);
 
-        //isAppointmentDone = false;
-        //isAppointmentExisted = true;
-        //isAppointmentApproved = false;
-
-        //isLoading.value = false;
         return true;
 
       } else {
@@ -171,10 +162,6 @@ class ChatAppointmentController extends GetxController {
         print('SUCCESS');
 
         isLoading.value = true;
-        //appointmentId = '';
-        //isAppointmentDone = false;
-        //isAppointmentExisted = false;
-        //isAppointmentApproved = false;
 
         initialDay = DateTime.now();
         initialTime = TimeOfDay.now();
@@ -193,13 +180,14 @@ class ChatAppointmentController extends GetxController {
     }
   }
 
-  Future<bool> editAppointment(DateTime selectedDay, int diffTime) async{
+  Future<bool> editAppointment(DateTime selectedDay, DateTime endTime) async{
     Dio dio = Dio();
     dio.interceptors.add(CustomInterceptor());
 
     isLoading.value = true;
 
     DateTime dayToUTC = selectedDay.toUtc();
+    DateTime endDayToUTC = endTime.toUtc();
 
     print('----------------$appointmentId');
     print(dayToUTC.toIso8601String());
@@ -214,7 +202,7 @@ class ChatAppointmentController extends GetxController {
         data : json.encode({
           'appid' : appointmentId,
           'time': dayToUTC.toIso8601String(),
-          'length' : diffTime,
+          'length' : endDayToUTC.toIso8601String(),
         }),
       );
 
@@ -222,14 +210,9 @@ class ChatAppointmentController extends GetxController {
         print('SUCCESS');
 
         isLoading.value = true;
-        //appointmentTime = selectedDay;
         initialDay  = DateTime(appointmentTime.value.year,appointmentTime.value.month,appointmentTime.value.day);
         initialTime = TimeOfDay(hour: appointmentTime.value.hour, minute: appointmentTime.value.minute);
 
-        //isAppointmentApproved = false;
-        //isAppointmentDone = false;
-
-        //isLoading.value = false;
         return true;
       } else {
         return false;

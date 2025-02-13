@@ -31,14 +31,12 @@ class _DMListState extends State<DMList> {
     Get.to(()=> ChatScreen(
       chatId: chat.cid,
       unreadChat: unread,
-      userName: '',//chat.userName,
+      userName: chat.userName,//chat.userName,
       userId: chat.userId,
     ))?.whenComplete(() {
       if(this.mounted){
         setState(() {
-          
           controller.getChatList();
-          
         });
       }
     });
@@ -55,16 +53,9 @@ class _DMListState extends State<DMList> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('채팅 목록'),
-      //   backgroundColor: Colors.white,
-      //   foregroundColor: Colors.black,
-      //   elevation: 0,
-      // ),
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
@@ -85,7 +76,8 @@ class _DMListState extends State<DMList> {
                 goToChatScreen(chat);
               },
               child: Container(
-                padding: const EdgeInsets.all(16),
+
+                padding: const EdgeInsets.fromLTRB(7, 16, 16, 16),
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
@@ -95,31 +87,28 @@ class _DMListState extends State<DMList> {
                   ),
                 ),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 10),
+                      width: 7,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(10)
+                      ),
+                    ),
 
-                    const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                chat.userName ?? '유저 이름 없음',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                formattedDate,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade600,
-                                ),
-                              ),
-                            ],
+                          Text(
+                            chat.userName ?? '유저 이름 없음',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
@@ -134,35 +123,51 @@ class _DMListState extends State<DMList> {
                         ],
                       ),
                     ),
-                    FutureBuilder<int>(
-              future: chatDb.getLastReadId(chat.cid),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const SizedBox();
-                }
-                int lastAutoIncrementID = snapshot.data!;
-                int unread = chat.recentChat['autoIncrementId'] - lastAutoIncrementID;
-                if (unread > 0) {
-                  return Container(
-                    margin: const EdgeInsets.only(left: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          formattedDate,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+
+                        SizedBox(height: 5,),
+
+                        FutureBuilder<int>(
+                          future: chatDb.getLastReadId(chat.cid),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return const SizedBox();
+                            }
+                            int lastAutoIncrementID = snapshot.data!;
+                            int unread = chat.recentChat['autoIncrementId'] - lastAutoIncrementID;
+                            if (unread > 0) {
+                              return Container(
+                                margin: const EdgeInsets.only(left: 8),
+                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  '$unread',
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              );
+                            } else {
+                              return const SizedBox();
+                            }
+                          },
+                        ),
+                      ],
                     ),
-                    child: Text(
-                      '$unread',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  );
-                } else {
-                  return const SizedBox();
-                }
-              },
-            ),
                   ],
                 ),
               ),

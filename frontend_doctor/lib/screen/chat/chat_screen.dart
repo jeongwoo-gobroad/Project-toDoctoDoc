@@ -37,10 +37,12 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   final ScrollController _scrollController = ScrollController();
-  late ChatAppointmentController chatAppointmentController = ChatAppointmentController(userId: widget.userId, chatId: widget.chatId);
-  final AppointmentController appointmentController = AppointmentController();
-  late ChatSocketService socketService;
+  late ChatAppointmentController chatAppointmentController = Get.put(ChatAppointmentController(userId: widget.userId, chatId: widget.chatId));
+  final AppointmentController appointmentController = Get.put(AppointmentController());
   ChatController chatController = Get.put(ChatController());
+
+  late ChatSocketService socketService;
+
   final ChatDatabase chatDb = ChatDatabase();
 
   RxBool isLoading = true.obs;
@@ -51,8 +53,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   List<ChatObject> _messageList = [];
 
   alterParent() { setState(() {}); }
-
-
 
   Future<void> appointmentMustBeDoneAlert(BuildContext context) async {
     return showDialog<void>(
@@ -103,21 +103,19 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void parseAndStoreChats() {
-
     print('parseAndStore');
     List<dynamic> chatsJson = chatController.chatContents;
     
     print(chatsJson);
-
-     for (var chatData in chatsJson) {
+    for (var chatData in chatsJson) {
       DateTime time;
-      
       var tempTime = chatData['createdAt'];
+
       if(tempTime is String){
-       time = DateTime.parse(chatData['createdAt']).toLocal();
+        time = DateTime.parse(chatData['createdAt']).toLocal();
       }
       else{
-      time = DateTime.fromMillisecondsSinceEpoch(tempTime);
+        time = DateTime.fromMillisecondsSinceEpoch(tempTime);
       }
       
       // messageList에 추가
@@ -130,8 +128,8 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       );
       chatDb.saveChat(widget.chatId, widget.userId, chatData['message'], time, chatData['role']);
     }
-  
-}
+  }
+
   void asyncBefore() async {
     isLoading.value = true;
     SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
@@ -161,20 +159,19 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     if(widget.unreadChat != 0){
       print('parse: ${widget.unreadChat}');
       parseAndStoreChats();
-
     }
 
     if(this.mounted){
-    setState(() {
-      Future.delayed(Duration(milliseconds: 100), () {
-        if(!mounted) return;
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
+      setState(() {
+        Future.delayed(Duration(milliseconds: 100), () {
+          if(!mounted) return;
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        });
       });
-    });
     }
 
     WidgetsBinding.instance.addObserver(this);
@@ -215,17 +212,21 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     asyncBefore();
     updateUnread = widget.unreadChat;
     chatAppointmentController.getAppointmentInformation(widget.chatId);
+
     super.initState();
+
     isLoading.value = false;
   }
+
   @override
-void dispose() {
-  
-  WidgetsBinding.instance.removeObserver(this); 
-  socketService.onDisconnect(); 
-  _scrollController.dispose(); 
-  super.dispose();
-}
+  void dispose() {
+    socketService.onDisconnect();
+    _scrollController.dispose();
+
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
   setAppointmentDay() {
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
@@ -234,12 +235,12 @@ void dispose() {
       builder: (_) {
         return AppointmentBottomSheet(
           userName: widget.userName,
-          chatAppointmentController: chatAppointmentController,
           alterParent : alterParent,
         );
       },
     );
   }
+
   Widget _buildColorButton(Color color, int index) {
     return GestureDetector(
       onTap: () {
@@ -260,6 +261,7 @@ void dispose() {
       ),
     );
   }
+
   Future<void> showMemoDialog(BuildContext context) async {
     final memoController = TextEditingController();
     final characterCount = ValueNotifier<int>(0);
@@ -303,7 +305,6 @@ void dispose() {
                   ],
                 ),
                 SizedBox(height: 20,),
-                
 
                 Expanded(
                   child: Stack(
@@ -360,8 +361,6 @@ void dispose() {
                     SizedBox(width: 10),
                     TextButton(
                       style: TextButton.styleFrom(backgroundColor: Color.fromARGB(255, 225, 234, 205)),
-                      
-                      
                       onPressed: () {
                         //exists한지부터 판단하고 
                         if (memoController.text.isNotEmpty) {
@@ -516,9 +515,8 @@ void dispose() {
               if (chatAppointmentController.isLoading.value) {
                 return const Center(child: CircularProgressIndicator());
               }
-              return UpperAppointmentInformation(appointmentController: chatAppointmentController, chatId: widget.chatId,);
+              return UpperAppointmentInformation(chatId: widget.chatId,);
             }),
-
 
             Obx(() {
               if (isLoading.value) {
@@ -529,17 +527,14 @@ void dispose() {
 
             Padding(
               padding: const EdgeInsets.all(8.0),
-
               child: TextField(
                 maxLines: null,
                 controller: messageController,
-
                 onSubmitted: (value) {
                   if (value.isNotEmpty) {
                     sendText(value);
                   }
                 },
-
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Color.fromARGB(255, 244, 242, 248),

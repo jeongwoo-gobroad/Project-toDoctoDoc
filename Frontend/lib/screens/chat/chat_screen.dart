@@ -28,11 +28,12 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
-  late ChatAppointmentController chatAppointmentController = ChatAppointmentController();
+  late ChatAppointmentController chatAppointmentController = Get.put(ChatAppointmentController());
+  final ChatController chatController = Get.put(ChatController());
+
   final ScrollController _scrollController = ScrollController();
   late ChatSocketService socketService;
   final ChatDatabase chatDb = ChatDatabase();
-  final ChatController chatController = Get.put(ChatController());
   late int lastAutoIncrementID;
   RxBool isLoading = true.obs;
 
@@ -166,7 +167,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    
     asyncBefore();
     super.initState();
     chatAppointmentController.getAppointmentInformation(widget.chatId);
@@ -204,7 +204,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       ),
       body: PopScope(
         onPopInvokedWithResult: (didPop, result) async {
-          
           await chatController.getChatList();
           print('popped: ${chatController.serverAutoIncrementId}');
           await chatDb.updateLastReadId(widget.chatId, chatController.serverAutoIncrementId.value);
@@ -218,7 +217,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
               if (chatAppointmentController.isLoading.value) {
                 return const Center(child: CircularProgressIndicator());
               }
-              return UpperAppointmentInform(appointmentController: chatAppointmentController, chatId: widget.chatId);
+              return UpperAppointmentInform(chatId: widget.chatId);
             }),
 
             // 채팅 리스트 //
