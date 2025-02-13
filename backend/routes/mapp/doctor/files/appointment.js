@@ -142,7 +142,6 @@ router.post(["/set"],
     checkIfLoggedIn,
     isDoctorThenProceed,
     async (req, res, next) => {
-        const doctor = await getTokenInformation(req, res);
         const {cid, uid, time, endTime} = req.body; // time 객체는 GMT 기준으로 1995-12-17T03:24:00 의 형태로 나타내야 함.
 
         // console.log("Appointment set: ", cid, uid, time);
@@ -150,14 +149,14 @@ router.post(["/set"],
         try {
             const appointment = await Appointment.create({
                 user: uid,
-                doctor: doctor.userid,
+                doctor: req.userid,
                 appointmentTime: new Date(time),
                 appointmentEndAt: new Date(endTime),
                 chatId: cid,
-                psyId: (await Doctor.findById(doctor.userid)).myPsyID
+                psyId: (await Doctor.findById(req.userid)).myPsyID
             });
 
-            await Doctor.findByIdAndUpdate(doctor.userid, {
+            await Doctor.findByIdAndUpdate(req.userid, {
                 $push: {appointments: appointment._id}
             });
 

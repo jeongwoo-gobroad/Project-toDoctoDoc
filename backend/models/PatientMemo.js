@@ -13,6 +13,7 @@ const PatientMemoSchema = new mongoose.Schema({
     },
     color: {
         type: Number,
+        default: 0,
     },
     memo: {
         type: String,

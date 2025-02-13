@@ -111,7 +111,7 @@ class ChatAppointmentController extends GetxController {
           'cid' : chatId,
           'uid' : userId,
           'time': dayToUTC.toIso8601String(),
-          'length' : endDayToUTC.toIso8601String(),
+          'endTime' : endDayToUTC.toIso8601String(),
         }),
       );
 

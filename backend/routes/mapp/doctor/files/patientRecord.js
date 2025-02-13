@@ -211,4 +211,33 @@ router.delete(["/delete/:id"],
     }
 );
 
+router.get(["/colorOf/:uid"],
+    checkIfLoggedIn,
+    isDoctorThenProceed,
+    async (req, res, next) => {
+        try {
+            const memo = await PatientMemo.findOne({
+                user: req.params.uid,
+                doctor: req.userid
+            }, 'color');
+
+            if (!memo) {
+                res.status(401).json(returnResponse(true, "noSuchMemo", "-"));
+
+                return;
+            }
+
+            res.status(200).json(returnResponse(false, "patientMemoColor", {color: memo.color}));
+
+            return;
+        } catch (error) {
+            res.status(500).json(returnResponse(true, "errorAtPatientColorGet", "-"));
+
+            console.error(error, "errorAtPatientColorGet");
+
+            return;
+        }
+    }
+);
+
 module.exports = router;
