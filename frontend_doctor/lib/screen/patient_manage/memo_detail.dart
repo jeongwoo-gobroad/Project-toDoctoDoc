@@ -29,10 +29,16 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
   final ValueNotifier<int> memoCharCount = ValueNotifier<int>(0);
   final ValueNotifier<int> detailCharCount = ValueNotifier<int>(0);
   bool isGeneratingAnswer = false;
+  bool _isDetailsExpanded = false;
+  bool _isEditingDetails = false;
+  bool _animateNewSummary = false;
+  String _oldSummary = '';
 
   @override
   void initState() {
     super.initState();
+    _oldSummary = aiAssistantController.summary.value;
+
     print('summary: ${aiAssistantController.summary}');
     selectColor = widget.selectedColor;
     print(widget.patientId);
@@ -142,8 +148,22 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
                         Navigator.of(context).pop();
                         setState(() {
                           isGeneratingAnswer = true;
+                          aiAssistantController.summary.value = "";
                         });
-                        aiAssistantController.detailsSummary(widget.patientId);
+                        aiAssistantController
+                            .detailsSummary(widget.patientId)
+                            .then((_) {
+                          setState(() {
+                            isGeneratingAnswer = false;
+                            if (aiAssistantController.summary.value !=
+                                _oldSummary) {
+                              _oldSummary = aiAssistantController.summary.value;
+                              _animateNewSummary = true;
+                            } else {
+                              _animateNewSummary = false;
+                            }
+                          });
+                        });
                       }
                     },
                     child: const Text("확인"),
@@ -168,7 +188,7 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
           return const Center(child: CircularProgressIndicator());
         }
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -176,8 +196,55 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
               const SizedBox(height: 3),
               Obx(() {
                 if (aiAssistantController.summary.value.isNotEmpty) {
-                  return AnimatedSummaryText(
-                      text: aiAssistantController.summary.value);
+                  if (_animateNewSummary) {
+                    return AnimatedSummaryText(
+                      text: aiAssistantController.summary.value,
+                      onAnimationComplete: () {
+                        setState(() {
+                          _animateNewSummary = false;
+                        });
+                      },
+                    );
+                  } else {
+                    return Container(
+                      margin: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 225, 234, 205),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.green, width: 1),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: const [
+                              Icon(Icons.auto_awesome,
+                                  color: Color.fromARGB(255, 255, 230, 0)),
+                              SizedBox(width: 8),
+                              Text(
+                                "AI 요약",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            aiAssistantController.summary.value,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                 } else if (isGeneratingAnswer) {
                   return const LoadingAnimationText();
                 } else {
@@ -297,23 +364,65 @@ class _MemoDetailScreenState extends State<MemoDetailScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey[300]!),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: TextFormField(
-                          controller: detailsTextController,
-                          maxLines: null,
-                          keyboardType: TextInputType.multiline,
-                          decoration: const InputDecoration(
-                            hintText: '세부사항을 입력하세요',
-                            contentPadding: EdgeInsets.all(16),
-                            border: InputBorder.none,
-                          ),
-                        ),
-                      ),
+                      _isEditingDetails
+                          ? TextFormField(
+                              controller: detailsTextController,
+                              maxLines: null,
+                              keyboardType: TextInputType.multiline,
+                              decoration: const InputDecoration(
+                                hintText: '세부사항을 입력하세요',
+                                contentPadding: EdgeInsets.all(16),
+                                border: InputBorder.none,
+                              ),
+                            )
+                          : Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey[300]!),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                detailsTextController.text,
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ),
                       const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              setState(() {
+                                _isEditingDetails = !_isEditingDetails;
+                              });
+                            },
+                            child: Text(_isEditingDetails ? "접기" : "더보기"),
+                          ),
+                          if (_isEditingDetails)
+                            ElevatedButton(
+                              onPressed: () async {
+                                final updatedDetails =
+                                    detailsTextController.text;
+                                bool result = await controller.editDetails(
+                                  widget.patientId,
+                                  updatedDetails,
+                                );
+                                if (result) {
+                                  Get.snackbar('성공', '세부사항이 업데이트 되었습니다.');
+                                  setState(() {
+                                    _isEditingDetails = false;
+                                  });
+                                } else {
+                                  Get.snackbar('실패', '세부사항 업데이트에 실패했습니다.');
+                                }
+                              },
+                              child: const Text("수정 완료"),
+                            ),
+                        ],
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -466,10 +575,12 @@ class _LoadingAnimationTextState extends State<LoadingAnimationText>
 class AnimatedSummaryText extends StatefulWidget {
   final String text;
   final Duration duration;
+  final VoidCallback? onAnimationComplete;
   const AnimatedSummaryText({
     Key? key,
     required this.text,
     this.duration = const Duration(milliseconds: 1500),
+    this.onAnimationComplete,
   }) : super(key: key);
 
   @override
@@ -497,6 +608,7 @@ class _AnimatedSummaryTextState extends State<AnimatedSummaryText> {
       });
       if (currentIndex > totalLetters) {
         _timer?.cancel();
+        widget.onAnimationComplete?.call();
       }
     });
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:to_doc_for_doc/Database/chat_database.dart';
@@ -14,7 +15,7 @@ import 'firebase/firebase_handler.dart';
 void main() async{
   await initializeDateFormatting();
   WidgetsFlutterBinding.ensureInitialized();
-
+  await GetStorage.init();
   //clearSecureStorageOnReinstall();
   initFirebase();
   initDatabase();
