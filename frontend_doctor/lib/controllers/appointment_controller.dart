@@ -107,6 +107,7 @@ class AppointmentController extends GetxController {
       nearAppointment = 0;
       for (var appointment in appList) {
         appointment['appointmentTime'] = DateTime.parse(appointment['appointmentTime']).toLocal();
+        appointment['appointmentEndAt'] = DateTime.parse(appointment['appointmentEndAt']).toLocal();
 
         if (appointment['appointmentTime'].isBefore(DateTime.now())) {
           isBeforeAppExist = true;

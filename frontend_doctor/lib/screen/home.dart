@@ -62,27 +62,35 @@ class _HomeState extends State<Home> {
       itemCount: appController.todayList.length,
       itemBuilder: (context, index) {
         return Container(
-          padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
           decoration: BoxDecoration(border: BorderDirectional(bottom: BorderSide(color: Colors.grey.shade100))),
-          height: 55,
+          height: 60,
           child: Row(
             children: [
               // TODO 이거 유저 색깔 넣는거 추가 할 거 같은데 유저 에서 ID랑 nick 만 들어 와서 애매함
               Container(
-                width: 10,
+                height: 40,
+                width: 7,
                 decoration: BoxDecoration(color: Colors.orange, borderRadius: BorderRadius.circular(5)),
               ),
 
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('${appController.appList[appController.todayList[index]]['user']['usernick']}와의 약속', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
-                  Text(DateFormat.yMMMEd('ko_KR').add_jm().format(appController.appList[appController.todayList[index]]['appointmentTime']),),
-
-                  // TODO 끝나는 시간 추가 필요
-                  Text(DateFormat.yMMMEd('ko_KR').add_jm().format(appController.appList[appController.todayList[index]]['appointmentTime']),),
-                ],
+              SizedBox(width: 10,),
+              SizedBox(
+                width: 100,
+                child: Column(
+                 // mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 12,),
+                    Text(DateFormat.jm('ko_KR').format(appController.appList[appController.todayList[index]]['appointmentTime']),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, height: 1),),
+                    Text('~ ${DateFormat.jm('ko_KR').format(appController.appList[appController.todayList[index]]['appointmentEndAt'])} 까지',
+                      style: TextStyle(color: Colors.black, fontSize: 12, height: 1),),
+                  ],
+                ),
               ),
+              SizedBox(width: 10,),
+              Text('${appController.appList[appController.todayList[index]]['user']['usernick']}와의 약속',
+                style: TextStyle(fontSize: 20),),
             ],
           ),
         );
@@ -221,9 +229,13 @@ class _HomeState extends State<Home> {
                         border: BorderDirectional(bottom: BorderSide(color: Colors.grey.shade300)),
                       ),
                       child:
-                        Text('오늘의 예약', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        //),
-                      ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('오늘의 예약', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                            IconButton(onPressed: () {}, icon: Icon(Icons.calendar_month)),
+                          ],
+                        ),
                     ),
                     //SizedBox(width: 30, height: 200,),
 
