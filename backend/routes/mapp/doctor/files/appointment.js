@@ -49,7 +49,7 @@ router.get(["/simpleList"],
         try {
             const information = await Doctor.findById(req.userid).populate({
                 path: 'appointments',
-                select: 'appointmentTime appointmentLength',
+                select: 'appointmentTime appointmentEndAt',
                 populate: {
                     path: 'user',
                     select: 'usernick'

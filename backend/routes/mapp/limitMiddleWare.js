@@ -151,9 +151,68 @@ const ifDailyCurateNotExceededThenProceed = async (req, res, next) => {
     }
 };
 
+const ifDailyCurateNotExceeded_v2 = async (req, res, next) => {
+    try {
+        const db = await User.findById(req.userid);
+    
+        const limits = new Date(db.recentCurateDate);
+        const current = new Date();
+    
+        if (limits.toDateString() !== current.toDateString()) {
+            db.recentCurateDate = current;
+            await db.save();
+
+            req.isDone = false;
+
+            next();
+
+            return;
+        } else {
+            req.isDone = true;
+            
+            next();
+
+            return;
+        }
+    } catch (error) {
+        console.error(error, "errorAtIfDailyCurateNotExceeded_v2");
+
+        res.status(401).json(returnResponse(true, "errorAtIfDailyCurateNotExceeded_v2", "-"));
+
+        return;
+    }
+};
+
+const ifDailyCurateHasDone = async (req, res, next) => {
+    try {
+        const db = await User.findById(req.userid);
+    
+        const limits = new Date(db.recentCurateDate);
+        const current = new Date();
+    
+        if (limits.toDateString() === current.toDateString()) {
+            next();
+
+            return;
+        } else {
+            res.status(403).json(returnResponse(true, "notTodaysCurateAvailable", "-"));
+
+            return;
+        }
+    } catch (error) {
+        console.error(error, "errorAtIfDailyCurateCurateHasDone");
+
+        res.status(401).json(returnResponse(true, "errorAtIfDailyCurateCurateHasDone", "-"));
+
+        return;
+    }
+};
+
 module.exports = {
     ifDailyRequestNotExceededThenProceed, 
     ifDailyChatNotExceededThenProceed, 
     ifDailyCurateNotExceededThenProceed,
     ifDailyRequestNotExceededThenProceed_chatHintMessage,
+    ifDailyCurateNotExceeded_v2,
+    ifDailyCurateHasDone,
 };

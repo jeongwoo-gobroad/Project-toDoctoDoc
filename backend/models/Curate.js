@@ -35,6 +35,13 @@ const CurateSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    isPublic: {
+        type: Boolean,
+        default: false,
+    },
+    ifNotPublicOpenedTo: [{
+        type: String
+    }]
 });
 
 module.exports = mongoose.model("Curate", CurateSchema);
