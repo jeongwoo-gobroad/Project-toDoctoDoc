@@ -1,7 +1,14 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:to_doc/controllers/careplus/curate_list_controller.dart';
+import 'package:to_doc/controllers/hospital/hospital_information_controller.dart';
+import 'package:to_doc/screens/hospital/hospital_detail_view.dart';
+
 
 class NearbyCurateScreen extends StatefulWidget {
   const NearbyCurateScreen({super.key});
@@ -88,6 +95,7 @@ class _NearbyCurateScreenState extends State<NearbyCurateScreen> {
         child: SafeArea(
           child: Column(
             children: [
+              SizedBox(height: 20),
               Expanded(
                 child: Center(
                   child: Container(
@@ -110,19 +118,19 @@ class _NearbyCurateScreenState extends State<NearbyCurateScreen> {
                         _WeightIndicator(
                           label: '시간 빠른 순',
                           value: fastWeight,
-                          color: Colors.blue,
+                          color: Color(0xFFAEC6CF),
                         ),
                         const SizedBox(height: 16),
                         _WeightIndicator(
                           label: '거리순',
                           value: distWeight,
-                          color: Colors.green,
+                          color: Color(0xFF98FB98),
                         ),
                         const SizedBox(height: 16),
                         _WeightIndicator(
                           label: '평점 높은 순',
                           value: starWeight,
-                          color: Colors.orange,
+                          color: Color(0xFFFFDAB9),
                         ),
                         const SizedBox(height: 24),
                         _InteractiveSlider(
@@ -260,7 +268,7 @@ class __InteractiveSliderState extends State<_InteractiveSlider> {
               children: [
                 Positioned.fill(
                   child: CustomPaint(
-                    painter: _TrianglePainter(),
+                    painter: _TrianglePainter(offsetY: 5.0),
                   ),
                 ),
                 AnimatedPositioned(
@@ -284,26 +292,26 @@ class __InteractiveSliderState extends State<_InteractiveSlider> {
                 ),
                 Positioned(
                   left: w / 2 - 12,
-                  top: 16,
+                  top: -5,
                   child: Text(
                     '시간',
-                    style: TextStyle(color: Colors.blue, fontSize: 12),
+                    style: TextStyle(color: Color.fromARGB(255, 16, 103, 134), fontSize: 11, fontWeight: FontWeight.bold),
                   ),
                 ),
                 Positioned(
-                  left: 6,
-                  top: h - 16,
+                  left: 0,
+                  top: h - 13,
                   child: Text(
                     '거리',
-                    style: TextStyle(color: Colors.green, fontSize: 12),
+                    style: TextStyle(color: Color.fromARGB(255, 56, 209, 56), fontSize: 11, fontWeight: FontWeight.bold),
                   ),
                 ),
                 Positioned(
-                  left: w - 32,
-                  top: h - 16,
+                  left: w - 24,
+                  top: h - 13,
                   child: Text(
                     '평점',
-                    style: TextStyle(color: Colors.orange, fontSize: 12),
+                    style: TextStyle(color: Color.fromARGB(255, 238, 147, 67), fontSize: 11, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -382,16 +390,31 @@ class _WeightIndicator extends StatelessWidget {
   }
 }
 
-class HospitalPopupDialog extends StatelessWidget {
+class HospitalPopupDialog extends StatefulWidget {
+  @override
+  State<HospitalPopupDialog> createState() => _HospitalPopupDialogState();
+}
+
+class _HospitalPopupDialogState extends State<HospitalPopupDialog> {
   final CurateListController curateListController =
       Get.find<CurateListController>();
+
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       child: Container(
-        height: 520,
+        height: 600,
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
@@ -413,20 +436,54 @@ class HospitalPopupDialog extends StatelessWidget {
                   return const Center(child: Text("추천 병원이 없습니다."));
                 }
 
-                return PageView.builder(
-                  itemCount: curateListController.curatedList.length,
-                  itemBuilder: (context, index) {
-                    final hospital = curateListController.curatedList[index];
-                    return HospitalCard(
-                      name : hospital.name,
-                      hospitalName: hospital.myPsyID.name,
-                      rating: hospital.myPsyID.stars,
-                      address: hospital.myPsyID.address.address,
-                      detailAddress: hospital.myPsyID.address.detailAddress,
-                      extraAddress: hospital.myPsyID.address.extraAddress,
-                    
-                    );
-                  },
+                return Column(
+                  children: [
+                    Expanded(
+                      child: PageView.builder(
+                        controller: _pageController,
+                        onPageChanged: (index) {
+                          setState(() {
+                            _currentPage = index;
+                          });
+                          HapticFeedback.lightImpact();
+                        },
+                        itemCount: curateListController.curatedList.length,
+                        itemBuilder: (context, index) {
+                          final hospital = curateListController.curatedList[index];
+                          print(hospital.myProfileImage);
+                          return HospitalCard(
+                            name: hospital.name,
+                            hospitalName: hospital.myPsyID.name,
+                            pid: hospital.myPsyID.id,
+                            rating: hospital.myPsyID.stars,
+                            address: hospital.myPsyID.address.address,
+                            detailAddress: hospital.myPsyID.address.detailAddress,
+                            extraAddress: hospital.myPsyID.address.extraAddress,
+                            isPremiumPsy: hospital.myPsyID.isPremiumPsy,
+                            myProfileImage: hospital.myProfileImage,
+                            longitude : hospital.myPsyID.address.longitude,
+                            latitude : hospital.myPsyID.address.latitude,
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        curateListController.curatedList.length,
+                        (index) => Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                          width: _currentPage == index ? 12.0 : 8.0,
+                          height: _currentPage == index ? 12.0 : 8.0,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: _currentPage == index ? Colors.blue : Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 );
               }),
             ),
@@ -440,27 +497,69 @@ class HospitalPopupDialog extends StatelessWidget {
 class HospitalCard extends StatefulWidget {
   final String name;
   final String hospitalName;
+  final String pid;
   final double rating;
   final String address;
   final String detailAddress;
   final String extraAddress;
+  final bool isPremiumPsy;
+  final String? myProfileImage;
+  final double longitude;
+  final double latitude;
 
   const HospitalCard({
     super.key,
     required this.name,
     required this.hospitalName,
+    required this.pid,
     required this.rating,
     required this.address,
     required this.detailAddress,
     required this.extraAddress,
+    required this.isPremiumPsy,
+    required this.myProfileImage,
+    required this.longitude,
+    required this.latitude,
+
   });
 
   @override
   State<HospitalCard> createState() => _HospitalCardState();
 }
 
-class _HospitalCardState extends State<HospitalCard> {
+class _HospitalCardState extends State<HospitalCard> with TickerProviderStateMixin {
+  bool _showMap = false;
+  Set<Marker> markers = {};
+  late KakaoMapController kakaoMapController;
   bool _showDetailAddress = false;
+  HospitalInformationController hospitalInformationController = Get.put(HospitalInformationController());
+  openHospitalDetailView(BuildContext context, Map<String, dynamic> hospital) {
+    showModalBottomSheet(
+      //shape : ,
+      enableDrag: true,
+      showDragHandle: true,
+      backgroundColor: Colors.white,
+      context: context,
+      isScrollControlled: true,
+      elevation: 0,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          expand: false,
+          snap: true,
+          snapSizes: [0.2, 1.0],
+          initialChildSize: 0.4,
+          minChildSize: 0.2,
+          maxChildSize: 1.0,
+          builder: (context, scrollController) {
+            return SingleChildScrollView(
+                controller: scrollController,
+                child: SizedBox(height: 2000, child: HospitalDetailView(hospital: hospital))
+            );
+          }
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -471,70 +570,135 @@ class _HospitalCardState extends State<HospitalCard> {
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              widget.hospitalName,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
+            CircleAvatar(
+              radius: 50,
+              backgroundColor: Colors.grey[300],
+              backgroundImage: widget.myProfileImage != "" 
+                  ? NetworkImage(widget.myProfileImage!) 
+                  : null,
+              child: widget.myProfileImage == "" 
+                  ? Icon(Icons.person, color: Colors.grey[600])
+                  : null,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '의사 ${widget.name}',
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                if (widget.isPremiumPsy) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.amber,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text(
+                      '프리미엄',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
             const SizedBox(height: 4),
-             Text(
-              '담당 의사: ${widget.name}',
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
+            Text(
+              widget.hospitalName,
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
+              textAlign: TextAlign.start,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             _buildStarRating(widget.rating),
             const SizedBox(height: 12),
             InkWell(
               onTap: () {
                 setState(() {
-                  _showDetailAddress = !_showDetailAddress;
+                  _showMap = !_showMap;
                 });
               },
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-
-
-                  Text(
-                    '${widget.address}${widget.extraAddress}',
-                    style: const TextStyle(fontSize: 16, color: Colors.black54),
+                  Expanded(
+                    child: Text(
+                      widget.address,
+                      style: const TextStyle(fontSize: 16, color: Colors.black54),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   Icon(
-                    _showDetailAddress
-                        ? Icons.arrow_drop_up
-                        : Icons.arrow_drop_down,
+                    _showMap ? Icons.arrow_drop_up : Icons.arrow_drop_down,
                     size: 24,
                     color: Colors.grey[600],
                   ),
                 ],
               ),
             ),
-            if (_showDetailAddress) ...[
-              const SizedBox(height: 8),
-              Text(
-                '상세주소: ${widget.detailAddress}',
-                style: const TextStyle(fontSize: 14, color: Colors.black54),
-              ),
-            ],
 
+            AnimatedSize(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              child: Container(
+                width: double.infinity,
+                height: _showMap ? 90 : 0,
+                child: _showMap
+                    ? KakaoMap(
+                        onMapCreated: (controller) async {
+                                              markers.add(Marker(
+                            markerId: UniqueKey().toString(),
+                            latLng: LatLng(widget.latitude, widget.longitude),
+                          ));
+                          setState(() { });
+
+                        },
+                        markers: markers.toList(),
+                        center: LatLng(widget.latitude, widget.longitude),
+                        
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            ),
+            //TODO 카카오맵 누르면 좀 큰화면에서 볼수있도록록
+             ElevatedButton(
+              onPressed: () async {
+                if (await hospitalInformationController.getHospitalInformation(widget.pid)) {
+                  openHospitalDetailView(context, hospitalInformationController.hospital);
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 165, 168, 167),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text(
+                '자세히 보기',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
             const Spacer(),
             Align(
               alignment: Alignment.centerRight,
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-
-                  //todo 구현하기
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(255, 225, 234, 205),
+                  backgroundColor: const Color.fromARGB(255, 225, 234, 205),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -573,27 +737,39 @@ class _HospitalCardState extends State<HospitalCard> {
 }
 
 class _TrianglePainter extends CustomPainter {
+  final double offsetY; // 위로 올릴 픽셀 수
+
+  _TrianglePainter({this.offsetY = 0.0});
+
   @override
   void paint(Canvas canvas, Size size) {
     final Rect rect = Offset.zero & size;
     final Gradient gradient = LinearGradient(
-      colors: [Colors.blue.shade50, Colors.orange.shade50],
+      colors: [Color(0xFFAEC6CF).withOpacity(0.3), Color(0xFFFFDAB9).withOpacity(0.3)],
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
     );
 
     final Paint fillPaint = Paint()..shader = gradient.createShader(rect);
+    
+    final double side = size.width;
+    final double height = (sqrt(3) / 2) * side;
+    final double verticalPadding = ((size.height - height) / 2) - offsetY;
+
     final Path path = Path()
-      ..moveTo(size.width / 2, 0)
-      ..lineTo(0, size.height)
-      ..lineTo(size.width, size.height)
+      ..moveTo(size.width / 2, verticalPadding)
+      ..lineTo(0, size.height - verticalPadding)
+      ..lineTo(size.width, size.height - verticalPadding)
       ..close();
+
     canvas.drawPath(path, fillPaint);
 
     final Paint borderPaint = Paint()
       ..color = Colors.black87
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
+      ..strokeWidth = 2
+      ..strokeJoin = StrokeJoin.round;
+
     canvas.drawPath(path, borderPaint);
   }
 
