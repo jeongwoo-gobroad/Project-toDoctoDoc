@@ -58,26 +58,28 @@ const getNearestDateInMomentType = async (availableTime, doctorId, leastTime) =>
         for (let day = 0; day < 32; day++) {
             const loopDate = (date + day) % 7;
 
-            if (start === null && availableTime[loopDate].length > 0) {
-                start = makeScheduleAsTime(availableTime[loopDate][0]);
-            }
+            if (availableTime[loopDate].length > 0) {
+                if (start === null) {
+                    start = makeScheduleAsTime(availableTime[loopDate][0].from, day);
+                }
 
-            for (let i = 0; i < availableTime[loopDate].length - 1; i++) {
                 if (prevLoop) { // first loop, i = 0 and prevLoop exists
                     array.push({
                         stt: prevLoop,
-                        end: makeScheduleAsTime(availableTime[loopDate][i], day)
+                        end: makeScheduleAsTime(availableTime[loopDate][0].from, day)
                     })
                     prevLoop = null;
                 }
-                array.push({
-                    stt: makeScheduleAsTime(availableTime[loopDate][i], day),
-                    end: makeScheduleAsTime(availableTime[loopDate][i + 1], day)
-                });
-            }
-
-            if (availableTime[loopDate].length > 0) {
-                prevLoop = makeScheduleAsTime(availableTime[loopDate][availableTime[loopDate].length - 1]);
+                for (let i = 0; i < availableTime[loopDate].length - 1; i++) {
+                    array.push({
+                        stt: makeScheduleAsTime(availableTime[loopDate][i].to, day),
+                        end: makeScheduleAsTime(availableTime[loopDate][i + 1].from, day)
+                    });
+                }
+    
+                if (availableTime[loopDate].length > 0) {
+                    prevLoop = makeScheduleAsTime(availableTime[loopDate][availableTime[loopDate].length - 1].to, day);
+                }
             }
         }
 

@@ -59,7 +59,7 @@ const returnAroundDoctorList = async (patientLong, patientLat, radius) => {
                     longestTime = doctor.leastTime;
                 }
             } else {
-                doctor.leastTime = "2099-12-31T23:59:59.500+00:00"
+                doctor.leastTime = DateTime.fromISO("2099-12-31T23:59:59.500+00:00");
             }
         }
 
