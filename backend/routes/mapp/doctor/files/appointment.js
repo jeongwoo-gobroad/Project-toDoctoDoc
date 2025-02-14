@@ -147,6 +147,12 @@ router.post(["/set"],
         // console.log("Appointment set: ", cid, uid, time);
 
         try {
+            if (new Date(time) > new Date(endTime)) {
+                res.status(401).json(returnResponse(true, "aheadOfTime", "-"));
+
+                return;
+            }
+
             const appointment = await Appointment.create({
                 user: uid,
                 doctor: req.userid,
@@ -190,6 +196,12 @@ router.patch(["/set"],
         // console.log("Appointment fix: ", appid, time);
 
         try {
+            if (new Date(time) > new Date(endTime)) {
+                res.status(401).json(returnResponse(true, "aheadOfTime", "-"));
+
+                return;
+            }
+
             const appointment = await Appointment.findByIdAndUpdate(appid, {
                 appointmentTime: new Date(time),
                 appointmentEditedAt: Date.now(),

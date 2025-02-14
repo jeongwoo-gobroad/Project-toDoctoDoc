@@ -5,7 +5,7 @@ const { checkIfLoggedIn, isDoctorThenProceed } = require('../../../../checkingMi
 const returnResponse = require('../../../../standardResponseJSON');
 const Appointment = require('../../../../../../models/Appointment');
 const {checkIfDailySummationLimitNotExceeded, checkIfDailyPatientStateSummationLimitNotExceeded} = require('../limitMiddleWare');
-const moment = require('moment');
+const {DateTime} = require('luxon');
 const PatientMemo = require('../../../../../../models/PatientMemo');
 const dailyScheduleSchema = require('../jsonSchema/aiMemo');
 const Doctor = require('../../../../../../models/Doctor');
@@ -38,8 +38,8 @@ router.post(["/dailySummation"],
     checkIfDailySummationLimitNotExceeded,
     async (req, res, next) => {
         try {
-            const today = moment().startOf('day');
-            const tomorrow = moment().endOf('day');
+            const today = DateTime.now().startOf('day').toString();
+            const tomorrow = DateTime.now().endOf('day').toString();
             const inputData = [];
 
             const appointments = await Appointment.find({$and: [

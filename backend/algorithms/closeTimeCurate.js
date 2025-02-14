@@ -1,15 +1,12 @@
-const moment = require("moment");
+const {DateTime} = require('luxon');
 const Appointment = require("../models/Appointment");
 
 const makeScheduleAsTime = (timeString, dateAdded) => {
-    return moment((moment().add(dateAdded, 'days').format('YYYY-MM-DD') + 'T' + timeString));
+    return DateTime.fromISO(DateTime.now().toFormat("yyyy-MM-dd") + 'T' + timeString).plus({days: dateAdded});
 };
 
 const diffAsMinutes = (from, to) => {
-    const a = moment.duration(from);
-    const b = moment.duration(to);
-
-    return b.subtract(a).asMinutes();
+    return to.diff(from, 'minutes').values.minutes;
 };
 
 /*
@@ -42,19 +39,19 @@ const getNearestDateInMomentType = async (availableTime, doctorId, leastTime) =>
         const appointments = await Appointment.find({
             $and: [
                 {doctor: doctorId},
-                {appointmentTime: {$gte: moment()}}
+                {appointmentTime: {$gte: DateTime.now().toString()}}
             ]
         });
         const array = [];
-        const date = moment(moment()).day();
+        const date = DateTime.now().weekday - 1; // 0: 월요일 6: 일요일의 내부 구성 유지를 위한 선택임.
         let start = null;
         let rtnVal = null;
 
         for (const app of appointments) {
             array.push({
-                stt: moment(app.appointmentTime),
-                end: moment(app.appointmentEndAt)
-            })
+                stt: DateTime.fromISO(app.appointmentTime),
+                end: DateTime.fromISO(app.appointmentEndAt)
+            });
         }
 
         let prevLoop = null;
@@ -62,7 +59,7 @@ const getNearestDateInMomentType = async (availableTime, doctorId, leastTime) =>
             const loopDate = (date + day) % 7;
 
             if (start === null && availableTime[loopDate].length > 0) {
-                start = availableTime[loopDate][0];
+                start = makeScheduleAsTime(availableTime[loopDate][0]);
             }
 
             for (let i = 0; i < availableTime[loopDate].length - 1; i++) {
@@ -85,11 +82,11 @@ const getNearestDateInMomentType = async (availableTime, doctorId, leastTime) =>
         }
 
         array.sort((a, b) => {
-            return moment(a.stt).subtract(moment(b.stt));
+            return a.stt - b.stt;
         });
 
         for (const item of array) {
-            if (diffAsMinutes(start, item.stt) >= leastTime && diffAsMinutes(start, moment()) > 0) {
+            if (diffAsMinutes(start, item.stt) >= leastTime && diffAsMinutes(start, DateTime.now()) > 0) {
                 rtnVal = start;
 
                 break;

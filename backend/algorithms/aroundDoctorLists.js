@@ -1,5 +1,5 @@
 const Doctor = require("../models/Doctor");
-const moment = require("moment");
+const {DateTime} = require('luxon');
 const closePsychiatryFinding = require("./closePlaceCurate");
 const { getNearestDateInMomentType, diffAsMinutes } = require("./closeTimeCurate");
 
@@ -55,7 +55,7 @@ const returnAroundDoctorList = async (patientLong, patientLat, radius) => {
 
             if (doctor.schedule) {
                 doctor.leastTime = await getNearestDateInMomentType(doctor.schedule.availableTime, doctor._id, doctor.schedule.minimalAppointmentTime);
-                if (doctor.leastTime && diffAsMinutes(moment(), doctor.leastTime) > longestTime) {
+                if (doctor.leastTime && diffAsMinutes(DateTime.now(), doctor.leastTime) > longestTime) {
                     longestTime = doctor.leastTime;
                 }
             } else {
@@ -64,7 +64,7 @@ const returnAroundDoctorList = async (patientLong, patientLat, radius) => {
         }
 
         for (const doctor of doctors) {
-            doctor.timeScore = longestTime / diffAsMinutes(moment(), doctor.leastTime);
+            doctor.timeScore = longestTime / diffAsMinutes(DateTime.now(), doctor.leastTime);
         }
 
         return doctors;
