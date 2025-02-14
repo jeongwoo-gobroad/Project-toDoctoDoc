@@ -4,6 +4,7 @@ import 'package:to_doc/Database/chat_database.dart';
 import 'package:to_doc/controllers/careplus/appointment_controller.dart';
 import 'package:to_doc/screens/careplus/appointment_listview.dart';
 import 'package:to_doc/screens/appointment/appointment_detail_screen.dart';
+import 'package:to_doc/screens/careplus/nearby_curate_screen.dart';
 
 import '../../controllers/careplus/chat_controller.dart';
 import '../../controllers/careplus/curate_list_controller.dart';
@@ -51,6 +52,7 @@ class _CurateMainState extends State<CurateMain> {
   @override
   void initState() {
     super.initState();
+    
     appointmentController.getAppointmentList();
     chatController.getChatList();
     curateListController.getList();
@@ -67,7 +69,28 @@ class _CurateMainState extends State<CurateMain> {
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
         ),
         backgroundColor: Colors.grey.shade100,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Get.to(() => NearbyCurateScreen());
+              },
+              icon: Icon(Icons.local_hospital, color: Colors.redAccent),
+              label: Text("내 맞춤 병원 찾기", style: TextStyle(color: Colors.black)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                ),
+              ),
+            ),
+          ),
+        ],
+        
+      
       ),
+      
       body: SingleChildScrollView(
         child: Align(
           alignment: Alignment.topCenter,
