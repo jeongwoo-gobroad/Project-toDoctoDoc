@@ -20,11 +20,14 @@ class HospitalInformationController extends GetxController{
   double averageRating = 0.0;
   List<int> reviewRatingArr = [];
 
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
+
+
   Future<bool> getHospitalInformation(String placeId) async {
     isLoading = true.obs;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.get(
         '${Apis.baseUrl}mapp/curate/info/$placeId',
@@ -58,7 +61,7 @@ class HospitalInformationController extends GetxController{
     isLoading = true.obs;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.get(
       '${Apis.baseUrl}mapp/review/listing/$placeId',

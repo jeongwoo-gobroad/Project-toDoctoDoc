@@ -8,9 +8,12 @@ class UploadController extends GetxController {
   var title = "".obs;
   var context = "".obs; // content 필드
 
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
+
+
   Future<bool> uploadResult(String title, String content, String additionalContent, String tags) async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     var body = {
       'title': title,

@@ -16,11 +16,14 @@ class QueryController extends GetxController {
   String? nickname;
   RxBool isLimited = false.obs;
 
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
+
+
   Future<void> sendQuery(String input) async {
     isLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final prefs = await SharedPreferences.getInstance();
     nickname = prefs.getString('usernick');
@@ -72,7 +75,7 @@ class QueryController extends GetxController {
 
   Future<void> queryLimit() async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final prefs = await SharedPreferences.getInstance();
 

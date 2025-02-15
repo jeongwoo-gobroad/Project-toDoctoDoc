@@ -19,6 +19,7 @@ class TagGraphController extends GetxController{
   var _tagGraph = <List<String>>[].obs;
   var tagPositions = <String, Offset>{}.obs;
 
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
 
   final _tagInfoMap = <String, TagInfo>{}.obs;
 
@@ -26,7 +27,7 @@ class TagGraphController extends GetxController{
 
   Future<void> getGraph() async{
     isLoading.value = true;
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.get(
       '${Apis.baseUrl}mapp/graphBoard',
@@ -68,7 +69,7 @@ class TagGraphController extends GetxController{
 
   Future<void> tagBan(String tag) async{
     //isLoading.value = true;
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.post(
       '${Apis.baseUrl}mapp/tagBan',
@@ -108,7 +109,7 @@ class TagGraphController extends GetxController{
 
   Future<void> getBannedTags() async{
     getTagLoading.value = true;
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.get(
       '${Apis.baseUrl}mapp/bannedTags',
@@ -136,7 +137,7 @@ class TagGraphController extends GetxController{
   }
   Future<void> tagUnBan(String tag) async{
     //isLoading.value = true;
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.delete(
       '${Apis.baseUrl}mapp/tagUnBan',

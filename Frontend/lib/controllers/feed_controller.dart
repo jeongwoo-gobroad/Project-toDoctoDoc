@@ -7,10 +7,13 @@ import 'package:dio/dio.dart';
 class FeedController extends GetxController{
   var feedData = {}.obs;
   var isLoading = false.obs;
-  
+
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
+
+
   Future<void> getFeed(String postId) async{
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     isLoading.value = true;
 

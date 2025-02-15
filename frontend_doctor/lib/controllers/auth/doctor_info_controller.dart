@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:to_doc_for_doc/controllers/auth/auth_interceptor.dart';
 
 class DoctorInfoController extends getter.GetxController {
+  CustomInterceptor customInterceptor = getter.Get.find<CustomInterceptor>();
+
   getter.RxString id = "".obs;
   getter.RxString name = "".obs;
   getter.RxString email = "".obs;
@@ -26,7 +28,7 @@ class DoctorInfoController extends getter.GetxController {
   
   Future<void> getInfo() async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     print('GETINFO----------------------------------------');
 
@@ -82,7 +84,7 @@ class DoctorInfoController extends getter.GetxController {
   Future<bool> editInfo(String usernick, String email, String postcode, String address, String detailAddress, String extraAddress
   , String password, String password2) async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     Map<String, dynamic> body = {
         'usernick': usernick,
@@ -120,7 +122,7 @@ class DoctorInfoController extends getter.GetxController {
 
   Future<bool> uploadProfileImage(dynamic imageLink) async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     print('upload---------------------------------------');
     print(imageLink);

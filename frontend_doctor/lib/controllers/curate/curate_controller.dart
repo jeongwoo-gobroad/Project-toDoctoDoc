@@ -7,6 +7,8 @@ import 'package:to_doc_for_doc/controllers/curate/curate_detail_model.dart';
 import 'content_model.dart';
 
 class CurateController extends GetxController {
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
+
   Rx<CurateDetail?> curateDetail = Rx<CurateDetail?>(null);
   var isLoading      = true.obs;
   var forHomeLoading = true.obs;
@@ -31,7 +33,8 @@ class CurateController extends GetxController {
       tempList.sort((a, b) => a.createdAt.compareTo(b.createdAt));
     }
     return tempList;
-  } 
+  }
+
   List<ContentItem> get filteredItems {
     switch (filterStatus.value) {
       case 'read':
@@ -47,7 +50,7 @@ class CurateController extends GetxController {
     forHomeLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     try {
       final response = await dio.get(
@@ -86,7 +89,7 @@ class CurateController extends GetxController {
 
   Future<void> addComment(String id, String comment) async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     //isLoading.value = true;
     final response = await dio.post(
@@ -110,9 +113,10 @@ class CurateController extends GetxController {
       Get.snackbar('Failed', '댓글을 남기지 못했습니다.');
     }
   }
+
   Future<void> commentModify(String comment_id, String detail_id, String updatedComment) async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     //isLoading.value = true;
     final response = await dio.patch(
@@ -138,9 +142,10 @@ class CurateController extends GetxController {
       Get.snackbar('Failed', '에러 발생');
     }
   }
+
   Future<void> commentDelete(String comment_id, String detail_id) async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     // try {
     //isLoading.value = true;
@@ -171,7 +176,7 @@ class CurateController extends GetxController {
 
   Future<void> getCurateDetails(String id) async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     // try {
     //isLoading.value = true;

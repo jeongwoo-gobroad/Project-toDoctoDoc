@@ -15,9 +15,12 @@ class MapController extends GetxController{
   String currentRadius = '1';
   final RxSet<Marker> markers = <Marker>{}.obs;
 
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
+
+
   Future<bool> getMapInfo(String radius, {int page = 1}) async{
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     try {
       isLoading.value = true;

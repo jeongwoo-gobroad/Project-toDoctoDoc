@@ -17,10 +17,13 @@ class ChatAppointmentController extends GetxController{
   bool isAppointmentDone     = false;
   bool isAppointmentApproved = false;
 
+
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
+
   Future<bool> getAppointmentInformation(String chatId) async {
     //isLoading.value = true;
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.get(
       '${Apis.baseUrl}mapp/careplus/appointment/get/$chatId',
@@ -65,7 +68,7 @@ class ChatAppointmentController extends GetxController{
 
   Future<bool> sendAppointmentApproval() async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.post(
       '${Apis.baseUrl}mapp/careplus/appointment/approve',

@@ -10,12 +10,13 @@ class MypostController extends GetxController{
   var isLoading = false.obs;
   var isTagLoading = false.obs;
 
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
 
   Future<bool> fetchMyPost() async {
     isLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.get(
       '${Apis.baseUrl}mapp/myPosts',
@@ -76,7 +77,7 @@ class MypostController extends GetxController{
     isLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     try {
       final response = await dio.patch(
@@ -124,7 +125,7 @@ class MypostController extends GetxController{
     isLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.delete(
       '${Apis.baseUrl}mapp/delete/$postID',
@@ -162,7 +163,7 @@ class MypostController extends GetxController{
     isTagLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.get(
       '${Apis.baseUrl}mapp/tagSearch/$tag',

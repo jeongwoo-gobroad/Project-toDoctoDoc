@@ -4,6 +4,8 @@ import 'package:get/get.dart' as getter;
 import '../auth/auth_interceptor.dart';
 
 class HospitalInformationController extends getter.GetxController {
+  CustomInterceptor customInterceptor = getter.Get.find<CustomInterceptor>();
+
   var isLoading = true.obs;
   var isReviewLoading = true.obs;
 
@@ -28,14 +30,11 @@ class HospitalInformationController extends getter.GetxController {
   var reviews; /* = <Map<String, dynamic>>[];*/
 
 
-
   Future<bool> getInfo() async{
     isLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
-
-    //isLoading.value = true;
+    dio.interceptors.add(customInterceptor);
 
     try {
       final response = await dio.get(
@@ -62,7 +61,6 @@ class HospitalInformationController extends getter.GetxController {
         breakTime = data['breakTime'] ?? 'XX:XX/XX:XX';
         openTime = data['openTime'] ?? 'XX:XX/XX:XX';
 
-
         isLoading.value = false;
         return true;
 
@@ -75,14 +73,12 @@ class HospitalInformationController extends getter.GetxController {
     }
   }
 
+
   Future<bool> editMyHospitalInformation(String name, String address, String phone, String openTime, String breakTime) async{
     isLoading.value = true;
 
-
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
-
-    //isLoading.value = true;
+    dio.interceptors.add(customInterceptor);
 
     try {
       final response = await dio.patch(
@@ -103,10 +99,8 @@ class HospitalInformationController extends getter.GetxController {
       if (response.statusCode == 200) {
         print('SUCCESS');
 
-
         isLoading.value = false;
         return true;
-
       } else {
         return false;
       }
@@ -118,7 +112,7 @@ class HospitalInformationController extends getter.GetxController {
 
   Future<bool> uploadImage(dynamic imageLink) async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     print('upload---------------------------------------');
     print(imageLink);
@@ -152,7 +146,7 @@ class HospitalInformationController extends getter.GetxController {
 
   Future<bool> deleteImage(String imageName) async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     print('delete--------------------------------------');
     print(imageName);
@@ -188,8 +182,7 @@ class HospitalInformationController extends getter.GetxController {
     isReviewLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
-
+    dio.interceptors.add(customInterceptor);
 
     try {
       final response = await dio.get(
@@ -202,23 +195,15 @@ class HospitalInformationController extends getter.GetxController {
 
       if (response.statusCode == 200) {
         var data = json.decode(response.data);
-
-        print(data);
+        //print(data);
 
         reviews = data['content']['reviews'];
 
         starsNum = List<int>.filled(6, 0);
         for (var review in reviews) {
           print(review);
-
           starsNum[review['stars']]++;
-
-
-
         }
-
-
-
         isReviewLoading.value = false;
         return true;
       }
@@ -231,5 +216,4 @@ class HospitalInformationController extends getter.GetxController {
     }
     return false;
   }
-
 }

@@ -6,9 +6,11 @@ import '../../auth/auth_dio.dart';
 class AiChatDeleteController extends GetxController{
   var isLoading = false.obs;
 
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
+
   Future<void> deleteOldChat(String chatId) async{
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
     //로딩
     isLoading.value = true;
 

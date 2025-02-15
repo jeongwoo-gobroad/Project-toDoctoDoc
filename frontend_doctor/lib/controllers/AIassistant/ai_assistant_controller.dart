@@ -3,13 +3,10 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:to_doc_for_doc/controllers/auth/auth_interceptor.dart';
-import 'package:to_doc_for_doc/controllers/memo/memo_detail_model.dart';
-import 'package:to_doc_for_doc/controllers/memo/memo_model.dart';
-
-
-
 
 class AiAssistantController extends GetxController {
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
+
   var isLoading = true.obs;
   RxString summary = "".obs;
 
@@ -17,7 +14,7 @@ class AiAssistantController extends GetxController {
     isLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.post(
       '${Apis.baseUrl}mapp/v2/doctor/aiAssistant/detailSummation',
@@ -48,13 +45,13 @@ class AiAssistantController extends GetxController {
       return false;
     }
   }
-  
 
-   bool _isSameDay(DateTime date1, DateTime date2) {
+  bool _isSameDay(DateTime date1, DateTime date2) {
     return date1.year == date2.year &&
         date1.month == date2.month &&
         date1.day == date2.day;
   }
+
   bool _isLimited(){
     if(patientTotal.value == dailyPatientLimit){
       return true;
@@ -63,6 +60,7 @@ class AiAssistantController extends GetxController {
       return false;
     }
   }
+
   RxInt patientTotal = 0.obs;
   int dailyPatientLimit = 30;
   RxBool patientLimited = false.obs;
@@ -71,7 +69,7 @@ class AiAssistantController extends GetxController {
     isLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.get(
       '${Apis.baseUrl}mapp/v2/doctor/aiAssistant/dailyLimit',

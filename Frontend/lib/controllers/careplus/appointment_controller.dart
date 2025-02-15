@@ -16,11 +16,13 @@ class AppointmentController extends GetxController {
   late Map<String, dynamic> appointment;
   late Map<String, dynamic> hospital;
 
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
+
   Future<bool> getAppointmentList() async {
     isLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.get(
       '${Apis.baseUrl}mapp/careplus/appointment/list',
@@ -88,7 +90,7 @@ class AppointmentController extends GetxController {
     isLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.get(
       '${Apis.baseUrl}mapp/careplus/appointment/getWithAppid/$appointmentId',
@@ -123,7 +125,7 @@ class AppointmentController extends GetxController {
     print('APPOINTMENT ID ------ $appointmentId');
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.post(
       '${Apis.baseUrl}mapp/careplus/appointment/review',

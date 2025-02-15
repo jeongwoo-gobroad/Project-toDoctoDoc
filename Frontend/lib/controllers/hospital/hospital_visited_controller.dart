@@ -8,12 +8,14 @@ class HospitalVisitedController extends GetxController{
   var isLoading = true.obs;
   late List<dynamic> hospitals;
 
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
+
 
   Future<bool> getVisitedHospitals() async {
     isLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.get(
       '${Apis.baseUrl}mapp/review/visited',

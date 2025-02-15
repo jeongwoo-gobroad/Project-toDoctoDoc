@@ -7,6 +7,8 @@ import 'auth/auth_interceptor.dart';
 
 
 class AppointmentController extends GetxController {
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
+
   late List<dynamic> appList;
 
   var isLoading = true.obs;
@@ -24,7 +26,7 @@ class AppointmentController extends GetxController {
     isLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.get(
       '${Apis.baseUrl}mapp/doctor/appointment/list',
@@ -78,7 +80,7 @@ class AppointmentController extends GetxController {
     isLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.get(
       '${Apis.baseUrl}mapp/doctor/appointment/simpleList',
@@ -133,7 +135,7 @@ class AppointmentController extends GetxController {
     isLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.get(
       '${Apis.baseUrl}mapp/doctor/appointment/get/$appointmentId',
@@ -161,7 +163,7 @@ class AppointmentController extends GetxController {
     print('APPOINTMENT ID ------ $appointmentId');
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.post(
         '${Apis.baseUrl}mapp/doctor/appointment/done',

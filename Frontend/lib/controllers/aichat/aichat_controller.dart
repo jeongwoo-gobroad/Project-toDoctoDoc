@@ -11,9 +11,11 @@ class AiChatController extends GetxController{
 
   var isLoading = false.obs;
 
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
+
   Future<void> getNewChat() async{
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
     isLoading.value = true;
 
     final response = await dio.get(
@@ -62,7 +64,7 @@ class AiChatController extends GetxController{
 
   Future<void> chatLimit() async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     isLoadingLimit.value = true;
 
@@ -80,7 +82,7 @@ class AiChatController extends GetxController{
       isLimited.value = false;
       final data = json.decode(response.data);
 
-      print(data);
+      print('CHAT LIMIT $data');
       chats.value = data['content']['chats'];
 
       DateTime serverDate = DateTime.parse(data['content']['userDate']);

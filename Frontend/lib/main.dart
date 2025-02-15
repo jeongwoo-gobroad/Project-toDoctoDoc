@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -5,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:to_doc/Database/chat_database.dart';
+import 'package:to_doc/auth/auth_dio.dart';
 import 'package:to_doc/controllers/userInfo_controller.dart';
 import 'package:to_doc/controllers/view_controller.dart';
 import 'package:to_doc/screens/intro.dart';
@@ -27,8 +29,11 @@ void main() async{
       appKey: 'd5f01b0b56b0599393d5cae23ae8d69f' ?? '',
       baseUrl: '');
 
+  Get.put(CustomInterceptor());
   Get.put(UserinfoController(), permanent: true);
   Get.put(ViewController(), permanent: true);
+
+
   runApp(GetMaterialApp(
     scrollBehavior: const MaterialScrollBehavior().copyWith(
         dragDevices: {

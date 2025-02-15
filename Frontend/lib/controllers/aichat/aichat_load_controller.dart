@@ -9,9 +9,11 @@ class AichatLoadController extends GetxController {
   var isLoading = false.obs;
   final List<ChatObject> messageList = [];
 
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
+
   Future<bool> loadChat(String chatId) async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     isLoading.value = true;
 

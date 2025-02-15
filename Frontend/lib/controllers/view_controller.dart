@@ -23,10 +23,12 @@ class ViewController extends GetxController{
   var isLoading = false.obs;
   RxList<Post> feed = <Post>[].obs;
 
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
+
 
   Future<void> getFeed(String postId) async{
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     isLoading.value = true;
     currentId.value = postId;

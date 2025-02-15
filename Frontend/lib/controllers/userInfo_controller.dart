@@ -21,10 +21,13 @@ class UserinfoController extends GetxController {
   //RxString address = "".obs;
  /*error: false, result: info, content: {_id: 67763d058b0c374bed083641, id: test1234, usernick: jun, email: j123@21, address: {postcode: 41196, address: 대구 동구 경대로 2, detailAddress: 1, extraAddress:  (신암동), longitude: 128.612188721856, latitude: 35.8819379527752, _id: 67763d058b0c374bed083642}, limits: {dailyRequestDate: 2025-01-02T07:15:17.044Z, dailyRequestCount: 4, dailyChatDate: 2025-01-03T06:27:50.340Z, dailyChatCount: 1, _id: 67763d058b0c374bed083643}, isPremium: true}} */
 
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
+
+
 
   Future<void> getInfo() async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.get(
       '${Apis.baseUrl}mapp/userinfo',
@@ -39,6 +42,7 @@ class UserinfoController extends GetxController {
     if (response.statusCode == 200) {
       final data = json.decode(response.data);
 
+      print('UserINfo');
       print(data);
       uid.value = data['content']['_id'];
       id.value = data['content']['id'];
@@ -79,7 +83,7 @@ class UserinfoController extends GetxController {
     isLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     Map<String, dynamic> body = {
         'usernick': usernick,

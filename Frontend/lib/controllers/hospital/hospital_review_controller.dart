@@ -15,6 +15,7 @@ class HospitalReviewController extends GetxController{
   var starsNum = List<int>.filled(6, 0);
   var reviews;
 
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
 
   Future<bool> postUserReview(String placeId, double rating, String review) async {
     isLoading = true.obs;
@@ -24,7 +25,7 @@ class HospitalReviewController extends GetxController{
     print(review);
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.post(
         '${Apis.baseUrl}mapp/review/write',
@@ -54,7 +55,7 @@ class HospitalReviewController extends GetxController{
     isLoading = true.obs;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.patch(
         '${Apis.baseUrl}mapp/review/edit/$reviewId',
@@ -85,7 +86,7 @@ class HospitalReviewController extends GetxController{
     isReviewLoading = true.obs;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.get(
       '${Apis.baseUrl}mapp/review/listing/$pid',
@@ -119,7 +120,7 @@ class HospitalReviewController extends GetxController{
     isReviewLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.delete(
       '${Apis.baseUrl}mapp/review/delete/$reviewId',
@@ -147,7 +148,7 @@ class HospitalReviewController extends GetxController{
     isReviewLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.get(
       '${Apis.baseUrl}mapp/review/myReviews',

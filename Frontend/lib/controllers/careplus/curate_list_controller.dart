@@ -15,6 +15,7 @@ class CurateListController extends GetxController {
   var comments   = <Map<String, dynamic>>[].obs;
   var posts      = <Map<String, dynamic>>[].obs;
 
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
   UserinfoController userinfoController = Get.put(UserinfoController());
 
   String deepCurate = 'null';
@@ -23,7 +24,7 @@ class CurateListController extends GetxController {
     isLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.get(
       '${Apis.baseUrl}mapp/careplus/list',
@@ -74,7 +75,7 @@ class CurateListController extends GetxController {
     isLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     // try {
     final response = await dio.get(
@@ -129,7 +130,7 @@ class CurateListController extends GetxController {
 
   Future<void> requestCurate() async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.post(
       '${Apis.baseUrl}mapp/careplus/curate',
@@ -158,7 +159,7 @@ class CurateListController extends GetxController {
     nearbyLoading.value = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     final response = await dio.get(
       '${Apis.baseUrl}mapp/v2/user/curate/nearbyCurating?fastWeight=$fastWeight&distWeight=$distWeight&starWeight=$starWeight&radius=5',

@@ -14,7 +14,10 @@ class Apis {
 }
 
 class CustomInterceptor extends Interceptor {
-  SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
+  static SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
+  List<ErrorInterceptorHandler> requestQueue = [];
+
+  static Future<bool>? refreshTokenLock; // 동시성 제어를 위한 static변수
 
   @override void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     if (options.headers['accessToken'] == 'true') {
@@ -22,7 +25,7 @@ class CustomInterceptor extends Interceptor {
 
       final accessToken = await storage.readAccessToken();
 
-      print('dio login');
+      print('dio accessToken');
       print(accessToken);
 
       options.headers.addAll({
@@ -44,52 +47,93 @@ class CustomInterceptor extends Interceptor {
 
 
   @override
-  void onError(DioException error, ErrorInterceptorHandler handler) async {
-    final refreshToken = await storage.readRefreshToken();
-
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
     print('ERror');
 
-    print(error.response?.statusCode);
-    print(error.message);
+    print(err.response?.statusCode);
+    print(err.message);
 
     // 인증 오류가 발생했을 경우: AccessToken의 만료
-    if (error.response?.statusCode == 419) {
-      print('419');
+    if (err.response?.statusCode == 419) {
+      //final options = err.requestOptions;
 
-      var refreshDio = Dio();
+      print('await');
+      if (!await refreshLockFunc()) {
+        print('ERROR');
+        storage.deleteEveryToken();
 
-      refreshDio.interceptors.clear();
-      refreshDio.interceptors
-          .add(InterceptorsWrapper(onError: (error, handler) async {
-        // 다시 인증 오류가 발생했을 경우: RefreshToken의 만료
-        if (error.response?.statusCode == 419) {
-          // 기기의 자동 로그인 정보 삭제
+        print('리프래시 토큰 오류');
+        Get.snackbar('Error', '로그인이 만료되었습니다.');
+        Get.off(()=> Intro());
+        return;
+      }
 
-          storage.deleteEveryToken();
+      print('Redo token authorization');
+      final _accessToken = await storage.readAccessToken();
 
-          print('리프래시 토큰 오류');
-          Get.snackbar('Error', '로그인이 만료되었습니다.');
-          Get.off(()=> Intro());
+      final options = err.requestOptions;
+      options.headers.addAll({'authorization' : 'Bearer $_accessToken'});
 
-          // . . .
-          // 로그인 만료 dialog 발생 후 로그인 페이지로 이동
-          // . . .
-        }
-        return handler.next(error);
-      }));
+      Dio dio = Dio();
+      final clonedRequest = await dio.fetch(options);
+      return handler.resolve(clonedRequest);
+    }
+  }
 
 
-      print('wait refresh response');
-      print(refreshToken);
+  static Future<bool> refreshLockFunc() async {
+    if (refreshTokenLock != null) {
+      await refreshTokenLock;
+      return true; // 이전 토큰 갱신 요청의 결과를 기다린 후, true 반환
+    }
 
+    await getNewToken();
+
+
+    refreshTokenLock = getNewToken();
+
+
+    return refreshTokenLock!.then((value) {
+      refreshTokenLock = null;
+      return value;
+    }).catchError((error) {
+      refreshTokenLock = null;
+      return false;
+    });
+  }
+
+  static  Future<bool> getNewToken() async {
+    final refreshToken = await storage.readRefreshToken();
+
+    var refreshDio = Dio();
+
+    refreshDio.interceptors.clear();
+    refreshDio.interceptors.add(InterceptorsWrapper(onError: (error, handler) async {
+      // 다시 인증 오류가 발생했을 경우: RefreshToken의 만료
+      if (error.response?.statusCode == 419) {
+        // 기기의 자동 로그인 정보 삭제
+        storage.deleteEveryToken();
+
+        print('리프래시 토큰 오류');
+        Get.snackbar('Error', '로그인이 만료되었습니다.');
+        Get.off(()=> Intro());
+      }
+      return handler.next(error);
+    }));
+
+
+    print('wait refresh response');
+    print(refreshToken);
+
+    try {
       final refreshResponse = await refreshDio.post(
           'http://jeongwoo-kim-web.myds.me:3000/mapp/tokenRefresh',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'authorization': 'Bearer $refreshToken',
-          }
-        )
+          options: Options(
+              headers: {
+                'Content-Type': 'application/json',
+                'authorization': 'Bearer $refreshToken',
+              }
+          )
       );
 
       print('refreshtoken');
@@ -97,7 +141,6 @@ class CustomInterceptor extends Interceptor {
 
       if (refreshResponse.statusCode == 200) {
         final data = json.decode(refreshResponse.data);
-
         print(data);
 
         final _accessToken = data['content']['accessToken'];
@@ -106,24 +149,16 @@ class CustomInterceptor extends Interceptor {
         await storage.saveAccessToken(_accessToken);
         await storage.saveRefreshToken(_refreshToken);
 
+        print('accessToken');
         print(data['content']['accessToken']);
+
+        print('refreshToken');
         print(data['content']['refreshToken']);
-
-        print('Redo token authorization');
-
-        final options = error.requestOptions;
-        options.headers.addAll({'authorization' : 'Bearer $_accessToken'});
-
-        // 수행하지 못했던 API 요청 복사본 생성
-        final clonedRequest = await refreshDio.fetch(options);
-
-        // API 복사본으로 재요청
-        return handler.resolve(clonedRequest);
-
+        return true;
       }
-
-      print('ERR');
-
+      return true;
+    } on DioException catch (e) {
+      return false;
     }
   }
 }

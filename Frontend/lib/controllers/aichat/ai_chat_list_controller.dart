@@ -10,11 +10,13 @@ class AiChatListController extends GetxController {
   var isLoading = false.obs;
   var isEmpty = true.obs;
 
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
+
   AiChatListController();
 
   Future<void> getChatList() async{
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     isLoading.value = true;
 
@@ -33,6 +35,9 @@ class AiChatListController extends GetxController {
       isEmpty.value = false;
 
       final data = json.decode(response.data);
+
+      print('AI CHAT LIST $data');
+
 
       if(data is Map<String,dynamic> && data['content'] is List) {
         List<dynamic> contentList = data['content'];

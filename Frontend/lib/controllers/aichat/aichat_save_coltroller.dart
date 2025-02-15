@@ -7,9 +7,11 @@ import '../../auth/auth_dio.dart';
 class AiChatSaveController extends GetxController{
   var isLoading = false.obs;
 
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
+
   Future<void> saveChat(String chatId) async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
     print(chatId);
 
     try {

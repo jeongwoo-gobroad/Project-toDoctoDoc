@@ -9,11 +9,14 @@ import '../model/chat_dart_model.dart';
 class ChatController extends GetxController{
   final chatList = <ChatContent>[].obs;
   var isLoading = true.obs;
-
   RxInt serverAutoIncrementId = 0.obs;
+
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
+
+
   Future<void> getChatList() async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     isLoading.value = true;
 
@@ -58,7 +61,7 @@ class ChatController extends GetxController{
 
   Future<void> enterChat(String cid, int value) async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
     String strvalue = value.toString();
     
     final response = await dio.get(

@@ -9,9 +9,12 @@ class ChatController extends GetxController{
   final chatList = <ChatContent>[].obs;
   var isLoading = true.obs;
   final ChatDatabase chatDatabase = ChatDatabase();
+
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
+
   Future<void> requestChat(String doctorID) async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     
 
@@ -46,7 +49,7 @@ class ChatController extends GetxController{
   RxInt serverAutoIncrementId = 0.obs;
   Future<void> getChatList() async {
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     isLoading.value = true;
 
@@ -110,7 +113,7 @@ class ChatController extends GetxController{
     //value = 1;
     print('enter chat');
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
     String strvalue = value.toString();
     //print(strvalue);
     final response = await dio.get(

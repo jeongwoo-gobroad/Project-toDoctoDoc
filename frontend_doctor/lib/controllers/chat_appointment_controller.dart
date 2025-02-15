@@ -9,6 +9,7 @@ import '../socket_service/chat_socket_service.dart';
 
 class ChatAppointmentController extends GetxController {
   ChatAppointmentController({required this.userId, required this.chatId});
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
 
   var isLoading = true.obs;
 
@@ -32,7 +33,7 @@ class ChatAppointmentController extends GetxController {
     //isAppointmentExisted = true;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     //try {
       final response = await dio.get(
@@ -90,7 +91,7 @@ class ChatAppointmentController extends GetxController {
     //isLoading = true.obs;
 
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     DateTime dayToUTC = selectedDay.toUtc();
     DateTime endDayToUTC = endTime.toUtc();
@@ -135,7 +136,7 @@ class ChatAppointmentController extends GetxController {
 
   Future<bool> deleteAppointment() async{
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     //isLoading.value = true;
 
@@ -182,7 +183,7 @@ class ChatAppointmentController extends GetxController {
 
   Future<bool> editAppointment(DateTime selectedDay, DateTime endTime) async{
     Dio dio = Dio();
-    dio.interceptors.add(CustomInterceptor());
+    dio.interceptors.add(customInterceptor);
 
     isLoading.value = true;
 
