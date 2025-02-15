@@ -44,7 +44,7 @@ const getNearestDateInMomentType = async (availableTime, doctorId, leastTime) =>
         });
         const array = [];
         const date = DateTime.now().weekday - 1; // 0: 월요일 6: 일요일의 내부 구성 유지를 위한 선택임.
-        let start = null;
+        let start = DateTime.now();
         let rtnVal = null;
 
         for (const app of appointments) {
@@ -59,9 +59,9 @@ const getNearestDateInMomentType = async (availableTime, doctorId, leastTime) =>
             const loopDate = (date + day) % 7;
 
             if (availableTime[loopDate].length > 0) {
-                if (start === null) {
-                    start = makeScheduleAsTime(availableTime[loopDate][0].from, day);
-                }
+                // if (start === null) {
+                //     start = makeScheduleAsTime(availableTime[loopDate][0].from, day);
+                // }
 
                 if (prevLoop) { // first loop, i = 0 and prevLoop exists
                     array.push({
@@ -88,7 +88,7 @@ const getNearestDateInMomentType = async (availableTime, doctorId, leastTime) =>
         });
 
         for (const item of array) {
-            if (diffAsMinutes(start, item.stt) >= leastTime && diffAsMinutes(start, DateTime.now()) > 0) {
+            if (diffAsMinutes(start, item.stt) >= leastTime && diffAsMinutes(DateTime.now(), start) > 0) {
                 rtnVal = start;
 
                 break;

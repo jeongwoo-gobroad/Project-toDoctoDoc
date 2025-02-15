@@ -10,7 +10,7 @@ const returnNewCurate = async (userid) => {
 
         const data = await User.findById(userid).populate('posts ai_chats');
 
-        curate.user = req.userid;
+        curate.user = userid;
 
         data.posts.sort((a, b) => {
             return b.editedAt - a.editedAt;

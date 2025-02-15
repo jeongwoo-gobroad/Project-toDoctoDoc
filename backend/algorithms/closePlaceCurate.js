@@ -18,7 +18,7 @@ const closePsychiatryFinding = async (x, y, radius) => {
         await redis.connect();
 
         if ((cached = await redis.getCache("DOCS:" + uri))) {
-            console.log("returned cached documents for closePsy");
+            console.log("returned cached documents for close-Psy");
     
             redis.closeConnnection();
             redis = null;

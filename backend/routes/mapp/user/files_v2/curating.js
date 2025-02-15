@@ -99,7 +99,8 @@ router.post(["/todayCurate"],
                     recentCurate: curate._id,
                 });
             } else {
-                curate = (await User.findById(req.userid).populate('recentCurate')).recentCurate;
+                const curateId = (await User.findById(req.userid)).recentCurate;
+                curate = await Curate.findById(curateId).populate('posts ai_chats');
             }
 
             res.status(200).json(returnResponse(false, "todayCurateResult", curate));

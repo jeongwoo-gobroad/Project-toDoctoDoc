@@ -8,6 +8,7 @@ const nearbyPatientCurateV2 = async (long, lat, radius) => {
     const newLong = parseFloat(long);
     const newLat = parseFloat(lat);
     const newRadius = parseFloat(radius);
+    const newUsers = [];
 
     try {
         const users = await User.find({
@@ -29,7 +30,12 @@ const nearbyPatientCurateV2 = async (long, lat, radius) => {
             ]
         }, 'usernick recentCurate recentCurateDate');
 
-        return users;
+        for (let user of users) {
+            user = user.toObject();
+            newUsers.push(user);
+        }
+
+        return newUsers;
     } catch (error) {
         console.error(error, "errorAtNearByPatientCurateV2");
 

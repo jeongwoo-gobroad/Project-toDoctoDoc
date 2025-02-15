@@ -4,7 +4,7 @@ const sortAroundDoctorListsByScoreWeight = async (fast, dist, star, pLong, pLat,
     try {
         let temp = null;
         let index = 0;
-        const list = await returnAroundDoctorList(pLong, pLat, radius);
+        const list = await returnAroundDoctorList(pLong, pLat, parseFloat(radius) * 1000);
 
         for (const item of list) {
             item.score = parseFloat(fast) * item.timeScore + parseFloat(dist) * item.distanceScore + parseFloat(star) * item.starScore;
