@@ -18,6 +18,9 @@ router.post(["/tokenRefresh"],
             const decoded = jwt.verify(req.headers["authorization"]?.split(" ")[1], secretKey);
             
             if (typeof decoded.userid === "undefined") {
+
+                // console.log(req.headers["authorization"]?.split(" ")[1]);
+
                 const user = await User.findOne({refreshToken: req.headers["authorization"]?.split(" ")[1]});
                 const doctor = await Doctor.findOne({refreshToken: req.headers["authorization"]?.split(" ")[1]});
                 const admin = await Admin.findOne({refreshToken: req.headers["authorization"]?.split(" ")[1]});
@@ -71,13 +74,14 @@ router.post(["/tokenRefresh"],
                 } else {
                     res.status(403).json(returnResponse(true, "unexpectedError", "-"));
 
+                    console.error("errorAtTokenRefreshing");
+
                     return;
                 }
                 // console.log("Token refreshed successfully");
 
                 res.status(200).json(returnResponse(false, "returnedTokenSuccessfully", {accessToken: token, refreshToken: refreshToken}));
     
-                return payload; 
     
             } else {
                 res.status(401).json(returnResponse(true, "unauthorizedToken", "-"));

@@ -98,3 +98,10 @@ Please refer to /uxDesign
     * Implemented Appointment system.
     * Implemented View counting system with GraphBoard layout.
     * Currently implementing Doctor profile image & Psychiatry profile image system...
+
+* #### 1.0.0
+    * Completely redesigned curating system & algorithm.
+    * Review system has been implemented.
+    * Psy-premiumify system(via admin page) has been implemented.
+    * Doctor profile image/psychiatry profile image system has been implemented.
+    * First Ready-to-launch version.
