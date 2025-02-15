@@ -83,8 +83,6 @@ const getNearestDateInMomentType = async (availableTime, doctorId, leastTime) =>
             }
         }
 
-        console.log(array);
-
         array.sort((a, b) => {
             return a.stt - b.stt;
         });
