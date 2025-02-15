@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:to_doc/controllers/hospital/hospital_review_controller.dart';
+import 'package:to_doc/controllers/map_controller.dart';
 import 'package:to_doc/screens/hospital/hospital_rating_screen.dart';
 import 'package:to_doc/screens/hospital/review_widget.dart';
 import 'package:to_doc/screens/hospital/star_rating_editor.dart';
@@ -19,7 +21,7 @@ class HospitalDetailView extends StatefulWidget {
 class _HospitalDetailViewState extends State<HospitalDetailView> {
   HospitalReviewController hospitalReviewController = Get.put(HospitalReviewController());
   ScrollController rowScrollController = ScrollController();
-
+  late KakaoMapController mapController;
   Widget chartRow(BuildContext context, String label, double pct) {
     return Row(
       children: [
@@ -59,23 +61,23 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
   }
   Widget placeInform(Icon thisIcon, String description) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-      child: Row(
-        //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          SizedBox(
-              //width: MediaQuery.of(context).size.width * 1 / 20,
-              child: thisIcon,
+    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+    child: Row(
+      // Row 내부에서 직접 너비를 확장해야 하므로, Expanded/Flexible 사용
+      children: [
+        thisIcon,
+        const SizedBox(width: 10),
+        // Text를 Expanded로 감싸서 가로 공간이 부족할 때 자동으로 줄임표 처리
+        Expanded(
+          child: Text(
+            description,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
-          SizedBox(width: 10,),
-          Container(
-              //color: Colors.blue,
-              width: MediaQuery.of(context).size.width * 3 / 4,
-              child: Text(description, maxLines: 2, overflow: TextOverflow.ellipsis,),
-          ),
-        ],
-      ),
-    );
+        ),
+      ],
+    ),
+  );
   }
   Widget imageList() {
     return SizedBox(
@@ -115,6 +117,83 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
     super.initState();
     hospitalReviewController.getHospitalReviewList(widget.hospital['_id']);
   }
+  Set<Marker> markers = {};
+
+  void showMapOverlay(BuildContext context) {
+   
+  showDialog(
+    context: context,
+    builder: (context) {
+      return Dialog(
+        insetPadding: const EdgeInsets.all(20),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: SizedBox(
+          height: 600,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey, width: 2),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: SizedBox(
+                      height: 500,
+                      child: KakaoMap(
+                        onMapCreated: (controller) async {
+                          mapController = controller;
+                          markers.add(Marker(
+                            markerId: 'hosptial',
+                            latLng: LatLng(
+                          widget.hospital['address']['latitude'],
+                          widget.hospital['address']['longitude'],
+                        ),
+                          ));
+                            
+                          setState(() {});
+
+                        },
+                        markers: markers.toList(),
+                        
+                        center: LatLng(
+                          widget.hospital['address']['latitude'],
+                          widget.hospital['address']['longitude'],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey[200],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    '닫기',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -143,8 +222,28 @@ class _HospitalDetailViewState extends State<HospitalDetailView> {
           ),*/
           child: Column(
             children: [
-              placeInform(Icon(Icons.fmd_good_outlined, size: 30),
-                  '${widget.hospital['address']['address']} ${widget.hospital['address']['detailAddress']} ${widget.hospital['address']['extraAddress']}, ${widget.hospital['address']['postcode']}'),
+              Row(
+                children: [
+                  Expanded(
+                    child: placeInform(Icon(Icons.fmd_good_outlined, size: 30),
+                        '${widget.hospital['address']['address']} ${widget.hospital['address']['detailAddress']} ${widget.hospital['address']['extraAddress']}, ${widget.hospital['address']['postcode']}'),
+                  ),
+                  const SizedBox(width: 4),
+                  TextButton(
+            onPressed: () {
+              showMapOverlay(context);
+            },
+            child: Text(
+              '지도에서 보기',
+              style: TextStyle(
+                color: Colors.blue,
+                fontSize: 14,
+                
+              ),
+            ),
+          ),
+                ],
+              ),
               placeInform(
                   Icon(CupertinoIcons.time, size: 30), '영업시간 : '),
               placeInform(

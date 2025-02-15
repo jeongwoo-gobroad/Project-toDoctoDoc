@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:to_doc_for_doc/controllers/curate/curate_controller.dart';
+import 'package:to_doc_for_doc/screen/curate/curate_detail_screen.dart';
 
 import '../../model/chat_object.dart';
 
 
 class makeChatList extends StatelessWidget {
-  const makeChatList({super.key, required this.scrollController, required this.messageList, this.updateUnread});
-
+  makeChatList({super.key, required this.scrollController, required this.messageList, this.updateUnread});
+  final CurateController curateController = Get.find<CurateController>();
   final ScrollController scrollController;
   final List<ChatObject> messageList;
   final updateUnread;
@@ -173,10 +176,74 @@ class makeChatList extends StatelessWidget {
                                   : Color.fromARGB(100, 244, 242, 248),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Text(
-                              messageList[index].content,
-                              style: TextStyle(fontSize: 15),
-                            ),
+                            child: () {
+                              // ChatObject
+                              final chatObj = messageList[index];
+                              if (chatObj.content.contains('curateId:')) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+
+                                    Text(
+                                      "큐레이팅 요청입니다.",
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                    SizedBox(height: 4),
+                                    InkWell(
+                                      onTap: () async{
+                                        String marker = "curateId:";
+                                        String curateId = "";
+                                        int idx =
+                                            chatObj.content.indexOf(marker);
+                                        if (idx != -1) {
+                                          String cId = chatObj.content
+                                              .substring(idx + marker.length)
+                                              .trim();
+                                          print(cId);
+                                          curateId = cId;
+                                        } else {
+                                          print("curateId가 없습니다.");
+                                        }
+                                        await curateController.getCurateDetails(curateId);
+                                        Get.to(()=>CurateDetailScreen(userName: ""));
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.all(4),
+                                        constraints: BoxConstraints(maxWidth: 200),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          border: Border.all(
+                                              color: Colors.grey.shade300),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.link,
+                                                color: Colors.blue),
+                                            SizedBox(width: 8),
+                                            Expanded(
+                                              child: Text(
+                                                '큐레이팅 확인하기',
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.blue),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                );
+                              } else {
+                                return Text(
+                                  chatObj.content,
+                                  style: TextStyle(fontSize: 15),
+                                );
+                              }
+                            }(),
+
                           ),
                         ],),
                     ),

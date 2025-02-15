@@ -17,12 +17,15 @@ import '../../auth/auth_secure.dart';
 import '../intro.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key, required this.chatId, required this.unreadMsg, required this.doctorName, required this.doctorId, required this.autoIncrementId}) : super(key:key);
+  const ChatScreen({Key? key, required this.chatId, required this.unreadMsg, required this.doctorName, required this.doctorId, required this.autoIncrementId, this.fromCurate = false, this.curateId}) : super(key:key);
   final String chatId;
   final int unreadMsg;
   final String doctorName;
   final String doctorId;
   final int autoIncrementId;
+  final bool fromCurate;
+  final String? curateId;
+
   @override
   State<ChatScreen> createState() => _ChatScreen();
 }
@@ -176,6 +179,20 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     print('updateUnread = ${updateUnread}');
     autoIncrement = widget.autoIncrementId;
     isLoading.value = false;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.fromCurate) {
+        _sendAutoMessage();
+      }
+    });
+  }
+
+  void _sendAutoMessage() async {
+  await Future.delayed(Duration(seconds: 3)); //3초 하드코딩은 수정해야함 
+    if (mounted && widget.fromCurate && widget.curateId != null) {
+      final message = '큐레이팅 요청입니다. curateId: ${widget.curateId}';
+      socketService.sendMessage(message);
+    }
   }
 
   @override

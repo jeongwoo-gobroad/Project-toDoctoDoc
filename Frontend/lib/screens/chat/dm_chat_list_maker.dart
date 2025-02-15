@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:to_doc/screens/careplus/curate_screen.dart';
 
 import '../../chat_object.dart';
 
 class makeChatList extends StatelessWidget {
-  const makeChatList({super.key, required this.messageList, required this.scrollController, this.updateUnread});
+  const makeChatList(
+      {super.key,
+      required this.messageList,
+      required this.scrollController,
+      this.updateUnread});
 
   final List<ChatObject> messageList;
   final ScrollController scrollController;
   final updateUnread;
 
-   Widget _buildUnreadDivider() {
+  Widget _buildUnreadDivider() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -43,7 +49,8 @@ class makeChatList extends StatelessWidget {
     if (index == 0) {
       return true;
     }
-    return messageList[index].createdAt?.day != messageList[index-1].createdAt?.day;
+    return messageList[index].createdAt?.day !=
+        messageList[index - 1].createdAt?.day;
   }
 
   String formatTime(DateTime? dateTime) {
@@ -93,9 +100,9 @@ class makeChatList extends StatelessWidget {
 
           return Padding(
             padding: const EdgeInsets.symmetric(
-                vertical: 4.0,
-                horizontal: 10.0,
-              ),
+              vertical: 4.0,
+              horizontal: 10.0,
+            ),
             child: Column(
               children: [
                 if (showUnreadDivider) _buildUnreadDivider(),
@@ -113,9 +120,8 @@ class makeChatList extends StatelessWidget {
                   ),
                 ],
                 Row(
-                  mainAxisAlignment: isUser
-                      ? MainAxisAlignment.end
-                      : MainAxisAlignment.start,
+                  mainAxisAlignment:
+                      isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     if (!isUser) ...[
@@ -130,7 +136,8 @@ class makeChatList extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        if (index + updateUnread! == messageList.length - 1 && isUser) ...[
+                        if (index + updateUnread! == messageList.length - 1 &&
+                            isUser) ...[
                           Container(
                             padding: EdgeInsets.fromLTRB(0, 0, 12, 5),
                             child: Text(
@@ -139,7 +146,7 @@ class makeChatList extends StatelessWidget {
                             ),
                           ),
                         ],
-                        if (isUser && shouldShowTime(index))...[
+                        if (isUser && shouldShowTime(index)) ...[
                           Container(
                             padding: EdgeInsets.fromLTRB(12, 0, 12, 5),
                             child: Text(
@@ -164,10 +171,74 @@ class makeChatList extends StatelessWidget {
                                   : Color.fromARGB(255, 244, 242, 248),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Text(
-                              messageList[index].content,
-                              style: TextStyle(fontSize: 15),
-                            ),
+                            child: () {
+                              // ChatObject
+                              final chatObj = messageList[index];
+                              if (chatObj.content.contains('curateId:')) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+
+                                    Text(
+                                      "큐레이팅 요청입니다.",
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                    SizedBox(height: 4),
+                                    InkWell(
+                                      onTap: () {
+                                        String marker = "curateId:";
+                                        String curateId = "";
+                                        int idx =
+                                            chatObj.content.indexOf(marker);
+                                        if (idx != -1) {
+                                          String cId = chatObj.content
+                                              .substring(idx + marker.length)
+                                              .trim();
+                                          print(cId);
+                                          curateId = cId;
+                                        } else {
+                                          print("curateId가 없습니다.");
+                                        }
+
+                                        Get.to(CurationScreen(
+                                            currentId: curateId));
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.all(4),
+                                        constraints: BoxConstraints(maxWidth: 200),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          border: Border.all(
+                                              color: Colors.grey.shade300),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.link,
+                                                color: Colors.blue),
+                                            SizedBox(width: 8),
+                                            Expanded(
+                                              child: Text(
+                                                '큐레이팅 확인하기',
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.blue),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                );
+                              } else {
+                                return Text(
+                                  chatObj.content,
+                                  style: TextStyle(fontSize: 15),
+                                );
+                              }
+                            }(),
                           ),
                         ],
                       ),

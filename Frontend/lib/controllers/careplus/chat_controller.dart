@@ -12,6 +12,7 @@ class ChatController extends GetxController{
 
   CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
 
+  RxString chatId = "".obs;
   Future<void> requestChat(String doctorID) async {
     Dio dio = Dio();
     dio.interceptors.add(customInterceptor);
@@ -39,6 +40,7 @@ class ChatController extends GetxController{
       print('채팅방 코드');
       final data = json.decode(response.data);
       print(data);
+      chatId.value = data['content'];
     }
     else{
       print('코드: ${response.statusCode}');

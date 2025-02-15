@@ -57,7 +57,42 @@ class _CurateMainState extends State<CurateMain> {
     chatController.getChatList();
     curateListController.getList();
   }
+  Future<void> _handleCurateRequest() async {
 
+  Get.dialog(
+    Center(child: CircularProgressIndicator()),
+    barrierDismissible: false,
+  );
+
+  await curateListController.requestCurateNew(); 
+
+
+  Get.back();
+
+  if (curateListController.curateFinished.value) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text("완료"),
+        content: const Text("맞춤병원 찾기 메뉴로 이동하시겠습니까?"),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Get.back(); 
+              Get.to(() => NearbyCurateScreen());
+            },
+            child: const Text("확인"),
+          ),
+          TextButton(
+            onPressed: () {
+              Get.back(); 
+            },
+            child: const Text("취소"),
+          ),
+        ],
+      ),
+    );
+  }
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -365,58 +400,48 @@ class _CurateMainState extends State<CurateMain> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0),
-                ),
-                title: const Text(
-                  "큐레이팅 요청",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18.0,
-                  ),
-                ),
-                content: const Text(
-                  "주치의 큐레이팅 시스템을 활용하기 위해 본인의 AI 기반 고민 상담 기록을 제출하는 것에 동의합니다.",
-                  overflow: TextOverflow.clip,
-                  style: TextStyle(fontSize: 16),
-                ),
-                actions: [
-                  ElevatedButton(
-                    onPressed: () async {
-                      Navigator.of(context).pop();
-                      await curateListController.requestCurate();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 225, 234, 205),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                    ),
-                    child: const Text("확인"),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text(
-                      "취소",
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                ],
-              );
+  onPressed: () {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
+        ),
+        title: const Text(
+          "큐레이팅 요청",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+        ),
+        content: const Text(
+          "주치의 큐레이팅 시스템을 활용하기 위해 본인의 AI 기반 고민 상담 기록을 제출하는 것에 동의합니다.",
+          style: TextStyle(fontSize: 16),
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () async {
+              Get.back(); 
+              await _handleCurateRequest(); 
             },
-          );
-        },
-        icon: const Icon(Icons.auto_awesome),
-        label: const Text("큐레이팅 받기", style: TextStyle(color: Colors.black),),
-        backgroundColor: const Color.fromARGB(255, 225, 234, 205),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromARGB(255, 225, 234, 205),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+            ),
+            child: const Text("확인"),
+          ),
+          TextButton(
+            onPressed: () {
+              Get.back();
+            },
+            child: const Text("취소", style: TextStyle(color: Colors.grey)),
+          ),
+        ],
       ),
+    );
+  },
+  icon: const Icon(Icons.auto_awesome),
+  label: const Text("큐레이팅 받기", style: TextStyle(color: Colors.black)),
+  backgroundColor: const Color.fromARGB(255, 225, 234, 205),
+),
     );
   }
 

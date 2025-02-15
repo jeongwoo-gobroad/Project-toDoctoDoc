@@ -72,20 +72,23 @@ class Content {
   final String name;
   final MyPsyID myPsyID;
   final String? myProfileImage;
+  final DateTime leastTime;
 
   Content({
     required this.id,
     required this.name,
     required this.myPsyID,
     this.myProfileImage,
+    required this.leastTime,
   });
 
   factory Content.fromJson(Map<String, dynamic> json) {
-    return Content(
+    return Content( 
       id: json['_id'] ?? '',
       name: json['name'] ?? '',
       myPsyID: MyPsyID.fromJson(json['myPsyID']),
-      myProfileImage: json['myProfileImage'], // null일 수 있으므로 String? 처리
+      myProfileImage: json['myProfileImage'], //null일 수 있으므로 String? 처리
+      leastTime: DateTime.parse(json['leastTime'] as String).toLocal(),
     );
   }
 }

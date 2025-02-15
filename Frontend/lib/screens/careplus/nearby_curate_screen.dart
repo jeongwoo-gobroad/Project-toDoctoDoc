@@ -5,8 +5,11 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+import 'package:to_doc/Database/chat_database.dart';
+import 'package:to_doc/controllers/careplus/chat_controller.dart';
 import 'package:to_doc/controllers/careplus/curate_list_controller.dart';
 import 'package:to_doc/controllers/hospital/hospital_information_controller.dart';
+import 'package:to_doc/screens/chat/chat_screen.dart';
 import 'package:to_doc/screens/hospital/hospital_detail_view.dart';
 
 
@@ -204,6 +207,7 @@ class _InteractiveSlider extends StatefulWidget {
 
 class __InteractiveSliderState extends State<_InteractiveSlider> {
   late Offset _position;
+  Offset? _lastHapticPosition;
 
   @override
   void initState() {
@@ -215,6 +219,7 @@ class __InteractiveSliderState extends State<_InteractiveSlider> {
     final y = 200 * (1 - widget.fast);
     final x = 100 * widget.fast + 200 * widget.dist;
     _position = Offset(x.clamp(0.0, 200.0), y.clamp(0.0, 200.0));
+    _lastHapticPosition = _position;
   }
 
   void _updateWeightsFromPosition(Offset pos) {
@@ -240,6 +245,12 @@ class __InteractiveSliderState extends State<_InteractiveSlider> {
 
     final newY = 200 * (1 - a);
     final newX = 100 * a + 200 * (1 - a - b);
+    final newPosition = Offset(newX, newY);
+    if (_lastHapticPosition == null ||
+        (newPosition - _lastHapticPosition!).distance > 5) {
+      HapticFeedback.lightImpact();
+      _lastHapticPosition = newPosition;
+    }
 
     setState(() {
       _position = Offset(newX, newY);
@@ -407,7 +418,15 @@ class _HospitalPopupDialogState extends State<HospitalPopupDialog> {
     _pageController.dispose();
     super.dispose();
   }
-
+  DateTime? processLeastTime(DateTime time) {
+  final localTime = time.toLocal();
+  print(localTime);
+  if(localTime.year == 2100 && localTime.month == 1 && localTime.day == 1){
+    return null;
+  }
+  
+  return localTime;
+}
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -451,6 +470,10 @@ class _HospitalPopupDialogState extends State<HospitalPopupDialog> {
                         itemBuilder: (context, index) {
                           final hospital = curateListController.curatedList[index];
                           print(hospital.myProfileImage);
+                          //print(hospital.leastTime);
+                          print('기존시각: ${hospital.leastTime}');
+                          final processedLeastTime = processLeastTime(hospital.leastTime);
+                          print(processedLeastTime);
                           return HospitalCard(
                             name: hospital.name,
                             hospitalName: hospital.myPsyID.name,
@@ -463,6 +486,8 @@ class _HospitalPopupDialogState extends State<HospitalPopupDialog> {
                             myProfileImage: hospital.myProfileImage,
                             longitude : hospital.myPsyID.address.longitude,
                             latitude : hospital.myPsyID.address.latitude,
+                            doctorId: hospital.id,
+                            leastTime: processedLeastTime,
                           );
                         },
                       ),
@@ -506,6 +531,8 @@ class HospitalCard extends StatefulWidget {
   final String? myProfileImage;
   final double longitude;
   final double latitude;
+  final String doctorId;
+  final DateTime? leastTime;
 
   const HospitalCard({
     super.key,
@@ -520,7 +547,8 @@ class HospitalCard extends StatefulWidget {
     required this.myProfileImage,
     required this.longitude,
     required this.latitude,
-
+    required this.doctorId,
+    required this.leastTime
   });
 
   @override
@@ -533,6 +561,61 @@ class _HospitalCardState extends State<HospitalCard> with TickerProviderStateMix
   late KakaoMapController kakaoMapController;
   bool _showDetailAddress = false;
   HospitalInformationController hospitalInformationController = Get.put(HospitalInformationController());
+  ChatController chatController = Get.find<ChatController>();
+  CurateListController curateListController = Get.find<CurateListController>();
+  final ChatDatabase chatDb = ChatDatabase();
+   void _showCurateRequestDialog() {
+    Get.dialog(
+      AlertDialog(
+        title: const Text("큐레이팅 요청"),
+        content: Text("의사 ${widget.name}에게 큐레이팅 요청을 하시겠습니까?"),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              
+              Get.back();
+              goToChatScreen();
+            },
+            child: const Text("예"),
+          ),
+          TextButton(
+            onPressed: () {
+              Get.back();
+            },
+            child: const Text("아니요"),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget _buildReservationTime() {
+  return Container(
+    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+    margin: const EdgeInsets.symmetric(vertical: 8),
+    decoration: BoxDecoration(
+      color: Colors.grey[100],
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: Colors.grey.shade300),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.access_time, size: 18, color: Colors.grey[600]),
+        const SizedBox(width: 8),
+        Text(
+          widget.leastTime != null
+              ? '${DateFormat('yyyy년 M월 d일 HH:mm').format(widget.leastTime!)}' //todo 디자인수정 
+              : '예약 시각은 DM으로 직접 문의',
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[700],
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    ),
+  );
+}
   openHospitalDetailView(BuildContext context, Map<String, dynamic> hospital) {
     showModalBottomSheet(
       //shape : ,
@@ -561,6 +644,36 @@ class _HospitalCardState extends State<HospitalCard> with TickerProviderStateMix
     );
   }
 
+  void goToChatScreen() async {
+    await chatController.requestChat(widget.doctorId);
+
+    print("최신 id: ${chatController.serverAutoIncrementId}");
+
+    int lastAutoIncrementID;
+    lastAutoIncrementID = await chatDb.getLastReadId(chatController.chatId.value);
+    print("마지막 id: $lastAutoIncrementID");
+
+    
+    int autoIncrementId = 0;
+  try {
+    var chatItem = chatController.chatList.firstWhere(
+      (chat) => chat.doctorId == widget.doctorId,
+    );
+    if (chatItem.recentChat.containsKey('autoIncrementId')) {
+      autoIncrementId = chatItem.recentChat['autoIncrementId'];
+      print("추출된 autoIncrementId: $autoIncrementId");
+    }
+  } catch (e) {
+    print("해당 doctorId의 autoIncrementId를 찾지 못했습니다: $e");
+  }
+
+  int unread = autoIncrementId - lastAutoIncrementID;
+  print('안읽은 개수: ${unread}');
+  await chatController.enterChat(chatController.chatId.value, lastAutoIncrementID);
+    
+    Get.to(()=> ChatScreen(doctorId: widget.doctorId, chatId: chatController.chatId.value, unreadMsg: unread, doctorName: widget.name, autoIncrementId: autoIncrementId, fromCurate: true, curateId: curateListController.curateId.value,));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -582,39 +695,33 @@ class _HospitalCardState extends State<HospitalCard> with TickerProviderStateMix
                   ? Icon(Icons.person, color: Colors.grey[600])
                   : null,
             ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '의사 ${widget.name}',
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                if (widget.isPremiumPsy) ...[
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.amber,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Text(
-                      '프리미엄',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
+            const SizedBox(height: 8),
+            if (widget.isPremiumPsy)
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.amber,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Text(
+          '프리미엄',
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    const SizedBox(height: 8),
+    Text(
+      '의사 ${widget.name}',
+      style: const TextStyle(
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
+        color: Colors.black,
+      ),
+      textAlign: TextAlign.center,
+    ),
             const SizedBox(height: 4),
             Text(
               widget.hospitalName,
@@ -623,56 +730,10 @@ class _HospitalCardState extends State<HospitalCard> with TickerProviderStateMix
             ),
             const SizedBox(height: 12),
             _buildStarRating(widget.rating),
+            const SizedBox(height: 8),
+             _buildReservationTime(),
             const SizedBox(height: 12),
-            InkWell(
-              onTap: () {
-                setState(() {
-                  _showMap = !_showMap;
-                });
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Text(
-                      widget.address,
-                      style: const TextStyle(fontSize: 16, color: Colors.black54),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Icon(
-                    _showMap ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                    size: 24,
-                    color: Colors.grey[600],
-                  ),
-                ],
-              ),
-            ),
-
-            AnimatedSize(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              child: Container(
-                width: double.infinity,
-                height: _showMap ? 90 : 0,
-                child: _showMap
-                    ? KakaoMap(
-                        onMapCreated: (controller) async {
-                                              markers.add(Marker(
-                            markerId: UniqueKey().toString(),
-                            latLng: LatLng(widget.latitude, widget.longitude),
-                          ));
-                          setState(() { });
-
-                        },
-                        markers: markers.toList(),
-                        center: LatLng(widget.latitude, widget.longitude),
-                        
-                      )
-                    : const SizedBox.shrink(),
-              ),
-            ),
-            //TODO 카카오맵 누르면 좀 큰화면에서 볼수있도록록
+            
              ElevatedButton(
               onPressed: () async {
                 if (await hospitalInformationController.getHospitalInformation(widget.pid)) {
@@ -695,7 +756,8 @@ class _HospitalCardState extends State<HospitalCard> with TickerProviderStateMix
               alignment: Alignment.centerRight,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  curateListController.curateShowTo(widget.doctorId);
+                  _showCurateRequestDialog();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 225, 234, 205),
@@ -732,7 +794,7 @@ class _HospitalCardState extends State<HospitalCard> with TickerProviderStateMix
     while (stars.length < 5) {
       stars.add(const Icon(Icons.star_border, color: Colors.amber));
     }
-    return Row(children: stars);
+    return Row(mainAxisAlignment: MainAxisAlignment.center,children: stars);
   }
 }
 
