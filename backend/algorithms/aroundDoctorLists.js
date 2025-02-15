@@ -49,8 +49,10 @@ const returnAroundDoctorList = async (patientLong, patientLat, radius) => {
             doctor = doctor.toObject();
 
             if (psyMap.has(doctor.myPsyID.place_id)) {
+                doctor.distance = psyMap.get(doctor.myPsyID.place_id);
                 doctor.distanceScore = shortestDistance / psyMap.get(doctor.myPsyID.place_id);
             } else {
+                doctor.distance = 9999;
                 doctor.distanceScore = 0;
             }
 

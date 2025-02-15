@@ -104,24 +104,24 @@ class _CurateMainState extends State<CurateMain> {
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
         ),
         backgroundColor: Colors.grey.shade100,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Get.to(() => NearbyCurateScreen());
-              },
-              icon: Icon(Icons.local_hospital, color: Colors.redAccent),
-              label: Text("내 맞춤 병원 찾기", style: TextStyle(color: Colors.black)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18.0),
-                ),
-              ),
-            ),
-          ),
-        ],
+        // actions: [
+        //   // Padding(
+        //   //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        //   //   child: ElevatedButton.icon(
+        //   //     onPressed: () {
+        //   //       Get.to(() => NearbyCurateScreen());
+        //   //     },
+        //   //     icon: Icon(Icons.local_hospital, color: Colors.redAccent),
+        //   //     label: Text("내 맞춤 병원 찾기", style: TextStyle(color: Colors.black)),
+        //   //     style: ElevatedButton.styleFrom(
+        //   //       backgroundColor: Colors.white,
+        //   //       shape: RoundedRectangleBorder(
+        //   //         borderRadius: BorderRadius.circular(18.0),
+        //   //       ),
+        //   //     ),
+        //   //   ),
+        //   // ),
+        // ],
         
       
       ),

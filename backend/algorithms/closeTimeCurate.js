@@ -49,8 +49,8 @@ const getNearestDateInMomentType = async (availableTime, doctorId, leastTime) =>
 
         for (const app of appointments) {
             array.push({
-                stt: DateTime.fromISO(app.appointmentTime),
-                end: DateTime.fromISO(app.appointmentEndAt)
+                stt: DateTime.fromJSDate(app.appointmentTime),
+                end: DateTime.fromJSDate(app.appointmentEndAt)
             });
         }
 
@@ -82,6 +82,8 @@ const getNearestDateInMomentType = async (availableTime, doctorId, leastTime) =>
                 }
             }
         }
+
+        console.log(array);
 
         array.sort((a, b) => {
             return a.stt - b.stt;
