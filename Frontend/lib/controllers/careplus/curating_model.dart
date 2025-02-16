@@ -73,6 +73,7 @@ class Content {
   final MyPsyID myPsyID;
   final String? myProfileImage;
   final DateTime leastTime;
+  final int distance;
 
   Content({
     required this.id,
@@ -80,6 +81,7 @@ class Content {
     required this.myPsyID,
     this.myProfileImage,
     required this.leastTime,
+    required this.distance,
   });
 
   factory Content.fromJson(Map<String, dynamic> json) {
@@ -89,6 +91,7 @@ class Content {
       myPsyID: MyPsyID.fromJson(json['myPsyID']),
       myProfileImage: json['myProfileImage'], //null일 수 있으므로 String? 처리
       leastTime: DateTime.parse(json['leastTime'] as String).toLocal(),
+      distance: int.parse(json['distance']),
     );
   }
 }

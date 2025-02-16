@@ -488,6 +488,7 @@ class _HospitalPopupDialogState extends State<HospitalPopupDialog> {
                             latitude : hospital.myPsyID.address.latitude,
                             doctorId: hospital.id,
                             leastTime: processedLeastTime,
+                            distance: hospital.distance,
                           );
                         },
                       ),
@@ -533,6 +534,7 @@ class HospitalCard extends StatefulWidget {
   final double latitude;
   final String doctorId;
   final DateTime? leastTime;
+  final int distance;
 
   const HospitalCard({
     super.key,
@@ -548,7 +550,8 @@ class HospitalCard extends StatefulWidget {
     required this.longitude,
     required this.latitude,
     required this.doctorId,
-    required this.leastTime
+    required this.leastTime,
+    required this.distance,
   });
 
   @override
@@ -597,14 +600,23 @@ class _HospitalCardState extends State<HospitalCard> with TickerProviderStateMix
       borderRadius: BorderRadius.circular(12),
       border: Border.all(color: Colors.grey.shade300),
     ),
-    child: Row(
+    child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        Text( // todo 텍스트 박스 밖으로 빼내서 별점 찍는 곳 밑에 icon.socialDistance? 랑 같이 박스 없이 plain text로만.
+          widget.distance != int.parse("9999")
+              ? '${widget.distance}m' //todo 디자인수정
+              : '거리가 다소 멉니다.', // 플러터 잘 몰라서 미안합니다... 최대한 정성껏 해 봤어요.
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey[700],
+          ),
+        ),
         Icon(Icons.access_time, size: 18, color: Colors.grey[600]),
         const SizedBox(width: 8),
         Text(
           widget.leastTime != null
-              ? '${DateFormat('yyyy년 M월 d일 HH:mm').format(widget.leastTime!)}' //todo 디자인수정 
+              ? '${DateFormat('yyyy년 M월 d일 HH:mm').format(widget.leastTime!)}' //todo 디자인수정
               : '예약 시각은 DM으로 직접 문의',
           style: TextStyle(
             fontSize: 14,
