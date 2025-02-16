@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc_for_doc/controllers/appointment_controller.dart';
 import 'package:to_doc_for_doc/controllers/curate/curate_controller.dart';
+import 'package:to_doc_for_doc/screen/appointment/appointment_calendar.dart';
 import 'package:to_doc_for_doc/screen/appointment/appointment_listview.dart';
 import 'package:intl/intl.dart';
 
@@ -16,6 +17,10 @@ class _HomeState extends State<Home> {
   CurateController curateController = Get.put(CurateController());
   AppointmentController appController = Get.put(AppointmentController());
   ScrollController scrollController = ScrollController();
+
+  String todayYM = DateFormat.yM().format(DateTime.now());
+  int today = DateTime.now().day;
+
 
   String formatDate(String date) {
     try {
@@ -59,8 +64,10 @@ class _HomeState extends State<Home> {
     return ListView.builder(
       shrinkWrap: true,
       controller: scrollController,
-      itemCount: appController.todayList.length,
+      itemCount: (appController.orderedMap[todayYM] == null) ? 0 : appController.orderedMap[todayYM]?[today].length,
       itemBuilder: (context, index) {
+        var nowApp = appController.appList[appController.orderedMap[todayYM]![today][index]];
+
         return Container(
           padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
           decoration: BoxDecoration(border: BorderDirectional(bottom: BorderSide(color: Colors.grey.shade100))),
@@ -81,15 +88,15 @@ class _HomeState extends State<Home> {
                  // mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(height: 12,),
-                    Text(DateFormat.jm('ko_KR').format(appController.appList[appController.todayList[index]]['appointmentTime']),
+                    Text(DateFormat.jm('ko_KR').format(nowApp.startTime),
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, height: 1),),
-                    Text('~ ${DateFormat.jm('ko_KR').format(appController.appList[appController.todayList[index]]['appointmentEndAt'])} 까지',
+                    Text('~ ${DateFormat.jm('ko_KR').format(nowApp.endTime)} 까지',
                       style: TextStyle(color: Colors.black, fontSize: 12, height: 1),),
                   ],
                 ),
               ),
               SizedBox(width: 10,),
-              Text('${appController.appList[appController.todayList[index]]['user']['usernick']}와의 약속',
+              Text('${nowApp.userNick}와의 약속',
                 style: TextStyle(fontSize: 20),),
             ],
           ),
@@ -166,9 +173,9 @@ class _HomeState extends State<Home> {
                                   ],
                                 ),
                                 SizedBox(height: 5),
-                                Text('${appController.appList[appController.nearAppointment-1]['user']['usernick']}, '
+                                Text('${appController.appList[appController.nearAppointment-1].userNick}, '
                                     '${DateFormat.yMMMEd('ko_KR').add_jm()
-                                    .format(appController.appList[appController.nearAppointment-1]['appointmentTime'])}'),
+                                    .format(appController.appList[appController.nearAppointment-1].startTime)}'),
 
                               ],
                             ),
@@ -233,7 +240,12 @@ class _HomeState extends State<Home> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text('오늘의 예약', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-                            IconButton(onPressed: () {}, icon: Icon(Icons.calendar_month)),
+                            IconButton(
+                              onPressed: () {
+                                Get.to(() => AppointmentCalendar());
+                              },
+                              icon: Icon(Icons.calendar_month)
+                            ),
                           ],
                         ),
                     ),

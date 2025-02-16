@@ -23,7 +23,7 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
     if (index == 0) {
       return true;
     }
-    if ((appointmentController.appList[index-1]['appointmentTime'].day != appointmentController.appList[index]['appointmentTime'].day)) {
+    if ((appointmentController.appList[index-1].startTime.day != appointmentController.appList[index].startTime.day)) {
       return true;
     }
     return false;
@@ -82,9 +82,9 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
               child: Text('확정'),
               onPressed: () async {
 
-                if (await appointmentController.sendAppointmentIsDone(appointmentController.appList[index]['_id'])) {
+                if (await appointmentController.sendAppointmentIsDone(appointmentController.appList[index].id)) {
                   // todo 완료 메세지 추가 필요
-                  appointmentController.appList[index]['hasAppointmentDone'] = true;
+                  appointmentController.appList[index].isDone = true;
                   Navigator.of(context).pop();
                   setState(() {});
                 }
@@ -125,6 +125,8 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
                     controller: scrollController,
                     itemCount: appointmentController.nearAppointment,
                     itemBuilder: (context, index) {
+                      final nowApp = appointmentController.appList[index];
+
                       return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -138,7 +140,7 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
                                       top: BorderSide(color: Colors.grey.shade300),
                                     )
                                 ),
-                                child: Text(DateFormat.yMMMEd('ko_KR').format(appointmentController.appList[index]['appointmentTime'])),
+                                child: Text(DateFormat.yMMMEd('ko_KR').format(nowApp.startTime)),
                               ),
                             ],
 
@@ -151,9 +153,9 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
                                 children: [
                                   Row(
                                     children: [
-                                      Text(DateFormat.jm('ko_KR').format(appointmentController.appList[index]['appointmentTime']), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                                      Text(DateFormat.jm('ko_KR').format(nowApp.startTime), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
                                       SizedBox(width: 10),
-                                      Text('${appointmentController.appList[index]['user']['usernick']}와의 약속' , style: TextStyle(fontSize: 20),),
+                                      Text('${nowApp.userNick}와의 약속' , style: TextStyle(fontSize: 20),),
                                     ],
                                   ),
 
@@ -165,11 +167,11 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
                                         },
                                         child: Wrap (
                                           children: [
-                                            if (appointmentController.appList[index]['hasFeedbackDone']) ... [
-                                              if (appointmentController.appList[index]['feedback']['rating'] == 0) ... [
+                                            if (nowApp.isFeedBackDone) ... [
+                                              if (nowApp.feedback['rating'] == 0) ... [
                                                 SvgPicture.asset('asset/images/emoji/frowning-face.svg', width: 30),
                                               ]
-                                              else if (appointmentController.appList[index]['feedback']['rating'] == 1) ... [
+                                              else if (nowApp.feedback['rating'] == 1) ... [
                                                 SvgPicture.asset('asset/images/emoji/neutral-face.svg', width: 30),
                                               ]
                                               else ... [
@@ -184,16 +186,16 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
 
                                       InkWell(
                                         onTap: () {
-                                          if (appointmentController.appList[index]['hasAppointmentDone']) return;
+                                          if (nowApp.isDone) return;
                                           isReallyAppointmentDoneAlert(context, index);
                                         },
                                         child: Container(
                                           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                                           decoration: BoxDecoration(
-                                              color: (appointmentController.appList[index]['hasAppointmentDone'])? Colors.green : Colors.grey,
+                                              color: (nowApp.isDone)? Colors.green : Colors.grey,
                                               borderRadius: BorderRadius.circular(5)
                                           ),
-                                          child: Text((appointmentController.appList[index]['hasAppointmentDone'])? '완료' : '미완료', style: TextStyle(color: Colors.white)),
+                                          child: Text((nowApp.isDone)? '완료' : '미완료', style: TextStyle(color: Colors.white)),
                                         ),
                                       ),
                                     ],
@@ -223,10 +225,12 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
                       /*if (!widget.appointmentController.appointmentList[index]['isAppointmentApproved']) {
                         return SizedBox(height: 20, child: Text('미승인 약속입니다.'),);
                       }*/
+                      final nowApp = appointmentController.appList[index + appointmentController.nearAppointment];
+
                       return Column(
                         children: [
                           if (checkIfDayChanged(index + appointmentController.nearAppointment)) ... [
-                            Text(DateFormat.yMMMEd('ko_KR').format(appointmentController.appList[index + appointmentController.nearAppointment]['appointmentTime'])),
+                            Text(DateFormat.yMMMEd('ko_KR').format(nowApp.startTime)),
                           ],
                           Container(
                             width: double.infinity,
@@ -234,10 +238,10 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
                             decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.black), top: BorderSide(color: Colors.black),)),
                             child: Column(
                               children: [
-                                Text('예약 ID ${appointmentController.appList[index + appointmentController.nearAppointment]['_id']}'),
-                                Text('유저 ID ${appointmentController.appList[index + appointmentController.nearAppointment]['user']['usernick']}'),
-                                Text('승인 : ${appointmentController.appList[index]['isAppointmentApproved']}'),
-                                Text(DateFormat.yMMMEd('ko_KR').add_jm().format(appointmentController.appList[index + appointmentController.nearAppointment]['appointmentTime'])),
+                                Text('예약 ID ${nowApp.id}'),
+                                Text('유저 ID ${nowApp.userNick}'),
+                                Text('승인 : ${nowApp.isApproved}'),
+                                Text(DateFormat.yMMMEd('ko_KR').add_jm().format(nowApp.startTime)),
                               ],
                             ),
                           ),

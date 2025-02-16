@@ -8,7 +8,7 @@ import 'package:to_doc_for_doc/controllers/appointment_controller.dart';
 class AppointmentDetailScreen extends StatefulWidget {
   const AppointmentDetailScreen({super.key, required this.appointment});
 
-  final Map<String, dynamic> appointment;
+  final Appointment appointment;
 
   @override
   State<AppointmentDetailScreen> createState() => _AppointmentDetailScreenState();
@@ -44,12 +44,12 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
                           Column(
                             children: [
                               //Text('얼마나 좋았나요?'),
-                              if (widget.appointment['feedback']['rating'] == 0) ... [
+                              if (widget.appointment.feedback['rating'] == 0) ... [
                                 SvgPicture.asset('asset/images/emoji/frowning-face.svg', width: 50),
                                 SizedBox(height: 10,),
                                 Text('별로였어요'),
                               ]
-                              else if (widget.appointment['feedback']['rating'] == 1) ... [
+                              else if (widget.appointment.feedback['rating'] == 1) ... [
                                 SvgPicture.asset('asset/images/emoji/neutral-face.svg', width: 50),
                                 SizedBox(height: 10,),
                                 Text('보통이였어요'),
@@ -62,7 +62,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
                               //Text('피드백 내용', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
                             ],
                           ),
-                          Text(widget.appointment['feedback']['content'] ?? '', 
+                          Text(widget.appointment.feedback['content'] ?? '',
                             style: TextStyle(fontSize: 15),),
                         ],
                       ),

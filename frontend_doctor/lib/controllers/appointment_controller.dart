@@ -2,25 +2,69 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import 'auth/auth_interceptor.dart';
 
+class Appointment {
+  DateTime startTime;
+  DateTime endTime;
+  String userNick = '';
+  String userId   = '';
+
+  String id     = '';
+  String chatId = '';
+  bool isApproved     = false;
+  bool isDone         = false;
+  bool isFeedBackDone = false;
+  Map<String, dynamic> feedback = {};
+
+  Appointment({required this.userId, required this.userNick, required this.startTime, required this.endTime,
+    required this.chatId, required this.id, required this.isApproved, required this.isDone, required this.isFeedBackDone, required this.feedback,
+  });
+
+  factory Appointment.simple({required data}) =>
+      Appointment(
+          userId:     data['user']['_id'],
+          userNick:   data['user']['usernick'],
+          startTime:  DateTime.parse(data['appointmentTime']),
+          endTime:    DateTime.parse(data['appointmentEndAt']),
+
+          chatId: '', id: '', feedback: {}, isFeedBackDone: false, isDone: false, isApproved: false
+      );
+
+  factory Appointment.normal({required data}) =>
+      Appointment(
+          userId: data['user']['_id'],
+          userNick: data['user']['usernick'],
+          startTime: DateTime.parse(data['appointmentTime']),
+          endTime: DateTime.parse(data['appointmentEndAt']),
+
+          id: data['_id'],
+          chatId: data['chatId'],
+          isApproved: data['isAppointmentApproved'],
+          isDone: data['hasAppointmentDone'],
+          isFeedBackDone: data['hasFeedbackDone'],
+          feedback: data['feedback'] ?? {},
+      );
+}
 
 class AppointmentController extends GetxController {
   CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
 
-  late List<dynamic> appList;
-
+  //late List<dynamic> appList;
   var isLoading = true.obs;
   var isBeforeAppExist = false;
-
-  List<int> todayList = [];
 
   var nearAppointment = 0;
   var approvedAppointment = -1;
 
   late Map<String, dynamic> appointment;
+  late List<Appointment> appList = [];
+
   late Map<String, dynamic> hospital;
+
+  var orderedMap = <String, List<List<int>>>{};
 
   Future<bool> getAppointmentList() async {
     isLoading.value = true;
@@ -38,29 +82,34 @@ class AppointmentController extends GetxController {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.data);
-      appList = data['content'];
+      //appList = data['content'];
+      appList.clear();
 
       print('APPOINTMENT LIST -------------');
-      print(appList);
+      //print(appList);
 
       if (data['content'].isEmpty) {
         isLoading.value = false;
         return false;
       }
-      appList.sort((a, b) => a['appointmentTime'].compareTo(b['appointmentTime']));
+
+      for (var appointment in data['content']) {
+        Appointment nowApp = Appointment.normal(data: appointment);
+        appList.add(nowApp);
+      }
+      appList.sort((a, b) => a.startTime.compareTo(b.startTime));
 
       var index = 0;
       nearAppointment = 0;
       approvedAppointment = -1;
+      isBeforeAppExist = false;
 
       for (var appointment in appList) {
-        appointment['appointmentTime'] = DateTime.parse(appointment['appointmentTime']).toLocal();
-
-        if (appointment['appointmentTime'].isBefore(DateTime.now())) {
+        if (appointment.startTime.isBefore(DateTime.now())) {
           isBeforeAppExist = true;
           nearAppointment++;
         }
-        else if (appointment['isAppointmentApproved'] && approvedAppointment == -1) {
+        else if (appointment.isApproved && approvedAppointment == -1) {
           approvedAppointment = index;
         }
         index++;
@@ -91,35 +140,46 @@ class AppointmentController extends GetxController {
     );
 
     if (response.statusCode == 200) {
+      orderedMap.clear();
+      appList.clear();
+
       final data = json.decode(response.data);
-      appList = data['content'];
 
       print('APPOINTMENT LIST -------------');
-      print(appList);
 
       if (data['content'].isEmpty) {
         isLoading.value = false;
         return false;
       }
 
-      appList.sort((a, b) => a['appointmentTime'].compareTo(b['appointmentTime']));
 
-      todayList = [];
+      for (var appointment in data['content']) {
+        Appointment nowApp = Appointment.simple(data: appointment);
+        appList.add(nowApp);
+      }
+      appList.sort((a, b) => a.startTime.compareTo(b.startTime));
+
       int i = 0;
       nearAppointment = 0;
       for (var appointment in appList) {
-        appointment['appointmentTime'] = DateTime.parse(appointment['appointmentTime']).toLocal();
-        appointment['appointmentEndAt'] = DateTime.parse(appointment['appointmentEndAt']).toLocal();
+        print(appointment.startTime);
 
-        if (appointment['appointmentTime'].isBefore(DateTime.now())) {
+        var nowYM = DateFormat.yM().format(appointment.startTime);
+        orderedMap.putIfAbsent(nowYM, () => List.generate(32, (_) => List.empty(growable: true), growable: false));
+
+        //print(orderedMap[nowYM]);
+        //print(appointment.startTime.day);
+        orderedMap[nowYM]?[appointment.startTime.day].add(i);
+
+        if (appointment.startTime.isBefore(DateTime.now())) {
           isBeforeAppExist = true;
           nearAppointment++;
         }
-        if (appointment['appointmentTime'].day == DateTime.now().day) {
-          todayList.add(i);
-        }
         i++;
       }
+
+      print(orderedMap);
+
       isLoading.value = false;
       return true;
     }
