@@ -43,7 +43,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
   late ChatSocketService socketService;
 
-  final ChatDatabase chatDb = ChatDatabase();
+  ChatDatabase chatDb = ChatDatabase();
 
   RxBool isLoading = true.obs;
 

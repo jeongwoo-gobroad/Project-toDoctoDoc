@@ -19,12 +19,15 @@ class CurationScreen extends StatefulWidget {
   _CurationScreenState createState() => _CurationScreenState();
 }
 
-class _CurationScreenState extends State<CurationScreen> with SingleTickerProviderStateMixin {
+class _CurationScreenState extends State<CurationScreen>
+    with SingleTickerProviderStateMixin {
   bool isPostExpanded = false;
   bool isAiExpanded = false;
-  final CurateListController curateListController = Get.find<CurateListController>();
+  final CurateListController curateListController =
+      Get.find<CurateListController>();
   final ViewController viewController = Get.find<ViewController>();
-  final AiChatListController aiChatListController = Get.put(AiChatListController());
+  final AiChatListController aiChatListController =
+      Get.put(AiChatListController());
   final ChatController chatController = Get.put(ChatController());
   final UserinfoController userinfoController = Get.find<UserinfoController>();
 
@@ -52,7 +55,8 @@ class _CurationScreenState extends State<CurationScreen> with SingleTickerProvid
       isAiExpanded = !isAiExpanded;
     });
   }
-  Future<void> _onRefresh() async{
+
+  Future<void> _onRefresh() async {
     await curateListController.getPost(widget.currentId);
     setState(() {});
   }
@@ -103,8 +107,7 @@ class _CurationScreenState extends State<CurationScreen> with SingleTickerProvid
         GestureDetector(
           onTap: onToggle,
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
             decoration: BoxDecoration(
               color: backgroundColor ?? Colors.purple[100],
               borderRadius: BorderRadius.circular(8),
@@ -270,8 +273,8 @@ class _CurationScreenState extends State<CurationScreen> with SingleTickerProvid
                   reQuestChat(comment['doctor']['_id']);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple[600],
-                  foregroundColor: Colors.white,
+                  backgroundColor: const Color.fromARGB(255, 225, 234, 205),
+                  foregroundColor: Colors.black,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(
@@ -292,7 +295,9 @@ class _CurationScreenState extends State<CurationScreen> with SingleTickerProvid
 
   void reQuestChat(String doctorId) async {
     await chatController.requestChat(doctorId);
-    Get.to(()=> DMList(controller: chatController,));
+    Get.to(() => DMList(
+          controller: chatController,
+        ));
   }
 
   @override
@@ -303,7 +308,6 @@ class _CurationScreenState extends State<CurationScreen> with SingleTickerProvid
       ),
       body: NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification scrollInfo) {
-          // 스크롤 이벤트 처리
           return true;
         },
         child: RefreshIndicator(
@@ -313,128 +317,313 @@ class _CurationScreenState extends State<CurationScreen> with SingleTickerProvid
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (curateListController.isLoading.value) ...[
-                        Center(child: CircularProgressIndicator()),
-                      ]
-                      else ... [
-                        Text('AI 요약', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
-                        SizedBox(height: 10,),
-                        Text(curateListController.deepCurate),
-                      ],
-                    ],
-                  ),
+                  child: Obx(() {
+                    if (curateListController.isLoading.value) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return Container(
+                      margin: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 225, 234, 205),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.green, width: 1),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: const [
+                              Icon(Icons.auto_awesome,
+                                  color: Color.fromARGB(255, 255, 230, 0)),
+                              SizedBox(width: 8),
+                              Text(
+                                "AI 요약",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            curateListController.deepCurate,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
                 ),
               ),
-
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 포스트 드롭다운
-                      buildExpandableSection(
-                        title: "포스트",
-                        isExpanded: isPostExpanded,
-                        onToggle: togglePostExpansion,
-                        content: Obx(() {
-                          return AnimatedContainer(
-                            duration: const Duration(milliseconds: 800),
-                            curve: Curves.decelerate,
-                            child: AnimatedSize(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.decelerate,
-                              child: isPostExpanded
-                                  ? ListView.builder(
-                                      shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      itemCount: curateListController.posts.length,
+                      GestureDetector(
+                        onTap: togglePostExpansion,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "포스트 ${isPostExpanded ? '숨기기' : '보기 (${curateListController.posts.length})'}",
+                                style: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              Icon(isPostExpanded
+                                  ? Icons.keyboard_arrow_up
+                                  : Icons.keyboard_arrow_down),
+                            ],
+                          ),
+                        ),
+                      ),
+                      AnimatedSize(
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeInOut,
+                        child: ConstrainedBox(
+                          constraints: isPostExpanded
+                              ? const BoxConstraints()
+                              : const BoxConstraints(maxHeight: 0),
+                          child: Obx(() {
+                            final int itemCount =
+                                curateListController.posts.length;
+                            double computedHeight =
+                                (itemCount * 80.0 + 12).clamp(0.0, 300.0);
+                            return Container(
+                              margin: const EdgeInsets.only(top: 12),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[50],
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                    color: Colors.grey[300]!, width: 1),
+                              ),
+                              height: computedHeight,
+                              child: itemCount > 0
+                                  ? ListView.separated(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 12),
+                                      itemCount: itemCount,
+                                      separatorBuilder: (context, index) =>
+                                          Divider(
+                                        color: Colors.grey[400],
+                                        thickness: 1.5,
+                                        indent: 8,
+                                        endIndent: 8,
+                                      ),
                                       itemBuilder: (context, index) {
-                                        final post = curateListController.posts[index];
-                                        return buildListItem(
-                                          id: post['_id'],
-                                          title: post['title'],
-                                          backgroundColor: Colors.purple[50]!,
-                                          onTap: () async {
-                                            await viewController.getFeed(post['_id']);
-                  
-                                            Get.to(() => Pageview());
-                                            //print("${post['title']} 클릭");
-                                          },
+                                        final post =
+                                            curateListController.posts[index];
+                                        return Material(
+                                          color: Colors.transparent,
+
+                                          // onTap: () async {
+                                          //   // 게시물 클릭 시 Feed 정보 불러오기 후 Pageview로 이동
+                                          //   await viewController.getFeed(post['_id']);
+                                          //   Get.to(() => Pageview());
+                                          // },
+                                          child: InkWell(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            splashColor:
+                                                Colors.grey.withOpacity(0.3),
+                                            onTap: () async {
+                                              await viewController
+                                                  .getFeed(post['_id']);
+                                              Get.to(() => Pageview());
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 8),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    post['title'] ?? '제목 없음',
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.black87,
+                                                    ),
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                  const SizedBox(height: 4),
+                                                  Text(
+                                                    post['details'] ?? '',
+                                                    style: const TextStyle(
+                                                      fontSize: 14,
+                                                      color: Colors.black87,
+                                                    ),
+                                                    maxLines: 2,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
                                         );
                                       },
                                     )
-                                  : Container(),
-                            ),
-                          );
-                        }),
-                      ),
-              
-                      //챗
-                      const SizedBox(height: 16),
-              
-                      // AI 챗 섹션
-                      buildExpandableSection(
-                        title: "AI 챗",
-                        isExpanded: isAiExpanded,
-                        onToggle: toggleAiExpansion,
-                        backgroundColor: Colors.blue[100],
-                        content: Obx(() {
-                          return AnimatedSize(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeOutQuart,
-                            child: isAiExpanded
-                                ? ListView.builder(
-                                    shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    itemCount: curateListController.chatList.length,
-                                    itemBuilder: (context, index) {
-                                      final chat = curateListController.chatList[index];
-                                      return buildListItem(
-                                        id: (chat['_id'] != null) ? chat['_id'] : '',
-                                        title: (chat['title'] != null) ? chat['title'] : '빈 제목',
-                                        //subtitle: chat['lastMessage'],
-                                        backgroundColor: Colors.blue[50]!,
-                                        onTap: () async {
-                                          //await viewController.openAiChat(chat['_id']);
-                                          Get.to(() => AiChatOldView(
-                                                chatId: (chat['_id'] != null)? chat['_id'] : '',
-                                                chatTitle: (chat['title'] != null)
-                                                    ? chat['title']
-                                                    : '빈 제목',
-                                              ))?.whenComplete(() {
-                                            setState(() {
-                                              aiChatListController.getChatList();
-                                            });
-                                          });
-                                          print("${chat['title']} AI 챗 클릭됨");
-                                        },
-                                      );
-                                    },
-                                  )
-                                : Container(),
-                          );
-                        }),
-                      ),
-              
-                      //댓글
-                      const SizedBox(height: 24),
-              
-                      // 댓글 섹션
-                      const Text(
-                        "큐레이팅 코멘트",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                                  : const Center(
+                                      child: Text(
+                                        "표시할 게시글이 없습니다.",
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                    ),
+                            );
+                          }),
                         ),
                       ),
-              
                       const SizedBox(height: 16),
+                      GestureDetector(
+                        onTap: toggleAiExpansion,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "AI 챗 ${isAiExpanded ? '숨기기' : '보기 (${curateListController.chatList.length})'}",
+                                style: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              Icon(isAiExpanded
+                                  ? Icons.keyboard_arrow_up
+                                  : Icons.keyboard_arrow_down),
+                            ],
+                          ),
+                        ),
+                      ),
+                      AnimatedSize(
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeInOut,
+                        child: ConstrainedBox(
+                          constraints: isAiExpanded
+                              ? const BoxConstraints()
+                              : const BoxConstraints(maxHeight: 0),
+                          child: Obx(() {
+                            final int itemCount =
+                                curateListController.chatList.length;
+                            double computedHeight =
+                                (itemCount * 80.0 + 12).clamp(0.0, 300.0);
+                            return Container(
+                              margin: const EdgeInsets.only(top: 12),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[50],
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                    color: Colors.grey[300]!, width: 1),
+                              ),
+                              height: computedHeight,
+                              child: itemCount > 0
+                                  ? ListView.separated(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 12),
+                                      itemCount: itemCount,
+                                      separatorBuilder: (context, index) =>
+                                          Divider(
+                                        color: Colors.grey[400],
+                                        thickness: 1.5,
+                                        indent: 8,
+                                        endIndent: 8,
+                                      ),
+                                      itemBuilder: (context, index) {
+                                        final chat = curateListController
+                                            .chatList[index];
+                                        return Material(
+                                          color: Colors.transparent,
+                                          child: InkWell(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            splashColor:
+                                                Colors.grey.withOpacity(0.3),
+                                            onTap: () async {
+                                              Get.to(() => AiChatOldView(
+                                                    chatId: chat['_id'] ?? '',
+                                                    chatTitle:
+                                                        chat['title'] ?? '빈 제목',
+                                                  ))?.whenComplete(() {
+                                                setState(() {
+                                                  aiChatListController
+                                                      .getChatList();
+                                                });
+                                              });
+                                              print(
+                                                  "${chat['title']} AI 챗 클릭됨");
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 8),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    chat['title'] ?? '제목 없음',
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.black87,
+                                                    ),
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                  const SizedBox(height: 4),
+                                                  Text(
+                                                    chat['recentMessage'] ?? '',
+                                                    style: const TextStyle(
+                                                      fontSize: 14,
+                                                      color: Colors.black87,
+                                                    ),
+                                                    maxLines: 2,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : const Center(
+                                      child: Text(
+                                        "표시할 AI 챗이 없습니다.",
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                    ),
+                            );
+                          }),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
                     ],
                   ),
                 ),
@@ -442,22 +631,44 @@ class _CurationScreenState extends State<CurationScreen> with SingleTickerProvid
               Obx(() {
                 if (curateListController.comments.isEmpty) {
                   return SliverToBoxAdapter(
-                    child: const Text(
-                      "코멘트가 없습니다.",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 32),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(color: Colors.grey[300]!, width: 1),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(Icons.comment, size: 48, color: Colors.grey),
+                          SizedBox(height: 8),
+                          Text(
+                            "댓글이 존재하지 않습니다.",
+                            style: TextStyle(fontSize: 14, color: Colors.grey),
+                          ),
+                        ],
                       ),
                     ),
                   );
                 } else {
-                  return SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final comment = curateListController.comments[index];
-                        return buildCommentCard(comment, index);
-                      },
-                      childCount: curateListController.comments.length,
+                  return SliverToBoxAdapter(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(color: Colors.grey[300]!, width: 1),
+                        ),
+                      ),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: curateListController.comments.length,
+                        itemBuilder: (context, index) {
+                          final comment = curateListController.comments[index];
+                          return buildCommentCard(comment, index);
+                        },
+                      ),
                     ),
                   );
                 }

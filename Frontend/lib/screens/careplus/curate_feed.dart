@@ -207,8 +207,8 @@ class _CurateFeedState extends State<CurateFeed> {
                           ),
                         ],
                       ),
-                      onTap: () {
-                        curateListController.getPost(item.id);
+                      onTap: () async{
+                        await curateListController.getPost(item.id);
                         Get.to(() => CurationScreen(currentId: item.id));
                       },
                     ),
