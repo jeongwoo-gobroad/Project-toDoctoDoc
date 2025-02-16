@@ -21,7 +21,6 @@ class _HomeState extends State<Home> {
   String todayYM = DateFormat.yM().format(DateTime.now());
   int today = DateTime.now().day;
 
-
   String formatDate(String date) {
     try {
       DateTime dateTime = DateTime.parse(date).toUtc().add(Duration(hours: 9));
@@ -189,14 +188,8 @@ class _HomeState extends State<Home> {
                           },
                           child: Container(
                             padding: EdgeInsets.fromLTRB(0, 50, 20, 0),
-                            width: MediaQuery
-                                .of(context)
-                                .size
-                                .width - 320,
-                            decoration: BoxDecoration(
-                                border: Border(
-                                    left: BorderSide(color: Colors.grey))
-                            ),
+                            width: MediaQuery.of(context).size.width - 320,
+                            decoration: BoxDecoration(border: Border(left: BorderSide(color: Colors.grey))),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
@@ -249,40 +242,8 @@ class _HomeState extends State<Home> {
                           ],
                         ),
                     ),
-                    //SizedBox(width: 30, height: 200,),
 
-                    // 기존 일자 리스트
                     makeAppointmentList(),
-
-                    // 더보기 버튼
-                   /*
-                   Container(
-                      width : double.infinity,
-                      padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                      decoration: BoxDecoration(
-                        border: BorderDirectional(top: BorderSide(color: Colors.grey.shade300)),
-                      ),
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                            shape: const RoundedRectangleBorder(),
-                        ),
-                        onPressed: () {
-                          if (appointmentController.isLoading.value) {
-                            return;
-                          }
-                          Get.to(()=>AppointmentListview());
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('더보기', style: TextStyle(fontSize: 15, color: Colors.grey),),
-                            Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 15,),
-                          ],
-                        ),
-                      ),
-                    ),
-                    */
-              
                   ],
                 ),
               ),

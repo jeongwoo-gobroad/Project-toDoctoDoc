@@ -40,11 +40,9 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   late ChatAppointmentController chatAppointmentController = Get.put(ChatAppointmentController(userId: widget.userId, chatId: widget.chatId));
   final AppointmentController appointmentController = Get.put(AppointmentController());
   ChatController chatController = Get.put(ChatController());
-
   late ChatSocketService socketService;
 
   ChatDatabase chatDb = ChatDatabase();
-
   RxBool isLoading = true.obs;
 
   late int updateUnread;
@@ -101,7 +99,6 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       },
     );
   }
-
   void parseAndStoreChats() {
     print('parseAndStore');
     List<dynamic> chatsJson = chatController.chatContents;

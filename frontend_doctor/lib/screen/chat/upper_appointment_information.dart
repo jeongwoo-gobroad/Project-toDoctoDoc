@@ -22,14 +22,11 @@ class _UpperAppointmentInformationState extends State<UpperAppointmentInformatio
 
   void getAppointment(Timer timer) {
     print('reload appointment');
-    if(mounted){
-      appointmentController.getAppointmentInformation(widget.chatId);
-      setState(() {    });
-    }
-
     if (!mounted) {
       _timer.cancel();
     }
+    appointmentController.getAppointmentInformation(widget.chatId);
+    setState(() {    });
   }
 
   void cancelTimer() {
@@ -62,7 +59,7 @@ class _UpperAppointmentInformationState extends State<UpperAppointmentInformatio
           child: Column(
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Row(children: [
                     Icon(Icons.calendar_month),
@@ -70,13 +67,13 @@ class _UpperAppointmentInformationState extends State<UpperAppointmentInformatio
                       style: TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold),),
                   ],),
-                  Text(DateFormat.yMMMEd('ko_KR').add_jm().format(
-                      appointmentController.appointmentTime.value),
-                    style: TextStyle(fontSize: 15,),),
+
                 ],
               ),
               SizedBox(height:5),
               //Text('${appointmentController.appointmentId} : 약속 ID', style: TextStyle(fontSize: 10),),
+              Text('${DateFormat.yMMMEd('ko_KR').add_Hm().format(appointmentController.appointmentTime.value)} ~ ${DateFormat.Hm('ko_KR').format(appointmentController.appointmentEndTime.value)}',
+                style: TextStyle(fontSize: 15,),),
 
               if (appointmentController.appointmentTime.value.isAfter(DateTime.now())) ... [
                 if (!appointmentController.isAppointmentApproved.value) ...[

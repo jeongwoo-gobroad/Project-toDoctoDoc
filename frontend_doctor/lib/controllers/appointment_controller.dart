@@ -27,8 +27,8 @@ class Appointment {
       Appointment(
           userId:     data['user']['_id'],
           userNick:   data['user']['usernick'],
-          startTime:  DateTime.parse(data['appointmentTime']),
-          endTime:    DateTime.parse(data['appointmentEndAt']),
+          startTime:  DateTime.parse(data['appointmentTime']).toLocal(),
+          endTime:    DateTime.parse(data['appointmentEndAt']).toLocal(),
 
           chatId: '', id: '', feedback: {}, isFeedBackDone: false, isDone: false, isApproved: false
       );
@@ -37,8 +37,8 @@ class Appointment {
       Appointment(
           userId: data['user']['_id'],
           userNick: data['user']['usernick'],
-          startTime: DateTime.parse(data['appointmentTime']),
-          endTime: DateTime.parse(data['appointmentEndAt']),
+          startTime: DateTime.parse(data['appointmentTime']).toLocal(),
+          endTime: DateTime.parse(data['appointmentEndAt']).toLocal(),
 
           id: data['_id'],
           chatId: data['chatId'],
@@ -55,7 +55,6 @@ class AppointmentController extends GetxController {
   //late List<dynamic> appList;
   var isLoading = true.obs;
   var isBeforeAppExist = false;
-
   var nearAppointment = 0;
   var approvedAppointment = -1;
 
@@ -65,6 +64,10 @@ class AppointmentController extends GetxController {
   late Map<String, dynamic> hospital;
 
   var orderedMap = <String, List<List<int>>>{};
+
+  DateTime focusedDay = DateTime.now();
+  DateTime selectedDay = DateTime.now();
+
 
   Future<bool> getAppointmentList() async {
     isLoading.value = true;
@@ -168,7 +171,7 @@ class AppointmentController extends GetxController {
         orderedMap.putIfAbsent(nowYM, () => List.generate(32, (_) => List.empty(growable: true), growable: false));
 
         //print(orderedMap[nowYM]);
-        //print(appointment.startTime.day);
+        print(appointment.startTime.day);
         orderedMap[nowYM]?[appointment.startTime.day].add(i);
 
         if (appointment.startTime.isBefore(DateTime.now())) {

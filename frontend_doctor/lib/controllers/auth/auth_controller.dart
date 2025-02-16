@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:to_doc_for_doc/controllers/auth/auth_secure.dart';
 import 'package:to_doc_for_doc/controllers/auth/doctor_info_controller.dart';
 

@@ -23,8 +23,6 @@ class UserinfoController extends GetxController {
 
   CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
 
-
-
   Future<void> getInfo() async {
     Dio dio = Dio();
     dio.interceptors.add(customInterceptor);

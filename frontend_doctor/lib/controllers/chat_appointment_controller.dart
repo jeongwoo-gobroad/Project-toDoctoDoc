@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc_for_doc/controllers/auth/auth_interceptor.dart';
 
-import '../socket_service/chat_socket_service.dart';
-
 class ChatAppointmentController extends GetxController {
   ChatAppointmentController({required this.userId, required this.chatId});
   CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
@@ -15,6 +13,7 @@ class ChatAppointmentController extends GetxController {
 
   DateTime initialDay = DateTime.now();
   TimeOfDay initialTime = TimeOfDay.now();
+  TimeOfDay initialEndTime = TimeOfDay.now();
 
   late String appointmentId = 'load';
 
@@ -22,7 +21,8 @@ class ChatAppointmentController extends GetxController {
   final String userId;
 
   var temptime;
-  late  Rx<DateTime> appointmentTime = DateTime(0).obs;
+  late Rx<DateTime> appointmentTime = DateTime(0).obs;
+  late Rx<DateTime> appointmentEndTime = DateTime(0).obs;
 
    RxBool isAppointmentExisted = false.obs;
    RxBool isAppointmentDone = false.obs;
@@ -56,12 +56,14 @@ class ChatAppointmentController extends GetxController {
           return true;
         }
 
-        isAppointmentExisted.value = true;
 
         appointmentId = data['content']['_id'];
         appointmentTime.value = DateTime.parse(data['content']['appointmentTime']).toLocal();
+        appointmentEndTime.value = DateTime.parse(data['content']['appointmentEndAt']).toLocal();
+
         isAppointmentApproved.value = data['content']['isAppointmentApproved'];
         isAppointmentDone.value = data['content']['hasAppointmentDone'];
+
 
         print(isAppointmentApproved);
         print(isAppointmentDone);
@@ -70,8 +72,12 @@ class ChatAppointmentController extends GetxController {
         print('USER ID--------------------- $userId');
         print('APPOINTMENT TIME------------ ${appointmentTime.value}');
 
-        //initialDay  = DateTime(appointmentTime.year,appointmentTime.month,appointmentTime.day);
-        //initialTime = TimeOfDay(hour: appointmentTime.hour, minute: appointmentTime.minute);
+        isAppointmentExisted.value = true;
+        isLoading.value = false;
+
+        initialDay  = DateTime(appointmentTime.value.year,appointmentTime.value.month,appointmentTime.value.day);
+        initialTime = TimeOfDay(hour: appointmentTime.value.hour, minute: appointmentTime.value.minute);
+        initialEndTime = TimeOfDay(hour: appointmentEndTime.value.hour, minute: appointmentEndTime.value.minute);
       }
       else if (response.statusCode == 201) {
         isAppointmentExisted.value = false;
@@ -122,6 +128,7 @@ class ChatAppointmentController extends GetxController {
 
         initialDay  = DateTime(selectedDay.year,selectedDay.month,selectedDay.day);
         initialTime = TimeOfDay(hour: selectedDay.hour, minute: selectedDay.minute);
+        initialEndTime = TimeOfDay(hour: endTime.hour, minute: endTime.minute);
 
         return true;
 
@@ -161,20 +168,17 @@ class ChatAppointmentController extends GetxController {
 
       if (response.statusCode == 200) {
         print('SUCCESS');
-
         isLoading.value = true;
 
-        initialDay = DateTime.now();
-        initialTime = TimeOfDay.now();
+        initialDay     = DateTime.now();
+        initialTime    = TimeOfDay.now();
+        initialEndTime = TimeOfDay.now();
 
         isLoading.value = false;
         return true;
-
       } else {
-
         return false;
       }
-
     } catch (error) {
       print('An error occurred: $error');
       return false;
@@ -211,8 +215,9 @@ class ChatAppointmentController extends GetxController {
         print('SUCCESS');
 
         isLoading.value = true;
-        initialDay  = DateTime(appointmentTime.value.year,appointmentTime.value.month,appointmentTime.value.day);
-        initialTime = TimeOfDay(hour: appointmentTime.value.hour, minute: appointmentTime.value.minute);
+        initialDay  = DateTime(selectedDay.year,selectedDay.month,selectedDay.day);
+        initialTime = TimeOfDay(hour: selectedDay.hour, minute: selectedDay.minute);
+        initialEndTime = TimeOfDay(hour: endTime.hour, minute: endTime.minute);
 
         return true;
       } else {
