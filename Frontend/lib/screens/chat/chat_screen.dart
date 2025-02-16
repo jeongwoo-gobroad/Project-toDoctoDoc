@@ -17,7 +17,16 @@ import '../../auth/auth_secure.dart';
 import '../intro.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key, required this.chatId, required this.unreadMsg, required this.doctorName, required this.doctorId, required this.autoIncrementId, this.fromCurate = false, this.curateId}) : super(key:key);
+  const ChatScreen(
+      {Key? key,
+      required this.chatId,
+      required this.unreadMsg,
+      required this.doctorName,
+      required this.doctorId,
+      required this.autoIncrementId,
+      this.fromCurate = false,
+      this.curateId})
+      : super(key: key);
   final String chatId;
   final int unreadMsg;
   final String doctorName;
@@ -31,18 +40,19 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
-  late ChatAppointmentController chatAppointmentController = Get.put(ChatAppointmentController());
-  final ChatController chatController = Get.put(ChatController());
+  late ChatAppointmentController chatAppointmentController =
+      Get.put(ChatAppointmentController());
+  final ChatController chatController = Get.find<ChatController>();
 
   final ScrollController _scrollController = ScrollController();
   late ChatSocketService socketService;
   final ChatDatabase chatDb = ChatDatabase();
   late int lastAutoIncrementID;
   RxBool isLoading = true.obs;
-
+  bool isSocketConnected = false;
   late int updateUnread;
   late bool isAppointment;
-  late int autoIncrement; 
+  late int autoIncrement;
 
   List<ChatObject> _messageList = [];
 
@@ -55,57 +65,53 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       );
     });
   }
-  void parseAndStoreChats() {
 
-    print('parseAndStore');
+  Future<void> parseAndStoreChats() async {
+    print('--밀린채팅을 messageList에 add하는 과정--');
     List<dynamic> chatsJson = chatController.chatContents;
-    
-    print(chatsJson);
 
-     for (var chatData in chatsJson) {
+    //print(chatsJson);
+
+    for (var chatData in chatsJson) {
       DateTime time;
       // DateTime 객체로 변환
       //DateTime messageTime = DateTime.parse(chatData['createdAt']);
       var tempTime = chatData['createdAt'];
-      if(tempTime is String){
-       time = DateTime.parse(chatData['createdAt']).toLocal();
+      if (tempTime is String) {
+        time = DateTime.parse(chatData['createdAt']).toLocal();
+      } else {
+        time = DateTime.fromMillisecondsSinceEpoch(tempTime);
       }
-      else{
-      time = DateTime.fromMillisecondsSinceEpoch(tempTime);
-      }
-      print('hello $chatData');
+      print('밀린 채팅 목록: $chatData');
       // messageList에 추가
-      _messageList.add(
-        ChatObject(
+      _messageList.add(ChatObject(
           content: chatData['message'],
           role: chatData['role'],
-          createdAt: time.toLocal()
-        )
-      );
-      chatDb.saveChat(widget.chatId, widget.doctorId, chatData['message'], time, chatData['role']);
+          createdAt: time.toLocal()));
+      chatDb.saveChat(widget.chatId, widget.doctorId, chatData['message'], time,
+          chatData['role']);
     }
-  
-}
+  }
+
   void asyncBefore() async {
     SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
     String? token = await storage.readAccessToken();
 
     if (token == null) {
       print('TOKEN ERROR ----------- [NULL ACCESS TOKEN]');
-      Get.offAll(()=>Intro());
+      Get.offAll(() => Intro());
     }
 
     print(token);
-    socketService = ChatSocketService(token!, widget.chatId);
-
-    //채팅창 진입시 Db에서 마지막 id 불러옴
-    //lastAutoIncrementID = await chatDb.getLastReadId(widget.chatId);
-
-    //print('안 읽은 개수: ${widget.autoIncrementId - lastAutoIncrementID}');
-
-    //updateUnread 전달달 widget.autoIncrementId - lastAutoIncrementId;
-
-    //print('chat screen');
+    socketService = ChatSocketService(token!, widget.chatId, onConnected: () {
+      print("소켓이 성공적으로 연결되었습니다!");
+      setState(() {
+        isSocketConnected = true;
+      });
+      if (widget.fromCurate) {
+        _sendAutoMessage();
+      }
+    });
     var chatData = await chatDb.loadChat(widget.chatId);
 
     if (chatData != null) {
@@ -113,23 +119,21 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       print(chatData);
 
       for (var chat in chatData) {
-        print(chat);
-        _messageList.add(ChatObject(content: chat['message'],
+        _messageList.add(ChatObject(
+            content: chat['message'],
             role: chat['role'],
             createdAt: DateTime.parse(chat['timestamp']).toLocal()));
       }
     }
     //enterChat으로 받는 인자들 db에 삽입
-    if(widget.unreadMsg != 0){
-    parseAndStoreChats();
-
+    if (widget.unreadMsg != 0) {
+      await parseAndStoreChats();
     }
     if (this.mounted) {
       setState(() {
         animateToBottom();
       });
     }
-
 
     // TODO 예전 채팅 폰에 저장된 거 불러 오기
 
@@ -144,7 +148,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         print(data);
         chatData = json.decode(data);
         // if(chatData['role'] == 'user'){
-          
+
         //   return;
         // }
         print(chatData['message']);
@@ -154,19 +158,30 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
         if (this.mounted) {
           setState(() {
-            _messageList.add(ChatObject(content: chatData['message'], role: role, createdAt: time.toLocal()));
-            chatDb.saveChat(widget.chatId, widget.doctorId, chatData['message'], time, role);
-          
+            _messageList.add(ChatObject(
+                content: chatData['message'],
+                role: role,
+                createdAt: time.toLocal()));
+            chatDb.saveChat(widget.chatId, widget.doctorId, chatData['message'],
+                time, role);
+
             print('autoIncrement: $autoIncrement');
             animateToBottom();
           });
         }
       });
     });
-
   }
 
-
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.paused) {
+      //chatscreen 라이프사이클 변경시 호출
+      await chatDb.updateLastReadId(widget.chatId,
+              chatController.serverAutoIncrementMap[widget.chatId] ?? 0);
+      print("앱 백그라운드 전환: lastreadId 업데이트");
+    }
+  }
 
   @override
   void initState() {
@@ -180,15 +195,23 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     autoIncrement = widget.autoIncrementId;
     isLoading.value = false;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.fromCurate) {
-        _sendAutoMessage();
-      }
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (widget.fromCurate) {
+    //     _sendAutoMessage();
+    //   }
+    // });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _scrollController.dispose();
+    socketService.onDisconnect();
+    super.dispose();
   }
 
   void _sendAutoMessage() async {
-  await Future.delayed(Duration(seconds: 3)); //3초 하드코딩은 수정해야함 
+    await Future.delayed(Duration(seconds: 1)); //3초 하드코딩은 수정해야함
     if (mounted && widget.fromCurate && widget.curateId != null) {
       final message = '큐레이팅 요청입니다. curateId: ${widget.curateId}';
       socketService.sendMessage(message);
@@ -199,36 +222,31 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final messageController = TextEditingController();
 
-     void sendText(String value) {
-       socketService.sendMessage(value);
-       messageController.clear();
-
-      //  setState(() {
-      //    _messageList.add(ChatObject(content: value, role: 'user', createdAt: DateTime.now()));
-      //    print(_messageList);
-      //  });
-
-      //  DateTime now = DateTime.now().toUtc();
-      //  chatDb.saveChat(widget.chatId, widget.doctorId, value, now, 'user');
-      //  animateToBottom();
-     }
+    void sendText(String value) {
+      socketService.sendMessage(value);
+      messageController.clear();
+    }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.doctorName, style: TextStyle(fontWeight: FontWeight.bold),),
+        title: Text(
+          widget.doctorName,
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         //centerTitle: true,
         shape: Border(bottom: BorderSide(color: Colors.grey.withAlpha(50))),
       ),
       body: PopScope(
         onPopInvokedWithResult: (didPop, result) async {
           await chatController.getChatList();
-          print('popped: ${chatController.serverAutoIncrementId}');
-          await chatDb.updateLastReadId(widget.chatId, chatController.serverAutoIncrementId.value);
+          print(
+              '채팅방 종료 시 serverAutoIncrementId: ${chatController.serverAutoIncrementMap[widget.chatId]}');
+          await chatDb.updateLastReadId(widget.chatId,
+              chatController.serverAutoIncrementMap[widget.chatId] ?? 0);
           socketService.onDisconnect();
         },
         child: Column(
           children: [
-
             // 약속 알람 //
             Obx(() {
               if (chatAppointmentController.isLoading.value) {
@@ -242,12 +260,15 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
               if (isLoading.value) {
                 return const Center(child: CircularProgressIndicator());
               }
-              return makeChatList(messageList: _messageList, scrollController: _scrollController, updateUnread: updateUnread,);
+              return makeChatList(
+                messageList: _messageList,
+                scrollController: _scrollController,
+                updateUnread: updateUnread,
+              );
             }),
 
             Padding(
               padding: const EdgeInsets.all(8.0),
-
               child: TextField(
                 maxLines: null,
                 controller: messageController,
@@ -261,8 +282,8 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                   fillColor: Color.fromARGB(255, 244, 242, 248),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(40),
-                      borderSide: BorderSide(width: 0, style: BorderStyle.none)
-                  ),
+                      borderSide:
+                          BorderSide(width: 0, style: BorderStyle.none)),
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 10,
@@ -274,8 +295,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                           sendText(messageController.text);
                         }
                       },
-                      icon: Icon(Icons.arrow_circle_right_outlined, size: 45)
-                  ),
+                      icon: Icon(Icons.arrow_circle_right_outlined, size: 45)),
                 ),
               ),
             ),

@@ -49,6 +49,7 @@ class ChatController extends GetxController{
 
   int lastReadId = 0;
   RxInt serverAutoIncrementId = 0.obs;
+  RxMap<String, int> serverAutoIncrementMap = <String, int>{}.obs;
   Future<void> getChatList() async {
     Dio dio = Dio();
     dio.interceptors.add(customInterceptor);
@@ -75,6 +76,7 @@ class ChatController extends GetxController{
       // print(data['content']['recentChat']['role'].toString());
       // print(data['content']['recentChat']['message'].toString());
       for (var chat in data['content']) {
+        String cid = chat['cid'];
         Map<String, dynamic> temp = {
           'role' : chat['recentChat']['role'].toString(),
           'message' : chat['recentChat']['message'].toString(),
@@ -84,8 +86,12 @@ class ChatController extends GetxController{
         };
 
 
-        serverAutoIncrementId.value = chat['recentChat']['autoIncrementId'];
-        print('serverAutoIncremented: ${serverAutoIncrementId}');
+        // serverAutoIncrementId.value = chat['recentChat']['autoIncrementId'];
+        // print('serverAutoIncremented: ${chat['recentChat']['autoIncrementId']}');
+
+        int autoInc = chat['recentChat']['autoIncrementId'];
+        serverAutoIncrementMap[cid] = autoInc;
+        print('serverAutoIncrement for $cid: $autoInc');
         
         // //lastReadId = await chatDatabase.getLastReadId(chat['cid']); //기존 불러오기
         // print('lastreadId : ${lastReadId}');

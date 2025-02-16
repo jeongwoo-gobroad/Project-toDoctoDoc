@@ -32,6 +32,7 @@ class _CurateMainState extends State<CurateMain> {
   void goToChatScreen(chat) async {
     //print(chat.chatId);
     //linkTest();
+    print('enter chat : ${chat.cid}');
     int lastAutoIncrementID;
     lastAutoIncrementID = await chatDb.getLastReadId(chat.cid);
     int unread = chat.recentChat['autoIncrementId'] - lastAutoIncrementID;
@@ -331,6 +332,7 @@ class _CurateMainState extends State<CurateMain> {
                           child: ListView.builder(
                             itemBuilder: (context, index) {
                               final chat = chatController.chatList[index];
+                              print(chat.cid);
                               //final formattedDate = DateFormat('MM/dd HH:mm').format(chat.date.toLocal());
                               // final commentCount = curateList['comments']?.length ?? 0;
 

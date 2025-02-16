@@ -18,7 +18,7 @@ class ChatSocketService {
 
   var chatMap;
 
-  ChatSocketService(String token, String chatId) {
+  ChatSocketService(String token, String chatId, {Function? onConnected}) {
     ischatFetchLoading.value = true;
 
     try {
@@ -38,6 +38,9 @@ class ChatSocketService {
         print('Socket 연결 성공');
         ischatFetchLoading.value = false;
         socket.emit('chatList', null);
+         if (onConnected != null) {
+          onConnected();
+        }
       });
 
       socket.onError((error) {

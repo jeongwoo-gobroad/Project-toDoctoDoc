@@ -19,7 +19,7 @@ class _DMListState extends State<DMList> {
   final ChatDatabase chatDb = ChatDatabase();
 
   void goToChatScreen(chat) async {
-    print("최신 id: ${widget.controller.serverAutoIncrementId}");
+    print("최신 id: ${chat.cid}");
 
     int lastAutoIncrementID;
     lastAutoIncrementID = await chatDb.getLastReadId(chat.cid);
@@ -137,7 +137,9 @@ class _DMListState extends State<DMList> {
                             if (!snapshot.hasData) {
                               return const SizedBox();
                             }
+                            print(chat.cid);
                             int lastAutoIncrementID = snapshot.data!;
+                            print(lastAutoIncrementID);
                             int unread = chat.recentChat['autoIncrementId'] - lastAutoIncrementID;
                             if (unread > 0) {
                               return Container(
