@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
+import 'package:to_doc/controllers/careplus/curate_list_model.dart';
 import 'package:to_doc/controllers/careplus/curating_model.dart';
 import 'dart:convert';
 import 'package:to_doc/controllers/userInfo_controller.dart';
@@ -17,8 +18,44 @@ class CurateListController extends GetxController {
 
   CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
   UserinfoController userinfoController = Get.put(UserinfoController());
-
+  RxBool curateLoading = false.obs;
   String deepCurate = 'null';
+  List<CurateItem> curateList = <CurateItem>[].obs;
+  Future<void> getCurateList(int sort, int amount, String last_id) async {
+    curateLoading.value = true;
+    Dio dio = Dio();
+    dio.interceptors.add(customInterceptor);
+    
+    
+
+    final response = await dio.get(
+      '${Apis.baseUrl}mapp/v2/user/curate/list?sort=$sort&amount=$amount&last_id=$last_id',
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          'accessToken': 'true',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.data);
+      
+      print(data);
+
+      List<CurateItem> contentItems = parseCurateContent(data);
+
+      if(last_id.isEmpty){
+        //초기라는뜻
+        curateList.assignAll(contentItems);
+
+      }else{
+        curateList.addAll(contentItems);
+      }
+      curateLoading.value = false;
+    }
+  }
+
 
   Future<void> getList() async {
     isLoading.value = true;
@@ -190,6 +227,14 @@ class CurateListController extends GetxController {
   RxBool curateFinished = false.obs;
   RxString curateId = "".obs;
 
+
+  var CurateListNew = <Map<String, dynamic>>[].obs;
+  var chatListNew   = <Map<String, dynamic>>[].obs;
+  var commentsNew   = <Map<String, dynamic>>[].obs;
+  var postsNew      = <Map<String, dynamic>>[].obs;
+  String deepCurateNew = 'null';
+
+
   Future<void> requestCurateNew() async {
     curateFinished.value = false;
     Dio dio = Dio();
@@ -212,8 +257,33 @@ class CurateListController extends GetxController {
       final data = json.decode(response.data);
       print(data);
       curateId.value = data['content']['_id'];
-      print(curateId.value);
-      //print(content);
+
+      if (data['content'] == null) {
+        curateFinished.value = true;
+        return;
+      }
+
+      deepCurateNew = 'AI 요약이 없습니다';
+      if (data['content']['posts'] is List) {
+        postsNew.value = (data['content']['posts'] as List)
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+      }
+      if (data['content']['ai_chats'] is List) {
+        chatListNew.value = (data['content']['ai_chats'] as List)
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+      }
+      if (data['content']['comments'] is List) {
+        commentsNew.value = (data['content']['comments'] as List)
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+      }
+      if (data['content']['deepCurate'] != null) {
+        deepCurateNew = data['content']['deepCurate'];
+        print(deepCurateNew);
+      }
+;
       curateFinished.value = true;
     }
     curateFinished.value = true;
@@ -238,6 +308,63 @@ class CurateListController extends GetxController {
       final data = json.decode(response.data);
       print(data);
       
+    }
+  }
+
+  Future<void> curateMakePublic(String curateId) async {
+  
+    Dio dio = Dio();
+    dio.interceptors.add(customInterceptor);
+
+    final response = await dio.patch(
+      '${Apis.baseUrl}mapp/v2/user/curate/makePublic/$curateId',
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          'accessToken': 'true',
+        },
+      ),
+    );
+   
+    if (response.statusCode == 200) {
+      final data = json.decode(response.data);
+      print(data);
+      int index = curateList.indexWhere((item) => item.id == curateId);
+      if (index != -1) {
+        curateList[index] = curateList[index].copyWith(isPublic: true);
+      }
+      
+    }
+    else if(response.statusCode == 203){
+      Get.snackbar('오류', '이미 공개된 게시글입니다.');
+    }
+  }
+
+  Future<void> curateMakePrivate(String curateId) async {
+  
+    Dio dio = Dio();
+    dio.interceptors.add(customInterceptor);
+
+    final response = await dio.patch(
+      '${Apis.baseUrl}mapp/v2/user/curate/makePrivate/$curateId',
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          'accessToken': 'true',
+        },
+      ),
+    );
+   
+    if (response.statusCode == 200) {
+      final data = json.decode(response.data);
+      print(data);
+      int index = curateList.indexWhere((item) => item.id == curateId);
+      if (index != -1) {
+        curateList[index] = curateList[index].copyWith(isPublic: false);
+      }
+    }
+    else if(response.statusCode == 203){
+      Get.snackbar('오류', '이미 비공개 게시글입니다.');
     }
   }
 }

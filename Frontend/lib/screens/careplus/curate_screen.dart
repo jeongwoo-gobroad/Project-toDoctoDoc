@@ -22,7 +22,7 @@ class CurationScreen extends StatefulWidget {
 class _CurationScreenState extends State<CurationScreen> with SingleTickerProviderStateMixin {
   bool isPostExpanded = false;
   bool isAiExpanded = false;
-  final CurateListController curateListController = Get.put(CurateListController());
+  final CurateListController curateListController = Get.find<CurateListController>();
   final ViewController viewController = Get.find<ViewController>();
   final AiChatListController aiChatListController = Get.put(AiChatListController());
   final ChatController chatController = Get.put(ChatController());

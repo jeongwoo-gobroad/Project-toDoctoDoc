@@ -574,18 +574,19 @@ class _HospitalCardState extends State<HospitalCard> with TickerProviderStateMix
         content: Text("의사 ${widget.name}에게 큐레이팅 요청을 하시겠습니까?"),
         actions: [
           ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color.fromARGB(255, 225, 234, 205)),
             onPressed: () {
               
               Get.back();
               goToChatScreen();
             },
-            child: const Text("예"),
+            child: const Text("예", style: TextStyle(color: Colors.black),),
           ),
           TextButton(
             onPressed: () {
               Get.back();
             },
-            child: const Text("아니요"),
+            child: const Text("아니요", style: TextStyle(color: Colors.black),),
           ),
         ],
       ),

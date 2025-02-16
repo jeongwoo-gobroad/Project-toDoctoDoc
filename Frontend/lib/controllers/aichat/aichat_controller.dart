@@ -85,7 +85,7 @@ class AiChatController extends GetxController{
       print('CHAT LIMIT $data');
       chats.value = data['content']['chats'];
 
-      DateTime serverDate = DateTime.parse(data['content']['userDate']);
+      DateTime serverDate = DateTime.parse(data['content']['userDate']).toLocal();
       DateTime today = DateTime.now();
       print(serverDate);
       print(today);

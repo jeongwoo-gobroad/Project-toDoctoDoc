@@ -122,6 +122,7 @@ class ChatController extends GetxController{
     print('enter chat');
     Dio dio = Dio();
     dio.interceptors.add(customInterceptor);
+    
     String strvalue = value.toString();
     //print(strvalue);
     final response = await dio.get(
@@ -142,7 +143,7 @@ class ChatController extends GetxController{
       chatContents.value = data['content'];
       print(chatContents);
 
-
+      
       // //chatList.value = [];
       // // print(data['content']['recentChat']['role'].toString());
       // // print(data['content']['recentChat']['message'].toString());

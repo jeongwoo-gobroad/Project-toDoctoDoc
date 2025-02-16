@@ -82,7 +82,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       } else {
         time = DateTime.fromMillisecondsSinceEpoch(tempTime);
       }
-      print('밀린 채팅 목록: $chatData');
+      //print('밀린 채팅 목록: $chatData');
       // messageList에 추가
       _messageList.add(ChatObject(
           content: chatData['message'],
@@ -134,6 +134,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
         animateToBottom();
       });
     }
+  
 
     // TODO 예전 채팅 폰에 저장된 거 불러 오기
 
