@@ -105,7 +105,7 @@ class _HomeState extends State<Home> {
   final List<String> queryQuotes = [
     '무엇이 당신을 힘들게 하나요?',
     '당신의 걱정거리는 무엇인가요?',
-    '고민거리를 입력해주세요.',
+    '마음속의 부정적인 감정을 털어놓으세요.',
   ];
 
   ChatController chatController = Get.put(ChatController());
@@ -185,7 +185,7 @@ class _HomeState extends State<Home> {
             ),
           ),
           body: isLoading
-              ? Center(child: CircularProgressIndicator()) //아직 갱신안됐으면 로딩창띄움움
+              ? Center(child: CircularProgressIndicator()) //아직 갱신안됐으면 로딩창띄움
               : Column(
                   children: [
                     Expanded(
@@ -200,9 +200,13 @@ class _HomeState extends State<Home> {
                               children: [
                                 SizedBox(height: 50),
 
-                                Icon(
-                                  Icons.circle_outlined,
-                                  size: 100,
+                                // Icon(
+                                //   Icons.circle_outlined,
+                                //   size: 100,
+                                // ),
+                                Image.asset('asset/images/intro.png',
+                                  width: 200,
+                                  height: 200,
                                 ),
           
                                 SizedBox(height: 50),

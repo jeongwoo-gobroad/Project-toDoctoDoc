@@ -114,6 +114,7 @@ flutter:
    - asset/images/image7.jpg
    - asset/images/emoji/
    - asset/db/chat_database.db
+   - asset/images/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
