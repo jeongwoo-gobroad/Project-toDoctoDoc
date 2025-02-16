@@ -37,7 +37,7 @@ router.post(["/query"],
                     "messages": [
                         {
                             "role": "developer",
-                            "content": "너는 전문 심리 상담사이고, 걱정할 필요가 없다는 것을 가능한 한 긍정적으로, 밝고 긍정적인 어휘를 써서, 한국어 경어체로 말해줘야 해"
+                            "content": process.env.OPENAI_PROMPT,
                         },
                         {
                             "role": "user",

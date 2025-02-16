@@ -105,7 +105,7 @@ const ifDailyChatNotExceededThenProceed = async (req, res, next) => {
     
             return;
         } else {
-            // limits.dailyChatCount += 1;
+            limits.dailyChatCount += 1;
     
             try {
                 next();
