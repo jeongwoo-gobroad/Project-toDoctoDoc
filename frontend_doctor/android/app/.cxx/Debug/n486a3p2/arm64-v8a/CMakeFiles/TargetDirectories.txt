@@ -1,2 +1,0 @@
-D:/SynologyDrive/_Main Archive/_University Materials/_myProject/Project_toDoctoDoc_workingFolder/Project-toDoctoDoc_PC/frontend_doctor/android/app/.cxx/Debug/n486a3p2/arm64-v8a/CMakeFiles/edit_cache.dir
-D:/SynologyDrive/_Main Archive/_University Materials/_myProject/Project_toDoctoDoc_workingFolder/Project-toDoctoDoc_PC/frontend_doctor/android/app/.cxx/Debug/n486a3p2/arm64-v8a/CMakeFiles/rebuild_cache.dir

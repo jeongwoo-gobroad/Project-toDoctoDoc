@@ -91,7 +91,7 @@ class Content {
       myPsyID: MyPsyID.fromJson(json['myPsyID']),
       myProfileImage: json['myProfileImage'], //null일 수 있으므로 String? 처리
       leastTime: DateTime.parse(json['leastTime'] as String).toLocal(),
-      distance: json['distance'],
+      distance: int.parse(json['distance']),
     );
   }
 }

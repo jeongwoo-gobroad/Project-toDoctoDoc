@@ -17,7 +17,7 @@ const tagCountRefreshWorksViaRedis = async (newTags) => {
 
     for (const tag of tags) {
         if (prev.has(tag)) {
-            const val = prev.get(tag);
+            let val = prev.get(tag);
             val.tagCount++;
             
             if (val.tagCount > maxTagCount) {
@@ -51,7 +51,7 @@ const tagCountRefreshWorksViaRedis = async (newTags) => {
 const viewCountRefreshWorksViaRedis = async (currentTags) => {
     const tagLine = removeSpacesAndHashes(currentTags);
     const tags = tagLine.split(",");
-    const redis = new Redis();
+    let redis = new Redis();
 
     await redis.connect();
 
@@ -64,7 +64,7 @@ const viewCountRefreshWorksViaRedis = async (currentTags) => {
 
     for (const tag of tags) {
         if (prev.has(tag)) {
-            const val = prev.get(tag);
+            let val = prev.get(tag);
             val.viewCount++;
             
             if (val.viewCount > maxViewCount) {
