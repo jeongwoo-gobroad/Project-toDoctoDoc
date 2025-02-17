@@ -7,6 +7,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:to_doc/Database/chat_database.dart';
 import 'package:to_doc/auth/auth_dio.dart';
+import 'package:to_doc/controllers/careplus/chat_controller.dart';
 import 'package:to_doc/controllers/userInfo_controller.dart';
 import 'package:to_doc/controllers/view_controller.dart';
 import 'package:to_doc/screens/intro.dart';
@@ -31,6 +32,7 @@ void main() async{
 
   Get.put(CustomInterceptor());
   Get.put(UserinfoController(), permanent: true);
+  Get.put(ChatController(), permanent: true);
   Get.put(ViewController(), permanent: true);
 
 

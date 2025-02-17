@@ -89,8 +89,8 @@ class ChatDatabase {
     await db.insert('chat_messages', <String, dynamic>{'room_id':chatId, 'doctor_id':doctorId, 'message': message, 'timestamp': time.toString(), 'role': role});
 
     var i = await db.rawQuery('SELECT * from chat_messages');
-    print('QUERY SaveChat function');
-    print(i.toString());
+    //print('QUERY SaveChat function');
+    // print(i.toString());
   }
 
   loadChat(String chatId) async {

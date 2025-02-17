@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -53,9 +54,28 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   late int updateUnread;
   late bool isAppointment;
   late int autoIncrement;
-
+  RxBool isParsing = false.obs;
+    bool autoMessageSent = false;
   List<ChatObject> _messageList = [];
 
+  Future<List<ChatObject>> parseChats(List<dynamic> chatsJson) async {
+  List<ChatObject> messages = [];
+  for (var chatData in chatsJson) {
+    DateTime time;
+    var tempTime = chatData['createdAt'];
+    if (tempTime is String) {
+      time = DateTime.parse(tempTime).toLocal();
+    } else {
+      time = DateTime.fromMillisecondsSinceEpoch(tempTime);
+    }
+    messages.add(ChatObject(
+      content: chatData['message'],
+      role: chatData['role'],
+      createdAt: time,
+    ));
+  }
+  return messages;
+}
   animateToBottom() {
     Future.delayed(Duration(milliseconds: 100), () {
       _scrollController.animateTo(
@@ -68,29 +88,49 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
 
   Future<void> parseAndStoreChats() async {
     print('--밀린채팅을 messageList에 add하는 과정--');
+    isParsing.value = true;
     List<dynamic> chatsJson = chatController.chatContents;
-
+      List<ChatObject> parsedMessages = await compute(parseChats, chatsJson);
     //print(chatsJson);
-
-    for (var chatData in chatsJson) {
-      DateTime time;
-      // DateTime 객체로 변환
-      //DateTime messageTime = DateTime.parse(chatData['createdAt']);
-      var tempTime = chatData['createdAt'];
-      if (tempTime is String) {
-        time = DateTime.parse(chatData['createdAt']).toLocal();
-      } else {
-        time = DateTime.fromMillisecondsSinceEpoch(tempTime);
+      for (var chat in parsedMessages) {
+    await chatDb.saveChat(
+      widget.chatId,
+      widget.doctorId,
+      chat.content,
+      chat.createdAt!,
+      chat.role,
+    );
+  }
+    // for (var chatData in chatsJson) {
+    //   DateTime time;
+    //   // DateTime 객체로 변환
+    //   //DateTime messageTime = DateTime.parse(chatData['createdAt']);
+    //   var tempTime = chatData['createdAt'];
+    //   if (tempTime is String) {
+    //     time = DateTime.parse(chatData['createdAt']).toLocal();
+    //   } else {
+    //     time = DateTime.fromMillisecondsSinceEpoch(tempTime);
+    //   }
+    //   //print('밀린 채팅 목록: $chatData');
+    //   // messageList에 추가
+    //   _messageList.add(ChatObject(
+    //       content: chatData['message'],
+    //       role: chatData['role'],
+    //       createdAt: time.toLocal()));
+    //   chatDb.saveChat(widget.chatId, widget.doctorId, chatData['message'], time,
+    //       chatData['role']);
+    // }
+    setState(() {
+    _messageList.addAll(parsedMessages);
+    });
+    isParsing.value = false;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (isSocketConnected && widget.fromCurate) {
+        _sendAutoMessage();
       }
-      //print('밀린 채팅 목록: $chatData');
-      // messageList에 추가
-      _messageList.add(ChatObject(
-          content: chatData['message'],
-          role: chatData['role'],
-          createdAt: time.toLocal()));
-      chatDb.saveChat(widget.chatId, widget.doctorId, chatData['message'], time,
-          chatData['role']);
-    }
+      animateToBottom();
+    });
+      
   }
 
   void asyncBefore() async {
@@ -107,16 +147,22 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       print("소켓이 성공적으로 연결되었습니다!");
       setState(() {
         isSocketConnected = true;
+          
       });
-      if (widget.fromCurate) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+
+      if (isSocketConnected && widget.fromCurate) {
         _sendAutoMessage();
       }
+
+      
+    });
     });
     var chatData = await chatDb.loadChat(widget.chatId);
 
     if (chatData != null) {
       print('NOT NULL');
-      print(chatData);
+      //print(chatData);
 
       for (var chat in chatData) {
         _messageList.add(ChatObject(
@@ -129,11 +175,14 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     if (widget.unreadMsg != 0) {
       await parseAndStoreChats();
     }
-    if (this.mounted) {
-      setState(() {
-        animateToBottom();
-      });
-    }
+    if (mounted) {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    // if (widget.fromCurate && widget.unreadMsg == 0 && isSocketConnected) {
+    //   _sendAutoMessage();
+    // }
+    animateToBottom();
+  });
+}
   
 
     // TODO 예전 채팅 폰에 저장된 거 불러 오기
@@ -222,7 +271,15 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final messageController = TextEditingController();
-
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (!autoMessageSent &&
+    //       widget.fromCurate &&
+    //       isSocketConnected &&
+    //       !isParsing.value) {
+    //     _sendAutoMessage();
+    //     autoMessageSent = true;
+    //   }
+    // });
     void sendText(String value) {
       socketService.sendMessage(value);
       messageController.clear();
@@ -246,60 +303,69 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
               chatController.serverAutoIncrementMap[widget.chatId] ?? 0);
           socketService.onDisconnect();
         },
-        child: Column(
+        child: Stack(
           children: [
-            // 약속 알람 //
-            Obx(() {
-              if (chatAppointmentController.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              return UpperAppointmentInform(chatId: widget.chatId);
-            }),
-
-            // 채팅 리스트 //
-            Obx(() {
-              if (isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              return makeChatList(
-                messageList: _messageList,
-                scrollController: _scrollController,
-                updateUnread: updateUnread,
-              );
-            }),
-
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                maxLines: null,
-                controller: messageController,
-                onSubmitted: (value) {
-                  if (value.isNotEmpty) {
-                    sendText(value);
+            Column(
+              children: [
+                Obx(() {
+                  if (chatAppointmentController.isLoading.value) {
+                    return const Center(child: CircularProgressIndicator());
                   }
-                },
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 244, 242, 248),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(40),
-                      borderSide:
-                          BorderSide(width: 0, style: BorderStyle.none)),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
-                  hintText: '메시지를 입력하세요',
-                  suffixIcon: IconButton(
-                      onPressed: () {
-                        if (messageController.text.isNotEmpty) {
-                          sendText(messageController.text);
-                        }
-                      },
-                      icon: Icon(Icons.arrow_circle_right_outlined, size: 45)),
+                  return UpperAppointmentInform(chatId: widget.chatId);
+                }),
+                Expanded(
+                  child: Obx(() {
+                    if (isLoading.value) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return makeChatList(
+                      messageList: _messageList,
+                      scrollController: _scrollController,
+                      updateUnread: updateUnread,
+                    );
+                  }),
                 ),
-              ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    maxLines: null,
+                    controller: messageController,
+                    onSubmitted: (value) {
+                      if (value.isNotEmpty) {
+                        sendText(value);
+                      }
+                    },
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Color.fromARGB(255, 244, 242, 248),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(40),
+                          borderSide: BorderSide(width: 0, style: BorderStyle.none)),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
+                      hintText: '메시지를 입력하세요',
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          if (messageController.text.isNotEmpty) {
+                            sendText(messageController.text);
+                          }
+                        },
+                        icon: Icon(Icons.arrow_circle_right_outlined, size: 45),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
+            //파싱작업때 중앙로딩딩
+            Obx(() => isParsing.value
+                ? Container(
+                    color: const Color.fromARGB(255, 234, 232, 232),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                : SizedBox()),
           ],
         ),
       ),
