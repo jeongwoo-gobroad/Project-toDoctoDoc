@@ -118,4 +118,8 @@ class UserinfoController extends GetxController {
     }
     return false;
   }
+
+
+  
+  
 }

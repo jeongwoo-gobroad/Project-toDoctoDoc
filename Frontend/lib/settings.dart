@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:to_doc/controllers/userInfo_controller.dart';
 import 'package:to_doc/screens/graph_tag_list.dart';
 import 'package:to_doc/screens/user_edit.dart';
+import 'package:to_doc/withdrawal_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -48,6 +49,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
             },
             contentPadding: EdgeInsets.zero,
           ),
+           SizedBox(height: 20),
+            _buildSectionTitle('계정 관리'),
+            ListTile(
+              title: Text(
+                '탈퇴하기',
+                style: TextStyle(fontSize: 16, color: Colors.grey,),
+
+              ),
+              //trailing: Icon(Icons.arrow_forward_ios, size: 18, color: Colors.red),
+              onTap: () {
+                Get.to(()=> WithdrawalScreen());
+              },
+              contentPadding: EdgeInsets.zero,
+            ),
            
           ],
         ),

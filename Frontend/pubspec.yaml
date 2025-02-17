@@ -115,6 +115,7 @@ flutter:
    - asset/images/emoji/
    - asset/db/chat_database.db
    - asset/images/
+   - asset/images/kakao_login_large_wide.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

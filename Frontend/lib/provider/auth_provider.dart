@@ -5,7 +5,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:to_doc/auth/auth_dio.dart';
 
 import '../auth/auth_secure.dart';
 import '../device_info.dart';
@@ -18,7 +20,7 @@ class AuthProvider extends ChangeNotifier{
   String? _pushToken;
 
   final Dio dio;
-
+  CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
   AuthProvider({required this.dio});
 
   Future<Map<String, dynamic>> login(String userid, String password, bool autoLogin, bool firstLogin) async{
@@ -122,4 +124,28 @@ class AuthProvider extends ChangeNotifier{
     }
   }
 
+  Future<bool> withdrawalAccount() async {
+
+    Dio dio = Dio();
+    dio.interceptors.add(customInterceptor);
+
+    final response = await dio.delete(
+      '${Apis.baseUrl}mapp/v2/user/accountManagement/memberDelete',
+      options:
+        Options(headers: {
+          'Content-Type':'application/json',
+          'accessToken': 'true',
+        },
+      ),
+    );
+
+
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.data}');
+    if (response.statusCode == 200) {
+      await storage.deleteEveryToken();
+      return true;
+    }
+    return false;
+  }
 }

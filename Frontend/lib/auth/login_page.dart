@@ -8,7 +8,6 @@ import 'package:to_doc/home.dart';
 import 'package:to_doc/navigation_menu.dart';
 import 'package:to_doc/provider/auth_provider.dart';
 
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -17,7 +16,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
   final authProvider = Get.put(AuthProvider(dio: Dio()));
   final UserinfoController user = Get.find<UserinfoController>();
   final TextEditingController idController = TextEditingController(); //추후 수정
@@ -28,26 +26,34 @@ class _LoginPageState extends State<LoginPage> {
   //테스트용
   RegisterController registerController = Get.put(RegisterController());
 
-  _submit(bool autologin) async{
+  _submit(bool autologin) async {
     print('login test');
 
     //await registerController.dupidCheck(idController.text);
     Map result = await authProvider.login(
       idController.text,
       pwController.text,
-      autologin, true,
+      autologin,
+      true,
     );
-    if(result['success'] == true){
+    if (result['success'] == true) {
       print('test succ');
       Get.snackbar('Login', '로그인에 성공하였습니다.');
       user.getInfo();
-      Get.offAll(()=> NavigationMenu(startScreen : 0));
-    }
-    else{
+      Get.offAll(() => NavigationMenu(startScreen: 0));
+    } else {
       Get.snackbar('Login', '로그인에 실패하였습니다.',
-      backgroundColor: const Color.fromARGB(255, 217, 107, 99), barBlur: 100, boxShadows: List.filled(3, BoxShadow(blurRadius: BorderSide.strokeAlignOutside)), 
-      colorText: Colors.white);
+          backgroundColor: const Color.fromARGB(255, 217, 107, 99),
+          barBlur: 100,
+          boxShadows: List.filled(
+              3, BoxShadow(blurRadius: BorderSide.strokeAlignOutside)),
+          colorText: Colors.white);
     }
+  }
+
+  _kakaoLogin() {
+    print('카카오 로그인 시도');
+    Get.snackbar('카카오', '추후구현');
   }
 
   @override
@@ -62,12 +68,10 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 60),
-                
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    
-                  ],
+                  children: [],
                 ),
                 const SizedBox(height: 40),
                 // Login Form
@@ -86,7 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color:Color(0xFF1D4044),
+                          color: Color(0xFF1D4044),
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -131,25 +135,30 @@ class _LoginPageState extends State<LoginPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Text('자동 로그인',style: TextStyle(fontSize:15),),
-                          Checkbox(value: _autoLogin, onChanged: (bool? value) {
-                            setState(() {
-                              _autoLogin = value!;
-                            });
-                          }),
+                          Text(
+                            '자동 로그인',
+                            style: TextStyle(fontSize: 15),
+                          ),
+                          Checkbox(
+                              value: _autoLogin,
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  _autoLogin = value!;
+                                });
+                              }),
                         ],
                       ),
-
 
                       SizedBox(
                         width: double.infinity,
                         height: 48,
                         child: ElevatedButton(
-
                           onPressed: () => _submit(_autoLogin),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(255, 212, 212, 212),
-                            foregroundColor: const Color.fromARGB(255, 35, 40, 35),
+                            backgroundColor:
+                                const Color.fromARGB(255, 212, 212, 212),
+                            foregroundColor:
+                                const Color.fromARGB(255, 35, 40, 35),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -159,18 +168,29 @@ class _LoginPageState extends State<LoginPage> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              
                             ),
                           ),
                         ),
                       ),
-                    ],),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: InkWell(
+                          onTap: _kakaoLogin,
+                          child: Image.asset(
+                            'asset/images/kakao_login_large_wide.png',
+                            //fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ],),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 }
-  

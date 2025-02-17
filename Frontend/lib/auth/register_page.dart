@@ -40,6 +40,10 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController extraController = TextEditingController();
 
   RegisterController registerController = Get.put(RegisterController());
+  _kakaoLogin() {
+    print('카카오 로그인 시도');
+    Get.snackbar('카카오', '추후구현');
+  }
 
   _submit() async{
 
@@ -395,6 +399,18 @@ class _RegisterPageState extends State<RegisterPage> {
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: InkWell(
+                          onTap: _kakaoLogin,
+                          child: Image.asset(
+                            'asset/images/kakao_login_large_wide.png',
+                            //fit: BoxFit.cover,
                           ),
                         ),
                       ),
