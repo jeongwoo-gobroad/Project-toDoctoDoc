@@ -140,16 +140,6 @@ router.get(["/view/:id"],
             //     post.views++;
             //     await post.save();
             // }
-            if (!(await redis.doesHashContains("VIEW:" + req.userid, post._id))) {
-                viewCountRefreshWorksViaRedis(post.tag);
-
-                post.views++;
-                await post.save();
-
-                // setSetForNDays("VIEW:" + req.userid, post._id, 1);
-                redis.setHashValueWithTTL("VIEW:" + req.userid, post._id, 1, 1);
-                // console.log("Set cache");
-            }
 
             const pageContent = {
                 postid: post._id,
@@ -166,6 +156,17 @@ router.get(["/view/:id"],
             };
 
             res.status(200).json(returnResponse(false, "view", pageContent));
+
+            if (!(await redis.doesHashContains("VIEW:" + req.userid, post._id))) {
+                viewCountRefreshWorksViaRedis(post.tag);
+
+                post.views++;
+                await post.save();
+
+                // setSetForNDays("VIEW:" + req.userid, post._id, 1);
+                await redis.setHashValueWithTTL("VIEW:" + req.userid, post._id, 1, 1);
+                // console.log("Set cache");
+            }
 
             redis.closeConnnection();
             redis = null;

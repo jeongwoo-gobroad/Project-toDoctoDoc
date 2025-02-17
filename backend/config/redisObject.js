@@ -100,7 +100,6 @@ class Redis {
             await this.redisClient.hExpire(key.toString(), field.toString(), process.env.ONE_DAY_TO_SECONDS * parseInt(days));
             await this.redisClient.expire(key.toString(), process.env.ONE_DAY_TO_SECONDS * parseInt(days));
             
-
             return;
         } catch (error) {
             console.error(error, "errorAtSetHashValueWithTTL");
