@@ -297,7 +297,7 @@ class _HomeState extends State<Home> {
                                     if (queryController.text.isNotEmpty) {
                                       query.queryLimit();
                                       query.sendQuery(queryController.text);
-                                      Get.to(() => Airesult());
+                                      Get.to(() => Airesult(title : queryController.text));
                                     }
                                   },
                                   icon: Icon(Icons.arrow_circle_right_outlined,
