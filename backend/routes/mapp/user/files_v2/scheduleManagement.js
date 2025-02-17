@@ -24,7 +24,7 @@ router.post(["/manage"],
                 await initSchedule(req.userid, false, false);
             }
 
-            const mySchedule = await Schedule.findOne({userid: req.userid});
+            const mySchedule = await Schedule.findOne({userid: req.userid, isDoctor: false, isCounselor: false});
 
             mySchedule.availableTime = myList;
 
@@ -47,7 +47,7 @@ router.get(["/mine"],
     checkIfLoggedIn,
     async (req, res, next) => {
         try {
-            const mySchedule = await Schedule.findOne({userid: req.userid});
+            const mySchedule = await Schedule.findOne({userid: req.userid, isDoctor: false, isCounselor: false});
 
             if (!mySchedule) {
                 res.status(201).json(returnResponse(false, "noScheduleSetYet", "-"));

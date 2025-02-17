@@ -76,6 +76,7 @@ dm_doctor.on('connect', require("./routes/mapp/doctor/files/dm_MQ"));
 app.use(cors());
 
 app.use("/", require("./routes/main"));
+app.use("/", require("./routes/accountDeletion"));
 app.use("/admin", require("./routes/adminAccount")); 
 app.use("/admin", require("./routes/admin_premiumify_psy"));
 app.use("/admin", require("./routes/admin_register_doctor_to_psy"));
