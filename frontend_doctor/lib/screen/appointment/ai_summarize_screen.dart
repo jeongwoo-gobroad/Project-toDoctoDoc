@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:to_doc_for_doc/controllers/AIassistant/ai_assistant_controller.dart';
+import 'package:to_doc_for_doc/controllers/appointment_controller.dart';
 
 class AiSummarizeScreen extends StatefulWidget {
   const AiSummarizeScreen({super.key});
@@ -11,6 +13,10 @@ class AiSummarizeScreen extends StatefulWidget {
 
 class _AiSummarizeScreenState extends State<AiSummarizeScreen> {
   AiAssistantController aiController = Get.put(AiAssistantController());
+  AppointmentController appController = Get.find<AppointmentController>();
+
+  String todayYM = DateFormat.yM().format(DateTime.now());
+  int today = DateTime.now().day;
 
   void asyncBefore() async {
     aiController.loadDailySummary();
@@ -33,12 +39,14 @@ class _AiSummarizeScreenState extends State<AiSummarizeScreen> {
       builder: (BuildContext context, ScrollController scrollController) {
         return Wrap(children: [
           Container(
-            height: 410,
+            margin: EdgeInsets.symmetric(horizontal: 20),
+            height: MediaQuery.of(context).size.height/2,
             width: double.infinity,
             decoration: const BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.all(
-                Radius.circular(20),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
               ),
             ),
             child: Column(
@@ -79,33 +87,28 @@ class _AiSummarizeScreenState extends State<AiSummarizeScreen> {
 
                 Container(
                   decoration: BoxDecoration(
-                    color: (aiController.isDailySumRemain.value)? Colors.blue : Colors.grey,
+                    color: (aiController.isDailySumRemain.value && (appController.isTodayAppExist.value))? Colors.blue : Colors.grey,
                   ),
                   child: TextButton(
-                    onPressed: () async  {
-                      if (!aiController.isDailySumRemain.value) {
-                        return;
-                      }
-
+                    onPressed: (!appController.isTodayAppExist.value || !aiController.isDailySumRemain.value) ? null : () async  {
                       await aiController.dailySummation();
                       setState(() {});
                     },
                     style: TextButton.styleFrom(
                         minimumSize: Size.zero,
-                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         alignment: Alignment.bottomRight,
                       //textStyle: TextStyle(color: Colors.white),
-
-
                     ),
-                    child: SizedBox(
-                      width: 150,
+                    child: Container(
+                      //padding: EdgeInsets.symmetric(horizontal: 5),
+                      width: 170,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.auto_awesome, color: Colors.white,),
-                          Text('새 요약 받기', style: TextStyle(fontSize: 20, color: Colors.white),),
+                          Text(' 요약 업데이트 ', style: TextStyle(fontSize: 20, color: Colors.white),),
                           Text('${aiController.dailySumCount.value}/${aiController.dailySumLimit}', style: TextStyle(fontSize: 15, color: Colors.white),),
                         ],
                       ),

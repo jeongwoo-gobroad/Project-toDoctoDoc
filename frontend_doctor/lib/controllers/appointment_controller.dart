@@ -53,6 +53,11 @@ class AppointmentController extends GetxController {
   CustomInterceptor customInterceptor = Get.find<CustomInterceptor>();
 
   //late List<dynamic> appList;
+  String todayYM = DateFormat.yM().format(DateTime.now());
+  int today = DateTime.now().day;
+
+  var isTodayAppExist = false.obs;
+
   var isLoading = true.obs;
   var isBeforeAppExist = false;
   var nearAppointment = 0;
@@ -118,6 +123,9 @@ class AppointmentController extends GetxController {
         index++;
       }
 
+      if (orderedMap[todayYM]![today].isNotEmpty) {
+        isTodayAppExist.value = true;
+      }
       print(nearAppointment);
       isLoading.value = false;
       return true;
@@ -182,6 +190,10 @@ class AppointmentController extends GetxController {
       }
 
       print(orderedMap);
+
+      if (orderedMap[todayYM]![today].isNotEmpty) {
+        isTodayAppExist.value = true;
+      }
 
       isLoading.value = false;
       return true;

@@ -258,6 +258,7 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
         title: Text('내 일정'),
       ),
       body: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           calendarWidget(),
           SizedBox(height: 20,),
@@ -271,21 +272,22 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
                   style: TextStyle(fontSize: 20),
                 ),
 
-                if (nowAppList.isEmpty) ... [
-                  SizedBox(height: 50,),
-                  Center(child: Text('약속이 없습니다.', style: TextStyle(fontSize: 20),))
-                ]
-                else ... [
-                  SingleChildScrollView(
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height - 521,
-                      child: appointmentList()
-                    ),
-                  )
-                ]
+
               ],
             ),
           ),
+
+          if (nowAppList.isEmpty) ... [
+            SizedBox(height: 50,),
+            Center(child: Text('약속이 없습니다.', style: TextStyle(fontSize: 20),))
+          ]
+          else ... [
+            Flexible(
+              child: SingleChildScrollView(
+                child: appointmentList(),
+              ),
+            )
+          ]
         ],
       )
     );

@@ -194,7 +194,7 @@ class _AppointmentBottomSheet extends State<AppointmentBottomSheet> with Widgets
             DateFormat.yMMM('ko_KR').format(date),
       ),
 
-      focusedDay: (chatAppController.isAppointmentExisted.value)? chatAppController.appointmentTime.value : _selectedDay,
+      focusedDay: (chatAppController.isAppointmentExisted.value && (chatAppController.appointmentTime.value.isAfter(DateTime.now())))? chatAppController.appointmentTime.value : DateTime.now(),
       firstDay: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
       lastDay: DateTime(DateTime.now().year + 2),
 

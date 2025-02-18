@@ -49,7 +49,7 @@ class _HomeState extends State<Home> {
     return ListView.builder(
       shrinkWrap: true,
       controller: scrollController,
-      itemCount: (appController.orderedMap[todayYM] == null) ? 0 : appController.orderedMap[todayYM]?[today].length,
+      itemCount: (!appController.isTodayAppExist.value) ? 0 : appController.orderedMap[todayYM]?[today].length,
       itemBuilder: (context, index) {
         var nowApp = appController.appList[appController.orderedMap[todayYM]![today][index]];
 

@@ -181,6 +181,10 @@ class AiAssistantController extends GetxController {
       return true;
     }
     else if (response.statusCode == 201){
+      //Get.snackbar('오류', '오늘은 약속이 존재하지 않습니다.');
+
+
+
       isLoading.value = false;
       return false;
     }

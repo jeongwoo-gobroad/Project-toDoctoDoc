@@ -5,7 +5,6 @@ import 'package:to_doc/controllers/careplus/appointment_controller.dart';
 import 'package:to_doc/screens/careplus/appointment_listview.dart';
 import 'package:to_doc/screens/appointment/appointment_detail_screen.dart';
 import 'package:to_doc/screens/careplus/curate_preview.dart';
-import 'package:to_doc/screens/careplus/nearby_curate_screen.dart';
 
 import '../../controllers/careplus/chat_controller.dart';
 import '../../controllers/careplus/curate_list_controller.dart';

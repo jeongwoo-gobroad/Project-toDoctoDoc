@@ -91,6 +91,13 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
           actions: [
             TextButton(
               onPressed: () async {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              child: Text('취소', style: TextStyle(color:Colors.grey),),
+            ),
+            TextButton(
+              onPressed: () async {
                 if (await chatAppointmentController.deleteAppointment()) {
                   // todo 삭제 완료 메세지 추가 필요
                   setState(() {});
@@ -526,9 +533,12 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
             ListTile(
               leading: Icon(Icons.calendar_today),
               title: Text('약속 관리'),
-              onTap: () {
-                
-                Navigator.pop(context);
+              onTap: () async {
+/*                if (chatAppointmentController.isAppointmentExisted.value && chatAppointmentController.appointmentTime.value.isBefore(DateTime.now())) {
+                  await appointmentMustBeDoneAlert(context);
+                }
+                setAppointmentDay();
+                Navigator.pop(context);*/
               },
             ),
             ListTile(
