@@ -73,7 +73,7 @@ class Content {
   final MyPsyID myPsyID;
   final String? myProfileImage;
   final DateTime leastTime;
-  final int distance;
+  final String distance;
 
   Content({
     required this.id,
@@ -91,7 +91,7 @@ class Content {
       myPsyID: MyPsyID.fromJson(json['myPsyID']),
       myProfileImage: json['myProfileImage'], //null일 수 있으므로 String? 처리
       leastTime: DateTime.parse(json['leastTime'] as String).toLocal(),
-      distance: int.parse(json['distance']),
+       distance: json['distance'] is String ? json['distance'] : json['distance'].toString(),
     );
   }
 }

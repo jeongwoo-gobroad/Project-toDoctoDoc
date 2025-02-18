@@ -534,7 +534,7 @@ class HospitalCard extends StatefulWidget {
   final double latitude;
   final String doctorId;
   final DateTime? leastTime;
-  final int distance;
+  final String distance;
 
   const HospitalCard({
     super.key,
@@ -593,40 +593,55 @@ class _HospitalCardState extends State<HospitalCard> with TickerProviderStateMix
     );
   }
   Widget _buildReservationTime() {
-  return Container(
-    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-    margin: const EdgeInsets.symmetric(vertical: 8),
-    decoration: BoxDecoration(
-      color: Colors.grey[100],
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: Colors.grey.shade300),
-    ),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text( // todo 텍스트 박스 밖으로 빼내서 별점 찍는 곳 밑에 icon.socialDistance? 랑 같이 박스 없이 plain text로만.
-          widget.distance != int.parse("9999")
-              ? '${widget.distance}m' //todo 디자인수정
-              : '거리가 다소 멉니다.', // 플러터 잘 몰라서 미안합니다... 최대한 정성껏 해 봤어요.
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[700],
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.social_distance, size: 18, color: Colors.grey[600]),
+          const SizedBox(width: 4),
+          Text(
+            widget.distance != "9999"
+                ? '${widget.distance}m'
+                : '거리가 다소 멉니다.',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[700],
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(width: 4),
+       IntrinsicWidth(
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.grey[100],
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.access_time, size: 18, color: Colors.grey[600]),
+              const SizedBox(width: 8),
+              Text(
+                widget.leastTime != null
+                    ? '${DateFormat('yyyy년 M월 d일 HH:mm').format(widget.leastTime!)}'
+                    : '예약 시각은 DM으로 직접 문의',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[700],
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
         ),
-        Icon(Icons.access_time, size: 18, color: Colors.grey[600]),
-        const SizedBox(width: 8),
-        Text(
-          widget.leastTime != null
-              ? '${DateFormat('yyyy년 M월 d일 HH:mm').format(widget.leastTime!)}' //todo 디자인수정
-              : '예약 시각은 DM으로 직접 문의',
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[700],
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    ),
+      ),
+    ],
   );
 }
   openHospitalDetailView(BuildContext context, Map<String, dynamic> hospital) {

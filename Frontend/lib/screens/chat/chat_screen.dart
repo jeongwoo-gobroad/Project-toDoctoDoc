@@ -18,6 +18,7 @@ import '../../auth/auth_secure.dart';
 import '../intro.dart';
 
 class ChatScreen extends StatefulWidget {
+  
   const ChatScreen(
       {Key? key,
       required this.chatId,
@@ -41,11 +42,13 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
+  
   late ChatAppointmentController chatAppointmentController =
       Get.put(ChatAppointmentController());
   final ChatController chatController = Get.find<ChatController>();
 
   final ScrollController _scrollController = ScrollController();
+  bool _showScrollToBottom = false;
   late ChatSocketService socketService;
   final ChatDatabase chatDb = ChatDatabase();
   late int lastAutoIncrementID;
@@ -74,10 +77,11 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       createdAt: time,
     ));
   }
+  _messageList.addAll(messages);
   return messages;
 }
   animateToBottom() {
-    Future.delayed(Duration(milliseconds: 100), () {
+    Future.delayed(Duration(milliseconds: 300), () {
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
         duration: Duration(milliseconds: 300),
@@ -93,7 +97,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       List<ChatObject> parsedMessages = await compute(parseChats, chatsJson);
     //print(chatsJson);
       for (var chat in parsedMessages) {
-    await chatDb.saveChat(
+    chatDb.saveChat(
       widget.chatId,
       widget.doctorId,
       chat.content,
@@ -120,9 +124,9 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     //   chatDb.saveChat(widget.chatId, widget.doctorId, chatData['message'], time,
     //       chatData['role']);
     // }
-    setState(() {
-    _messageList.addAll(parsedMessages);
-    });
+    // setState(() {
+    // _messageList.addAll(parsedMessages);
+    // });
     isParsing.value = false;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (isSocketConnected && widget.fromCurate) {
@@ -237,6 +241,22 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   void initState() {
     asyncBefore();
     super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.offset < _scrollController.position.maxScrollExtent - 100) {
+        if (!_showScrollToBottom) {
+          setState(() {
+            _showScrollToBottom = true;
+          });
+        }
+      } else {
+        if (_showScrollToBottom) {
+          setState(() {
+            _showScrollToBottom = false;
+          });
+        }
+      }
+    });
+  
     chatAppointmentController.getAppointmentInformation(widget.chatId);
 
     //최신id - 기존 id
@@ -359,6 +379,32 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                 ),
               ],
             ),
+            if (_showScrollToBottom)
+            Positioned(
+              bottom: 85,
+              right: 20,
+              child: GestureDetector(
+                onTap: animateToBottom,
+                child: Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 211, 211, 211),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 6,
+                      )
+                    ],
+                  ),
+                  child: Icon(Icons.arrow_downward, color: Colors.black),
+                ),
+              ),
+            ),
+
+
+
             //파싱작업때 중앙로딩딩
             Obx(() => isParsing.value
                 ? Container(

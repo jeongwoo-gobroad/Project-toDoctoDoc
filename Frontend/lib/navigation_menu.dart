@@ -79,14 +79,26 @@ class NavigationMenu extends StatelessWidget {
             onDestinationSelected: (index) =>
             controller.selectedIndex.value = index,
             destinations: [
-              const NavigationDestination(icon: Icon(Icons.home), label: '홈'),
-              const NavigationDestination(icon: Icon(Icons.chat), label: 'AI 채팅'),
               const NavigationDestination(
-                  icon: Icon(Icons.analytics), label: '그래프보드'),
+                icon: Icon(Icons.home),
+                selectedIcon: Icon(Icons.home, color: Color.fromARGB(255, 164, 199, 81),), 
+                label: '홈'),
               const NavigationDestination(
-                  icon: Icon(Icons.place), label: '마음병원'),
+                icon: Icon(Icons.chat), 
+                selectedIcon: Icon(Icons.chat, color: Color.fromARGB(255, 164, 199, 81),), 
+                label: 'AI 채팅'),
               const NavigationDestination(
-                  icon: Icon(Icons.fact_check), label: '큐레이팅'),
+                  icon: Icon(Icons.analytics), 
+                  selectedIcon: Icon(Icons.analytics, color: Color.fromARGB(255, 164, 199, 81),), 
+                  label: '그래프보드'),
+              const NavigationDestination(
+                  icon: Icon(Icons.place), 
+                  selectedIcon: Icon(Icons.place, color: Color.fromARGB(255, 164, 199, 81),), 
+                  label: '마음병원'),
+              const NavigationDestination(
+                  icon: Icon(Icons.fact_check), 
+                  selectedIcon: Icon(Icons.fact_check, color: Color.fromARGB(255, 164, 199, 81),), 
+                  label: '큐레이팅'),
             ],
           ),
         ),
