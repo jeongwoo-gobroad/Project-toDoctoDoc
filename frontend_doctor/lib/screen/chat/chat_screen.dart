@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -41,7 +42,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   final AppointmentController appointmentController = Get.put(AppointmentController());
   ChatController chatController = Get.put(ChatController());
   late ChatSocketService socketService;
-
+  bool _showScrollToBottom = false;
   ChatDatabase chatDb = ChatDatabase();
   RxBool isLoading = true.obs;
 
@@ -49,8 +50,28 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
   late String appointmentId;
   int selectColor = 0;
   List<ChatObject> _messageList = [];
+  RxBool isParsing = false.obs;
 
   alterParent() { setState(() {}); }
+  Future<List<ChatObject>> parseChats(List<dynamic> chatsJson) async {
+  List<ChatObject> messages = [];
+  for (var chatData in chatsJson) {
+    DateTime time;
+    var tempTime = chatData['createdAt'];
+    if (tempTime is String) {
+      time = DateTime.parse(tempTime).toLocal();
+    } else {
+      time = DateTime.fromMillisecondsSinceEpoch(tempTime);
+    }
+    messages.add(ChatObject(
+      content: chatData['message'],
+      role: chatData['role'],
+      createdAt: time,
+    ));
+  }
+  _messageList.addAll(messages);
+  return messages;
+}
 
   Future<void> appointmentMustBeDoneAlert(BuildContext context) async {
     return showDialog<void>(
@@ -99,34 +120,53 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       },
     );
   }
-  void parseAndStoreChats() {
+  void parseAndStoreChats() async {
+    isParsing.value = true;
     print('parseAndStore');
     List<dynamic> chatsJson = chatController.chatContents;
-    
-    print(chatsJson);
-    for (var chatData in chatsJson) {
-      DateTime time;
-      var tempTime = chatData['createdAt'];
+    List<ChatObject> parsedMessages = await compute(parseChats, chatsJson);
+    for (var chat in parsedMessages) {
+    chatDb.saveChat(
+      widget.chatId,
+      widget.userId,
+      chat.content,
+      chat.createdAt!,
+      chat.role,
+    );
+    isParsing.value = false;
+    // for (var chatData in chatsJson) {
+    //   DateTime time;
+    //   var tempTime = chatData['createdAt'];
 
-      if(tempTime is String){
-        time = DateTime.parse(chatData['createdAt']).toLocal();
-      }
-      else{
-        time = DateTime.fromMillisecondsSinceEpoch(tempTime);
-      }
+    //   if(tempTime is String){
+    //     time = DateTime.parse(chatData['createdAt']).toLocal();
+    //   }
+    //   else{
+    //     time = DateTime.fromMillisecondsSinceEpoch(tempTime);
+    //   }
       
-      // messageList에 추가
-      _messageList.add(
-        ChatObject(
-          content: chatData['message'],
-          role: chatData['role'],
-          createdAt: time.toLocal()
-        )
-      );
-      chatDb.saveChat(widget.chatId, widget.userId, chatData['message'], time, chatData['role']);
-    }
+    //   // messageList에 추가
+    //   _messageList.add(
+    //     ChatObject(
+    //       content: chatData['message'],
+    //       role: chatData['role'],
+    //       createdAt: time.toLocal()
+    //     )
+    //   );
+    //   chatDb.saveChat(widget.chatId, widget.userId, chatData['message'], time, chatData['role']);
+    // }
   }
-
+  }
+  void animateToBottom(){
+    Future.delayed(Duration(milliseconds: 100), () {
+          if(!mounted) return;
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        });
+  }
   void asyncBefore() async {
     isLoading.value = true;
     SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
@@ -148,7 +188,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
       print(chatData);
 
       for (var chat in chatData) {
-        print(chat);
+        //print(chat);
         _messageList.add(ChatObject(content: chat['message'], role: chat['role'], createdAt: DateTime.parse(chat['timestamp']).toLocal()));
       }
     }
@@ -211,7 +251,21 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
     chatAppointmentController.getAppointmentInformation(widget.chatId);
 
     super.initState();
-
+    _scrollController.addListener(() {
+      if (_scrollController.offset < _scrollController.position.maxScrollExtent - 100) {
+        if (!_showScrollToBottom) {
+          setState(() {
+            _showScrollToBottom = true;
+          });
+        }
+      } else {
+        if (_showScrollToBottom) {
+          setState(() {
+            _showScrollToBottom = false;
+          });
+        }
+      }
+    });
     isLoading.value = false;
   }
 
@@ -506,70 +560,97 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
           await chatDb.updateLastReadId(widget.chatId, chatController.serverAutoIncrementId.value);
           socketService.onDisconnect();
         },
-        child: Column(
+        child: Stack(
           children: [
-            Obx(() {
-              if (chatAppointmentController.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              return UpperAppointmentInformation(chatId: widget.chatId,);
-            }),
-
-            Obx(() {
-              if (isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              return makeChatList(scrollController: _scrollController, messageList: _messageList, updateUnread: updateUnread,);
-            }),
-
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                maxLines: null,
-                controller: messageController,
-                onSubmitted: (value) {
-                  if (value.isNotEmpty) {
-                    sendText(value);
+            Column(
+              children: [
+                Obx(() {
+                  if (chatAppointmentController.isLoading.value) {
+                    return const Center(child: CircularProgressIndicator());
                   }
-                },
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 244, 242, 248),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(40),
-                      borderSide: BorderSide(width: 0, style: BorderStyle.none)
-                  ),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
-                  hintText: '메시지를 입력하세요',
-                  prefixIcon: IconButton(
-                      onPressed: () {
-                        if (chatAppointmentController.isAppointmentExisted.value && chatAppointmentController.appointmentTime.value.isBefore(DateTime.now())) {
-                          if (!chatAppointmentController.isAppointmentDone.value) {
-                            appointmentMustBeDoneAlert(context);
-                            return;
-                          }
-                        }
-                        setAppointmentDay();
-                        setState(() {});
-                      },
-                      icon: Icon(Icons.edit_calendar_outlined),
-                  ),
-
-                  suffixIcon: IconButton(
-                    onPressed: () {
-                      if (messageController.text.isNotEmpty) {
-                        sendText(messageController.text);
+                  return UpperAppointmentInformation(chatId: widget.chatId);
+                }),
+                Expanded(
+                  child: Obx(() {
+                    if (isLoading.value) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return makeChatList(
+                      messageList: _messageList,
+                      scrollController: _scrollController,
+                      updateUnread: updateUnread,
+                    );
+                  }),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    maxLines: null,
+                    controller: messageController,
+                    onSubmitted: (value) {
+                      if (value.isNotEmpty) {
+                        sendText(value);
                       }
                     },
-                    icon: Icon(Icons.arrow_circle_right_outlined, size: 45)
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Color.fromARGB(255, 244, 242, 248),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(40),
+                          borderSide: BorderSide(width: 0, style: BorderStyle.none)),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
+                      hintText: '메시지를 입력하세요',
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          if (messageController.text.isNotEmpty) {
+                            sendText(messageController.text);
+                          }
+                        },
+                        icon: Icon(Icons.arrow_circle_right_outlined, size: 45),
+                      ),
+                    ),
                   ),
+                ),
+              ],
+            ),
+            if (_showScrollToBottom)
+            Positioned(
+              bottom: 85,
+              right: 20,
+              child: GestureDetector(
+                onTap: animateToBottom,
+                child: Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 211, 211, 211),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 6,
+                      )
+                    ],
+                  ),
+                  child: Icon(Icons.arrow_downward, color: Colors.black),
                 ),
               ),
             ),
-        ],),
+
+
+
+            //파싱작업때 중앙로딩딩
+            Obx(() => isParsing.value
+                ? Container(
+                    color: const Color.fromARGB(255, 234, 232, 232),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                : SizedBox()),
+          ],
+        ),
       ),
     );
   }
