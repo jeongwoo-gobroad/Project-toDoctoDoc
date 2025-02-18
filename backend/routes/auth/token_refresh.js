@@ -7,6 +7,7 @@ const Doctor = require("../../models/Doctor");
 const Admin = require("../../models/Admin");
 const returnResponse = require("../mapp/standardResponseJSON");
 const { generateToken, generateRefreshToken } = require("./jwt");
+const Redis = require("../../config/redisObject");
 const User = mongoose.model("User", UserSchema);
 const router = require('express').Router();
 
@@ -15,15 +16,31 @@ router.post(["/tokenRefresh"],
         // console.log("Refresh request");
 
         try {
-            const decoded = jwt.verify(req.headers["authorization"]?.split(" ")[1], secretKey);
+            const originalRefreshToken = req.headers["authorization"]?.split(" ")[1];
+            const decoded = jwt.verify(originalRefreshToken, secretKey);
             
             if (typeof decoded.userid === "undefined") {
 
-                // console.log(req.headers["authorization"]?.split(" ")[1]);
+                let redis = new Redis();
+                let user = null;
+                let doctor = null;
+                let admin = null;
 
-                const user = await User.findOne({refreshToken: req.headers["authorization"]?.split(" ")[1]});
-                const doctor = await Doctor.findOne({refreshToken: req.headers["authorization"]?.split(" ")[1]});
-                const admin = await Admin.findOne({refreshToken: req.headers["authorization"]?.split(" ")[1]});
+                await redis.connect();
+
+                const object = await redis.getHashValue("TOKEN:", originalRefreshToken);
+
+                if (object) {
+                    if (object.userStatus === "user") {
+                        user = await User.findById(object.userId);
+                    } else if (object.userStatus === "doctor") {
+                        doctor = await Doctor.findById(object.userId);
+                    } else if (object.userStatus === "admin") {
+                        admin = await Admin.findById(object.userId);
+                    }
+                }
+
+                await redis.delHashValue("TOKEN:", originalRefreshToken);
     
                 let payload = null;
                 let token = null;
@@ -40,9 +57,11 @@ router.post(["/tokenRefresh"],
                     token = generateToken(payload);
                     refreshToken = generateRefreshToken();
     
-                    await User.findByIdAndUpdate(user._id, {
-                        refreshToken: refreshToken,
-                    });
+                    // await User.findByIdAndUpdate(user._id, {
+                    //     refreshToken: refreshToken,
+                    // });
+
+                    await redis.setHashValueWithTTL("TOKEN:", refreshToken, {userStatus: "user", userId: user._id}, 60);
                 } else if (doctor) {
                     payload = {
                         userid: doctor._id,
@@ -54,9 +73,11 @@ router.post(["/tokenRefresh"],
                     token = generateToken(payload);
                     refreshToken = generateRefreshToken();
     
-                    await Doctor.findByIdAndUpdate(doctor._id, {
-                        refreshToken: refreshToken,
-                    });
+                    // await Doctor.findByIdAndUpdate(doctor._id, {
+                    //     refreshToken: refreshToken,
+                    // });
+
+                    await redis.setHashValueWithTTL("TOKEN:", refreshToken, {userStatus: "doctor", userId: doctor._id}, 60);
                 } else if (admin) {
                     payload = {
                         userid: admin._id,
@@ -68,9 +89,11 @@ router.post(["/tokenRefresh"],
                     token = generateToken(payload);
                     refreshToken = generateRefreshToken();
     
-                    await Admin.findByIdAndUpdate(admin._id, {
-                        refreshToken: refreshToken,
-                    });
+                    // await Admin.findByIdAndUpdate(admin._id, {
+                    //     refreshToken: refreshToken,
+                    // });
+
+                    await redis.setHashValueWithTTL("TOKEN:", refreshToken, {userStatus: "admin", userId: admin._id}, 60);
                 } else {
                     res.status(403).json(returnResponse(true, "unexpectedError", "-"));
 

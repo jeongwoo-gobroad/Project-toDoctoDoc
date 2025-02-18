@@ -96,10 +96,8 @@ class QueryController extends GetxController {
       print(data);
       query.value = data['content']['query'];
 
-      DateTime serverDate = DateTime.parse(data['content']['userDate']);
+      DateTime serverDate = DateTime.parse(data['content']['userDate']).toLocal();
       DateTime today = DateTime.now();
-      // print(serverDate);
-      // print(today);
 
       if (!_isSameDay(serverDate, today)) {
         userTotal.value = 0;

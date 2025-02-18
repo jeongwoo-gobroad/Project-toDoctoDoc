@@ -12,6 +12,7 @@ const router = express.Router();
 const User = mongoose.model("User", UserSchema);
 const Doctor = require("../../../../models/Doctor");
 const Redis = require("../../../../config/redisObject");
+const { refreshToken } = require("firebase-admin/app");
 
 router.post(["/dupemailcheck"],
     checkIfNotLoggedIn,
@@ -117,6 +118,8 @@ router.post(["/login"],
                 res.status(403).json(returnResponse(true, "no_such_user", "등록된 유저가 없습니다."));
             }
 
+            await redis.setHashValueWithTTL("TOKEN:", refreshToken, {userStatus: "doctor", userId: doctor._id}, 60);
+
             redis.closeConnnection();
             redis = null;
         } catch (error) {
@@ -134,17 +137,16 @@ router.get(["/logout"],
     checkIfLoggedIn,
     async (req, res, next) => {
         try {
-            const {pushToken} = req.body;
+            const {deviceId, refreshToken} = req.body;
             let redis = new Redis();
 
             await redis.connect();
-
-            const user = await getTokenInformation(req, res);
     
-            await Doctor.findByIdAndUpdate(user.userid, {
+            await Doctor.findByIdAndUpdate(req.userid, {
                 $pull: {deviceIds: deviceId}
             });
-            redis.delCache("Device_Doctor: " + deviceId);
+            await redis.delCache("Device_Doctor: " + deviceId);
+            await redis.delHashValue("TOKEN:", refreshToken);
             console.log("pulled token");
 
             redis.closeConnnection();

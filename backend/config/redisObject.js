@@ -72,6 +72,21 @@ class Redis {
         }
     }
 
+    async swapHashFieldValueWithTTL(key, field, seconds) {
+        try {
+            const prevVal = await this.redisClient.hGet(key.toString(), field.toString());
+            await this.redisClient.hDel(key.toString(), field.toString());
+            await this.redisClient.hSet(key.toString(), prevVal, field.toString());
+            await this.redisClient.hExpire(key.toString(), prevVal, parseInt(seconds));
+
+            return;
+        } catch (error) {
+            console.error(error, "errorAtSwapHashFieldValue");
+
+            return null;
+        }
+    }
+
     async getHashValue(key, field) {
         try {
             const value = await this.redisClient.hGet(key.toString(), field.toString());
@@ -86,6 +101,17 @@ class Redis {
     async setHashValue(key, field, value) {
         try {
             await this.redisClient.hSet(key.toString(), field.toString(), JSON.stringify(value));
+            
+            return;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    async delHashValue(key, field) {
+        try {
+            await this.redisClient.hDel(key.toString(), field.toString());
             
             return;
         } catch (error) {

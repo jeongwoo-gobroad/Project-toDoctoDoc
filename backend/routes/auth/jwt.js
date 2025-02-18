@@ -4,6 +4,7 @@ const secretKey = process.env.JWT_SECRET;
 const mongoose = require("mongoose");
 const Doctor = require("../../models/Doctor");
 const Admin = require("../../models/Admin");
+const Redis = require('../../config/redisObject');
 const User = mongoose.model("User", UserSchema);
 
 const generateToken = (payload) => {

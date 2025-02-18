@@ -114,6 +114,8 @@ router.post(["/login"], async (req, res, next) => {
             }
         }
 
+        await redis.setHashValueWithTTL("TOKEN:", refreshToken, {userStatus: "user", userId: user._id}, 60);
+
         redis.closeConnnection();
         redis = null;
 
@@ -132,16 +134,16 @@ router.get(["/logout"],
     checkIfLoggedIn,
     async (req, res, next) => {
         try {
-            const {deviceId} = req.body;
-            const user = await getTokenInformation(req, res);
+            const {deviceId, refreshToken} = req.body;
             let redis = new Redis();
 
             await redis.connect();
     
-            await User.findByIdAndUpdate(user.userid, {
+            await User.findByIdAndUpdate(req.userid, {
                 $pull: {deviceIds: deviceId}
             });
-            redis.delCache("Device: " + deviceId);
+            await redis.delCache("Device: " + deviceId);
+            await redis.delHashValue("TOKEN:", refreshToken);
             console.log("pulled device ID");
     
             res.status(200).json(returnResponse(false, "loggedOut", "-"));
