@@ -48,6 +48,51 @@ const tagCountRefreshWorksViaRedis = async (newTags) => {
     return;
 };
 
+const tagCountMinusWorksViaRedis = async (prevTags) => {
+    const tagLine = removeSpacesAndHashes(prevTags);
+    const tags = tagLine.split(",");
+    let redis = new Redis();
+
+    await redis.connect();
+
+    const prev = await redis.getHashAll("GRAPHBOARD:");
+    let maxTagCount = 0;
+
+    for (let [tag, obj] of prev) {
+        obj.tagCount *= maxTagCount;
+    }
+
+    for (const tag of tags) {
+        if (prev.has(tag)) {
+            let val = prev.get(tag);
+            val.tagCount--;
+            
+            if (val.tagCount > maxTagCount) {
+                maxTagCount = val.tagCount;
+            }
+
+            prev.set(tag, val);
+        }
+        if (prev.get(tag).tagCount > maxTagCount) {
+            maxTagCount = prev.get(tag).tagCount;
+        }
+    }
+
+    for (let [tag, obj] of prev) {
+        obj.tagCount /= maxTagCount;
+        await redis.setHashValue("GRAPHBOARD:", tag, obj);
+    }
+    await redis.setCacheForever("GRAPHBOARD_MAX_TAGCOUNT:", maxTagCount);
+
+    redis.closeConnnection();
+
+    redis = null;
+
+    // console.log(prev, "tagCountRefreshWorksViaRedis");
+
+    return;
+};
+
 const viewCountRefreshWorksViaRedis = async (currentTags) => {
     const tagLine = removeSpacesAndHashes(currentTags);
     const tags = tagLine.split(",");
@@ -90,4 +135,4 @@ const viewCountRefreshWorksViaRedis = async (currentTags) => {
     return;
 };
 
-module.exports = {tagCountRefreshWorksViaRedis, viewCountRefreshWorksViaRedis};
+module.exports = {tagCountRefreshWorksViaRedis, tagCountMinusWorksViaRedis, viewCountRefreshWorksViaRedis};

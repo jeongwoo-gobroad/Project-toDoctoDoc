@@ -13,7 +13,7 @@ const mongoose = require("mongoose");
 const returnLongLatOfAddress = require("../../../middleware/getcoordinate");
 const bcrypt = require("bcrypt");
 const userEmitter = require("../../../events/eventDrivenLists");
-const { tagCountRefreshWorksViaRedis, viewCountRefreshWorksViaRedis } = require("../../../serverSideWorks/redisBubbleCollection");
+const { tagCountRefreshWorksViaRedis, viewCountRefreshWorksViaRedis, tagCountMinusWorksViaRedis } = require("../../../serverSideWorks/redisBubbleCollection");
 const Redis = require("../../../config/redisObject");
 
 const User = mongoose.model("User", UserSchema);
@@ -93,7 +93,6 @@ router.post(["/upload"],
                 {new: true}
             );
 
-            // userEmitter.emit('postUpdated', "-");
             tagCountRefreshWorksViaRedis(newTags);
 
             res.status(200).json(returnResponse(false, "ai_answer", newPost));
@@ -194,11 +193,13 @@ router.patch(["/edit/:id"],
         try {
             const check = await Post.findById(req.params.id);
 
-            if (check.user != user.userid) {
-                res.status(400).json(returnResponse(true, "notowner", "notowner"));
+            if (check.user != user.userid || !check) {
+                res.status(400).json(returnResponse(true, "notOwnerOrNoSuchPostExists", "-"));
 
                 return;
             }
+
+            tagCountMinusWorksViaRedis(check.tag);
 
             const post = await Post.findByIdAndUpdate(req.params.id, {
                 additional_material: content_additional,
@@ -206,7 +207,7 @@ router.patch(["/edit/:id"],
                 editedAt: Date.now(),
             }, {new: true});
 
-            userEmitter.emit('postUpdated', "-");
+            tagCountRefreshWorksViaRedis(newTags);
 
             res.status(200).json(returnResponse(false, "edit", post));
 
@@ -229,18 +230,18 @@ router.delete(["/delete/:id"],
         try {
             const check = await Post.findById(req.params.id);
 
-            if (check.user != user.userid) {
-                res.status(400).json(returnResponse(true, "notowner", "notowner"));
+            if (check.user != user.userid || !check) {
+                res.status(400).json(returnResponse(true, "notOwnerOrNoSuchPostExists", "-"));
 
                 return;
             }
+
+            tagCountMinusWorksViaRedis(check.tag);
 
             await Post.findByIdAndDelete(req.params.id);
             await User.findByIdAndUpdate(user.userid, {
                 $pull: {posts: req.params.id}
             });
-
-            userEmitter.emit('postUpdated', "-");
 
             res.status(200).json(returnResponse(false, "delete", "delete"));
 
