@@ -18,7 +18,6 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
   late TabController tabController = TabController(length: 2, vsync: this, initialIndex: 1, animationDuration: const Duration(milliseconds: 300));
   AppointmentController appointmentController = Get.find<AppointmentController>();
 
-
   bool checkIfDayChanged(index) {
     if (index == 0) {
       return true;
@@ -29,28 +28,17 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
     return false;
   }
 
-
-
   gotoDetailScreen(index) async {
-    //await widget.appointmentController.getAppointmentInformation(widget.appointmentController.appointmentList[index]['_id']);
-
     showDialog(
       context: context,
       builder: (context) {
         return AppointmentDetailScreen(appointment: appointmentController.appList[index]);
       },
     );
-    //Get.to(()=>AppointmentDetailScreen(appointment: appointmentController.appointmentList[index]));
-  }
-
-  asyncBefore() async {
-    await appointmentController.getAppointmentList();
   }
 
   @override
   void initState() {
-    //asyncBefore();
-
     appointmentController.getAppointmentList();
     super.initState();
   }
@@ -99,126 +87,123 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            title: InkWell(
-              child: Text('예약 리스트(가)',
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
-            ),
-            bottom: TabBar(controller: tabController, tabs: [Tab(text: '지나간 약속',), Tab(text: '남은 약속',)])
-        ),
-        body: TabBarView(
-          controller: tabController,
-          physics: NeverScrollableScrollPhysics(),
-          children: [
-            Obx(() {
-              if (appointmentController.isLoading.value) {
-                return Center(child: CircularProgressIndicator(),);
-              }
-              return Column(
-                children: [
-                  ListView.builder(
-                    shrinkWrap: true,
+      appBar: AppBar(
+          title: InkWell(
+            child: Text('예약 리스트(가)',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+          ),
+          bottom: TabBar(controller: tabController, tabs: [Tab(text: '지나간 약속',), Tab(text: '남은 약속',)])
+      ),
+      body: TabBarView(
+        controller: tabController,
+        physics: NeverScrollableScrollPhysics(),
+        children: [
+          Obx(() {
+            if (appointmentController.isLoading.value) {
+              return Center(child: CircularProgressIndicator(),);
+            }
+            return Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    //shrinkWrap: true,
                     controller: scrollController,
                     itemCount: appointmentController.nearAppointment,
                     itemBuilder: (context, index) {
                       final nowApp = appointmentController.appList[index];
-
                       return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (checkIfDayChanged(index)) ... [
-                              Container(
-                                width: double.infinity,
-                                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(color: Colors.grey.shade300),
-                                      top: BorderSide(color: Colors.grey.shade300),
-                                    )
-                                ),
-                                child: Text(DateFormat.yMMMEd('ko_KR').format(nowApp.startTime)),
-                              ),
-                            ],
-
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (checkIfDayChanged(index)) ... [
                             Container(
                               width: double.infinity,
-                              padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                              //decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey.shade300),)),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(DateFormat.jm('ko_KR').format(nowApp.startTime), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
-                                      SizedBox(width: 10),
-                                      Text('${nowApp.userNick}와의 약속' , style: TextStyle(fontSize: 20),),
-                                    ],
-                                  ),
-
-                                  Row(
-                                    children: [
-                                      InkWell(
-                                        onTap: () {
-                                          gotoDetailScreen(index);
-                                        },
-                                        child: Wrap (
-                                          children: [
-                                            if (nowApp.isFeedBackDone) ... [
-                                              if (nowApp.feedback['rating'] == 0) ... [
-                                                SvgPicture.asset('asset/images/emoji/frowning-face.svg', width: 30),
-                                              ]
-                                              else if (nowApp.feedback['rating'] == 1) ... [
-                                                SvgPicture.asset('asset/images/emoji/neutral-face.svg', width: 30),
-                                              ]
-                                              else ... [
-                                                SvgPicture.asset('asset/images/emoji/grinning-squinting-face.svg', width: 30),
-                                              ],
-                                            ],
-                                          ]
-                                        ),
-                                      ),
-
-                                      SizedBox(width: 10,),
-
-                                      InkWell(
-                                        onTap: () {
-                                          if (nowApp.isDone) return;
-                                          isReallyAppointmentDoneAlert(context, index);
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                          decoration: BoxDecoration(
-                                              color: (nowApp.isDone)? Colors.green : Colors.grey,
-                                              borderRadius: BorderRadius.circular(5)
-                                          ),
-                                          child: Text((nowApp.isDone)? '완료' : '미완료', style: TextStyle(color: Colors.white)),
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                ],
+                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(color: Colors.grey.shade300),
+                                  top: BorderSide(color: Colors.grey.shade300),
+                                )
                               ),
+                              child: Text(DateFormat.yMMMEd('ko_KR').format(nowApp.startTime)),
                             ),
                           ],
+                          Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                            //decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey.shade300),)),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(DateFormat.jm('ko_KR').format(nowApp.startTime), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                                    SizedBox(width: 10),
+                                    Text('${nowApp.userNick}와의 약속' , style: TextStyle(fontSize: 20),),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        gotoDetailScreen(index);
+                                      },
+                                      child: Wrap (
+                                        children: [
+                                          if (nowApp.isFeedBackDone) ... [
+                                            if (nowApp.feedback['rating'] == 0) ... [
+                                              SvgPicture.asset('asset/images/emoji/frowning-face.svg', width: 30),
+                                            ]
+                                            else if (nowApp.feedback['rating'] == 1) ... [
+                                              SvgPicture.asset('asset/images/emoji/neutral-face.svg', width: 30),
+                                            ]
+                                            else ... [
+                                              SvgPicture.asset('asset/images/emoji/grinning-squinting-face.svg', width: 30),
+                                            ],
+                                          ],
+                                        ]
+                                      ),
+                                    ),
+                                    SizedBox(width: 10,),
+                                    InkWell(
+                                      onTap: () {
+                                        if (nowApp.isDone) return;
+                                        isReallyAppointmentDoneAlert(context, index);
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                        decoration: BoxDecoration(
+                                            color: (nowApp.isDone)? Colors.green : Colors.grey,
+                                            borderRadius: BorderRadius.circular(5)
+                                        ),
+                                        child: Text((nowApp.isDone)? '완료' : '미완료', style: TextStyle(color: Colors.white)),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
                       );
                     }
                   ),
-                ],
-              );
-            }),
+                ),
+              ],
+            );
+          }),
 
-            Obx(() {
-              if (appointmentController.isLoading.value) {
-                return Center(child: CircularProgressIndicator(),);
-              }
-              return Column(
-                children: [
-                  ListView.builder(
-                    shrinkWrap: true,
+          Obx(() {
+            if (appointmentController.isLoading.value) {
+              return Center(child: CircularProgressIndicator(),);
+            }
+            return Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    //shrinkWrap: true,
                     controller: scrollController,
                     itemCount: appointmentController.appList.length - appointmentController.nearAppointment,
                     itemBuilder: (context, index) {
@@ -249,11 +234,12 @@ class _AppointmentListviewState extends State<AppointmentListview> with SingleTi
                       );
                     }
                   ),
-                ],
-              );
-            }),
-          ],
-        )
+                ),
+              ],
+            );
+          }),
+        ],
+      )
     );
   }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_doc_for_doc/controllers/appointment_controller.dart';
 import 'package:to_doc_for_doc/controllers/curate/curate_controller.dart';
+import 'package:to_doc_for_doc/screen/appointment/ai_summarize_screen.dart';
 import 'package:to_doc_for_doc/screen/appointment/appointment_calendar.dart';
 import 'package:to_doc_for_doc/screen/appointment/appointment_listview.dart';
 import 'package:intl/intl.dart';
@@ -36,22 +37,7 @@ class _HomeState extends State<Home> {
       context: context,
       isScrollControlled: true,
       builder: (_) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.4,
-          minChildSize: 0.4,
-          maxChildSize: 1.0,
-
-          builder: (BuildContext context, ScrollController scrollController) {
-            return Wrap(
-              children: [
-                Container(
-                  height: 500,
-                  color: Colors.white
-                ),
-              ]
-            );
-          }
-        );
+        return AiSummarizeScreen();
       },
     );
   }

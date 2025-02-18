@@ -16,10 +16,10 @@ class AppointmentBottomSheet extends StatefulWidget {
   });
 
   @override
-  State<AppointmentBottomSheet> createState() => _appointmentBottomSheet();
+  State<AppointmentBottomSheet> createState() => _AppointmentBottomSheet();
 }
 
-class _appointmentBottomSheet extends State<AppointmentBottomSheet> with WidgetsBindingObserver {
+class _AppointmentBottomSheet extends State<AppointmentBottomSheet> with WidgetsBindingObserver {
   ChatAppointmentController chatAppController = Get.find<ChatAppointmentController>();
   AppointmentController appController = Get.find<AppointmentController>();
   List<int> nowAppList = [];
