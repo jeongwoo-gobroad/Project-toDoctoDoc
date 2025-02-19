@@ -1,10 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc/Database/chat_database.dart';
+import 'package:to_doc/auth/auth_secure.dart';
 import 'package:to_doc/controllers/careplus/chat_controller.dart';
 import 'package:to_doc/screens/chat/chat_screen.dart';
+import 'package:to_doc/screens/intro.dart';
+import 'package:to_doc/socket_service/chatlist_socket_service.dart';
+import 'package:to_doc/main.dart';
 
 class DMList extends StatefulWidget {
   DMList({required this.controller});
@@ -15,9 +20,46 @@ class DMList extends StatefulWidget {
   State<DMList> createState() => _DMListState();
 }
 
-class _DMListState extends State<DMList> {
+class _DMListState extends State<DMList> with WidgetsBindingObserver, RouteAware {
+
+  late ChatListSocketService chatListSocketService;
+  bool isFirstLoading = false;
   final ChatDatabase chatDb = ChatDatabase();
 
+  void socketConnection() async{
+    SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
+    String? token = await storage.readAccessToken();
+
+    if (token == null) {
+      print('TOKEN ERROR ----------- [NULL ACCESS TOKEN]');
+      Get.offAll(() => Intro());
+    }
+
+    print(token);
+    chatListSocketService = ChatListSocketService(token!, onConnected: () {
+      print("채팅 리스트용 소켓이 성공적으로 연결되었습니다!");
+      // setState(() {
+      //   isSocketConnected = true;
+          
+      // });
+
+    });
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      chatListSocketService.onEventOccurred((data) {
+        print('event occurred');
+        print(data);
+        
+        if (this.mounted) {
+
+          widget.controller.getChatList();
+        
+        }
+      });
+    });
+
+
+  }
   void goToChatScreen(chat) async {
     print("최신 id: ${chat.cid}");
 
@@ -35,15 +77,36 @@ class _DMListState extends State<DMList> {
     Get.to(()=> ChatScreen(doctorId: chat.doctorId, chatId: chat.cid, unreadMsg: unread, doctorName: chat.doctorName,autoIncrementId: chat.recentChat['autoIncrementId']));
   }
 
+   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.paused) {
+      chatListSocketService.onDisconnect();
+      
+      print("DmList 백그라운드 전환: SocketDisconnect");
+    }
+  }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    //Todo: DMList안에서만 socket연결, 벗어나면 무조건 disconnect하기기
+    //route.subscribe(this, ModalRoute.of(context)! as PageRoute);
+  }
+
   @override
   void initState() {
     super.initState();
-
+    socketConnection();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         setState(() {
           widget.controller.getChatList();
         });
     });
+  }
+
+  @override
+  void dispose() {
+    chatListSocketService.onDisconnect();
+    super.dispose();
   }
 
   @override
@@ -56,7 +119,8 @@ class _DMListState extends State<DMList> {
         elevation: 0,
       ),
       body: Obx(() {
-        if (widget.controller.isLoading.value) {
+        if (widget.controller.isLoading.value && !isFirstLoading) {
+          isFirstLoading = true;
           return const Center(child: CircularProgressIndicator());
         }
 
