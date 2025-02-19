@@ -95,6 +95,9 @@ router.post(["/tokenRefresh"],
 
                     await redis.setHashValueWithTTL("TOKEN:", refreshToken, {userStatus: "admin", userId: admin._id}, 60);
                 } else {
+                    redis.closeConnnection();
+                    redis = null;
+
                     res.status(403).json(returnResponse(true, "unexpectedError", "-"));
 
                     console.error("errorAtTokenRefreshing");
@@ -102,6 +105,8 @@ router.post(["/tokenRefresh"],
                     return;
                 }
                 // console.log("Token refreshed successfully");
+                redis.closeConnnection();
+                redis = null;
 
                 res.status(200).json(returnResponse(false, "returnedTokenSuccessfully", {accessToken: token, refreshToken: refreshToken}));
     

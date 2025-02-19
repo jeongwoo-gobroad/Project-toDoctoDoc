@@ -64,7 +64,7 @@ router.post(["/dailySummation"],
             });
 
             if (inputData.length < 1) {
-                res.status(401).json(returnResponse(true, "noScheduleToday", "-"));
+                res.status(201).json(returnResponse(true, "noScheduleToday", "-"));
 
                 return;
             }
