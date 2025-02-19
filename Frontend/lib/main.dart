@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:to_doc/Database/chat_database.dart';
@@ -21,8 +23,22 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   //clearSecureStorageOnReinstall();
   initFirebase();
-  initDatabase();
+  await initDatabase();
+  MobileAds.instance.initialize();
 
+  const Map<String, String> NATIVE_ID = kReleaseMode
+    ? {
+    
+
+  'ios': '[YOUR iOS AD UNIT ID]',
+  'android': 'ca-app-pub-xxxxxxxxxxxxxxxxx/xxxxxxxxx',
+  						
+}
+
+    :  {
+  'ios': 'ca-app-pub-3940256099942544/3986624511',
+  'android': 'ca-app-pub-3940256099942544/2247696110',
+};
 //  AuthRepository.initialize(
   //   appKey: dotenv.env['APP_KEY'] ?? '',
   //   baseUrl: dotenv.env['BASE_URL'] ?? '');
