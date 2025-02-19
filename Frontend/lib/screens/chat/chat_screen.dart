@@ -333,8 +333,8 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                   }
                   return UpperAppointmentInform(chatId: widget.chatId);
                 }),
-                Expanded(
-                  child: Obx(() {
+                
+                  Obx(() {
                     if (isLoading.value) {
                       return const Center(child: CircularProgressIndicator());
                     }
@@ -344,7 +344,7 @@ class _ChatScreen extends State<ChatScreen> with WidgetsBindingObserver {
                       updateUnread: updateUnread,
                     );
                   }),
-                ),
+                
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(

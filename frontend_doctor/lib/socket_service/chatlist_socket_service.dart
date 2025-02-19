@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:to_doc/auth/auth_secure.dart';
 
 class ChatListSocketService {
   //var chat = <Map<String, dynamic>>[].obs;
@@ -23,7 +22,7 @@ class ChatListSocketService {
 
     try {
       socket = io.io(
-          'http://jeongwoo-kim-web.myds.me:3000/dm_user_list',
+          'http://jeongwoo-kim-web.myds.me:3000/dm_doctor_list',
           io.OptionBuilder()
               .setTransports(['websocket'])
               .setQuery({'token': token,})

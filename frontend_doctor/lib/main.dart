@@ -9,7 +9,7 @@ import 'package:to_doc_for_doc/screen/auth/login_screen.dart';
 import 'package:to_doc_for_doc/controllers/auth/auth_interceptor.dart';
 
 import 'firebase/firebase_handler.dart';
-
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 void main() async{
   await initializeDateFormatting();
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,8 +35,9 @@ void main() async{
         dialogTheme: DialogTheme(
           backgroundColor: Colors.white,
         )
+        
       ),
-
+      navigatorObservers: [routeObserver],
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

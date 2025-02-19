@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:to_doc_for_doc/Database/chat_database.dart';
+import 'package:to_doc_for_doc/controllers/auth/auth_secure.dart';
+import 'package:to_doc_for_doc/main.dart';
+import 'package:to_doc_for_doc/screen/auth/login_screen.dart';
+import 'package:to_doc_for_doc/socket_service/chatlist_socket_service.dart';
 
 import '../../controllers/chat_controller.dart';
 import 'chat_screen.dart';
@@ -13,10 +18,50 @@ class DMList extends StatefulWidget {
   State<DMList> createState() => _DMListState();
 }
 
-class _DMListState extends State<DMList> {
+class _DMListState extends State<DMList> with WidgetsBindingObserver, RouteAware {
+  
+  late ChatListSocketService chatListSocketService;
+  bool isFirstLoading = false;
   final ChatDatabase chatDb = ChatDatabase();
   final ChatController controller = Get.put(ChatController());
   
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute<dynamic>);
+  }
+
+  void socketConnection() async{
+    SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
+    String? token = await storage.readAccessToken();
+
+    if (token == null) {
+      print('TOKEN ERROR ----------- [NULL ACCESS TOKEN]');
+      Get.offAll(()=>LoginPage());
+    }
+
+    print(token);
+    chatListSocketService = ChatListSocketService(token!, onConnected: () {
+      print("채팅 리스트용 소켓이 성공적으로 연결되었습니다!");
+      
+    });
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      chatListSocketService.onEventOccurred((data) {
+        print('event occurred');
+        print(data);
+        
+        if (this.mounted) {
+
+          controller.getChatList();
+        
+        }
+      });
+    });
+
+
+  }
+
   void goToChatScreen(chat) async {
     //linkTest();
 
@@ -45,6 +90,7 @@ class _DMListState extends State<DMList> {
   @override
   void initState() {
     super.initState();
+    socketConnection();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         setState(() {
           controller.getChatList();
@@ -54,10 +100,30 @@ class _DMListState extends State<DMList> {
   }
 
   @override
+  void didPushNext() {
+    print("DMList에서 다른 페이지로 이동 중이므로 소켓 연결 해제");
+    chatListSocketService.onDisconnect();
+  }
+
+  @override
+  void didPopNext() {
+    print("DMList로 돌아왔으므로 소켓 재연결");
+    socketConnection();
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    chatListSocketService.onDisconnect();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(() {
-        if (controller.isLoading.value) {
+        if (controller.isLoading.value && !isFirstLoading) {
+          isFirstLoading = true;
           return const Center(child: CircularProgressIndicator());
         }
 

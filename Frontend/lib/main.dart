@@ -18,6 +18,7 @@ import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'auth/auth_secure.dart';
 import 'firebase/firebase_handler.dart';
 
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 void main() async{
   await initializeDateFormatting();
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,6 +54,7 @@ void main() async{
 
 
   runApp(GetMaterialApp(
+    navigatorObservers: [routeObserver],
     scrollBehavior: const MaterialScrollBehavior().copyWith(
         dragDevices: {
           PointerDeviceKind.mouse,

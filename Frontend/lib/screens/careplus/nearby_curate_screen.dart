@@ -674,8 +674,10 @@ class _HospitalCardState extends State<HospitalCard> with TickerProviderStateMix
 
   void goToChatScreen() async {
     await chatController.requestChat(widget.doctorId);
+    await chatController.getChatList();
 
-    print("최신 id: ${chatController.serverAutoIncrementId}");
+
+    print("최신 id: ${chatController.serverAutoIncrementMap[chatController.chatId.value]}");
 
     int lastAutoIncrementID;
     lastAutoIncrementID = await chatDb.getLastReadId(chatController.chatId.value);

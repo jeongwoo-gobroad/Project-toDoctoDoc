@@ -25,7 +25,11 @@ class _DMListState extends State<DMList> with WidgetsBindingObserver, RouteAware
   late ChatListSocketService chatListSocketService;
   bool isFirstLoading = false;
   final ChatDatabase chatDb = ChatDatabase();
-
+  @override
+void didChangeDependencies() {
+  super.didChangeDependencies();
+  routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute<dynamic>);
+}
   void socketConnection() async{
     SecureStorage storage = SecureStorage(storage: FlutterSecureStorage());
     String? token = await storage.readAccessToken();
@@ -77,20 +81,32 @@ class _DMListState extends State<DMList> with WidgetsBindingObserver, RouteAware
     Get.to(()=> ChatScreen(doctorId: chat.doctorId, chatId: chat.cid, unreadMsg: unread, doctorName: chat.doctorName,autoIncrementId: chat.recentChat['autoIncrementId']));
   }
 
-   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.paused) {
-      chatListSocketService.onDisconnect();
+  //  @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) async {
+  //   if (state == AppLifecycleState.paused) {
+  //     chatListSocketService.onDisconnect();
       
-      print("DmList 백그라운드 전환: SocketDisconnect");
-    }
+  //     print("DmList 백그라운드 전환: SocketDisconnect");
+  //   }
+  // }
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   //Todo: DMList안에서만 socket연결, 벗어나면 무조건 disconnect하기기
+  //   //route.subscribe(this, ModalRoute.of(context)! as PageRoute);
+  // }
+  @override
+  void didPushNext() {
+    print("DMList에서 다른 페이지로 이동 중이므로 소켓 연결 해제");
+    chatListSocketService.onDisconnect();
   }
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    //Todo: DMList안에서만 socket연결, 벗어나면 무조건 disconnect하기기
-    //route.subscribe(this, ModalRoute.of(context)! as PageRoute);
+  void didPopNext() {
+    print("DMList로 돌아왔으므로 소켓 재연결");
+    socketConnection();
   }
+
+
 
   @override
   void initState() {
@@ -105,6 +121,7 @@ class _DMListState extends State<DMList> with WidgetsBindingObserver, RouteAware
 
   @override
   void dispose() {
+    routeObserver.unsubscribe(this);
     chatListSocketService.onDisconnect();
     super.dispose();
   }
