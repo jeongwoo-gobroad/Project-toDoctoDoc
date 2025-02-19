@@ -10,6 +10,7 @@ const { checkIfLoggedIn, checkIfMyChat } = require('./middlewares/checkingMiddle
 const connectDB = require('./config/mongo');
 const EventEmitter = require('events');
 const { connectRedis, doesKeyExist, doesAtLeastOneUserExist } = require('./config/redis-singleton');
+const Chat = require('./models/Chat');
 
 connectDB();
 connectRedis();
@@ -54,8 +55,20 @@ router.get(["/mapp/dm/joinChat/:cid"],
                 map.set(req.params.cid, people);
                 worker = threadPool.get(req.params.cid);
             } else {
+                let chats = null;
+                try {
+                    chats = await Chat.findById(req.params.cid);
+                } catch (error) {
+                    console.error(error, "errorAtJoinChat");
+
+                    return;
+                }
                 map.set(req.params.cid, 1);
-                worker = new Worker("./dmWorks/mqManagement.js", {workerData: {chatId: req.params.cid}});
+                worker = new Worker("./dmWorks/mqManagement.js", {workerData: {
+                    chatId: req.params.cid,
+                    userId: chats.user,
+                    doctorId: chats.doctor
+                }});
                 threadPool.set(req.params.cid, worker);
             }
     

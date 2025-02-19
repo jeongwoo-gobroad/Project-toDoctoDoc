@@ -46,6 +46,7 @@ connectFCM();
 bubbleCollection();
 
 /* event-driven */
+/* lazy-recomputing review update */
 userEmitter.on('reviewUpdated', reviewRefreshWorks);
 
 app.use(expressLayouts);
@@ -70,8 +71,12 @@ const aichat = io.of('/aichat');
 aichat.on('connect', require("./routes/mapp/user/chatbot").aiChatting);
 const dm_user = io.of('/dm_user');
 const dm_doctor = io.of('/dm_doctor');
+const dm_user_listView = io.of('/dm_user_list');
+const dm_doctor_listView = io.of('/dm_doctor_list');
 dm_user.on('connect', require("./routes/mapp/user/dm_MQ"));
 dm_doctor.on('connect', require("./routes/mapp/doctor/files/dm_MQ"));
+dm_user_listView.on('connect', require("./routes/mapp/user/dm_MQ_list"));
+dm_doctor_listView.on('connect', require("./routes/mapp/doctor/files/dm_MQ_list"));
 
 app.use(cors());
 

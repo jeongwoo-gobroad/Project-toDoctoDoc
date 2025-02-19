@@ -2,9 +2,9 @@ require('dotenv').config({path: "../_secrets/dotenv/.env"});
 const { parentPort, workerData } = require('worker_threads');
 const connectDB = require('../config/mongo');
 const Chat = require('../models/Chat');
-const { connectRedis, doesKeyExist, popMessageFromMessageQueue, atomicallyIncrement, setCacheForever, publishMessageToChatId } = require('../config/redis-singleton');
+const { connectRedis, doesKeyExist, popMessageFromMessageQueue, atomicallyIncrement, setCacheForever, publishMessageToChatId, publishMessageToUserId, publishMessageToDoctorId } = require('../config/redis-singleton');
 
-const { chatId } = workerData;
+const { chatId, userId, doctorId } = workerData;
 
 connectDB();
 connectRedis();
@@ -93,6 +93,8 @@ setInterval(async () => {
                 globalSubQueue.push(newMessage);
                 await setCacheForever("CHATROOM:RECENT:" + chatId, newMessage);
                 await publishMessageToChatId(chatId, newMessage);
+                await publishMessageToUserId(userId, "newMessage");
+                await publishMessageToDoctorId(doctorId, "newMessage");
             }
         }
     } catch (error) {

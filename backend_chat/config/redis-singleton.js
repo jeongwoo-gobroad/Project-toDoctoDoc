@@ -92,4 +92,28 @@ const publishMessageToChatId = async (chatId, message) => {
     }
 };
 
-module.exports = {redisClient, connectRedis, doesKeyExist, popMessageFromMessageQueue, atomicallyIncrement, setCacheForever, publishMessageToChatId, doesAtLeastOneUserExist};
+const publishMessageToUserId = async (userId, message) => {
+    try {
+        await redisClient.publish(("CHATROOM_USER_CHANNEL:" + userId).toString(), JSON.stringify(message));
+    } catch (error) {
+        console.error(error, "errorAtPublishMessageToUserId");
+
+        return;
+    }
+};
+
+const publishMessageToDoctorId = async (doctorId, message) => {
+    try {
+        await redisClient.publish(("CHATROOM_DOCTOR_CHANNEL:" + doctorId).toString(), JSON.stringify(message));
+    } catch (error) {
+        console.error(error, "errorAtPublishMessageToDoctorId");
+
+        return;
+    }
+};
+
+module.exports = {
+    redisClient, connectRedis, doesKeyExist, popMessageFromMessageQueue, 
+    atomicallyIncrement, setCacheForever, publishMessageToChatId, doesAtLeastOneUserExist, 
+    publishMessageToUserId, publishMessageToDoctorId,
+};
