@@ -3,6 +3,11 @@
 ##### A project by Jeongwoo Kim, KNU CSE
 
 ---
+
+###### Demo video
+> https://youtu.be/g3c3bnPoZQI
+
+---
 ###### Participants
 > - Jeongwoo Kim (Project Leader, Backend Developer, Web Frontend Developer, AI Prompt Developer, KNU CSE)
 > - Hyunjong Yoon (Flutter Frontend Developer, AI Prompt Developer, KNU SME)
